@@ -773,6 +773,7 @@ Q8.UI = (function() {
             clickableIcons: false
         });
 
+        initPriceOverlay(); // Init the class now that google.maps exists
         renderMapMarkers();
     }
 
