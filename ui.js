@@ -778,53 +778,56 @@ Q8.UI = (function() {
     }
 
     // --- Custom Marker Overlay ---
-    class PriceOverlay extends google.maps.OverlayView {
-        constructor(position, text, zone) {
-            super();
-            this.position = position;
-            this.text = text;
-            this.zone = zone;
-            this.div = null;
-        }
-        onAdd() {
-            this.div = document.createElement('div');
-            this.div.className = 'marker-price-pill';
-            this.div.innerHTML = this.text;
-            this.div.style.position = 'absolute';
-            this.div.style.cursor = 'pointer';
+    let PriceOverlay = null;
 
-            // Interaction
-            this.div.onclick = (e) => {
-                 e.stopPropagation(); // Prevent map click
-                 if (Q8.Services && Q8.Services.tryOpenOverlay) {
-                     Q8.Services.tryOpenOverlay('sheet-zone', { uid: this.zone.uid, zone: this.zone.id, price: this.zone.price, rates: this.zone.rates });
-                 }
-            };
+    function initPriceOverlay() {
+        if (PriceOverlay || typeof google === 'undefined' || !google.maps) return;
 
-            // Add to map panes
-            const panes = this.getPanes();
-            panes.floatPane.appendChild(this.div); // Use floatPane for better interactions? overlayMouseTarget is standard.
-            // overlayMouseTarget receives DOM events. floatPane is above map objects.
-            // Using overlayMouseTarget to ensure clicks work.
-            panes.overlayMouseTarget.appendChild(this.div);
-        }
-        draw() {
-            const overlayProjection = this.getProjection();
-            if (!overlayProjection) return;
-
-            const point = overlayProjection.fromLatLngToDivPixel(this.position);
-            if (this.div && point) {
-                // The CSS handles translate(-50%, -100%) for centering and anchoring to bottom
-                this.div.style.left = point.x + 'px';
-                this.div.style.top = point.y + 'px';
-            }
-        }
-        onRemove() {
-            if (this.div) {
-                this.div.parentNode.removeChild(this.div);
+        PriceOverlay = class extends google.maps.OverlayView {
+            constructor(position, text, zone) {
+                super();
+                this.position = position;
+                this.text = text;
+                this.zone = zone;
                 this.div = null;
             }
-        }
+            onAdd() {
+                this.div = document.createElement('div');
+                this.div.className = 'marker-price-pill';
+                this.div.innerHTML = this.text;
+                this.div.style.position = 'absolute';
+                this.div.style.cursor = 'pointer';
+
+                // Interaction
+                this.div.onclick = (e) => {
+                     e.stopPropagation(); // Prevent map click
+                     if (Q8.Services && Q8.Services.tryOpenOverlay) {
+                         Q8.Services.tryOpenOverlay('sheet-zone', { uid: this.zone.uid, zone: this.zone.id, price: this.zone.price, rates: this.zone.rates });
+                     }
+                };
+
+                // Add to map panes
+                const panes = this.getPanes();
+                panes.floatPane.appendChild(this.div);
+                panes.overlayMouseTarget.appendChild(this.div);
+            }
+            draw() {
+                const overlayProjection = this.getProjection();
+                if (!overlayProjection) return;
+
+                const point = overlayProjection.fromLatLngToDivPixel(this.position);
+                if (this.div && point) {
+                    this.div.style.left = point.x + 'px';
+                    this.div.style.top = point.y + 'px';
+                }
+            }
+            onRemove() {
+                if (this.div) {
+                    this.div.parentNode.removeChild(this.div);
+                    this.div = null;
+                }
+            }
+        };
     }
 
     function renderMapMarkers() {
