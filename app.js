@@ -38,6 +38,13 @@ Q8.App = (function() {
             const targetId = target.getAttribute('data-target');
 
             switch (action) {
+                case 'toggle-menu':
+                    const menu = document.getElementById('side-menu');
+                    const backdrop = document.getElementById('menu-overlay-backdrop');
+                    if(menu) menu.classList.toggle('open');
+                    if(backdrop) backdrop.classList.toggle('open');
+                    break;
+
                 case 'nav-to': Services.setScreen(targetId); break;
                 case 'toggle-search-mode':
                     const newMode = S.get.searchMode === 'zone' ? 'address' : 'zone';
