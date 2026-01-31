@@ -220,13 +220,13 @@
     <!-- TopBar -->
     <!-- Unified Floating Header (Replaces TopBar & Old Search) -->
     <div id="ui-idle-search" class="map-floating-header">
-       <button class="menu-btn" data-action="open-overlay" data-target="menu-overlay">
+       <button class="menu-btn" data-action="toggle-menu">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
        </button>
 
        <input type="text" id="inp-search" class="search-input" placeholder="Search zone or address...">
 
-       <!-- Optional: Toggle Mode (Address/Zone) - kept for functionality, visually subtle -->
+       <!-- Address Toggle Restored -->
        <button id="btn-search-toggle" class="menu-btn" data-action="toggle-search-mode" style="width: auto; padding: 0 8px; font-size: 0.8rem; font-weight: 700;">
           Address
        </button>
@@ -492,35 +492,37 @@
     <div id="toast" class="toast">Success</div>
   </div>
 
-  <!-- === BOTTOM NAVIGATION BAR === -->
-  <div id="bottom-nav" class="bottom-nav">
-      <!-- 1. Language (NL/EN) -->
-      <button class="nav-item" data-action="toggle-lang-f" data-target="lang">
-          <span class="nav-text-bold" id="nav-lang-text">NL</span>
-      </button>
-
-      <!-- 2. History -->
-      <button class="nav-item" data-action="nav-to" data-target="history">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-      </button>
-
-      <!-- 3. PARK (Main FAB) -->
-      <div class="nav-fab-container">
-          <button class="nav-fab-main" data-action="nav-to" data-target="parking">
-             <span class="font-bold text-xl text-brand-navy">P</span>
+  <!-- === SIDEBAR MENU (Reinstated) === -->
+  <div id="side-menu" class="side-menu">
+      <div class="menu-header">
+          <div class="brand-logo">Q8</div>
+          <button class="icon-btn" data-action="toggle-menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
       </div>
-
-      <!-- 4. Benefits (Stars) -->
-      <button class="nav-item" data-action="nav-to" data-target="benefits">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-      </button>
-
-      <!-- 5. Account/Profile -->
-      <button class="nav-item" data-action="open-overlay" data-target="menu-overlay">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-      </button>
+      <div class="menu-items">
+          <div class="menu-item active" data-action="nav-to" data-target="parking">
+             <span class="icon">🅿️</span> Parking
+          </div>
+          <div class="menu-item" data-action="nav-to" data-target="history">
+             <span class="icon">🕒</span> History
+          </div>
+          <div class="menu-item" data-action="nav-to" data-target="plates">
+             <span class="icon">🚗</span> License Plates
+          </div>
+          <div class="menu-divider"></div>
+          <div class="menu-item" data-action="logout">
+             <span class="icon">🚪</span> Sign Out
+          </div>
+      </div>
+      <div class="menu-footer">
+          <div class="text-xs text-secondary">Logged in as:</div>
+          <div class="font-bold text-sm text-brand-navy" id="menu-user-email">driver@q8.com</div>
+      </div>
   </div>
+
+  <!-- Overlay for Sidebar -->
+  <div id="menu-overlay-backdrop" class="overlay-backdrop" data-action="toggle-menu"></div>
 
 </div>
 </body>
