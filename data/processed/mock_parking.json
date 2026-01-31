@@ -1,0 +1,103 @@
+{
+  "zones": [
+    {
+      "zoneId": "10000",
+      "city": "Amsterdam",
+      "lat": 52.3676,
+      "lng": 4.9041,
+      "street": "Damrak",
+      "zipCode": "1000 AB",
+      "source": {
+        "strategy": "synthetic-zone-from-rdw"
+      },
+      "isDayPass": false,
+      "maxDurationMinutes": null,
+      "timeBlocks": [
+        {
+          "start": "00:00",
+          "end": "08:00",
+          "pricePerHour": 0.0,
+          "stepMinutes": 0
+        },
+        {
+          "start": "08:00",
+          "end": "18:00",
+          "pricePerHour": 2.5,
+          "stepMinutes": 30
+        },
+        {
+          "start": "18:00",
+          "end": "23:59",
+          "pricePerHour": 0.0,
+          "stepMinutes": 0
+        }
+      ]
+    },
+    {
+      "zoneId": "20000",
+      "city": "Utrecht",
+      "lat": 52.0907,
+      "lng": 5.1214,
+      "street": "Vredenburg",
+      "zipCode": "2000 AB",
+      "source": {
+        "strategy": "synthetic-zone-from-rdw"
+      },
+      "isDayPass": false,
+      "maxDurationMinutes": null,
+      "timeBlocks": [
+        {
+          "start": "00:00",
+          "end": "08:00",
+          "pricePerHour": 0.0,
+          "stepMinutes": 0
+        },
+        {
+          "start": "08:00",
+          "end": "18:00",
+          "pricePerHour": 2.5,
+          "stepMinutes": 30
+        },
+        {
+          "start": "18:00",
+          "end": "23:59",
+          "pricePerHour": 0.0,
+          "stepMinutes": 0
+        }
+      ]
+    },
+    {
+      "zoneId": "30000",
+      "city": "Den Haag",
+      "lat": 52.0705,
+      "lng": 4.3007,
+      "street": "Hofweg",
+      "zipCode": "3000 AB",
+      "source": {
+        "strategy": "synthetic-zone-from-rdw"
+      },
+      "isDayPass": false,
+      "maxDurationMinutes": null,
+      "timeBlocks": [
+        {
+          "start": "00:00",
+          "end": "08:00",
+          "pricePerHour": 0.0,
+          "stepMinutes": 0
+        },
+        {
+          "start": "08:00",
+          "end": "18:00",
+          "pricePerHour": 2.5,
+          "stepMinutes": 30
+        },
+        {
+          "start": "18:00",
+          "end": "23:59",
+          "pricePerHour": 0.0,
+          "stepMinutes": 0
+        }
+      ]
+    }
+  ]
+}
