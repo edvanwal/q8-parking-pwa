@@ -694,16 +694,26 @@ Q8.UI = (function() {
     let timerInterval = null;
 
     function startTimerTicker() {
-        if (timerInterval) return;
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
         timerInterval = setInterval(() => {
             const state = S.get;
             if (state.session) {
                 updateActiveTimerDisplay();
             } else {
-                clearInterval(timerInterval);
+                if (timerInterval) clearInterval(timerInterval);
                 timerInterval = null;
             }
         }, 1000);
+    }
+
+    function toDate(v) {
+        if (!v) return null;
+        if (v instanceof Date && !isNaN(v.getTime())) return v;
+        const d = new Date(v);
+        return isNaN(d.getTime()) ? null : d;
     }
 
     function updateActiveTimerDisplay() {
@@ -712,10 +722,13 @@ Q8.UI = (function() {
         if (!elTimer || !state.session) return;
 
         const now = new Date();
+        const startDate = toDate(state.session.start);
+        const endDate = toDate(state.session.end);
+        if (!startDate) return;
 
         // 1. Open-Ended Session (Count UP)
-        if (!state.session.end) {
-            const diff = now - state.session.start;
+        if (!endDate) {
+            const diff = now - startDate;
             const h = Math.floor(diff / 3600000);
             const m = Math.floor((diff % 3600000) / 60000);
             const s = Math.floor((diff % 60000) / 1000);
@@ -731,7 +744,7 @@ Q8.UI = (function() {
         }
 
         // 2. Fixed Duration Session (Count DOWN)
-        const diff = state.session.end - now;
+        const diff = endDate.getTime() - now.getTime();
 
         if (diff <= 0) {
             elTimer.innerText = "00:00";
@@ -745,7 +758,7 @@ Q8.UI = (function() {
 
         elTimer.style.color = "#ce1818";
         if (h > 0) {
-            elTimer.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+            elTimer.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         } else {
             elTimer.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
