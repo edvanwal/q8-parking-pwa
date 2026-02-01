@@ -131,16 +131,18 @@ Q8.UI = (function() {
         // Zone Sheet
         if (state.selectedZone) renderZoneSheet();
 
-        // Search Mode (auto-detect indicator)
+        // Search Mode
         const inpSearch = document.getElementById('inp-search');
-        const indicator = document.getElementById('search-mode-indicator');
-        if (inpSearch) {
-            if (document.activeElement !== inpSearch) inpSearch.value = state.searchQuery;
-        }
-        if (indicator) {
+        const btnToggle = document.getElementById('btn-search-toggle');
+        if (inpSearch && btnToggle) {
             const isZone = state.searchMode === 'zone';
-            indicator.textContent = isZone ? 'Zone' : 'Adres';
-            indicator.classList.toggle('map-search-indicator--address', !isZone);
+            inpSearch.placeholder = isZone ? 'Search by parking zone ...' : 'Search by address ...';
+            btnToggle.innerText = isZone ? 'Zone' : 'Address';
+            btnToggle.classList.toggle('map-search-toggle--zone', isZone);
+            btnToggle.classList.toggle('map-search-toggle--address', !isZone);
+            if (document.activeElement !== inpSearch) {
+                inpSearch.value = state.searchQuery;
+            }
         }
 
         renderSearchResults();
@@ -210,7 +212,7 @@ Q8.UI = (function() {
             } else {
                 const h = Math.floor(state.duration / 60);
                 const m = state.duration % 60;
-                elDur.innerText = `${h}h ${m.toString().padStart(2,'0')}m`;
+                elDur.innerText = m === 0 ? String(h) : `${h}h ${m.toString().padStart(2,'0')}m`;
             }
         }
 
@@ -579,21 +581,14 @@ Q8.UI = (function() {
         const container = document.getElementById('ui-search-results');
         if (!container) return;
 
-        const shouldShow = state.screen === 'parking' && state.searchQuery.trim().length >= 2 && state.activeOverlay === null;
+        const shouldShow = state.screen === 'parking' && state.searchMode === 'zone' && state.searchQuery.length >= 2 && state.activeOverlay === null;
         if (!shouldShow) {
             container.style.display = 'none';
             return;
         }
 
-        const query = state.searchQuery.toLowerCase().trim();
-        const isZoneMode = state.searchMode === 'zone';
-        const matches = state.zones.filter(z => {
-            const id = String(z.id || '').toLowerCase();
-            const name = (z.name || '').toLowerCase();
-            const city = (z.city || '').toLowerCase();
-            if (isZoneMode) return id.includes(query) || name.includes(query);
-            return name.includes(query) || city.includes(query) || id.includes(query);
-        })
+        const query = state.searchQuery.toLowerCase();
+        const matches = state.zones.filter(z => z.id.includes(query) || z.name.toLowerCase().includes(query))
             .sort((a,b) => {
                 if (a.id === query) return -1;
                 if (b.id === query) return 1;
