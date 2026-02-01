@@ -243,9 +243,20 @@ Q8.App = (function() {
                     break;
                 }
 
-                case 'apply-filters':
-                    S.update({ activeOverlay: null });
+                case 'apply-filters': {
+                    const inpStart = document.getElementById('filter-date-start');
+                    const inpEnd = document.getElementById('filter-date-end');
+                    let updates = { activeOverlay: null };
+                    if (inpStart || inpEnd) {
+                        updates.historyFilters = {
+                            ...S.get.historyFilters,
+                            customStart: inpStart ? inpStart.value || null : S.get.historyFilters.customStart,
+                            customEnd: inpEnd ? inpEnd.value || null : S.get.historyFilters.customEnd
+                        };
+                    }
+                    S.update(updates);
                     break;
+                }
 
                 case 'register':
                     const rEmail = document.getElementById('reg-email')?.value;
