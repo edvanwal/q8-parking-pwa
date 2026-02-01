@@ -390,6 +390,15 @@ Q8.Services = (function() {
     function handleAutoEndSession(reason) {
         const session = S.get.session;
         if (!session) return;
+        const sessionId = session.sessionId;
+        if (db && sessionId) {
+            db.collection('sessions').doc(sessionId).update({
+                status: 'ended',
+                endedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                endedBy: reason || 'maxTime'
+            }).catch(() => {});
+        }
+        if (_sessionListenerUnsub) { _sessionListenerUnsub(); _sessionListenerUnsub = null; }
         const zone = S.get.zones.find(z => z.uid === session.zoneUid || z.id === session.zoneUid) || S.get.zones.find(z => z.id === session.zone);
         const zoneLabel = zone ? zone.id : session.zone || '?';
         const plate = session.plate || '?';
@@ -402,6 +411,23 @@ Q8.Services = (function() {
         }
     }
 
+    let _sessionListenerUnsub = null;
+
+    function listenSessionStopped(sessionId) {
+        if (_sessionListenerUnsub) _sessionListenerUnsub();
+        if (!db || !sessionId) return;
+        _sessionListenerUnsub = db.collection('sessions').doc(sessionId).onSnapshot(doc => {
+            const data = doc.data();
+            if (data && data.status === 'ended') {
+                if (_sessionListenerUnsub) { _sessionListenerUnsub(); _sessionListenerUnsub = null; }
+                S.update({ session: null, activeOverlay: null });
+                S.save();
+                if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast('Parkeersessie beëindigd door fleetmanager');
+                else if (typeof window.showToast === 'function') window.showToast('Parkeersessie beëindigd door fleetmanager');
+            }
+        }, () => {});
+    }
+
     // --- PARKING END (fragile) ---
     // Risk: Silent return if no session (e.g. already ended, or state desync).
     function handleEndParking() {
@@ -409,6 +435,18 @@ Q8.Services = (function() {
             console.warn('[PARKING_END] Blocked: no active session');
             return;
         }
+
+        const session = S.get.session;
+        const sessionId = session.sessionId;
+
+        if (db && sessionId) {
+            db.collection('sessions').doc(sessionId).update({
+                status: 'ended',
+                endedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                endedBy: 'user'
+            }).catch(() => {});
+        }
+        if (_sessionListenerUnsub) { _sessionListenerUnsub(); _sessionListenerUnsub = null; }
 
         S.update({
             session: null,
