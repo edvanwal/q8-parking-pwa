@@ -104,6 +104,12 @@ Q8.App = (function() {
                     Services.modifyDuration(delta);
                     break;
 
+                case 'mod-active-end': {
+                    const endDelta = parseInt(target.getAttribute('data-delta'), 10);
+                    if (!isNaN(endDelta) && Services.modifyActiveSessionEnd) Services.modifyActiveSessionEnd(endDelta);
+                    break;
+                }
+
                 case 'start-session': Services.handleStartParking(); break;
                 case 'confirm-end': Services.handleEndParking(); break;
                 case 'save-plate': Services.saveNewPlate(); break;
