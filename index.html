@@ -217,26 +217,33 @@
 
   <!-- === VIEW: MAP (Parking & Active) === -->
   <div id="view-map" class="screen flex-col">
-    <!-- TopBar -->
-    <!-- Unified Floating Header (Replaces TopBar & Old Search) -->
-    <div id="ui-idle-search" class="map-floating-header">
-       <div class="search-icon-box">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-       </div>
-       <input type="text" id="inp-search" class="search-input" placeholder="Search by parking zone ...">
+    <!-- Header (bijlage 2: logo | Parking | hamburger) -->
+    <header class="top-bar map-top-bar">
+      <div class="brand-logo"><img src="q8-logo.png" class="header-logo" alt="Q8 Liberty"></div>
+      <h1 class="page-title">Parking</h1>
+      <button class="icon-btn" data-action="toggle-menu">
+        <svg class="no-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+    </header>
+
+    <!-- Search bar: auto-detect zone vs address, indicator shows detected type -->
+    <div id="ui-idle-search" class="map-search-bar">
+      <input type="text" id="inp-search" class="map-search-input" placeholder="Zone of adres..." autocomplete="off">
+      <span class="map-search-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </span>
+      <span id="search-mode-indicator" class="map-search-indicator" title="Automatisch herkend">Zone</span>
     </div>
     <div id="ui-search-results" class="hidden"></div>
 
-    <!-- Map FAB (Filter/Actions) - REMOVED per user feedback "filters hoort hier niet" -->
-    <!-- <button class="fab-action" ...>Filters</button> -->
-
-      <!-- Personal Greeting Container (Absolute Overlay) -->
-      <div id="personal-greeting" style="display: none; position: absolute; top: 80px; left: 0; right: 0; z-index: 5; pointer-events: none;"></div>
-
+    <!-- Map area -->
+    <div class="map-area">
       <!-- Map Surface -->
       <div id="map-container" class="map-surface">
         <!-- Markers injected by JS -->
       </div>
+      <!-- Personal Greeting: hidden per bijlage 2 -->
+      <div id="personal-greeting" class="hidden" style="display:none !important;"></div>
 
       <!-- Active Parking Overlay -->
       <div id="ui-active-parking" class="active-parking-overlay hidden" style="display:none !important;">
@@ -318,47 +325,45 @@
 
 
 
-  <!-- === OVERLAY: ZONE DETAILS (Sheet) === -->
+  <!-- === OVERLAY: ZONE DETAILS (Sheet) - bijlage 2 layout === -->
   <div id="sheet-zone" class="overlay-backdrop" data-action="close-overlay">
-    <div class="bottom-sheet">
+    <div class="bottom-sheet sheet-zone">
       <div class="sheet-handle"></div>
 
-      <div class="sheet-header flex-col items-start gap-xs">
-         <div class="flex items-center gap-sm">
-            <div class="zone-badge-box">
+      <div class="sheet-zone-header">
+         <div class="sheet-zone-title-row">
+            <div class="zone-badge-box zone-badge-box--sheet">
                <span class="icon-p">P</span>
-               <span id="details-zone-id">1100</span>
+               <span id="details-zone-id">321</span>
             </div>
-            <div class="font-bold text-lg flex items-center gap-xs clickable-plate" id="details-plate" data-action="open-plate-selector">
-               <span>G-346-VN</span>
-               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-            </div>
-          </div>
-         <div class="sheet-alert">
-            <span class="alert-icon">⚠</span>
+            <span class="sheet-zone-plate-badge clickable-plate" id="details-plate" data-action="open-plate-selector">G-346-VN</span>
+            <button class="sheet-zone-close icon-btn" data-action="close-overlay" aria-label="Close">
+               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+         </div>
+         <div class="sheet-alert sheet-alert--red">
+            <span class="alert-icon">!</span>
             <span>Please check your parking zone number</span>
          </div>
       </div>
 
       <div class="sheet-section">
-        <label class="input-label uppercase">Rates</label>
-        <div id="details-rates-list">
+        <label class="input-label sheet-section-label">Rates</label>
+        <div id="details-rates-list" class="sheet-rates-list">
             <!-- Dynamic rates injected here -->
         </div>
       </div>
 
-      <div class="sheet-section mb-xl">
-         <label class="input-label uppercase">Duration</label>
+      <div class="sheet-section sheet-section-duration">
+         <label class="input-label sheet-section-label">Parking duration (h):</label>
          <div class="sheet-duration-control">
-            <button class="icon-btn duration-btn" data-action="mod-duration" data-delta="-15">-</button>
-            <div class="text-center">
-               <div class="font-bold text-lg" id="val-duration">2h 00m</div>
-            </div>
-            <button class="icon-btn duration-btn" data-action="mod-duration" data-delta="15">+</button>
+            <button class="sheet-duration-btn" data-action="mod-duration" data-delta="-15">−</button>
+            <div class="sheet-duration-value" id="val-duration">2h 00m</div>
+            <button class="sheet-duration-btn" data-action="mod-duration" data-delta="15">+</button>
          </div>
       </div>
 
-      <button class="btn btn-primary btn-lg" data-action="start-session">START PARKING</button>
+      <button class="btn btn-primary btn-lg sheet-start-btn" data-action="start-session">START PARKING</button>
     </div>
   </div>
 

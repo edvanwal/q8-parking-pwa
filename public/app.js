@@ -16,17 +16,29 @@ Q8.App = (function() {
     // Debug Init
     if (U && U.debug) U.debug('APP', "Initializing application...");
 
-    function initListeners() {
-        document.body.addEventListener('click', (e) => {
-            // 1. Try to find a data-action element
-            const target = e.target.closest('[data-action]');
+    function closeSideMenu() {
+        const menu = document.getElementById('side-menu');
+        const backdrop = document.getElementById('menu-overlay-backdrop');
+        if (menu) menu.classList.remove('open');
+        if (backdrop) backdrop.classList.remove('open');
+    }
 
-            // 2. Handle Backdrop Clicks (Close Overlay) safely
+    function handleClick(e) {
+        try {
+            // 1. Handle Backdrop Clicks (exact target = dark overlay, not sheet content)
             if (e.target.classList.contains('overlay-backdrop')) {
-                S.update({ activeOverlay: null });
+                if (e.target.id === 'menu-overlay-backdrop') {
+                    closeSideMenu();
+                } else {
+                    if (S && S.update) S.update({ activeOverlay: null });
+                }
+                e.preventDefault();
+                e.stopPropagation();
                 return;
             }
 
+            // 2. Find data-action element
+            const target = e.target.closest('[data-action]');
             if (!target) return;
 
             // 3. BUBBLING GUARD
@@ -38,26 +50,34 @@ Q8.App = (function() {
             const targetId = target.getAttribute('data-target');
 
             switch (action) {
-                case 'nav-to': Services.setScreen(targetId); break;
-                case 'toggle-search-mode':
-                    const newMode = S.get.searchMode === 'zone' ? 'address' : 'zone';
-                    S.update({ searchMode: newMode, searchQuery: '' });
-                    const inp = document.getElementById('inp-search');
-                    if (inp) { inp.value = ''; inp.focus(); }
+                case 'toggle-menu': {
+                    const menu = document.getElementById('side-menu');
+                    const backdrop = document.getElementById('menu-overlay-backdrop');
+                    if (menu) menu.classList.toggle('open');
+                    if (backdrop) backdrop.classList.toggle('open');
                     break;
+                }
 
+                case 'nav-to':
+                    closeSideMenu(); // Close menu when navigating
+                    if (Services && Services.setScreen) Services.setScreen(targetId);
+                    break;
                 case 'open-plate-selector':
                     UI.renderQuickPlateSelector();
                     Services.tryOpenOverlay('sheet-plate-selector');
                     break;
 
                 case 'select-quick-plate':
+                    // Risk: selectedZone can be null if sheet was closed and reopened, or zone not yet set.
                     const qId = target.getAttribute('data-id');
+                    if (!qId) console.warn('[PLATE_SELECT] select-quick-plate: no data-id');
                     S.update({ selectedPlateId: qId });
+                    if (!S.get.selectedZone) console.warn('[PLATE_SELECT] Reopening zone sheet with no selectedZone');
                     Services.tryOpenOverlay('sheet-zone', { uid: S.get.selectedZone });
                     break;
 
                 case 'open-overlay':
+                    // Risk: JSON.parse on data-rates throws if malformed. data-zone-uid/zone missing = empty context.
                     const context = {
                         uid: target.getAttribute('data-zone-uid'),
                         zone: target.getAttribute('data-zone'),
@@ -72,7 +92,8 @@ Q8.App = (function() {
                     break;
 
                 case 'mod-duration':
-                    const delta = parseInt(target.getAttribute('data-delta'));
+                    const delta = parseInt(target.getAttribute('data-delta'), 10);
+                    if (isNaN(delta)) console.warn('[DURATION] mod-duration: invalid data-delta', target.getAttribute('data-delta'));
                     Services.modifyDuration(delta);
                     break;
 
@@ -196,7 +217,13 @@ Q8.App = (function() {
                     });
                     break;
             }
-        });
+        } catch (err) {
+            console.error('[Q8] Click handler error:', err);
+        }
+    }
+
+    function initListeners() {
+        document.body.addEventListener('click', handleClick, { passive: false });
 
         // Event Listener for Date Filters
         document.body.addEventListener('change', (e) => {
@@ -208,18 +235,20 @@ Q8.App = (function() {
             }
         });
 
-        // Event Listener for Search Input
+        // Event Listener for Search Input (auto-detect zone vs address)
         const searchInput = document.getElementById('inp-search');
-        if(searchInput) {
+        if (searchInput && U && U.detectSearchType) {
             searchInput.addEventListener('input', (e) => {
-                S.update({ searchQuery: e.target.value });
-                UI.renderSearchResults();
+                const q = e.target.value;
+                const mode = U.detectSearchType(q);
+                S.update({ searchQuery: q, searchMode: mode });
             });
         }
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                S.update({ activeOverlay: null });
+                closeSideMenu();
+                if (S && S.update) S.update({ activeOverlay: null });
             }
         });
     }

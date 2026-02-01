@@ -1,6 +1,10 @@
 /**
  * Q8 Parking - UI Renderer
  * Namespace: Q8.UI
+ *
+ * - Screens, overlays, lists (plates, history)
+ * - Google Maps: initGoogleMap, PriceOverlay, renderMapMarkers
+ * - DIAG: Set window.Q8_DIAG = true for Maps loading logs
  */
 
 window.Q8 = window.Q8 || {};
@@ -57,7 +61,7 @@ Q8.UI = (function() {
     function renderParkingView() {
         const state = S.get;
         const isActive = state.session !== null;
-        const idleSearch = document.getElementById('ui-search-bar');
+        const idleSearch = document.getElementById('ui-idle-search');
         const activeParking = document.getElementById('ui-active-parking');
 
         // Greeting
@@ -92,7 +96,10 @@ Q8.UI = (function() {
         if (idleSearch) idleSearch.style.display = isActive ? 'none' : 'block';
         if (activeParking) activeParking.style.display = isActive ? 'block' : 'none';
 
-        // Markers
+        // Markers (re-render when selectedZone changes for blue/red P styling)
+        renderMapMarkers();
+
+        // Marker cursor (legacy DOM markers if any)
         document.querySelectorAll('.marker').forEach(m => {
             m.style.cursor = isActive ? 'default' : 'pointer';
             m.style.opacity = isActive ? '0.6' : '1';
@@ -124,16 +131,16 @@ Q8.UI = (function() {
         // Zone Sheet
         if (state.selectedZone) renderZoneSheet();
 
-        // Search Mode
+        // Search Mode (auto-detect indicator)
         const inpSearch = document.getElementById('inp-search');
-        const btnToggle = document.getElementById('btn-search-toggle');
-        if (inpSearch && btnToggle) {
+        const indicator = document.getElementById('search-mode-indicator');
+        if (inpSearch) {
+            if (document.activeElement !== inpSearch) inpSearch.value = state.searchQuery;
+        }
+        if (indicator) {
             const isZone = state.searchMode === 'zone';
-            inpSearch.placeholder = isZone ? 'Search by parking zone ...' : 'Search by address ...';
-            btnToggle.innerText = isZone ? 'Zone' : 'Address';
-            if (document.activeElement !== inpSearch) {
-                inpSearch.value = state.searchQuery;
-            }
+            indicator.textContent = isZone ? 'Zone' : 'Adres';
+            indicator.classList.toggle('map-search-indicator--address', !isZone);
         }
 
         renderSearchResults();
@@ -146,32 +153,25 @@ Q8.UI = (function() {
                      state.zones.find(z => z.id === state.selectedZone);
 
         const elZoneId = document.getElementById('details-zone-id');
-        const sheetHeader = document.querySelector('#sheet-zone .sheet-header');
 
         const existingDetails = document.getElementById('zone-extra-details');
         if (existingDetails) existingDetails.remove();
 
         if (elZoneId) {
-            if (!zone) {
-                elZoneId.innerText = state.selectedZone || 'Unknown';
-            } else {
-                 elZoneId.innerText = zone.id;
+            const zoneLabel = !zone ? (state.selectedZone || 'Unknown') : zone.id;
+            elZoneId.innerText = 'ZONE ' + zoneLabel;
 
-                 const maxDurLabel = zone.max_duration_mins && zone.max_duration_mins < 1440
+            if (zone) {
+                const maxDurLabel = zone.max_duration_mins && zone.max_duration_mins < 1440
                     ? `${Math.floor(zone.max_duration_mins/60)}u ${zone.max_duration_mins%60}m limiet`
                     : null;
-
-                 const holidayWarning = zone.has_special_rules
-                    ? `<div style="color: #f59e0b; font-size: 0.85rem; font-weight:600; display: flex; align-items: center; gap: 4px; margin-top:2px;">
-                         <span>⚠️ Let op: Feestdag regels</span>
-                       </div>`
+                const holidayWarning = zone.has_special_rules
+                    ? `<div style="color: #f59e0b; font-size: 0.85rem; font-weight:600; display: flex; align-items: center; gap: 4px; margin-top:2px;"><span>⚠️ Let op: Feestdag regels</span></div>`
                     : '';
-
-                 const limitBadge = maxDurLabel
+                const limitBadge = maxDurLabel
                     ? `<span style="font-size: 0.8rem; background: var(--bg-secondary); color: var(--text-secondary); padding: 2px 8px; border-radius: 12px; font-weight: 500;">${maxDurLabel}</span>`
                     : '';
-
-                 const detailsHTML = `
+                const detailsHTML = `
                     <div id="zone-extra-details" class="flex-col gap-xs" style="width:100%; margin-top: 8px;">
                         <div class="flex items-center justify-between">
                             <span style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">${zone.city || ''}</span>
@@ -179,11 +179,12 @@ Q8.UI = (function() {
                         </div>
                         ${holidayWarning}
                     </div>
-                 `;
-
-                 if(sheetHeader && sheetHeader.children.length > 0) {
-                     sheetHeader.children[0].insertAdjacentHTML('afterend', detailsHTML);
-                 }
+                `;
+                const sheetZoneHeader = document.querySelector('#sheet-zone .sheet-zone-header');
+                if (sheetZoneHeader) {
+                    const firstChild = sheetZoneHeader.querySelector('.sheet-zone-title-row') || sheetZoneHeader.children[0];
+                    if (firstChild) firstChild.insertAdjacentHTML('afterend', detailsHTML);
+                }
             }
         }
 
@@ -192,10 +193,7 @@ Q8.UI = (function() {
                          state.plates[0];
         const elPlate = document.getElementById('details-plate');
         if (elPlate && selPlate) {
-            elPlate.innerHTML = `
-                <span class="no-pointer">${selPlate.text}</span>
-                <svg class="no-pointer" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-            `;
+            elPlate.innerText = selPlate.text;
         }
 
         // Duration Display
@@ -581,14 +579,21 @@ Q8.UI = (function() {
         const container = document.getElementById('ui-search-results');
         if (!container) return;
 
-        const shouldShow = state.screen === 'parking' && state.searchMode === 'zone' && state.searchQuery.length >= 2 && state.activeOverlay === null;
+        const shouldShow = state.screen === 'parking' && state.searchQuery.trim().length >= 2 && state.activeOverlay === null;
         if (!shouldShow) {
             container.style.display = 'none';
             return;
         }
 
-        const query = state.searchQuery.toLowerCase();
-        const matches = state.zones.filter(z => z.id.includes(query) || z.name.toLowerCase().includes(query))
+        const query = state.searchQuery.toLowerCase().trim();
+        const isZoneMode = state.searchMode === 'zone';
+        const matches = state.zones.filter(z => {
+            const id = String(z.id || '').toLowerCase();
+            const name = (z.name || '').toLowerCase();
+            const city = (z.city || '').toLowerCase();
+            if (isZoneMode) return id.includes(query) || name.includes(query);
+            return name.includes(query) || city.includes(query) || id.includes(query);
+        })
             .sort((a,b) => {
                 if (a.id === query) return -1;
                 if (b.id === query) return 1;
@@ -605,6 +610,7 @@ Q8.UI = (function() {
         container.innerHTML = matches.map(z => `
             <div class="search-result-item" data-action="open-overlay" data-target="sheet-zone"
                  data-zone-uid="${z.uid}"
+                 data-zone="${z.id || ''}"
                  data-price="${z.price}"
                  data-rates='${JSON.stringify(z.rates || [])}'>
                 <div class="flex items-center" style="gap: 12px; width: 100%;">
@@ -744,16 +750,25 @@ Q8.UI = (function() {
     let map;
     let gMarkers = [];
 
+    // DIAG: Set window.Q8_DIAG = true to log Maps loading steps
+    function diagMaps(tag, msg, data) {
+        if (window.Q8_DIAG) console.log('[DIAG_MAPS]', tag, msg, data || '');
+    }
+
     function initGoogleMap() {
         const container = document.getElementById('map-container');
+        diagMaps('initGoogleMap', 'entry', { hasContainer: !!container, hasMap: !!map });
         if (!container || map) return;
 
         if (typeof google === 'undefined' || !google.maps) {
-            const script = document.createElement('script');
+            diagMaps('initGoogleMap', 'loading-script');
             const apiKey = (typeof firebaseConfig !== 'undefined') ? firebaseConfig.googleMapsApiKey : '';
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=marker&v=weekly&loading=async&callback=initMapCallback`;
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMapCallback`;
             script.async = true;
-            window.initMapCallback = () => {
+            script.onerror = function() { diagMaps('initGoogleMap', 'script-load-error'); };
+            window.initMapCallback = function() {
+                 diagMaps('initGoogleMap', 'callback-fired');
                  if(Q8.UI && Q8.UI.initGoogleMap) Q8.UI.initGoogleMap();
                  else initGoogleMap();
             };
@@ -761,97 +776,103 @@ Q8.UI = (function() {
             return;
         }
 
-        const utrecht = { lat: 52.0907, lng: 5.1214 };
+        diagMaps('initGoogleMap', 'creating-map');
+        const center = { lat: 52.0907, lng: 5.1214 };
         map = new google.maps.Map(container, {
-            center: utrecht,
-            zoom: 15,
+            center: center,
+            zoom: 14,
             disableDefaultUI: true,
-            zoomControl: false,
+            zoomControl: true,
             mapTypeControl: false,
             streetViewControl: false,
-            fullscreenControl: false,
-            clickableIcons: false
+            fullscreenControl: true,
+            clickableIcons: false,
+            gestureHandling: 'greedy'
         });
 
         renderMapMarkers();
+        centerMapOnZones();
+        google.maps.event.addListenerOnce(map, 'idle', function() {
+            google.maps.event.trigger(map, 'resize');
+        });
+        diagMaps('initGoogleMap', 'done');
     }
 
-    // --- Custom Marker Overlay ---
-    class PriceOverlay extends google.maps.OverlayView {
-        constructor(position, text, zone) {
-            super();
-            this.position = position;
-            this.text = text;
-            this.zone = zone;
-            this.div = null;
-        }
-        onAdd() {
-            this.div = document.createElement('div');
-            this.div.className = 'marker-price-pill';
-            this.div.innerHTML = this.text;
-            this.div.style.position = 'absolute';
-            this.div.style.cursor = 'pointer';
-
-            this.div.onclick = () => {
-                 if (Q8.Services && Q8.Services.tryOpenOverlay) {
-                     Q8.Services.tryOpenOverlay('sheet-zone', { uid: this.zone.uid, zone: this.zone.id, price: this.zone.price, rates: this.zone.rates });
-                 }
-            };
-
-            const panes = this.getPanes();
-            panes.overlayMouseTarget.appendChild(this.div); // overlayMouseTarget allows clicks
-        }
-        draw() {
-            const overlayProjection = this.getProjection();
-            const point = overlayProjection.fromLatLngToDivPixel(this.position);
-            if (this.div) {
-                // Center the marker: Width/Height varies, so formatting is key.
-                // We'll trust css transform or offset.
-                // The pill is centered horizontally, bottom anchored.
-                const w = this.div.offsetWidth;
-                const h = this.div.offsetHeight;
-                this.div.style.left = (point.x - w / 2) + 'px';
-                this.div.style.top = (point.y - h - 6) + 'px'; // -6 for pointer padding
-            }
-        }
-        onRemove() {
-            if (this.div) {
-                this.div.parentNode.removeChild(this.div);
-                this.div = null;
-            }
-        }
+    function makeCircleIcon(isSelected) {
+        const fill = isSelected ? '#ce1818' : '#1e5f8a';
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+          <circle cx="20" cy="20" r="18" fill="${fill}" stroke="white" stroke-width="2"/>
+          <text x="20" y="26" text-anchor="middle" fill="white" font-size="18" font-weight="bold" font-family="sans-serif">P</text>
+        </svg>`;
+        return {
+            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
+            scaledSize: new google.maps.Size(40, 40),
+            anchor: new google.maps.Point(20, 20)
+        };
     }
 
     function renderMapMarkers() {
         const state = S.get;
         if (!map) return;
 
-        // Clear old overlays
         gMarkers.forEach(m => m.setMap(null));
         gMarkers = [];
 
         state.zones.forEach(z => {
             if (!z.lat || !z.lng) return;
 
-            let priceLabel = '€ ' + z.price.toFixed(2).replace('.', ',');
-            if (z.price === 0) priceLabel = 'Free';
+            const priceLabel = z.display_label || (typeof z.price === 'number'
+                ? z.price.toFixed(2).replace('.', ',')
+                : String(z.price));
+            const labelText = z.price === 0 ? 'Free' : '€' + priceLabel.substring(0, 6);
+            const isSelected = (z.uid && z.uid === state.selectedZone) || (z.id && String(z.id) === String(state.selectedZone));
 
-            const overlay = new PriceOverlay(
-                new google.maps.LatLng(z.lat, z.lng),
-                priceLabel,
-                z
-            );
-            overlay.setMap(map);
-            gMarkers.push(overlay);
+            const marker = new google.maps.Marker({
+                map: map,
+                position: { lat: z.lat, lng: z.lng },
+                title: 'Zone ' + (z.id || z.uid) + ' - € ' + priceLabel,
+                icon: makeCircleIcon(isSelected),
+                label: {
+                    text: labelText,
+                    color: isSelected ? '#ce1818' : '#1e5f8a',
+                    fontWeight: 'bold',
+                    fontSize: '11px'
+                }
+            });
+            marker.addListener('click', function() {
+                if (Q8.Services && Q8.Services.tryOpenOverlay) {
+                    Q8.Services.tryOpenOverlay('sheet-zone', {
+                        uid: z.uid,
+                        zone: z.id,
+                        price: z.price,
+                        rates: z.rates
+                    });
+                }
+            });
+            gMarkers.push(marker);
         });
+    }
+
+    function ensureMapResized() {
+        if (map && typeof google !== 'undefined' && google.maps) {
+            google.maps.event.trigger(map, 'resize');
+            centerMapOnZones();
+        }
     }
 
     function centerMapOnZones() {
         const state = S.get;
-        if (!map || state.zones.length === 0) return;
+        if (!map) return;
+        if (state.zones.length === 0) return;
         const bounds = new google.maps.LatLngBounds();
-        state.zones.forEach(z => bounds.extend({ lat: z.lat, lng: z.lng }));
-        if (state.searchQuery) map.fitBounds(bounds);
+        let hasValid = false;
+        state.zones.forEach(z => {
+            if (z.lat && z.lng) {
+                bounds.extend({ lat: z.lat, lng: z.lng });
+                hasValid = true;
+            }
+        });
+        if (hasValid) map.fitBounds(bounds, { top: 80, bottom: 80, left: 20, right: 20 });
     }
 
     return {
@@ -870,7 +891,8 @@ Q8.UI = (function() {
         updateActiveTimerDisplay,
         initGoogleMap,
         renderMapMarkers,
-        centerMapOnZones
+        centerMapOnZones,
+        ensureMapResized
     };
 })();
 
