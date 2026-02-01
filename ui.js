@@ -13,6 +13,7 @@ Q8.UI = (function() {
     'use strict';
 
     const S = Q8.State;
+    let _lastMarkerKey = '';
     const U = Q8.Utils;
     // Services might be circular, so access via Q8.Services literal if needed
 
@@ -96,8 +97,12 @@ Q8.UI = (function() {
         if (idleSearch) idleSearch.style.display = isActive ? 'none' : 'block';
         if (activeParking) activeParking.style.display = isActive ? 'block' : 'none';
 
-        // Markers (re-render when selectedZone changes for blue/red P styling)
-        renderMapMarkers();
+        // Markers: only re-render when zones, selectedZone, or session changed (not on search keystrokes)
+        const markerKey = `${state.zones.length}|${state.selectedZone || ''}|${state.session ? '1' : '0'}`;
+        if (markerKey !== _lastMarkerKey) {
+            _lastMarkerKey = markerKey;
+            renderMapMarkers();
+        }
 
         // Marker cursor (legacy DOM markers if any)
         document.querySelectorAll('.marker').forEach(m => {
@@ -859,7 +864,7 @@ Q8.UI = (function() {
         }
 
         map.setCenter(UTRECHT_CENTER);
-        map.setZoom(15);
+        map.setZoom(16);
     }
 
     return {
