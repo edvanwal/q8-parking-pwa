@@ -543,6 +543,7 @@ Q8.Services = (function() {
         tryOpenOverlay,
         handleStartParking,
         handleEndParking,
+        modifyActiveSessionEnd,
         saveNewPlate,
         updatePlate,
         deletePlate,
