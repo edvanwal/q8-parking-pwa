@@ -185,7 +185,7 @@ Q8.Services = (function() {
                     selectedZone: zoneUid,
                     selectedZoneRate: contextData.price || 2.0,
                     selectedZoneRates: rates,
-                    duration: 120 // Original: 2h default when opening zone sheet
+                    duration: 0   // Default: Until stopped
                 });
             } else if (!S.get.selectedZone) {
                 console.warn('[ZONE_SELECT] tryOpenOverlay(sheet-zone) called with no context and no selectedZone');
