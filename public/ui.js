@@ -762,6 +762,8 @@ Q8.UI = (function() {
         }
 
         const query = state.searchQuery.toLowerCase();
+        const favorites = state.favorites || [];
+        const favUids = new Set(favorites.map(f => f.zoneUid || f.zoneId));
         const matches = state.zones.filter(z => {
             const id = (z.id || '').toLowerCase();
             const name = (z.name || '').toLowerCase();
@@ -770,6 +772,10 @@ Q8.UI = (function() {
             return id.includes(query) || name.includes(query) || street.includes(query) || city.includes(query);
         })
             .sort((a,b) => {
+                const aFav = favUids.has(a.uid) || favUids.has(a.id);
+                const bFav = favUids.has(b.uid) || favUids.has(b.id);
+                if (aFav && !bFav) return -1;
+                if (!aFav && bFav) return 1;
                 if (a.id === query) return -1;
                 if (b.id === query) return 1;
                 return 0;
