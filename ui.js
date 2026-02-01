@@ -148,6 +148,11 @@ Q8.UI = (function() {
         }
 
         renderSearchResults();
+
+        // Side menu: sync language button active state (EN = blue, white text)
+        document.querySelectorAll('.side-menu .menu-lang-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-lang') === state.language);
+        });
     }
 
     function renderZoneSheet() {
