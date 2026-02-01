@@ -5,46 +5,62 @@
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
-  <title>Q8 Parking</title>
+  <title>Q8 Parking - RECOVERY PREVIEW</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <!-- Google Maps will be loaded dynamically in app.js -->
-
   <!-- Firebase (Compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-  <!-- Scripts (Cache Busted) -->
-  <!-- Scripts (Restored Standard Loader) -->
-  <script src="firebase-config.js?v=3.1"></script>
-  <script src="utils.js"></script>
-  <script src="state.js"></script>
-  <script src="services.js"></script>
-  <script src="ui.js"></script>
-  <script src="app.js?v=3.1" defer></script>
 
+  <!-- Firebase Config (nodig voor app_recovery.js) -->
+  <script src="firebase-config.js"></script>
 
-  <script>
-    // Force Unregister Service Worker validation
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        for(let registration of registrations) {
-          registration.unregister();
-        }
-      });
-    }
-  </script>
-  <!-- <script src="service-worker.js?v=2.3"></script> -->
+  <!-- ALLEEN app_recovery.js - de oude monolithische versie -->
+  <script src="app_recovery.js" defer></script>
 
-  <!-- Styles (Cache Busted) -->
-  <link rel="stylesheet" href="design-system.css?v=3.5">
-  <link rel="manifest" href="manifest.webmanifest">
+  <!-- Styles -->
+  <link rel="stylesheet" href="design-system.css">
   <meta name="theme-color" content="#ffffff">
+
+  <style>
+    /* Preview Banner */
+    #preview-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(90deg, #ff6b00, #ff9500);
+      color: white;
+      padding: 8px 16px;
+      font-family: 'Mulish', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      text-align: center;
+      z-index: 100000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    #preview-banner a {
+      color: white;
+      margin-left: 12px;
+      text-decoration: underline;
+    }
+    /* Schuif alles naar beneden voor de banner */
+    body {
+      padding-top: 36px !important;
+    }
+  </style>
 </head>
 <body>
+
+<!-- Preview Banner -->
+<div id="preview-banner">
+  RECOVERY PREVIEW - Dit is de oude app_recovery.js versie
+  <a href="index.html">Terug naar huidige versie</a>
+</div>
 
 <div id="app">
 
@@ -57,7 +73,7 @@
         <img src="q8-logo.png" class="login-logo-img" alt="Q8 Liberty">
         <div class="flex items-center gap-xs mt-xs">
           <div class="text-secondary font-bold text-lg text-brand-navy">Drivers-app</div>
-          <div class="badge badge-success text-xxs pad-badge-sm">v3.3 LIVE</div>
+          <div class="badge badge-success text-xxs pad-badge-sm">RECOVERY</div>
         </div>
       </div>
 
@@ -73,7 +89,7 @@
                <rect y="8" width="20" height="2" fill="#B22234"/>
                <rect y="10" width="20" height="2" fill="white"/>
                <rect y="12" width="20" height="2" fill="#B22234"/>
-               <rect width="8" height="8" fill="#3C3B6E"/> <!-- Simplified Canton -->
+               <rect width="8" height="8" fill="#3C3B6E"/>
              </svg>
            </span> ENGLISH
         </button>
@@ -217,33 +233,25 @@
 
   <!-- === VIEW: MAP (Parking & Active) === -->
   <div id="view-map" class="screen flex-col">
-    <!-- Header (bijlage 2: logo | Parking | hamburger) -->
-    <header class="top-bar map-top-bar">
-      <div class="brand-logo"><img src="q8-logo.png" class="header-logo" alt="Q8 Liberty"></div>
-      <h1 class="page-title">Parking</h1>
-      <button class="icon-btn" data-action="toggle-menu">
-        <svg class="no-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-      </button>
-    </header>
-
-    <!-- Search bar (bijlage 2: white bar, zone input, search icon, Zone toggle) -->
-    <div id="ui-idle-search" class="map-search-bar">
-      <input type="text" id="inp-search" class="map-search-input" placeholder="321" autocomplete="off">
-      <span class="map-search-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      </span>
-      <button id="btn-search-toggle" class="map-search-toggle map-search-toggle--zone" data-action="toggle-search-mode">Zone</button>
+    <!-- Unified Floating Header -->
+    <div id="ui-idle-search" class="map-floating-header">
+       <div class="search-icon-box">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+       </div>
+       <input type="text" id="inp-search" class="search-input" placeholder="Search by parking zone ...">
+       <button id="btn-search-toggle" class="menu-btn" data-action="toggle-search-mode" style="width: auto; padding: 0 8px; font-size: 0.8rem; font-weight: 700;">
+          Address
+       </button>
     </div>
     <div id="ui-search-results" class="hidden"></div>
 
-    <!-- Map area -->
-    <div class="map-area">
+      <!-- Personal Greeting Container -->
+      <div id="personal-greeting" style="display: none; position: absolute; top: 80px; left: 0; right: 0; z-index: 5; pointer-events: none;"></div>
+
       <!-- Map Surface -->
       <div id="map-container" class="map-surface">
         <!-- Markers injected by JS -->
       </div>
-      <!-- Personal Greeting: hidden per bijlage 2 -->
-      <div id="personal-greeting" class="hidden" style="display:none !important;"></div>
 
       <!-- Active Parking Overlay -->
       <div id="ui-active-parking" class="active-parking-overlay hidden" style="display:none !important;">
@@ -262,7 +270,7 @@
              </div>
              <div class="text-right" style="padding-top: 4px;">
                <div class="text-secondary text-xs uppercase font-bold mb-xs" style="font-size: 0.7rem; letter-spacing: 0.5px;">Time left</div>
-               <div id="active-timer" class="font-bold text-xl" style="color:#ce1818; font-variant-numeric: tabular-nums;">01:59</div> <!-- Less aggressive red -->
+               <div id="active-timer" class="font-bold text-xl" style="color:#ce1818; font-variant-numeric: tabular-nums;">01:59</div>
              </div>
            </div>
 
@@ -322,48 +330,80 @@
   </div>
 
 
+  <!-- === OVERLAY: MENU === -->
+  <div id="menu-overlay" class="overlay-backdrop" data-action="close-overlay">
+    <div class="menu-drawer">
+      <header class="top-bar">
+        <div class="brand-logo">Q8</div>
+        <h1 class="page-title">Menu</h1>
+        <button class="icon-btn" data-action="close-overlay">
+          <svg class="no-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </header>
+
+      <div class="menu-list" style="padding:24px;">
+        <div class="list-item" data-action="nav-to" data-target="parking">
+          <span>Parking</span>
+          <span class="text-secondary">›</span>
+        </div>
+        <div class="list-item" data-action="nav-to" data-target="history">
+          <span>Parking history</span>
+          <span class="text-secondary">›</span>
+        </div>
+        <div class="list-item" data-action="nav-to" data-target="plates">
+          <span>License plates</span>
+          <span class="text-secondary">›</span>
+        </div>
+      </div>
+
+      <div style="padding:24px; margin-top:auto;">
+         <button class="btn btn-danger" data-action="logout">Sign out</button>
+      </div>
+    </div>
+  </div>
 
 
-
-  <!-- === OVERLAY: ZONE DETAILS (Sheet) - bijlage 2 layout === -->
+  <!-- === OVERLAY: ZONE DETAILS (Sheet) === -->
   <div id="sheet-zone" class="overlay-backdrop" data-action="close-overlay">
-    <div class="bottom-sheet sheet-zone">
+    <div class="bottom-sheet">
       <div class="sheet-handle"></div>
 
-      <div class="sheet-zone-header">
-         <div class="sheet-zone-title-row">
-            <div class="zone-badge-box zone-badge-box--sheet">
+      <div class="sheet-header flex-col items-start gap-xs">
+         <div class="flex items-center gap-sm">
+            <div class="zone-badge-box">
                <span class="icon-p">P</span>
-               <span id="details-zone-id">321</span>
+               <span id="details-zone-id">1100</span>
             </div>
-            <span class="sheet-zone-plate-badge clickable-plate" id="details-plate" data-action="open-plate-selector">G-346-VN</span>
-            <button class="sheet-zone-close icon-btn" data-action="close-overlay" aria-label="Close">
-               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
-         </div>
-         <div class="sheet-alert sheet-alert--red">
-            <span class="alert-icon">!</span>
+            <div class="font-bold text-lg flex items-center gap-xs clickable-plate" id="details-plate" data-action="open-plate-selector">
+               <span>G-346-VN</span>
+               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+          </div>
+         <div class="sheet-alert">
+            <span class="alert-icon">⚠</span>
             <span>Please check your parking zone number</span>
          </div>
       </div>
 
       <div class="sheet-section">
-        <label class="input-label sheet-section-label">Rates</label>
-        <div id="details-rates-list" class="sheet-rates-list">
+        <label class="input-label uppercase">Rates</label>
+        <div id="details-rates-list">
             <!-- Dynamic rates injected here -->
         </div>
       </div>
 
-      <div class="sheet-section sheet-section-duration">
-         <label class="input-label sheet-section-label">Parking duration (h):</label>
+      <div class="sheet-section mb-xl">
+         <label class="input-label uppercase">Duration</label>
          <div class="sheet-duration-control">
-            <button class="sheet-duration-btn" data-action="mod-duration" data-delta="-15">−</button>
-            <div class="sheet-duration-value" id="val-duration">2h 00m</div>
-            <button class="sheet-duration-btn" data-action="mod-duration" data-delta="15">+</button>
+            <button class="icon-btn duration-btn" data-action="mod-duration" data-delta="-15">-</button>
+            <div class="text-center">
+               <div class="font-bold text-lg" id="val-duration">2h 00m</div>
+            </div>
+            <button class="icon-btn duration-btn" data-action="mod-duration" data-delta="15">+</button>
          </div>
       </div>
 
-      <button class="btn btn-primary btn-lg sheet-start-btn" data-action="start-session">START PARKING</button>
+      <button class="btn btn-primary btn-lg" data-action="start-session">START PARKING</button>
     </div>
   </div>
 
@@ -451,36 +491,6 @@
   <!-- Toast -->
   <div class="toast-container">
     <div id="toast" class="toast">Success</div>
-  </div>
-
-  <!-- === BOTTOM NAVIGATION BAR === -->
-  <div id="bottom-nav" class="bottom-nav">
-      <!-- 1. Language (NL/EN) -->
-      <button class="nav-item" data-action="toggle-lang-f" data-target="lang">
-          <span class="nav-text-bold" id="nav-lang-text">NL</span>
-      </button>
-
-      <!-- 2. History -->
-      <button class="nav-item" data-action="nav-to" data-target="history">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-      </button>
-
-      <!-- 3. PARK (Main FAB) -->
-      <div class="nav-fab-container">
-          <button class="nav-fab-main" data-action="nav-to" data-target="parking">
-             <span class="font-bold text-xl text-brand-navy">P</span>
-          </button>
-      </div>
-
-      <!-- 4. Benefits (Stars) -->
-      <button class="nav-item" data-action="nav-to" data-target="benefits">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-      </button>
-
-      <!-- 5. Account/Profile -->
-      <button class="nav-item" data-action="open-overlay" data-target="menu-overlay">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-      </button>
   </div>
 
 </div>

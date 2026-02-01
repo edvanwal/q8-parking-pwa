@@ -62,6 +62,13 @@ Q8.App = (function() {
                     closeSideMenu(); // Close menu when navigating
                     if (Services && Services.setScreen) Services.setScreen(targetId);
                     break;
+                case 'toggle-search-mode':
+                    const newMode = S.get.searchMode === 'zone' ? 'address' : 'zone';
+                    S.update({ searchMode: newMode, searchQuery: '' });
+                    const inp = document.getElementById('inp-search');
+                    if (inp) { inp.value = ''; inp.focus(); }
+                    break;
+
                 case 'open-plate-selector':
                     UI.renderQuickPlateSelector();
                     Services.tryOpenOverlay('sheet-plate-selector');
@@ -235,13 +242,12 @@ Q8.App = (function() {
             }
         });
 
-        // Event Listener for Search Input (auto-detect zone vs address)
+        // Event Listener for Search Input
         const searchInput = document.getElementById('inp-search');
-        if (searchInput && U && U.detectSearchType) {
+        if(searchInput) {
             searchInput.addEventListener('input', (e) => {
-                const q = e.target.value;
-                const mode = U.detectSearchType(q);
-                S.update({ searchQuery: q, searchMode: mode });
+                S.update({ searchQuery: e.target.value });
+                UI.renderSearchResults();
             });
         }
 

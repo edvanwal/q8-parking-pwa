@@ -66,7 +66,9 @@ Q8.State = (function() {
         }
     }
 
-    // --- PERSISTENCE ---
+    // --- PERSISTENCE (fragile) ---
+    // Risk: localStorage unavailable (private mode, quota). Risk: Corrupted JSON.
+    // Risk: Date(parsed.start/end) invalid if stored format changed.
 
     function load() {
         Q8.Utils.debug('STATE', 'Loading local state...');
@@ -79,9 +81,14 @@ Q8.State = (function() {
                 if (parsed) {
                     parsed.start = new Date(parsed.start);
                     parsed.end = new Date(parsed.end);
+                    if (isNaN(parsed.start.getTime())) console.warn('[PERSIST] Session start date invalid', parsed.start);
+                    if (parsed.end && isNaN(parsed.end.getTime())) console.warn('[PERSIST] Session end date invalid', parsed.end);
                 }
                 _state.session = parsed;
-            } catch (e) { _state.session = null; }
+            } catch (e) {
+                console.warn('[PERSIST] Session load failed, clearing', e);
+                _state.session = null;
+            }
         }
 
         // 2. Plates
@@ -89,7 +96,10 @@ Q8.State = (function() {
         if (savedPlates) {
             try {
                 _state.plates = JSON.parse(savedPlates);
-            } catch(e) { _state.plates = []; }
+            } catch (e) {
+                console.warn('[PERSIST] Plates load failed, using empty', e);
+                _state.plates = [];
+            }
         }
 
         // Seed default if empty
@@ -99,6 +109,7 @@ Q8.State = (function() {
         }
     }
 
+    // Risk: localStorage.setItem can throw (quota exceeded, private mode) - would propagate to caller.
     function save() {
         localStorage.setItem('q8_parking_session', JSON.stringify(_state.session));
     }

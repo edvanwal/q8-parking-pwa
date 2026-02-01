@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Kaart Preview - Q8 Parking</title>
+
+  <!-- Firebase (alleen App + Firestore, geen login) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="design-system.css">
+
+  <style>
+    body { margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; }
+    #preview-banner {
+      background: linear-gradient(90deg, #003D6B, #2D5AA7);
+      color: white;
+      padding: 12px 20px;
+      font-family: 'Mulish', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    #preview-banner a { color: #FDB913; margin-left: 16px; text-decoration: underline; }
+    #map-wrapper { flex: 1; position: relative; min-height: 0; }
+    #map-container {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: #f2f4f7;
+    }
+    #status {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      background: rgba(0,0,0,0.7);
+      color: #0f0;
+      font-family: monospace;
+      font-size: 12px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+
+<div id="preview-banner">
+  Kaart Preview – Parkeerzones uit Firebase
+  <a href="index.html">Terug naar app</a>
+</div>
+
+<div id="map-wrapper">
+  <div id="map-container"></div>
+  <div id="status">Bezig met laden...</div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  let map = null;
+  let gMarkers = [];
+  let zones = [];
+
+  function setStatus(msg) {
+    const el = document.getElementById('status');
+    if (el) el.textContent = msg;
+  }
+
+  // Firebase initialiseren
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // Zones ophalen uit Firestore (zelfde logica als app_recovery)
+  function loadZones() {
+    return new Promise(function(resolve, reject) {
+      setStatus('Zones ophalen uit Firebase...');
+      db.collection('zones').limit(2000).onSnapshot(
+        function(snapshot) {
+          zones = [];
+          snapshot.forEach(function(doc) {
+            const data = doc.data();
+            zones.push({
+              uid: doc.id,
+              id: data.id || doc.id,
+              lat: parseFloat(data.lat),
+              lng: parseFloat(data.lng),
+              price: parseFloat(data.price) || 0,
+              display_label: data.display_label,
+              city: data.city,
+              name: data.name
+            });
+          });
+          setStatus(zones.length + ' zones geladen. Kaart laden...');
+          resolve(zones);
+        },
+        function(err) {
+          setStatus('Fout: ' + (err.message || 'Firebase niet bereikbaar'));
+          reject(err);
+        }
+      );
+    });
+  }
+
+  // Google Maps laden (zelfde methode als app_recovery)
+  function loadGoogleMaps() {
+    if (typeof google !== 'undefined' && google.maps) {
+      return Promise.resolve();
+    }
+    return new Promise(function(resolve, reject) {
+      window._mapPreviewCallback = resolve;
+      const script = document.createElement('script');
+      script.src = 'https://maps.googleapis.com/maps/api/js?key=' + firebaseConfig.googleMapsApiKey + '&libraries=marker&v=beta&callback=_mapPreviewCallback';
+      script.async = true;
+      script.defer = true;
+      script.onerror = function() {
+        window._mapPreviewCallback = null;
+        reject(new Error('Google Maps laden mislukt'));
+      };
+      document.head.appendChild(script);
+    });
+  }
+
+  // Kaart initialiseren
+  function initMap() {
+    const container = document.getElementById('map-container');
+    if (!container || map) return;
+
+    map = new google.maps.Map(container, {
+      center: { lat: 52.0907, lng: 5.1214 },
+      zoom: 14,
+      disableDefaultUI: true,
+      mapTypeControl: false,
+      zoomControl: true,
+      streetViewControl: false,
+      fullscreenControl: true,
+      clickableIcons: false,
+      gestureHandling: 'greedy'
+    });
+
+    renderMarkers();
+    centerOnZones();
+    setStatus(zones.length + ' zones op de kaart.');
+  }
+
+  // Markers op de kaart zetten (zelfde stijl als app_recovery)
+  function renderMarkers() {
+    if (!map || !zones.length) return;
+
+    gMarkers.forEach(function(m) { m.setMap(null); });
+    gMarkers = [];
+
+    zones.forEach(function(z) {
+      if (!z.lat || !z.lng) return;
+
+      const priceLabel = z.display_label || (typeof z.price === 'number'
+        ? '€ ' + z.price.toFixed(2).replace('.', ',')
+        : z.price);
+
+      const markerEl = document.createElement('div');
+      markerEl.className = 'custom-map-marker';
+      markerEl.innerHTML = '<div class="marker" style="position:relative; transform:none; top:0; left:0;">' +
+        '<div class="marker-content"><span class="marker-label">' + priceLabel + '</span></div>' +
+        '<div class="marker-pin"></div></div>';
+
+      let marker;
+      if (google.maps.marker && google.maps.marker.AdvancedMarkerElement) {
+        marker = new google.maps.marker.AdvancedMarkerElement({
+          map: map,
+          position: { lat: z.lat, lng: z.lng },
+          content: markerEl,
+          title: 'Zone ' + (z.id || z.uid)
+        });
+      } else {
+        marker = new google.maps.Marker({
+          position: { lat: z.lat, lng: z.lng },
+          map: map,
+          title: 'Zone ' + (z.id || z.uid)
+        });
+      }
+      gMarkers.push(marker);
+    });
+  }
+
+  // Kaart centreren op alle zones
+  function centerOnZones() {
+    if (!map || zones.length === 0) return;
+
+    const bounds = new google.maps.LatLngBounds();
+    let hasValid = false;
+    zones.forEach(function(z) {
+      if (z.lat && z.lng) {
+        bounds.extend({ lat: z.lat, lng: z.lng });
+        hasValid = true;
+      }
+    });
+    if (hasValid) {
+      map.fitBounds(bounds, { top: 50, bottom: 50, left: 50, right: 50 });
+    }
+  }
+
+  // Start
+  loadZones()
+    .then(function() {
+      return loadGoogleMaps();
+    })
+    .then(function() {
+      initMap();
+    })
+    .catch(function(err) {
+      setStatus('Fout: ' + (err.message || err));
+      console.error(err);
+    });
+})();
+</script>
+</body>
+</html>

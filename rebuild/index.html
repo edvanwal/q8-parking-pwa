@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rebuild - Map Only</title>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="../firebase-config.js"></script>
+  <link rel="stylesheet" href="../design-system.css">
+  <style>
+    body { margin: 0; height: 100vh; display: flex; flex-direction: column; }
+    #bar { background: #003D6B; color: white; padding: 12px; font-weight: bold; }
+    #map { flex: 1; min-height: 0; }
+    #log { font-size: 11px; padding: 8px; background: #1a1a1a; color: #0f0; max-height: 80px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <div id="bar">Rebuild – Map + Firestore (reference)</div>
+  <div id="map"></div>
+  <pre id="log"></pre>
+
+  <script>
+  (function() {
+    const log = (msg) => {
+      const el = document.getElementById('log');
+      if (el) el.textContent += new Date().toLocaleTimeString() + ' ' + msg + '\n';
+    };
+
+    let map = null;
+    let markers = [];
+    let zones = [];
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function loadZones() {
+      return new Promise(function(resolve, reject) {
+        log('Firestore: subscribing to zones');
+        db.collection('zones').limit(2000).onSnapshot(
+          function(snap) {
+            zones = [];
+            snap.forEach(function(doc) {
+              const d = doc.data();
+              zones.push({
+                uid: doc.id,
+                id: d.id || doc.id,
+                lat: parseFloat(d.lat),
+                lng: parseFloat(d.lng),
+                price: parseFloat(d.price) || 0
+              });
+            });
+            log('Firestore: ' + zones.length + ' zones');
+            resolve(zones);
+          },
+          function(err) {
+            log('Firestore ERROR: ' + (err && err.message));
+            reject(err);
+          }
+        );
+      });
+    }
+
+    function loadMaps() {
+      if (typeof google !== 'undefined' && google.maps) return Promise.resolve();
+      return new Promise(function(resolve, reject) {
+        const key = (typeof firebaseConfig !== 'undefined') ? firebaseConfig.googleMapsApiKey : '';
+        window._rb = resolve;
+        const s = document.createElement('script');
+        s.src = 'https://maps.googleapis.com/maps/api/js?key=' + key + '&callback=_rb';
+        s.onerror = () => { log('Maps ERROR: script failed'); reject(new Error('Maps load failed')); };
+        document.head.appendChild(s);
+      });
+    }
+
+    function initMap() {
+      const el = document.getElementById('map');
+      if (!el || map) return;
+
+      map = new google.maps.Map(el, {
+        center: { lat: 52.0907, lng: 5.1214 },
+        zoom: 14,
+        disableDefaultUI: true,
+        zoomControl: true
+      });
+
+      markers.forEach(function(m) { m.setMap(null); });
+      markers = [];
+
+      zones.forEach(function(z) {
+        if (!z.lat || !z.lng) return;
+        const price = (typeof z.price === 'number') ? '€' + z.price.toFixed(2).replace('.', ',') : z.price;
+        const m = new google.maps.Marker({
+          map: map,
+          position: { lat: z.lat, lng: z.lng },
+          title: 'Zone ' + (z.id || z.uid) + ' ' + price
+        });
+        markers.push(m);
+      });
+
+      if (zones.length) {
+        const b = new google.maps.LatLngBounds();
+        zones.forEach(function(z) {
+          if (z.lat && z.lng) b.extend({ lat: z.lat, lng: z.lng });
+        });
+        map.fitBounds(b);
+      }
+      log('Map: ' + markers.length + ' markers');
+    }
+
+    loadZones()
+      .then(loadMaps)
+      .then(initMap)
+      .catch(function(e) { log('FAIL: ' + (e && e.message)); });
+  })();
+  </script>
+</body>
+</html>
