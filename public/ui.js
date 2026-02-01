@@ -399,6 +399,89 @@ Q8.UI = (function() {
         if (btnSetDefault) btnSetDefault.disabled = !selectionValid;
     }
 
+    function formatAPKDate(vervaldatum_apk) {
+        if (!vervaldatum_apk || String(vervaldatum_apk).length < 8) return '—';
+        const s = String(vervaldatum_apk);
+        const y = s.slice(0, 4), m = s.slice(4, 6), d = s.slice(6, 8);
+        return d + '-' + m + '-' + y;
+    }
+
+    function renderCarSpecs() {
+        const state = S.get;
+        const list = document.getElementById('list-car-specs');
+        const intro = document.getElementById('car-specs-intro');
+        const Kenteken = (typeof Q8 !== 'undefined' && Q8.Kenteken) ? Q8.Kenteken : null;
+        const nl = state.language === 'nl';
+        if (!list) return;
+        if (intro) intro.innerText = nl ? 'Specs van je ingevulde kentekens (RDW).' : 'Specs for your registered license plates (RDW).';
+
+        list.innerHTML = '';
+        const plates = state.plates || [];
+        if (plates.length === 0) {
+            list.innerHTML = '<p class="text-secondary">' + (nl ? 'Voeg eerst kentekens toe onder License plates.' : 'Add license plates first under License plates.') + '</p>';
+            return;
+        }
+
+        const labels = {
+            merk: nl ? 'Merk' : 'Brand',
+            handelsbenaming: nl ? 'Type' : 'Type',
+            kleur: nl ? 'Kleur' : 'Colour',
+            apk: nl ? 'APK datum' : 'APK date',
+            brandstof: nl ? 'Brandstof' : 'Fuel',
+            elektrisch: nl ? 'Elektrisch' : 'Electric',
+            gewicht: nl ? 'Gewicht (kg)' : 'Weight (kg)',
+            laad_aansluiting: nl ? 'Laad aansluiting' : 'Charging connector',
+            laad_snelheid: nl ? 'Laad snelheid' : 'Charging speed'
+        };
+
+        plates.forEach(function(plate) {
+            const normalized = (Kenteken && Kenteken.normalize) ? Kenteken.normalize(plate.text || plate.id) : (plate.id || (plate.text || '').replace(/[\s\-]/g, '').toUpperCase());
+            const card = document.createElement('div');
+            card.className = 'card mb-lg car-specs-card';
+            card.style.padding = '16px 20px';
+            card.innerHTML = '<div class="font-bold text-lg mb-md" style="display:flex;align-items:center;gap:8px;">' +
+                (plate.text || plate.id) +
+                '<span class="car-specs-loading text-secondary text-sm" style="font-weight:400;">' + (nl ? 'Laden...' : 'Loading...') + '</span></div>' +
+                '<div class="car-specs-fields flex-col gap-sm" style="display:none;"></div>';
+            list.appendChild(card);
+
+            const loadingEl = card.querySelector('.car-specs-loading');
+            const fieldsEl = card.querySelector('.car-specs-fields');
+
+            if (!Kenteken || !Kenteken.getVehicleSpecs) {
+                if (loadingEl) loadingEl.textContent = nl ? 'Specs niet beschikbaar.' : 'Specs not available.';
+                return;
+            }
+
+            Kenteken.getVehicleSpecs(normalized).then(function(result) {
+                if (loadingEl) loadingEl.style.display = 'none';
+                if (!result.found || result.error) {
+                    fieldsEl.style.display = 'flex';
+                    fieldsEl.innerHTML = '<p class="text-secondary">' + (result.error ? (nl ? 'RDW tijdelijk niet bereikbaar.' : 'RDW temporarily unavailable.') : (nl ? 'Niet gevonden in RDW.' : 'Not found in RDW.')) + '</p>';
+                    return;
+                }
+                const s = result.specs;
+                const kleur = [s.eerste_kleur, s.tweede_kleur].filter(Boolean).join(', ').replace(/Niet geregistreerd/gi, '') || '—';
+                const gewicht = s.massa_ledig_voertuig || s.toegestane_maximum_massa_voertuig || '—';
+                const rows = [
+                    [labels.merk, s.merk || '—'],
+                    [labels.handelsbenaming, (s.handelsbenaming || '').trim() || '—'],
+                    [labels.kleur, kleur],
+                    [labels.apk, formatAPKDate(s.vervaldatum_apk)],
+                    [labels.brandstof, s.brandstof || '—'],
+                    [labels.elektrisch, s.elektrisch ? (nl ? 'Ja' : 'Yes') : (nl ? 'Nee' : 'No')],
+                    [labels.gewicht, gewicht],
+                    [labels.laad_aansluiting, s.laad_aansluiting || '—'],
+                    [labels.laad_snelheid, s.laad_snelheid || '—']
+                ];
+                fieldsEl.style.display = 'flex';
+                fieldsEl.innerHTML = rows.map(function(r) {
+                    return '<div class="flex justify-between gap-md" style="align-items:baseline;"><span class="text-secondary text-sm">' + r[0] + '</span><span class="text-main font-medium">' + (r[1] || '—') + '</span></div>';
+                }).join('');
+            });
+        });
+    }
+
     function renderFavorites() {
         const state = S.get;
         const list = document.getElementById('list-favorites');

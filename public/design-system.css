@@ -801,6 +801,10 @@ body {
 .search-result-text { flex: 1; font-size: 0.95rem; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; }
 .search-result-text .search-highlight { color: var(--primary); font-weight: 700; }
 .search-result-price { font-weight: 700; font-size: 0.9rem; color: var(--primary); flex-shrink: 0; }
+.fav-star { color: #ce1818; font-size: 0.9rem; margin-right: 4px; }
+.history-fav-btn { color: var(--primary); }
+.history-fav-btn svg { fill: transparent; }
+.history-fav-btn[data-action="remove-favorite"] svg { fill: currentColor; }
 
 .menu-drawer {
   position: absolute; top: 0; bottom: 0; left: 0; width: 85%; max-width: 320px;
