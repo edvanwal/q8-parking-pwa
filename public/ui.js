@@ -781,44 +781,51 @@ Q8.UI = (function() {
         const endDate = toDate(state.session.end);
         if (!startDate) return;
 
-        // 1. Until stopped (duration=0): Count UP from 0
+        const zone = state.zones.find(z => z.uid === state.session.zoneUid || z.id === state.session.zoneUid) || state.zones.find(z => z.id === state.session.zone);
+        const maxDurMins = (zone && zone.max_duration_mins && zone.max_duration_mins > 0) ? zone.max_duration_mins : 1440;
+
+        // 1. Until stopped (duration=0): Count UP, check max duration
         if (!endDate) {
             if (elLabel) elLabel.innerText = state.language === 'nl' ? 'Tijd geparkeerd' : 'Time';
-            const diff = now - startDate;
-            const h = Math.floor(diff / 3600000);
-            const m = Math.floor((diff % 3600000) / 60000);
-            const s = Math.floor((diff % 60000) / 1000);
-
-            elTimer.style.color = "#059669"; // Success green
-
-            if (h > 0) {
-                elTimer.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-            } else {
-                elTimer.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            const elapsed = now - startDate;
+            if (elapsed >= maxDurMins * 60000) {
+                if (Q8.Services && Q8.Services.handleAutoEndSession) Q8.Services.handleAutoEndSession('sessionEndedByMaxTime');
+                return;
             }
+            const h = Math.floor(elapsed / 3600000);
+            const m = Math.floor((elapsed % 3600000) / 60000);
+            const s = Math.floor((elapsed % 60000) / 1000);
+            elTimer.style.color = "#059669";
+            if (h > 0) elTimer.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            else elTimer.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
             return;
         }
 
-        // 2. Fixed duration (chosen time): Count DOWN
+        // 2. Fixed duration: Count DOWN, auto-end when 0, expiring-soon notification
         if (elLabel) elLabel.innerText = state.language === 'nl' ? 'Resterende tijd' : 'Time left';
         const diff = endDate.getTime() - now.getTime();
 
         if (diff <= 0) {
-            elTimer.innerText = "00:00";
-            elTimer.style.color = "#ce1818";
+            if (Q8.Services && Q8.Services.handleAutoEndSession) Q8.Services.handleAutoEndSession('sessionEndedByUser');
             return;
+        }
+
+        const sessionKey = `${state.session.zone || ''}-${state.session.plate || ''}-${startDate.getTime()}`;
+        const expiringMins = (state.notificationSettings && state.notificationSettings.expiringSoonMinutes) || 10;
+        if (diff <= expiringMins * 60 * 1000 && _expiringSoonNotified !== sessionKey) {
+            _expiringSoonNotified = sessionKey;
+            if (Q8.Services && Q8.Services.addNotification) {
+                const msg = state.language === 'nl' ? `Parkeersessie verloopt over ${expiringMins} minuten` : `Parking session expires in ${expiringMins} minutes`;
+                Q8.Services.addNotification('sessionExpiringSoon', msg, `${state.session.zone || '?'} · ${state.session.plate || '?'}`);
+            }
         }
 
         const h = Math.floor(diff / 3600000);
         const m = Math.floor((diff % 3600000) / 60000);
         const s = Math.floor((diff % 60000) / 1000);
-
         elTimer.style.color = "#ce1818";
-        if (h > 0) {
-            elTimer.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        } else {
-            elTimer.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
+        if (h > 0) elTimer.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        else elTimer.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
 
 
