@@ -132,6 +132,7 @@ Q8.App = (function() {
 
                 case 'set-lang':
                     S.update({ language: target.getAttribute('data-lang') });
+                    closeSideMenu();
                     break;
                 case 'set-gate-lang':
                      S.update({ installMode: { ...S.get.installMode, language: target.getAttribute('data-lang') } });
