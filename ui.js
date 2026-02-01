@@ -131,16 +131,10 @@ Q8.UI = (function() {
         // Zone Sheet
         if (state.selectedZone) renderZoneSheet();
 
-        // Search Mode (auto-detect indicator)
+        // Search input sync (app herkent zelf zone vs adres)
         const inpSearch = document.getElementById('inp-search');
-        const indicator = document.getElementById('search-mode-indicator');
-        if (inpSearch) {
-            if (document.activeElement !== inpSearch) inpSearch.value = state.searchQuery;
-        }
-        if (indicator) {
-            const isZone = state.searchMode === 'zone';
-            indicator.textContent = isZone ? 'Zone' : 'Adres';
-            indicator.classList.toggle('map-search-indicator--address', !isZone);
+        if (inpSearch && document.activeElement !== inpSearch) {
+            inpSearch.value = state.searchQuery;
         }
 
         renderSearchResults();
@@ -153,6 +147,7 @@ Q8.UI = (function() {
                      state.zones.find(z => z.id === state.selectedZone);
 
         const elZoneId = document.getElementById('details-zone-id');
+
         const existingDetails = document.getElementById('zone-extra-details');
         if (existingDetails) existingDetails.remove();
 
@@ -209,7 +204,7 @@ Q8.UI = (function() {
             } else {
                 const h = Math.floor(state.duration / 60);
                 const m = state.duration % 60;
-                elDur.innerText = `${h}h ${m.toString().padStart(2,'0')}m`;
+                elDur.innerText = m === 0 ? String(h) : `${h}h ${m.toString().padStart(2,'0')}m`;
             }
         }
 
@@ -270,7 +265,12 @@ Q8.UI = (function() {
         const finalRates = unique.length > 0 ? unique : [{time: `Geen tarieven voor ${todayNL}`, price: ''}];
 
         container.innerHTML = finalRates.map(r => {
-             const displayTime = r.time.replace(new RegExp(todayNL, 'gi'), '').replace(/Dagelijks/gi,'').trim();
+             let displayTime = r.time.replace(new RegExp(todayNL, 'gi'), '').replace(/Dagelijks/gi,'').trim();
+             const timeMatch = displayTime.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
+             if (timeMatch) {
+                 const fmt = (h, m) => (parseInt(h, 10) < 10 ? String(h).replace(/^0/, '') : h) + ':' + m;
+                 displayTime = `${fmt(timeMatch[1], timeMatch[2])} – ${fmt(timeMatch[3], timeMatch[4])}`;
+             }
              const isFree = r.price.toLowerCase().includes('free') || r.price.toLowerCase().includes('gratis');
              const color = isFree ? '#10b981' : 'var(--q8-blue)';
              const label = isFree ? 'Free parking' : r.price;
@@ -278,8 +278,8 @@ Q8.UI = (function() {
              let detail = '';
              if (r.detail) {
                  const lines = r.detail.split('|').filter(l => l && l.trim() !== '' && l !== 'Vrij parkeren');
-                 if(lines.length > 0) {
-                     detail = `<ul style="margin: 4px 0 0 16px; padding: 0; list-style-type: disc; color: var(--q8-blue); font-weight: 600; font-size: 0.9rem;">${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
+                 if (lines.length > 0) {
+                     detail = `<ul class="rate-detail-list">${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
                  }
              }
 
@@ -287,10 +287,10 @@ Q8.UI = (function() {
                 <div class="rate-item">
                     <div class="rate-dot"></div>
                     <div class="rate-info">
-                        <span class="rate-time" style="font-weight: 700; color: var(--q8-blue); font-size: 1.1rem;">${displayTime}</span>
+                        <span class="rate-time">${displayTime}</span>
                         ${detail}
                     </div>
-                    ${!isFree || label !== 'Free parking' ? `<span class="rate-price" style="font-weight: 700; color: ${color}; font-size: 1rem;">${label}</span>` : ''}
+                    ${!isFree || label !== 'Free parking' ? `<span class="rate-price" style="color: ${color};">${label}</span>` : ''}
                 </div>
              `;
         }).join('');
@@ -584,15 +584,8 @@ Q8.UI = (function() {
             return;
         }
 
-        const query = state.searchQuery.toLowerCase().trim();
-        const isZoneMode = state.searchMode === 'zone';
-        const matches = state.zones.filter(z => {
-            const id = String(z.id || '').toLowerCase();
-            const name = (z.name || '').toLowerCase();
-            const city = (z.city || '').toLowerCase();
-            if (isZoneMode) return id.includes(query) || name.includes(query);
-            return name.includes(query) || city.includes(query) || id.includes(query);
-        })
+        const query = state.searchQuery.toLowerCase();
+        const matches = state.zones.filter(z => z.id.includes(query) || z.name.toLowerCase().includes(query))
             .sort((a,b) => {
                 if (a.id === query) return -1;
                 if (b.id === query) return 1;
@@ -604,27 +597,24 @@ Q8.UI = (function() {
             return;
         }
 
-        container.className = 'search-results-panel';
+        container.className = 'search-results-panel search-results-panel--pill';
         container.style.display = 'block';
-        container.innerHTML = matches.map(z => `
+        const q = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = q ? new RegExp(`(${q})`, 'gi') : null;
+        container.innerHTML = matches.map(z => {
+            const addr = [z.id, z.name, z.city].filter(Boolean).join(', ') + (z.id || z.name || z.city ? ', Nederland' : '');
+            const displayAddr = regex ? addr.replace(regex, '<strong class="search-highlight">$1</strong>') : addr;
+            return `
             <div class="search-result-item" data-action="open-overlay" data-target="sheet-zone"
                  data-zone-uid="${z.uid}"
                  data-zone="${z.id || ''}"
                  data-price="${z.price}"
                  data-rates='${JSON.stringify(z.rates || [])}'>
-                <div class="flex items-center" style="gap: 12px; width: 100%;">
-                    <div class="zone-badge-box no-pointer" style="height: 28px; min-width: 60px;">
-                        <span class="icon-p no-pointer">P</span>
-                        <span class="no-pointer" style="font-weight:700;">${z.id}</span>
-                    </div>
-                    <div class="flex flex-col no-pointer" style="overflow: hidden;">
-                         <span class="zone-name no-pointer text-truncate" style="font-weight: 600;">${z.city || ''}</span>
-                         <span class="zone-name no-pointer text-truncate" style="font-size: 0.8rem; color: var(--text-secondary);">${z.name}</span>
-                    </div>
-                    <div class="no-pointer" style="margin-left: auto; font-weight: 700; font-size: 0.9rem; color: var(--q8-blue);">€ ${z.price.toFixed(2).replace('.', ',')}</div>
-                </div>
+                <span class="search-result-text">${displayAddr}</span>
+                <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
             </div>
-        `).join('');
+        `;
+        }).join('');
     }
 
     function renderInfoBanner() {
@@ -748,6 +738,7 @@ Q8.UI = (function() {
 
     let map;
     let gMarkers = [];
+    const UTRECHT_CENTER = { lat: 52.0907, lng: 5.1214 };
 
     // DIAG: Set window.Q8_DIAG = true to log Maps loading steps
     function diagMaps(tag, msg, data) {
@@ -776,10 +767,9 @@ Q8.UI = (function() {
         }
 
         diagMaps('initGoogleMap', 'creating-map');
-        const center = { lat: 52.0907, lng: 5.1214 };
         map = new google.maps.Map(container, {
-            center: center,
-            zoom: 14,
+            center: UTRECHT_CENTER,
+            zoom: 15,
             disableDefaultUI: true,
             zoomControl: true,
             mapTypeControl: false,
@@ -790,7 +780,6 @@ Q8.UI = (function() {
         });
 
         renderMapMarkers();
-        centerMapOnZones();
         google.maps.event.addListenerOnce(map, 'idle', function() {
             google.maps.event.trigger(map, 'resize');
         });
@@ -862,16 +851,16 @@ Q8.UI = (function() {
     function centerMapOnZones() {
         const state = S.get;
         if (!map) return;
-        if (state.zones.length === 0) return;
-        const bounds = new google.maps.LatLngBounds();
-        let hasValid = false;
-        state.zones.forEach(z => {
-            if (z.lat && z.lng) {
-                bounds.extend({ lat: z.lat, lng: z.lng });
-                hasValid = true;
-            }
-        });
-        if (hasValid) map.fitBounds(bounds, { top: 80, bottom: 80, left: 20, right: 20 });
+
+        const sel = state.zones.find(z => (z.uid && z.uid === state.selectedZone) || (z.id && String(z.id) === String(state.selectedZone)));
+        if (sel && sel.lat && sel.lng) {
+            map.setCenter({ lat: sel.lat, lng: sel.lng });
+            map.setZoom(16);
+            return;
+        }
+
+        map.setCenter(UTRECHT_CENTER);
+        map.setZoom(15);
     }
 
     return {

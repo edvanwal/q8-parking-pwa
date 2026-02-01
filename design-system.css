@@ -89,6 +89,51 @@
     gap: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
+.map-search-bar--pill {
+    margin: 12px 16px 12px 16px;
+    border-radius: 9999px;
+    border: none;
+    border-bottom: none;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 12px 16px 12px 20px;
+}
+
+/* Floating search bar above map */
+.map-search-float {
+    position: absolute;
+    top: calc(var(--safe-area-top) + 16px);
+    left: 8px;
+    right: 8px;
+    z-index: var(--z-header);
+    display: flex;
+    align-items: center;
+    background: var(--surface);
+    border-radius: 9999px;
+    padding: 12px 40px 12px 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    box-sizing: border-box;
+}
+.map-search-float .map-search-input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    font-size: 1rem;
+    font-family: var(--font-family);
+    color: var(--q8-text);
+    outline: none;
+}
+.map-search-float .map-search-input::placeholder { color: var(--text-secondary); }
+.map-search-icon-right {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    color: var(--text-secondary);
+    pointer-events: none;
+}
 .map-search-input {
     flex: 1;
     border: none;
@@ -685,24 +730,24 @@ body {
 
 .search-results-panel, #ui-search-results {
   position: absolute;
-  top: calc(var(--safe-area-top) + 16px + 56px + 8px); /* Below header */
+  top: calc(var(--safe-area-top) + 16px + 52px + 8px);
   left: 16px; right: 16px;
   background: var(--surface); border-radius: 20px;
-  box-shadow: var(--shadow-float); border: 1px solid var(--border);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08); border: none;
   overflow: hidden; max-height: 260px; overflow-y: auto;
   z-index: 100;
 }
+.search-results-panel--pill { border-radius: 16px; }
 .search-result-item {
-  padding: 12px 20px; border-bottom: 1px solid var(--border); cursor: pointer;
-  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 20px; border-bottom: 1px solid var(--border); cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
   transition: background 0.1s; min-height: 48px;
 }
-.search-result-item:first-child { background: #f9fafb; }
-.search-result-item:first-child .zone-id { color: var(--primary); }
 .search-result-item:last-child { border-bottom: none; }
 .search-result-item:active { background: var(--bg-app); }
-.search-result-item .zone-id { font-weight: 700; color: var(--text-main); font-size: 1rem; }
-.search-result-item .zone-name { color: var(--text-secondary); font-size: 0.85rem; }
+.search-result-text { flex: 1; font-size: 0.95rem; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; }
+.search-result-text .search-highlight { color: var(--q8-blue-900); font-weight: 700; }
+.search-result-price { font-weight: 700; font-size: 0.9rem; color: var(--q8-blue-900); flex-shrink: 0; }
 
 .menu-drawer {
   position: absolute; top: 0; bottom: 0; left: 0; width: 85%; max-width: 320px;
@@ -1034,13 +1079,13 @@ body {
 /* --- NEW: Bottom Navigation --- */
 .bottom-nav {
   position: absolute; bottom: 0; left: 0; right: 0;
-  height: 60px; /* Reduced from 80px */
-  background: var(--brand-navy); /* #003D6B */
+  height: 80px; /* Taller for curve effect */
+  background: var(--brand-navy); /* #003D6B per Figma/Variable */
   display: flex; justify-content: space-between; align-items: center;
   padding: 0 16px;
-  z-index: var(--z-header);
+  z-index: var(--z-header); /* High z-index */
   box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
-  border-radius: 16px 16px 0 0; /* Subtler curve */
+  border-radius: 20px 20px 0 0;
 }
 
 .nav-item {
@@ -1056,84 +1101,37 @@ body {
 .nav-fab-container {
   width: 72px; height: 72px;
   position: relative;
-  margin-top: -36px; /* Exactly half of 72px to sit on the edge */
+  margin-top: -36px; /* Lift it up */
   display: flex; justify-content: center; align-items: center;
-  pointer-events: none; /* Let clicks pass to button */
+  background: var(--bg-app); /* Match background to create cutout effect? Or just transparent */
+  background: transparent;
 }
 
 .nav-fab-main {
-  width: 60px; height: 60px; /* Slightly smaller to fit nice */
+  width: 64px; height: 64px;
   border-radius: 50%;
-  background: #FFC000; /* Q8 Yellow */
-  border: 4px solid var(--brand-navy); /* Thick border matching footer */
+  background: #FFC000; /* Q8 Yellow rough match */
+  background: var(--q8-yellow-500);
+  border: 4px solid var(--brand-navy); /* To blend with bar */
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   cursor: pointer;
-  pointer-events: auto;
   transition: transform 0.1s;
 }
 .nav-fab-main:active { transform: scale(0.95); }
-.nav-fab-main span { font-size: 1.8rem; color: var(--brand-navy); font-weight: 800; font-family: 'Mulish', sans-serif; }
+.nav-fab-main span { font-size: 2rem; color: var(--brand-navy); font-weight: 900; }
 
 /* --- NEW: Floating Search Bar --- */
-.map-floating-header {
+.floating-search-bar {
   position: absolute;
-  top: 48px; /* Safe area */
-  left: 20px; right: 20px;
-  height: 52px;
+  top: 50px; left: 16px; right: 16px;
+  height: 56px;
   background: white;
-  border-radius: 12px;
+  border-radius: 16px;
   display: flex; align-items: center;
   padding: 0 16px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Soft shadow */
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
   z-index: var(--z-header);
-}
-
-.search-icon-box {
-  margin-right: 12px;
-  display: flex; align-items: center; justify-content: center;
-}
-
-.search-input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  font-size: 1rem;
-  color: var(--text-main);
-  outline: none;
-  font-family: 'Mulish', sans-serif;
-}
-.search-input::placeholder { color: #9CA3AF; }
-
-/* === MARKER PILLS (Blue) === */
-.marker-price-pill {
-  background-color: #003D6B; /* Brand Navy */
-  color: white;
-  padding: 4px 10px;
-  border-radius: 8px; /* Rounded rect */
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  display: flex; align-items: center; justify-content: center;
-  position: absolute;
-  transform: translate(-50%, -100%);
-  border: 2px solid white; /* White border as in screenshot */
-}
-/* Tiny triangle pointer */
-.marker-price-pill::after {
-  content: '';
-  position: absolute;
-  bottom: -5px; /* Push down */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 5px solid #003D6B; /* Same as bg */
-  z-index: 100; /* Above border? No, logic complex for bordered triangle. simple is fine */
 }
 
 .search-icon { color: #9CA3AF; margin-right: 12px; display: flex; align-items: center; }
@@ -1171,54 +1169,4 @@ body {
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
   border-top: 6px solid var(--brand-navy); /* Color match */
-}
-
-/* --- SIDEBAR MENU (Reinstated) --- */
-.side-menu {
-  position: fixed;
-  top: 0; left: 0; bottom: 0;
-  width: 280px;
-  background: var(--surface);
-  z-index: 1200; /* Above everything */
-  transform: translateX(-100%);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 4px 0 20px rgba(0,0,0,0.1);
-  display: flex; flex-direction: column;
-}
-.side-menu.open { transform: translateX(0); }
-
-.menu-header {
-  height: 72px;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 20px;
-  border-bottom: 1px solid var(--border);
-}
-
-.menu-items { flex: 1; padding: 20px; overflow-y: auto; }
-
-.menu-item {
-  display: flex; align-items: center; gap: 16px;
-  padding: 12px 16px;
-  border-radius: 12px;
-  color: var(--text-main);
-  font-weight: 600;
-  margin-bottom: 8px;
-  cursor: pointer;
-  transition: background 0.1s;
-}
-.menu-item:active { background: var(--bg-app); }
-.menu-item.active { background: var(--q8-blue-900); color: white; }
-.menu-item .icon { font-size: 1.2rem; min-width: 24px; text-align: center; }
-
-.menu-divider { height: 1px; background: var(--border); margin: 16px 0; }
-
-.menu-footer {
-  padding: 20px;
-  border-top: 1px solid var(--border);
-  background: var(--bg-app);
-}
-
-/* Ensure map surface doesn't overlap header too aggressively */
-.map-floating-header {
-  z-index: 500; /* Ensure below sidebar overlay */
 }

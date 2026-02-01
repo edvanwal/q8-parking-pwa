@@ -197,6 +197,10 @@ Q8.Services = (function() {
 
         S.update({ activeOverlay: id });
 
+        if (id === 'sheet-zone' && contextData && (contextData.uid || contextData.zone)) {
+            if (Q8.UI && Q8.UI.centerMapOnZones) setTimeout(() => Q8.UI.centerMapOnZones(), 50);
+        }
+
         // Auto-focus logic
         if (id === 'modal-add-plate') {
             setTimeout(() => {
