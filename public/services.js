@@ -67,7 +67,10 @@ Q8.Services = (function() {
         db.collection('users').doc(uid).onSnapshot(doc => {
             if (doc.exists) {
                 const data = doc.data();
-                S.update({ driverSettings: data.driverSettings || {} });
+                S.update({
+                    driverSettings: data.driverSettings || {},
+                    adminPlates: data.adminPlates || []
+                });
             }
         }, () => {});
     }

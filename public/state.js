@@ -48,6 +48,7 @@ Q8.State = (function() {
         },
         favorites: [],    // [{ zoneUid, zoneId }]
         driverSettings: {}, // { canAddPlates, maxPlates, platesLocked } - from Firestore
+        adminPlates: [],   // Plates toegevoegd door fleetmanager - from Firestore
         tenantId: null     // Set when user logs in, for session writes
     };
 
