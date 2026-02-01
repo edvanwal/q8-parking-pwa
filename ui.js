@@ -812,8 +812,13 @@ Q8.UI = (function() {
             const proj = this.getProjection();
             const state = S.get;
             this.container.innerHTML = '';
+            const seenCoords = new Set();
             (state.zones || []).forEach(z => {
                 if (!z.lat || !z.lng) return;
+                // Dedupe: skip if we already rendered a marker at this exact position
+                const coordKey = z.lat.toFixed(6) + ',' + z.lng.toFixed(6);
+                if (seenCoords.has(coordKey)) return;
+                seenCoords.add(coordKey);
                 const priceLabel = z.display_label || (typeof z.price === 'number'
                     ? z.price.toFixed(2).replace('.', ',')
                     : String(z.price));
