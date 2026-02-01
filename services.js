@@ -301,8 +301,7 @@ Q8.Services = (function() {
         }
         const rawVal = inp ? inp.value.trim().toUpperCase() : '';
 
-        const modal = document.getElementById('modal-add-plate');
-        const inpDesc = modal ? modal.querySelectorAll('input')[1] : null;
+        const inpDesc = document.getElementById('inp-plate-desc');
         const description = inpDesc ? inpDesc.value.trim() : '';
 
         const toast = (msg) => {
@@ -368,6 +367,53 @@ Q8.Services = (function() {
             else if(typeof window.showToast === 'function') window.showToast(msg);
         };
         toast('License plate deleted');
+    }
+
+    function updatePlate(id, newText, newDescription) {
+        if (id == null || id === '') {
+            console.warn('[PLATES] updatePlate: no id provided');
+            return;
+        }
+        const plateIdx = S.get.plates.findIndex(p => p.id == id || p.text == id);
+        if (plateIdx === -1) {
+            console.warn('[PLATES] updatePlate: plate not found', id);
+            return;
+        }
+        const rawVal = (newText || '').trim().toUpperCase();
+        const description = (newDescription || '').trim();
+
+        const toast = (msg) => {
+            if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg);
+            else if (typeof window.showToast === 'function') window.showToast(msg);
+        };
+        if (!rawVal) return toast('Please enter a license plate');
+        if (rawVal.length > 12) return toast('License plate too long (max 12)');
+        if (!/^[A-Z0-9-]+$/.test(rawVal)) return toast('Invalid characters');
+        if (S.get.plates.some(p => (p.id != id && p.text != id) && p.text === rawVal)) return toast('License plate already exists');
+
+        const newPlates = [...S.get.plates];
+        const plate = newPlates[plateIdx];
+        const wasDefault = plate.default;
+        newPlates[plateIdx] = {
+            id: rawVal,
+            text: rawVal,
+            description: description,
+            default: wasDefault
+        };
+
+        let newSelected = S.get.selectedPlateId;
+        if (S.get.selectedPlateId === id || S.get.selectedPlateId === plate.text) {
+            newSelected = rawVal;
+        }
+
+        S.update({
+            plates: newPlates,
+            selectedPlateId: newSelected,
+            activeOverlay: null
+        });
+
+        S.savePlates();
+        toast('License plate updated');
     }
 
     // --- DURATION CHANGE (fragile) ---
@@ -461,6 +507,7 @@ Q8.Services = (function() {
         handleStartParking,
         handleEndParking,
         saveNewPlate,
+        updatePlate,
         deletePlate,
         modifyDuration,
         setDefaultPlate,

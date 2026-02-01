@@ -108,6 +108,32 @@ Q8.App = (function() {
                 case 'confirm-end': Services.handleEndParking(); break;
                 case 'save-plate': Services.saveNewPlate(); break;
 
+                case 'edit-plate': {
+                    const plateId = target.getAttribute('data-id');
+                    const plate = S.get.plates.find(p => p.id == plateId || p.text == plateId);
+                    if (plate) {
+                        const inpPlate = document.getElementById('inp-edit-plate');
+                        const inpDesc = document.getElementById('inp-edit-plate-desc');
+                        if (inpPlate) inpPlate.value = plate.text || '';
+                        if (inpDesc) inpDesc.value = plate.description || '';
+                        const modal = document.getElementById('modal-edit-plate');
+                        if (modal) modal.setAttribute('data-editing-id', plate.id);
+                        Services.tryOpenOverlay('modal-edit-plate');
+                    }
+                    break;
+                }
+
+                case 'save-edit-plate': {
+                    const modal = document.getElementById('modal-edit-plate');
+                    const editingId = modal ? modal.getAttribute('data-editing-id') : null;
+                    const inpPlate = document.getElementById('inp-edit-plate');
+                    const inpDesc = document.getElementById('inp-edit-plate-desc');
+                    if (editingId && inpPlate) {
+                        Services.updatePlate(editingId, inpPlate.value, inpDesc ? inpDesc.value : '');
+                    }
+                    break;
+                }
+
                 case 'delete-plate':
                     Services.deletePlate(target.getAttribute('data-id'));
                     break;
