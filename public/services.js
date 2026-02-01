@@ -223,6 +223,10 @@ Q8.Services = (function() {
                 if (inp) { inp.value = ''; inp.focus(); }
                 const inpDesc = document.getElementById('inp-plate-desc');
                 if (inpDesc) inpDesc.value = '';
+                const resultEl = document.getElementById('plate-rdw-result');
+                if (resultEl) { resultEl.textContent = ''; resultEl.className = 'plate-rdw-result'; }
+                const errEl = document.getElementById('plate-format-error');
+                if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
             }, 100);
         }
     }
