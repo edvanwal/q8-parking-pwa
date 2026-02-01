@@ -747,7 +747,6 @@ Q8.UI = (function() {
     // --- GOOGLE MAPS ---
 
     let map;
-    let gMarkers = [];
     const UTRECHT_CENTER = { lat: 52.0907, lng: 5.1214 };
 
     // DIAG: Set window.Q8_DIAG = true to log Maps loading steps
@@ -797,9 +796,7 @@ Q8.UI = (function() {
     }
 
     /* OverlayView-based markers: DOM divs with fixed CSS size - avoids Google Maps icon shrink bug */
-    function PriceMarkersOverlay() {
-        this.setMap.apply(this, arguments);
-    }
+    function PriceMarkersOverlay() {}
     PriceMarkersOverlay.prototype = new google.maps.OverlayView();
     PriceMarkersOverlay.prototype.onAdd = function() {
         this.container = document.createElement('div');
