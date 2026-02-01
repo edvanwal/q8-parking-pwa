@@ -13,7 +13,7 @@ Q8.UI = (function() {
     'use strict';
 
     const S = Q8.State;
-    let _lastMarkerKey = '';
+    let _lastZoneKey = '';
     let _lastSelectedZone = null;
     const U = Q8.Utils;
     // Services might be circular, so access via Q8.Services literal if needed
@@ -809,12 +809,15 @@ Q8.UI = (function() {
         };
     }
 
+    let _markerZones = [];
+
     function renderMapMarkers() {
         const state = S.get;
         if (!map) return;
 
         gMarkers.forEach(m => m.setMap(null));
         gMarkers = [];
+        _markerZones = [];
 
         state.zones.forEach(z => {
             if (!z.lat || !z.lng) return;
@@ -842,6 +845,23 @@ Q8.UI = (function() {
                 }
             });
             gMarkers.push(marker);
+            _markerZones.push(z);
+        });
+    }
+
+    function updateMarkerSelection() {
+        const state = S.get;
+        if (!map || gMarkers.length !== _markerZones.length) return;
+
+        gMarkers.forEach((marker, i) => {
+            const z = _markerZones[i];
+            if (!z) return;
+            const priceLabel = z.display_label || (typeof z.price === 'number'
+                ? z.price.toFixed(2).replace('.', ',')
+                : String(z.price));
+            const priceText = z.price === 0 ? 'Free' : '€ ' + priceLabel.substring(0, 6);
+            const isSelected = (z.uid && z.uid === state.selectedZone) || (z.id && String(z.id) === String(state.selectedZone));
+            marker.setIcon(makePriceMarkerIcon(priceText, isSelected));
         });
     }
 
