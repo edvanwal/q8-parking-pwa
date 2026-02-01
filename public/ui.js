@@ -55,6 +55,7 @@ Q8.UI = (function() {
                 btnAdd.innerText = state.language === 'nl' ? 'Nieuw kenteken toevoegen' : 'Add new license plate';
             }
         }
+        if (state.screen === 'car-specs') renderCarSpecs();
         if (state.screen === 'history') renderHistory();
         if (state.screen === 'login') renderLoginUI();
 
