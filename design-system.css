@@ -102,25 +102,20 @@
 .map-search-float {
     position: absolute;
     top: calc(var(--safe-area-top) + 16px);
-    left: 8px;
-    right: 8px;
+    left: 12px;
+    right: 12px;
     z-index: var(--z-header);
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
     align-items: center;
-    gap: 10px;
     background: var(--surface);
     border-radius: 9999px;
     padding: 12px 16px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
     box-sizing: border-box;
-    overflow: hidden;
 }
 .map-search-float .map-search-input {
-    flex: 1 1 0;
-    width: 0;
-    min-width: 0;
+    flex: 1;
+    min-width: 50px;
     border: none;
     background: transparent;
     font-size: 1rem;
@@ -129,16 +124,13 @@
     outline: none;
     padding: 0;
     margin: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 .map-search-float .map-search-input::placeholder { color: var(--text-secondary); }
 .map-search-icon-right {
-    flex: 0 0 auto;
+    flex-shrink: 0;
+    margin-left: 10px;
     display: flex;
     align-items: center;
-    justify-content: center;
     color: var(--text-secondary);
     pointer-events: none;
 }
