@@ -188,6 +188,8 @@ Q8.App = (function() {
                     const zoneUid = target.getAttribute('data-zone-uid');
                     const zoneId = target.getAttribute('data-zone-id');
                     const favs = (S.get.favorites || []).filter(f => f.zoneUid !== zoneUid && f.zoneId !== zoneId);
+                    // Also remove by zoneUid match (primary key)
+                    const favsFiltered = (S.get.favorites || []).filter(f => f.zoneUid !== zoneUid);
                     S.update({ favorites: favs });
                     if (S.saveFavorites) S.saveFavorites();
                     if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Verwijderd uit favorieten' : 'Removed from favorites');

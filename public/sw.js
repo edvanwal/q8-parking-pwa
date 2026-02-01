@@ -17,6 +17,7 @@ const API_CACHE = `${CACHE_VERSION}-api`;
 const STATIC_ASSETS = [
   '/',
   '/index.html',
+  '/offline.html',
   '/design-system.css',
   '/app.js',
   '/ui.js',
