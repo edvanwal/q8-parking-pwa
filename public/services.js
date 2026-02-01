@@ -259,6 +259,10 @@ Q8.Services = (function() {
         // Logic: Context Checks
         if (id === 'modal-confirm' && S.get.session === null) return;
         if ((id === 'modal-add-plate' || id === 'modal-edit-plate') && S.get.screen !== 'plates') return;
+        if (id === 'modal-add-plate') {
+            const ds = S.get.driverSettings || {};
+            if (ds.platesLocked || ds.canAddPlates === false) return;
+        }
         if (id === 'sheet-filter' && S.get.screen !== 'history') return;
 
         S.update({ activeOverlay: id });
@@ -597,6 +601,16 @@ Q8.Services = (function() {
     // --- LICENSE PLATE DELETE (fragile) ---
     // Risk: id from data-id may not match (type coercion: id vs text).
     function deletePlate(id) {
+        const ds = S.get.driverSettings || {};
+        if (ds.platesLocked) {
+            toast(S.get.language === 'nl' ? 'Kentekens zijn vergrendeld door de fleetmanager' : 'License plates are locked by fleet manager');
+            return;
+        }
+        const adminPlates = (S.get.adminPlates || []).map(p => p.id);
+        if (adminPlates.includes(id)) {
+            toast(S.get.language === 'nl' ? 'Admin-kentekens kunnen niet worden verwijderd' : 'Admin plates cannot be removed');
+            return;
+        }
         if (id == null || id === '') {
             console.warn('[PLATES] deletePlate: no id provided');
             return;
@@ -633,6 +647,16 @@ Q8.Services = (function() {
     }
 
     function updatePlate(id, newText, newDescription) {
+        const ds = S.get.driverSettings || {};
+        if (ds.platesLocked) {
+            toast(S.get.language === 'nl' ? 'Kentekens zijn vergrendeld door de fleetmanager' : 'License plates are locked by fleet manager');
+            return;
+        }
+        const adminPlates = (S.get.adminPlates || []).map(p => p.id);
+        if (adminPlates.includes(id)) {
+            toast(S.get.language === 'nl' ? 'Admin-kentekens kunnen niet worden bewerkt' : 'Admin plates cannot be edited');
+            return;
+        }
         if (id == null || id === '') {
             console.warn('[PLATES] updatePlate: no id provided');
             return;

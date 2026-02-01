@@ -44,6 +44,9 @@ function loadModule(filename) {
     eval(content);
 }
 
+global.saveFavorites = function() {};
+global.loadFavorites = function() {};
+
 try {
     loadModule('utils.js');
     loadModule('state.js');
