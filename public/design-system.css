@@ -102,15 +102,15 @@
 .map-search-float {
     position: absolute;
     top: calc(var(--safe-area-top) + 16px);
-    left: 8px;
-    right: 8px;
+    left: 6px;
+    right: 6px;
     z-index: var(--z-header);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     background: var(--surface);
     border-radius: 9999px;
-    padding: 12px 14px 12px 18px;
+    padding: 10px 12px 10px 14px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
     box-sizing: border-box;
 }
@@ -119,7 +119,7 @@
     min-width: 0;
     border: none;
     background: transparent;
-    font-size: 1rem;
+    font-size: 0.9375rem;
     font-family: var(--font-family);
     color: var(--q8-text);
     outline: none;
