@@ -302,7 +302,7 @@ Q8.UI = (function() {
                  priceStr.toLowerCase().includes('gratis') ||
                  priceStr.replace(/[^\d,.]/g, '').replace(',', '.') === '0' ||
                  parseFloat(priceStr.replace(/[^\d,.]/g, '').replace(',', '.')) === 0;
-             const color = isFree ? '#10b981' : 'var(--q8-blue)';
+             const color = isFree ? '#10b981' : 'var(--primary)';
              const label = isFree ? 'Free' : (priceStr || r.price);
 
              let detail = '';

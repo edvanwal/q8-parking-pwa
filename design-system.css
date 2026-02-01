@@ -22,11 +22,11 @@
   /* State */
   --q8-danger: #DC2626;
 
-  /* --- Mapping to Application Variables --- */
-  --primary: var(--q8-blue-900);
-  --primary-dark: var(--q8-blue-900); /* Mapped to brand */
-  --btn-primary-bg: var(--q8-blue-900);
-  --brand-navy: var(--q8-blue-900);
+  /* --- Mapping to Application Variables (marker blue #1E4A99 door hele app) --- */
+  --primary: #1E4A99;
+  --primary-dark: #1E4A99;
+  --btn-primary-bg: #1E4A99;
+  --brand-navy: #1E4A99;
 
   --bg-app: var(--q8-bg);
   --surface: var(--q8-surface);
@@ -161,7 +161,7 @@
     transition: background 0.2s, color 0.2s;
 }
 .map-search-toggle--zone {
-    background: var(--q8-blue-900);
+    background: var(--primary);
     color: white;
 }
 .map-search-toggle--address {
@@ -414,7 +414,7 @@ body {
 }
 .marker:active { transform: translate(-50%, -100%) scale(0.95); }
 .marker-content {
-  background: var(--q8-blue-600); /* Matches footer/nav */
+  background: var(--primary); /* Matches footer/nav */
   color: white;
   padding: 5px 10px; /* Smaller */
   border-radius: var(--radius-pill);
@@ -462,7 +462,7 @@ body {
   width: 40px; height: 40px;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  color: var(--q8-blue-900); /* Brand Navy */
+  color: var(--primary); /* Brand Navy */
   cursor: pointer;
 }
 
@@ -474,7 +474,7 @@ body {
   height: 52px;
   padding: 0 16px;
   border-radius: 16px;
-  background: var(--q8-blue-900);
+  background: var(--primary);
   color: var(--q8-text-inverse); /* #FFFFFF */
   border: none;
   box-shadow: var(--shadow-float);
@@ -657,7 +657,7 @@ body {
   border-radius: 50%; margin-top: 6px; flex-shrink: 0;
 }
 .rate-info { flex: 1; }
-.rate-time { color: var(--q8-blue-900); font-weight: 700; font-size: 1rem; display: block; }
+.rate-time { color: var(--primary); font-weight: 700; font-size: 1rem; display: block; }
 .rate-detail-list {
   margin: 6px 0 0 16px; padding: 0;
   list-style-type: disc;
@@ -799,8 +799,8 @@ body {
 .search-result-item:last-child { border-bottom: none; }
 .search-result-item:active { background: var(--bg-app); }
 .search-result-text { flex: 1; font-size: 0.95rem; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; }
-.search-result-text .search-highlight { color: var(--q8-blue-900); font-weight: 700; }
-.search-result-price { font-weight: 700; font-size: 0.9rem; color: var(--q8-blue-900); flex-shrink: 0; }
+.search-result-text .search-highlight { color: var(--primary); font-weight: 700; }
+.search-result-price { font-weight: 700; font-size: 0.9rem; color: var(--primary); flex-shrink: 0; }
 
 .menu-drawer {
   position: absolute; top: 0; bottom: 0; left: 0; width: 85%; max-width: 320px;
