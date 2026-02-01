@@ -493,31 +493,44 @@ Q8.Services = (function() {
             console.warn('[PLATES] updatePlate: plate not found', id);
             return;
         }
-        const rawVal = (newText || '').trim().toUpperCase();
-        const description = (newDescription || '').trim();
+        const rawVal = (newText || '').trim();
 
         const toast = (msg) => {
             if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg);
             else if (typeof window.showToast === 'function') window.showToast(msg);
         };
         if (!rawVal) return toast('Please enter a license plate');
-        if (rawVal.length > 12) return toast('License plate too long (max 12)');
-        if (!/^[A-Z0-9-]+$/.test(rawVal)) return toast('Invalid characters');
-        if (S.get.plates.some(p => (p.id != id && p.text != id) && p.text === rawVal)) return toast('License plate already exists');
 
+        const Kenteken = (typeof Q8 !== 'undefined' && Q8.Kenteken) ? Q8.Kenteken : null;
+        let normalized = rawVal.replace(/[\s\-]/g, '').toUpperCase();
+        let formatValid = true;
+
+        if (Kenteken) {
+            const v = Kenteken.validate(rawVal);
+            formatValid = v.valid;
+            normalized = v.normalized;
+        } else {
+            if (normalized.length > 8) return toast('License plate too long');
+            if (!/^[A-Z0-9]+$/.test(normalized)) return toast('Letters and digits only');
+        }
+
+        if (!formatValid) return toast(Kenteken ? (Kenteken.validate(rawVal).errorMessage || 'Invalid format') : 'Invalid license plate format');
+        if (S.get.plates.some(p => (p.id != id && p.text != id) && (p.text === normalized || p.id === normalized))) return toast('License plate already exists');
+
+        const displayText = Kenteken && Kenteken.formatDisplay ? Kenteken.formatDisplay(normalized) : normalized;
         const newPlates = [...S.get.plates];
         const plate = newPlates[plateIdx];
         const wasDefault = plate.default;
         newPlates[plateIdx] = {
-            id: rawVal,
-            text: rawVal,
-            description: description,
+            id: normalized,
+            text: displayText || normalized,
+            description: (newDescription || '').trim(),
             default: wasDefault
         };
 
         let newSelected = S.get.selectedPlateId;
         if (S.get.selectedPlateId === id || S.get.selectedPlateId === plate.text) {
-            newSelected = rawVal;
+            newSelected = normalized;
         }
 
         S.update({
@@ -527,7 +540,69 @@ Q8.Services = (function() {
         });
 
         S.savePlates();
-        toast('License plate updated');
+        toast(S.get.language === 'nl' ? 'Kenteken bijgewerkt' : 'License plate updated');
+    }
+
+    /**
+     * Controleren bij RDW (gratis): valideer kenteken en toon RDW-resultaat in #plate-rdw-result.
+     */
+    function checkPlateRDW() {
+        const inp = document.getElementById('inp-plate');
+        const resultEl = document.getElementById('plate-rdw-result');
+        const Kenteken = (typeof Q8 !== 'undefined' && Q8.Kenteken) ? Q8.Kenteken : null;
+        const toast = (msg) => {
+            if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg);
+            else if (typeof window.showToast === 'function') window.showToast(msg);
+        };
+
+        if (!resultEl) return;
+        resultEl.textContent = '';
+        resultEl.className = 'plate-rdw-result';
+
+        const rawVal = inp ? inp.value.trim() : '';
+        if (!rawVal) {
+            resultEl.textContent = S.get.language === 'nl' ? 'Voer eerst een kenteken in.' : 'Enter a license plate first.';
+            resultEl.classList.add('plate-rdw-error');
+            return;
+        }
+
+        if (!Kenteken) {
+            resultEl.textContent = S.get.language === 'nl' ? 'Validatie niet beschikbaar.' : 'Validation not available.';
+            resultEl.classList.add('plate-rdw-error');
+            return;
+        }
+
+        const v = Kenteken.validate(rawVal);
+        if (!v.valid) {
+            resultEl.textContent = v.errorMessage || (S.get.language === 'nl' ? 'Ongeldig kentekenformaat' : 'Invalid format');
+            resultEl.classList.add('plate-rdw-error');
+            return;
+        }
+
+        resultEl.textContent = S.get.language === 'nl' ? 'Controleren bij RDW...' : 'Checking RDW...';
+        resultEl.classList.add('plate-rdw-loading');
+
+        Kenteken.lookupRDW(v.normalized).then(function(result) {
+            resultEl.classList.remove('plate-rdw-loading');
+            if (result.error) {
+                resultEl.textContent = S.get.language === 'nl' ? 'RDW tijdelijk niet bereikbaar.' : 'RDW temporarily unavailable.';
+                resultEl.classList.add('plate-rdw-error');
+                return;
+            }
+            if (result.found && result.data) {
+                const brand = ((result.data.merk || '') + (result.data.handelsbenaming ? ' ' + result.data.handelsbenaming : '')).trim();
+                const soort = result.data.voertuigsoort || '';
+                resultEl.textContent = (S.get.language === 'nl' ? 'Gevonden: ' : 'Found: ') + (brand || soort || 'RDW');
+                resultEl.classList.add('plate-rdw-ok');
+            } else {
+                resultEl.textContent = S.get.language === 'nl' ? 'Niet gevonden in RDW-register.' : 'Not found in RDW register.';
+                resultEl.classList.add('plate-rdw-warn');
+            }
+        }).catch(function() {
+            resultEl.classList.remove('plate-rdw-loading');
+            resultEl.textContent = S.get.language === 'nl' ? 'Controle mislukt.' : 'Check failed.';
+            resultEl.classList.add('plate-rdw-error');
+        });
     }
 
     // --- DURATION CHANGE (fragile) ---
