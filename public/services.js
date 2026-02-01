@@ -1,6 +1,12 @@
 /**
  * Q8 Parking - Services & Business Logic
  * Namespace: Q8.Services
+ *
+ * - Firebase init (Auth, Firestore)
+ * - loadZones: Firestore zones listener (db.collection('zones'))
+ * - Auth: login, register, logout
+ * - Parking: start/end session, plates, overlays
+ * - DIAG: Set window.Q8_DIAG = true for Firestore loading logs
  */
 
 window.Q8 = window.Q8 || {};
@@ -71,10 +77,16 @@ Q8.Services = (function() {
 
     // --- DATA SERVICES ---
 
+    // DIAG: Set window.Q8_DIAG = true to log Firestore/Maps loading steps
+    function diag(tag, msg, data) {
+        if (window.Q8_DIAG) console.log('[DIAG_FIREBASE]', tag, msg, data || '');
+    }
+
     function loadZones() {
         return new Promise((resolve, reject) => {
             if (U && U.debug) U.debug('DATA', "Setting up Firestore zones listener...");
-            if (!db) return resolve([]); // Fallback
+            diag('loadZones', 'start', { db: !!db });
+            if (!db) { diag('loadZones', 'no-db-fallback'); return resolve([]); }
 
             db.collection('zones').limit(2000).onSnapshot((snapshot) => {
                 const zones = [];
@@ -89,9 +101,11 @@ Q8.Services = (function() {
                     });
                 });
 
+                diag('onSnapshot', 'received', { count: zones.length });
                 if (zones.length > 0) {
                     S.update({ zones: zones });
                     if (U && U.debug) U.debug('DATA', `Live sync: ${zones.length} zones loaded.`);
+                    diag('onSnapshot', 'zones-updated');
 
                     // Update Map Markers (Check Q8.UI or fallback)
                     if (Q8.UI && typeof Q8.UI.renderMapMarkers === 'function') Q8.UI.renderMapMarkers();
@@ -106,6 +120,7 @@ Q8.Services = (function() {
                 }
                 resolve(zones);
             }, (error) => {
+                diag('onSnapshot', 'error', error && error.message);
                 console.error("Firestore zones sync error:", error);
                 reject(error);
             });
@@ -128,19 +143,13 @@ Q8.Services = (function() {
 
         S.update(updates);
 
-        // Map Specific Repaint
-        if (name === 'parking') {
-            if (typeof map !== 'undefined' && map) {
-                requestAnimationFrame(() => {
-                    if(typeof google !== 'undefined') google.maps.event.trigger(map, 'resize');
-                    // Try Q8.UI then global
-                    if(Q8.UI && typeof Q8.UI.centerMapOnZones === 'function') Q8.UI.centerMapOnZones();
-                    else if(typeof window.centerMapOnZones === 'function') window.centerMapOnZones();
-                });
-            } else if (!S.get.installMode.active) {
-                 if(Q8.UI && typeof Q8.UI.initGoogleMap === 'function') Q8.UI.initGoogleMap();
-                 else if(typeof window.initGoogleMap === 'function') window.initGoogleMap();
-            }
+        // Map: init when parking visible, resize when map exists
+        if (name === 'parking' && !S.get.installMode.active) {
+            if (Q8.UI && typeof Q8.UI.initGoogleMap === 'function') Q8.UI.initGoogleMap();
+            else if (typeof window.initGoogleMap === 'function') window.initGoogleMap();
+            requestAnimationFrame(() => {
+                if (Q8.UI && typeof Q8.UI.ensureMapResized === 'function') Q8.UI.ensureMapResized();
+            });
         }
     }
 
@@ -152,7 +161,9 @@ Q8.Services = (function() {
             return;
         }
 
-        // Logic: Zone Sheet
+        // --- ZONE SELECTION (fragile) ---
+        // Risk: sheet-zone opened without context (e.g. from plate selector) leaves selectedZone stale.
+        // Risk: contextData.uid/zone missing when clicked from marker with wrong data-* attributes.
         if (id === 'sheet-zone') {
             if (S.get.session !== null) {
                 if(Q8.UI && Q8.UI.showToast) Q8.UI.showToast("You have an active session.");
@@ -160,19 +171,22 @@ Q8.Services = (function() {
                 return;
             }
 
-            // Context Data Processing
+            // Context Data Processing (matches app_recovery: uid/zone, price, rates, duration=120)
             if (contextData) {
-                // Support both object with .uid/.zone or direct object
                 const zoneUid = contextData.uid || contextData.zone;
+                if (!zoneUid) {
+                    console.warn('[ZONE_SELECT] tryOpenOverlay(sheet-zone) called with no uid/zone in context', contextData);
+                }
                 const rates = (contextData.rates && contextData.rates.length > 0) ? contextData.rates : null;
-                const isDiff = S.get.selectedZone !== zoneUid;
 
                 S.update({
                     selectedZone: zoneUid,
                     selectedZoneRate: contextData.price || 2.0,
                     selectedZoneRates: rates,
-                    ...(isDiff ? { duration: 0 } : {})
+                    duration: 120 // Original: 2h default when opening zone sheet
                 });
+            } else if (!S.get.selectedZone) {
+                console.warn('[ZONE_SELECT] tryOpenOverlay(sheet-zone) called with no context and no selectedZone');
             }
         }
 
@@ -182,6 +196,10 @@ Q8.Services = (function() {
         if (id === 'sheet-filter' && S.get.screen !== 'history') return;
 
         S.update({ activeOverlay: id });
+
+        if (id === 'sheet-zone' && contextData && (contextData.uid || contextData.zone)) {
+            if (Q8.UI && Q8.UI.centerMapOnZones) setTimeout(() => Q8.UI.centerMapOnZones(), 50);
+        }
 
         // Auto-focus logic
         if (id === 'modal-add-plate') {
@@ -195,10 +213,28 @@ Q8.Services = (function() {
         }
     }
 
+    // --- PARKING START (fragile) ---
+    // Risk: Silent return if guard fails (user thinks they started but didn't).
+    // Risk: zoneObj undefined if zones not loaded or uid/id mismatch.
+    // Risk: plates empty - session would have no plate; UI may show wrong label.
     function handleStartParking() {
-        if (S.get.session || !S.get.selectedZone || S.get.activeOverlay !== 'sheet-zone') return;
+        if (S.get.session) {
+            console.warn('[PARKING_START] Blocked: session already active');
+            return;
+        }
+        if (!S.get.selectedZone) {
+            console.warn('[PARKING_START] Blocked: no selectedZone');
+            return;
+        }
+        if (S.get.activeOverlay !== 'sheet-zone') {
+            console.warn('[PARKING_START] Blocked: overlay is not sheet-zone', S.get.activeOverlay);
+            return;
+        }
 
         const zoneObj = S.get.zones.find(z => z.uid === S.get.selectedZone) || S.get.zones.find(z => z.id === S.get.selectedZone);
+        if (!zoneObj) {
+            console.warn('[PARKING_START] Zone not found in zones list', S.get.selectedZone, 'zones count:', S.get.zones.length);
+        }
         const displayId = zoneObj ? zoneObj.id : 'Unknown';
 
         const now = new Date();
@@ -220,8 +256,13 @@ Q8.Services = (function() {
         else if(typeof window.showToast === 'function') window.showToast('Parking session started');
     }
 
+    // --- PARKING END (fragile) ---
+    // Risk: Silent return if no session (e.g. already ended, or state desync).
     function handleEndParking() {
-        if (!S.get.session) return;
+        if (!S.get.session) {
+            console.warn('[PARKING_END] Blocked: no active session');
+            return;
+        }
 
         S.update({
             session: null,
@@ -235,8 +276,13 @@ Q8.Services = (function() {
 
     // --- PLATE MANAGEMENT ---
 
+    // --- LICENSE PLATE ADD (fragile) ---
+    // Risk: inp-plate or modal missing (DOM structure changed) causes empty rawVal.
     function saveNewPlate() {
         const inp = document.getElementById('inp-plate');
+        if (!inp) {
+            console.warn('[PLATES] saveNewPlate: #inp-plate not found');
+        }
         const rawVal = inp ? inp.value.trim().toUpperCase() : '';
 
         const modal = document.getElementById('modal-add-plate');
@@ -270,9 +316,18 @@ Q8.Services = (function() {
         toast('License plate added');
     }
 
+    // --- LICENSE PLATE DELETE (fragile) ---
+    // Risk: id from data-id may not match (type coercion: id vs text).
     function deletePlate(id) {
+        if (id == null || id === '') {
+            console.warn('[PLATES] deletePlate: no id provided');
+            return;
+        }
         const plateIdx = S.get.plates.findIndex(p => p.id == id || p.text == id);
-        if (plateIdx === -1) return;
+        if (plateIdx === -1) {
+            console.warn('[PLATES] deletePlate: plate not found', id);
+            return;
+        }
 
         const newPlates = [...S.get.plates];
         const removed = newPlates.splice(plateIdx, 1)[0];
@@ -299,8 +354,18 @@ Q8.Services = (function() {
         toast('License plate deleted');
     }
 
+    // --- DURATION CHANGE (fragile) ---
+    // Risk: Silent return if sheet-zone not active (e.g. +/− clicked when overlay closed).
+    // Risk: delta is NaN if data-delta attribute missing or invalid.
     function modifyDuration(delta) {
-        if (S.get.activeOverlay !== 'sheet-zone') return;
+        if (S.get.activeOverlay !== 'sheet-zone') {
+            console.warn('[DURATION] modifyDuration ignored: overlay not sheet-zone', S.get.activeOverlay);
+            return;
+        }
+        if (typeof delta !== 'number' || isNaN(delta)) {
+            console.warn('[DURATION] modifyDuration ignored: invalid delta', delta);
+            return;
+        }
 
         const zone = S.get.zones.find(z => z.uid === S.get.selectedZone) ||
                      S.get.zones.find(z => z.id === S.get.selectedZone);
@@ -324,8 +389,17 @@ Q8.Services = (function() {
         S.update({ duration: Math.min(newDur, maxDur) });
     }
 
+    // --- LICENSE PLATE SET DEFAULT (fragile) ---
+    // Risk: selectedPlateId not in plates (e.g. deleted plate still selected).
     function setDefaultPlate() {
-        if (!S.get.selectedPlateId) return;
+        if (!S.get.selectedPlateId) {
+            console.warn('[PLATES] setDefaultPlate: no selectedPlateId');
+            return;
+        }
+        const targetPlate = S.get.plates.find(p => p.id === S.get.selectedPlateId);
+        if (!targetPlate) {
+            console.warn('[PLATES] setDefaultPlate: selected plate not in list', S.get.selectedPlateId);
+        }
 
         const newPlates = S.get.plates.map(p => ({
             ...p,

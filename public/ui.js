@@ -859,6 +859,14 @@ Q8.UI = (function() {
         const state = S.get;
         if (!map) return;
         if (state.zones.length === 0) return;
+
+        const sel = state.zones.find(z => (z.uid && z.uid === state.selectedZone) || (z.id && String(z.id) === String(state.selectedZone)));
+        if (sel && sel.lat && sel.lng) {
+            map.setCenter({ lat: sel.lat, lng: sel.lng });
+            map.setZoom(16);
+            return;
+        }
+
         const bounds = new google.maps.LatLngBounds();
         let hasValid = false;
         state.zones.forEach(z => {
