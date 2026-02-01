@@ -464,12 +464,34 @@
 
         <div class="mb-xl">
            <label class="input-label">Description</label>
-           <input type="text" class="input-field input-lg" placeholder="My Car" maxlength="20">
+           <input type="text" id="inp-plate-desc" class="input-field input-lg" placeholder="My Car" maxlength="20">
         </div>
 
         <div class="flex gap-md">
            <button class="btn btn-secondary" data-action="close-overlay">CANCEL</button>
            <button class="btn btn-primary" data-action="save-plate">ADD</button>
+        </div>
+     </div>
+  </div>
+
+  <!-- === OVERLAY: EDIT PLATE (Modal) === -->
+  <div id="modal-edit-plate" class="overlay-backdrop justify-center items-center" data-action="close-overlay">
+     <div class="card modal-card">
+        <h2 class="font-bold text-lg mb-lg">Edit license plate</h2>
+
+        <div class="mb-md">
+           <label class="input-label">License plate</label>
+           <input type="text" id="inp-edit-plate" class="input-field input-lg" placeholder="1-ABC-123">
+        </div>
+
+        <div class="mb-xl">
+           <label class="input-label">Description</label>
+           <input type="text" id="inp-edit-plate-desc" class="input-field input-lg" placeholder="My Car" maxlength="20">
+        </div>
+
+        <div class="flex gap-md">
+           <button class="btn btn-secondary" data-action="close-overlay">CANCEL</button>
+           <button class="btn btn-primary" data-action="save-edit-plate">SAVE</button>
         </div>
      </div>
   </div>
