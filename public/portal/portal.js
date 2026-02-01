@@ -324,7 +324,6 @@
     $('btn-add-user').addEventListener('click', () => {
       $('modal-add-user').classList.remove('hidden');
       $('add-user-email').value = '';
-      $('add-user-password').value = '';
       $('add-user-name').value = '';
     });
     $('btn-cancel-add-user').addEventListener('click', () => $('modal-add-user').classList.add('hidden'));
