@@ -175,7 +175,7 @@ Q8.App = (function() {
                     const exists = favs.some(f => f.zoneUid === zoneUid || f.zoneId === zoneId);
                     let next;
                     if (exists) {
-                        next = favs.filter(f => f.zoneUid !== zoneUid);
+                        next = favs.filter(f => !(f.zoneUid === zoneUid || f.zoneId === zoneId));
                     } else {
                         next = [...favs, { zoneUid, zoneId }];
                     }
