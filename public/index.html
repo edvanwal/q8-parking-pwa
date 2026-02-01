@@ -492,10 +492,10 @@
     <div id="toast" class="toast">Success</div>
   </div>
 
-  <!-- === SIDEBAR MENU (Reinstated) === -->
+  <!-- === SIDEBAR MENU (from right) === -->
   <div id="side-menu" class="side-menu">
       <div class="menu-header">
-          <div class="brand-logo">Q8</div>
+          <img src="q8-logo.png" class="header-logo" alt="Q8 Liberty">
           <button class="icon-btn" data-action="toggle-menu">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
@@ -505,15 +505,18 @@
              <span class="icon">🅿️</span> Parking
           </div>
           <div class="menu-item" data-action="nav-to" data-target="history">
-             <span class="icon">🕒</span> History
+             <span class="icon">🕒</span> Parking history
           </div>
           <div class="menu-item" data-action="nav-to" data-target="plates">
              <span class="icon">🚗</span> License Plates
           </div>
           <div class="menu-divider"></div>
-          <div class="menu-item" data-action="logout">
-             <span class="icon">🚪</span> Sign Out
+          <div class="menu-lang-row">
+             <button type="button" class="menu-lang-btn active" data-action="set-lang" data-lang="en">EN</button>
+             <button type="button" class="menu-lang-btn" data-action="set-lang" data-lang="nl">DUTCH</button>
           </div>
+          <div class="menu-divider"></div>
+          <button type="button" class="menu-signout-btn" data-action="logout">SIGN OUT</button>
       </div>
       <div class="menu-footer">
           <div class="text-xs text-secondary">Logged in as:</div>
