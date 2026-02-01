@@ -357,10 +357,10 @@ Q8.UI = (function() {
                 <div class="flex items-center gap-md pointer-events-none" style="margin-left: 16px;">
                     ${p.default ? `<div class="badge badge-success">${badgeLabel}</div>` : ''}
                     <button class="icon-btn ptr-enabled" style="color:var(--text-secondary); padding: 4px;" data-action="edit-plate" data-id="${p.id}" title="${state.language === 'nl' ? 'Bewerken' : 'Edit'}">
-                         <img src="edit-svgrepo-com.svg" alt="" width="20" height="20" class="no-pointer" style="display:block;">
+                         <img src="edit-svgrepo-com.svg" alt="" width="20" height="20" class="no-pointer plate-icon" style="display:block;">
                     </button>
                     <button class="icon-btn ptr-enabled" style="color:var(--text-secondary); padding: 4px;" data-action="delete-plate" data-id="${p.id}">
-                         <img src="trash-svgrepo-com.svg" alt="" width="20" height="20" class="no-pointer" style="display:block;">
+                         <img src="trash-svgrepo-com.svg" alt="" width="20" height="20" class="no-pointer plate-icon" style="display:block;">
                     </button>
                 </div>
             `;
