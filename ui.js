@@ -42,6 +42,9 @@ Q8.UI = (function() {
         }
 
         // 4. Content Lists
+        if (state.screen === 'notifications') {
+            renderNotifications();
+        }
         if (state.screen === 'plates') {
             renderPlates();
             const btnAdd = document.querySelector('[data-target="modal-add-plate"] span');
@@ -381,6 +384,73 @@ Q8.UI = (function() {
         });
 
         if (btnSetDefault) btnSetDefault.disabled = !selectionValid;
+    }
+
+    function renderNotifications() {
+        const state = S.get;
+        const settingsList = document.getElementById('notif-settings-list');
+        const historyList = document.getElementById('notif-history-list');
+        if (!settingsList || !historyList) return;
+
+        const s = state.notificationSettings || {};
+        const nl = state.language === 'nl';
+
+        const settings = [
+            { key: 'sessionStarted', label: nl ? 'Parkeersessie gestart' : 'Parking session started' },
+            { key: 'sessionExpiringSoon', label: nl ? 'Parkeersessie verloopt binnenkort' : 'Parking session expiring soon', hasInterval: true },
+            { key: 'sessionEndedByUser', label: nl ? 'Sessie beëindigd (eindtijd)' : 'Session ended (end time reached)' },
+            { key: 'sessionEndedByMaxTime', label: nl ? 'Sessie beëindigd (max parkeertijd)' : 'Session ended (max parking time)' }
+        ];
+
+        settingsList.innerHTML = settings.map(setting => {
+            const checked = s[setting.key] !== false;
+            let html = `
+            <div class="notif-setting-row flex items-center justify-between" style="padding:12px 16px; background:var(--surface); border-radius:12px; border:1px solid var(--border); cursor:pointer;" data-action="toggle-notif-setting" data-key="${setting.key}">
+                <span class="text-main font-medium" style="font-size:0.9375rem;">${setting.label}</span>
+                <div class="notif-toggle" style="display:flex; align-items:center;">
+                    <input type="checkbox" data-key="${setting.key}" ${checked ? 'checked' : ''} style="width:20px; height:20px; pointer-events:none;">
+                </div>
+            </div>`;
+            if (setting.hasInterval) {
+                const mins = (s.expiringSoonMinutes || 10);
+                html += `
+            <div class="notif-interval-row flex items-center justify-between" style="padding:12px 16px; background:var(--bg-secondary); border-radius:12px; margin-top:8px; margin-left:16px;">
+                <span class="text-secondary" style="font-size:0.875rem;">${nl ? 'Waarschuw minuten van tevoren:' : 'Warn minutes before:'}</span>
+                <select data-action="change-expiring-interval" style="padding:6px 12px; border-radius:8px; font-size:0.9rem;">
+                    ${[5,10,15,20,30].map(m => `<option value="${m}" ${mins === m ? 'selected' : ''}>${m} min</option>`).join('')}
+                </select>
+            </div>`;
+            }
+            return html;
+        }).join('');
+
+        const notifs = (state.notifications || []).slice().reverse().slice(0, 50);
+        const typeLabel = (t) => {
+            if (t === 'sessionStarted') return nl ? 'Gestart' : 'Started';
+            if (t === 'sessionExpiringSoon') return nl ? 'Verloopt' : 'Expiring';
+            if (t === 'sessionEndedByUser') return nl ? 'Beëindigd (tijd)' : 'Ended (time)';
+            if (t === 'sessionEndedByMaxTime') return nl ? 'Beëindigd (max)' : 'Ended (max)';
+            return t;
+        };
+        const fmtDate = (iso) => {
+            const d = new Date(iso);
+            const now = new Date();
+            const sameDay = d.toDateString() === now.toDateString();
+            return sameDay ? d.toLocaleTimeString(nl ? 'nl-NL' : 'en-GB', { hour: '2-digit', minute: '2-digit' }) : d.toLocaleDateString(nl ? 'nl-NL' : 'en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+        };
+        historyList.innerHTML = notifs.length === 0
+            ? `<div class="text-secondary" style="padding:24px; text-align:center; font-size:0.9rem;">${nl ? 'Geen notificaties' : 'No notifications'}</div>`
+            : notifs.map(n => `
+            <div class="notif-history-item card" style="padding:12px 16px;">
+                <div class="flex justify-between items-start gap-sm">
+                    <div>
+                        <div class="font-bold text-main" style="font-size:0.9375rem;">${n.message}</div>
+                        ${n.detail ? `<div class="text-secondary text-sm" style="margin-top:2px;">${n.detail}</div>` : ''}
+                    </div>
+                    <span class="badge badge-neutral text-xs" style="flex-shrink:0;">${typeLabel(n.type)}</span>
+                </div>
+                <div class="text-secondary text-xs" style="margin-top:8px;">${fmtDate(n.at)}</div>
+            </div>`).join('');
     }
 
     function renderQuickPlateSelector() {
@@ -742,6 +812,7 @@ Q8.UI = (function() {
     // --- TIMERS ---
 
     let timerInterval = null;
+    let _expiringSoonNotified = null;
 
     function startTimerTicker() {
         if (timerInterval) {
@@ -777,44 +848,51 @@ Q8.UI = (function() {
         const endDate = toDate(state.session.end);
         if (!startDate) return;
 
-        // 1. Until stopped (duration=0): Count UP from 0
+        const zone = state.zones.find(z => z.uid === state.session.zoneUid || z.id === state.session.zoneUid) || state.zones.find(z => z.id === state.session.zone);
+        const maxDurMins = (zone && zone.max_duration_mins && zone.max_duration_mins > 0) ? zone.max_duration_mins : 1440;
+
+        // 1. Until stopped (duration=0): Count UP, check max duration
         if (!endDate) {
             if (elLabel) elLabel.innerText = state.language === 'nl' ? 'Tijd geparkeerd' : 'Time';
-            const diff = now - startDate;
-            const h = Math.floor(diff / 3600000);
-            const m = Math.floor((diff % 3600000) / 60000);
-            const s = Math.floor((diff % 60000) / 1000);
-
-            elTimer.style.color = "#059669"; // Success green
-
-            if (h > 0) {
-                elTimer.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-            } else {
-                elTimer.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            const elapsed = now - startDate;
+            if (elapsed >= maxDurMins * 60000) {
+                if (Q8.Services && Q8.Services.handleAutoEndSession) Q8.Services.handleAutoEndSession('sessionEndedByMaxTime');
+                return;
             }
+            const h = Math.floor(elapsed / 3600000);
+            const m = Math.floor((elapsed % 3600000) / 60000);
+            const s = Math.floor((elapsed % 60000) / 1000);
+            elTimer.style.color = "#059669";
+            if (h > 0) elTimer.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            else elTimer.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
             return;
         }
 
-        // 2. Fixed duration (chosen time): Count DOWN
+        // 2. Fixed duration: Count DOWN, auto-end when 0, expiring-soon notification
         if (elLabel) elLabel.innerText = state.language === 'nl' ? 'Resterende tijd' : 'Time left';
         const diff = endDate.getTime() - now.getTime();
 
         if (diff <= 0) {
-            elTimer.innerText = "00:00";
-            elTimer.style.color = "#ce1818";
+            if (Q8.Services && Q8.Services.handleAutoEndSession) Q8.Services.handleAutoEndSession('sessionEndedByUser');
             return;
+        }
+
+        const sessionKey = `${state.session.zone || ''}-${state.session.plate || ''}-${startDate.getTime()}`;
+        const expiringMins = (state.notificationSettings && state.notificationSettings.expiringSoonMinutes) || 10;
+        if (diff <= expiringMins * 60 * 1000 && _expiringSoonNotified !== sessionKey) {
+            _expiringSoonNotified = sessionKey;
+            if (Q8.Services && Q8.Services.addNotification) {
+                const msg = state.language === 'nl' ? `Parkeersessie verloopt over ${expiringMins} minuten` : `Parking session expires in ${expiringMins} minutes`;
+                Q8.Services.addNotification('sessionExpiringSoon', msg, `${state.session.zone || '?'} · ${state.session.plate || '?'}`);
+            }
         }
 
         const h = Math.floor(diff / 3600000);
         const m = Math.floor((diff % 3600000) / 60000);
         const s = Math.floor((diff % 60000) / 1000);
-
         elTimer.style.color = "#ce1818";
-        if (h > 0) {
-            elTimer.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        } else {
-            elTimer.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
+        if (h > 0) elTimer.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        else elTimer.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
 
 

@@ -9,7 +9,7 @@ Q8.State = (function() {
     'use strict';
 
     const _state = {
-        screen: 'login',      // 'login' | 'register' | 'parking' | 'history' | 'plates'
+        screen: 'login',      // 'login' | 'register' | 'parking' | 'history' | 'plates' | 'notifications'
         language: 'en',       // 'nl' | 'en'
         rememberMe: false,
         passwordVisible: false,
@@ -37,6 +37,14 @@ Q8.State = (function() {
             active: false,
             platform: 'ios',
             language: 'en'
+        },
+        notifications: [],     // { type, message, detail, at (ISO string) }
+        notificationSettings: {
+            sessionStarted: true,
+            sessionExpiringSoon: true,
+            sessionEndedByUser: true,
+            sessionEndedByMaxTime: true,
+            expiringSoonMinutes: 10
         }
     };
 
@@ -107,6 +115,9 @@ Q8.State = (function() {
             _state.plates = [{ id: '1-ABC-123', text: '1-ABC-123', description: 'Lease', default: true }];
             savePlates(); // Persist initial seed
         }
+
+        // 3. Notifications
+        loadNotifications();
     }
 
     // Risk: localStorage.setItem can throw (quota exceeded, private mode) - would propagate to caller.
@@ -118,11 +129,29 @@ Q8.State = (function() {
         localStorage.setItem('q8_plates_v1', JSON.stringify(_state.plates));
     }
 
+    function saveNotifications() {
+        try {
+            localStorage.setItem('q8_notifications_v1', JSON.stringify(_state.notifications));
+            localStorage.setItem('q8_notif_settings_v1', JSON.stringify(_state.notificationSettings));
+        } catch (e) { console.warn('[PERSIST] Notifications save failed', e); }
+    }
+
+    function loadNotifications() {
+        try {
+            const notifs = localStorage.getItem('q8_notifications_v1');
+            if (notifs) _state.notifications = JSON.parse(notifs);
+            const settings = localStorage.getItem('q8_notif_settings_v1');
+            if (settings) _state.notificationSettings = { ..._state.notificationSettings, ...JSON.parse(settings) };
+        } catch (e) { console.warn('[PERSIST] Notifications load failed', e); }
+    }
+
     return {
-        get: _state, // Direct access to state object
+        get: _state,
         update: update,
         load: load,
         save: save,
-        savePlates: savePlates
+        savePlates: savePlates,
+        saveNotifications: saveNotifications,
+        loadNotifications: loadNotifications
     };
 })();
