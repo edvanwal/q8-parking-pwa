@@ -198,6 +198,33 @@ Q8.UI = (function() {
                 if (zone.houseNumber) addrParts.push(zone.houseNumber);
                 const addrLine = addrParts.length ? addrParts.join(' ') : '';
                 const cityLine = zone.city || '';
+                const Kenteken = (typeof Q8 !== 'undefined' && Q8.Kenteken) ? Q8.Kenteken : null;
+                const cityInfo = Kenteken && Kenteken.getMilieuzoneCityInfo ? Kenteken.getMilieuzoneCityInfo(zone.city) : null;
+                const vehicleData = state.vehicleDataByPlate && state.selectedPlateId ? state.vehicleDataByPlate[state.selectedPlateId] : null;
+                const mzStatus = (cityInfo && vehicleData && Kenteken.getMilieuzoneStatusForCity) ? Kenteken.getMilieuzoneStatusForCity(vehicleData, zone.city) : null;
+                let milieuzoneBlock = '';
+                if (cityInfo) {
+                    if (mzStatus) {
+                        const allowedTxt = state.language === 'nl'
+                            ? (mzStatus.allowed ? 'Uw voertuig is toegestaan in deze milieuzone.' : 'Uw voertuig mag niet in deze milieuzone.')
+                            : (mzStatus.allowed ? 'Your vehicle is allowed in this environmental zone.' : 'Your vehicle is not allowed in this environmental zone.');
+                        const color = mzStatus.allowed ? 'var(--success)' : 'var(--danger)';
+                        milieuzoneBlock = `<div class="zone-milieuzone" style="margin-top: 8px; padding: 8px 10px; background: var(--bg-secondary); border-radius: 8px; font-size: 0.85rem;">
+                            <span style="font-weight: 600;">${state.language === 'nl' ? 'Milieuzone ' : 'Environmental zone '}${cityInfo.city}</span>
+                            <span style="display:block; margin-top: 4px; color: ${color}; font-weight: 500;">${allowedTxt}</span>
+                            <a href="https://www.milieuzones.nl" target="_blank" rel="noopener" style="font-size: 0.8rem; color: var(--primary); margin-top: 4px; display: inline-block;">milieuzones.nl</a>
+                        </div>`;
+                    } else {
+                        const hintTxt = state.language === 'nl'
+                            ? 'Deze zone ligt in een milieuzone. Controleer uw kenteken op milieuzones.nl.'
+                            : 'This zone is in an environmental zone. Check your license plate at milieuzones.nl.';
+                        milieuzoneBlock = `<div class="zone-milieuzone" style="margin-top: 8px; padding: 8px 10px; background: var(--bg-secondary); border-radius: 8px; font-size: 0.85rem;">
+                            <span style="font-weight: 600;">${state.language === 'nl' ? 'Milieuzone ' : 'Environmental zone '}${cityInfo.city}</span>
+                            <span style="display:block; margin-top: 4px; color: var(--text-secondary);">${hintTxt}</span>
+                            <a href="https://www.milieuzones.nl" target="_blank" rel="noopener" style="font-size: 0.8rem; color: var(--primary); margin-top: 4px; display: inline-block;">milieuzones.nl</a>
+                        </div>`;
+                    }
+                }
                 const detailsHTML = `
                     <div id="zone-extra-details" class="flex-col gap-xs" style="width:100%; margin-top: 8px;">
                         <div class="flex items-center justify-between flex-wrap gap-y-1">
@@ -205,6 +232,7 @@ Q8.UI = (function() {
                             ${limitBadge}
                         </div>
                         ${holidayWarning}
+                        ${milieuzoneBlock}
                     </div>
                 `;
                 const sheetZoneHeader = document.querySelector('#sheet-zone .sheet-zone-header');

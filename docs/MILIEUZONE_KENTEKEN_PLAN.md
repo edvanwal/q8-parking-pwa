@@ -178,7 +178,9 @@ Als brandstof = Diesel:
 | Kunnen we dit koppelen aan kenteken? | **Ja:** RDW Open Data 8ys7-d773 levert brandstof + emissiecode (emissieklasse); m9d7-ebf2 levert voertuigsoort. Geen API-key nodig. |
 | Kan de gebruiker zien “niet toegestaan” of “vanaf periode X niet meer”? | **Nu:** ja, voor huidige regels. **“Vanaf periode X”:** ja, als we ingangsdata van (toekomstige) aanscherpingen in onze metadata bijhouden. |
 
-**Volgende stap:** Fase 1 uitvoeren (statische data 4 steden, uitbreiden kentekenlookup met 8ys7-d773, regelmodule milieuzone), daarna Fase 2 in de UI integreren.
+**Implementatie (uitgevoerd):**
+- Fase 1: Statische data 4 steden in `kenteken.js` (MILIEUZONE_CITIES), lookup uitgebreid met 8ys7-d773 (brandstof + emissiecode), regelmodule `getMilieuzoneStatus` / `getMilieuzoneStatusForCity` / `getMilieuzoneCityInfo`.
+- Fase 2: Bij toevoegen kenteken en bij "Check at RDW" wordt `vehicleDataByPlate` bijgewerkt en milieuzone-samenvatting getoond (toast + #plate-rdw-result). In zone-sheet: bij zones in Amsterdam, Utrecht, Arnhem, Den Haag wordt milieuzone-blok getoond met toegang ja/nee voor geselecteerd kenteken (als RDW-data beschikbaar).
 
 ---
 
