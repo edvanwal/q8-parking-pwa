@@ -88,7 +88,7 @@ Q8.Services = (function() {
         const uid = (z.usageid || z.usage || '').toUpperCase();
         if (uid && EXCLUDED_USAGE.includes(uid)) return false;
         const name = (z.name || z.id || '').toLowerCase();
-        if (/garage|p\+r|carpool|parkeerplaats\s*[0-9]/.test(name)) return false;
+        if (/garage|p\+r|carpool/.test(name)) return false;
         const rates = z.rates || [];
         if (rates.some(r => /garage/i.test(r.detail || ''))) return false;
         return true;
