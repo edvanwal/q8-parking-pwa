@@ -745,6 +745,7 @@ Q8.UI = (function() {
     // --- TIMERS ---
 
     let timerInterval = null;
+    let _expiringSoonNotified = null;
 
     function startTimerTicker() {
         if (timerInterval) {
