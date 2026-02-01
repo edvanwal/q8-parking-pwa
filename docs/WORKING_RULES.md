@@ -1,35 +1,74 @@
-# WORKING RULES – Q8 Parking PWA
+# WORKING RULES – Q8 Parking PWA (MANDATORY)
 
 ## Role of the User
 - The user is NOT a developer.
 - The user acts as Product Manager / Product Owner.
 - The user cannot read or review code.
-- The user should never be asked to review diffs, files, or technical choices.
+- The user must NEVER be asked to review code, diffs, files, or technical decisions.
+- The user approves changes only on product behavior and outcomes, not implementation.
+
+## Authority Model
+- Agents are autonomous within defined safety boundaries.
+- Agents are responsible for correct technical decisions.
+- The user is NOT responsible for technical correctness.
 
 ## Responsibility of Agents
-- Agents are responsible for making SAFE changes.
-- Agents must work incrementally.
-- Agents must avoid large refactors unless explicitly requested.
-- If unsure, choose the safest option or stop and explain in plain language.
+- Agents must make SAFE, incremental changes.
+- Agents must preserve existing behavior unless explicitly instructed otherwise.
+- Agents must restore previous functionality before adding improvements.
+- Agents must prefer the smallest possible change.
 
 ## How to Work
-- Focus on ONE functional flow at a time.
-- Prefer restoring existing logic over inventing new logic.
-- Do not require technical input from the user.
-- Explain changes in product terms (what improved, what works now).
+- Work on ONE functional flow at a time.
+- Always explain changes in product terms:
+  - What worked before
+  - What was broken
+  - What works now
+- Never explain changes in code terms unless explicitly asked.
 
-## Restrictions
-- Do NOT touch deployment, Firebase config, API keys, or hosting unless explicitly requested.
+## Absolute Restrictions (Hard Stop Rules)
+Agents may NOT modify the following without explicit approval:
+- Deployment
+- Firebase configuration
+- API keys
+- Billing
+- Hosting
+- index.html
+
+### Approval Protocol
+If an agent believes a change in a restricted area is required:
+1. STOP immediately.
+2. Explain in plain product language:
+   - Why the change might be needed
+   - What breaks without it
+   - What the user would notice
+3. Explicitly ask for approval.
+4. Wait for approval before doing anything.
+
+Without explicit approval: NO ACTION.
+
+## UI & UX
 - Do NOT redesign UI unless explicitly requested.
-- Avoid modifying index.html unless explicitly requested.
+- Follow `directives/ui-parking-pwa.md` when touching UI behavior.
+- Visual changes are forbidden unless requested.
 
-## Conflict Handling
-- If multiple agents are active:
-  - Only ONE agent may modify code at a time.
-  - Other agents must be read-only and provide instructions or analysis only.
+## Conflict Handling (Multiple Agents)
+- Only ONE agent may modify code at any given time.
+- Other agents must operate in READ-ONLY mode:
+  - analysis
+  - instructions
+  - documentation
+- If conflict is detected: STOP and report.
+
+## Version Control & Safety
+- Agents must commit logical, isolated changes.
+- Agents must not squash or rewrite history.
+- Rollback must always be possible.
 
 ## Mandatory Rule
-Before making any changes:
+Before making ANY changes:
 - Read this file.
 - Follow it.
-- If this file is missing or unclear, STOP and ask the user.
+- If anything is unclear or conflicting: STOP and ask.
+
+Failure to follow these rules invalidates the change.

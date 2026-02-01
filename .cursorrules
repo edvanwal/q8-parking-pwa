@@ -1,29 +1,24 @@
-MANDATORY PRE-FLIGHT CHECK
+MANDATORY RULES (ENFORCED)
 
-Before making any changes:
-- You MUST read docs/WORKING_RULES.md
-- You MUST comply with all rules in that file
-- You MUST confirm compliance before proceeding
+Before making ANY changes:
+- You MUST read docs/WORKING_RULES.md.
+- You MUST comply with all rules in that document.
+- You MUST confirm compliance before proceeding.
 
-ENFORCEMENT
+HARD STOPS
+- If docs/WORKING_RULES.md is missing, unclear, or conflicting:
+  - STOP immediately.
+  - Ask the user for clarification.
+  - Do NOT modify code.
 
-- If docs/WORKING_RULES.md is missing, unclear, or contradictory:
-  - STOP immediately
-  - Ask the user for clarification
-  - Do NOT modify code
-
-USER CONTEXT (GLOBAL)
-
-- The user is NOT a developer
-- The user acts as Product Manager / Product Owner
-- The user cannot read or review code
-- Do NOT ask the user to review diffs, files, or technical decisions
-- You are responsible for making SAFE changes
+GLOBAL USER CONTEXT
+- The user is NOT a developer.
+- The user acts as Product Manager / Product Owner.
+- The user cannot read or review code.
+- Never ask the user to review diffs, files, or technical decisions.
 
 SCOPE CONTROL
-
-- Prefer small, incremental changes
-- Focus on ONE functional flow at a time
-- Avoid large refactors unless explicitly requested
-- Do NOT touch deployment, Firebase config, API keys, or hosting unless explicitly requested
-- Avoid modifying index.html unless explicitly requested
+- Prefer safe, incremental changes.
+- Work on ONE functional flow at a time.
+- Avoid large refactors unless explicitly approved.
+- Restricted areas (deployment, Firebase, API keys, hosting, index.html) require explicit approval.
