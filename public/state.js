@@ -46,7 +46,9 @@ Q8.State = (function() {
             sessionEndedByMaxTime: true,
             expiringSoonMinutes: 10
         },
-        favorites: []     // [{ zoneUid, zoneId }]
+        favorites: [],    // [{ zoneUid, zoneId }]
+        driverSettings: {}, // { canAddPlates, maxPlates, platesLocked } - from Firestore
+        tenantId: null     // Set when user logs in, for session writes
     };
 
     /**

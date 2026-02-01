@@ -39,6 +39,7 @@ Q8.Services = (function() {
             if (doc.exists) {
                 const data = doc.data();
                 S.update({ driverSettings: data.driverSettings || {} });
+                fetchDriverSettings(user.uid);
                 return data;
             }
             return db.collection('invites').where('email', '==', email).limit(1).get().then(invSnap => {
@@ -52,11 +53,11 @@ Q8.Services = (function() {
                     role,
                     driverSettings: { canAddPlates: true, maxPlates: 0, platesLocked: false },
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => ({ tenantId, role, driverSettings: {} }));
+                }).then(() => {
+                    fetchDriverSettings(user.uid);
+                    return { tenantId, role, driverSettings: {} };
+                });
             });
-        }).then(data => {
-            fetchDriverSettings(user.uid);
-            return data;
         });
     }
 
