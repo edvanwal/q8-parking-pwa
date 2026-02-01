@@ -217,25 +217,35 @@ Q8.Services = (function() {
     // Risk: Silent return if guard fails (user thinks they started but didn't).
     // Risk: zoneObj undefined if zones not loaded or uid/id mismatch.
     // Risk: plates empty - session would have no plate; UI may show wrong label.
+    function toast(msg) {
+        if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg);
+        else if (typeof window.showToast === 'function') window.showToast(msg);
+    }
+
     function handleStartParking() {
         if (S.get.session) {
             console.warn('[PARKING_START] Blocked: session already active');
+            toast('You already have an active parking session.');
             return;
         }
         if (!S.get.selectedZone) {
             console.warn('[PARKING_START] Blocked: no selectedZone');
+            toast('Select a parking zone first.');
             return;
         }
         if (S.get.activeOverlay !== 'sheet-zone') {
             console.warn('[PARKING_START] Blocked: overlay is not sheet-zone', S.get.activeOverlay);
+            toast('Open a zone to start parking.');
             return;
         }
 
         const zoneObj = S.get.zones.find(z => z.uid === S.get.selectedZone) || S.get.zones.find(z => z.id === S.get.selectedZone);
         if (!zoneObj) {
             console.warn('[PARKING_START] Zone not found in zones list', S.get.selectedZone, 'zones count:', S.get.zones.length);
+            toast('Parking could not be started. Please select the zone again.');
+            return;
         }
-        const displayId = zoneObj ? zoneObj.id : 'Unknown';
+        const displayId = zoneObj.id;
 
         const now = new Date();
         const session = {
@@ -252,8 +262,7 @@ Q8.Services = (function() {
         });
 
         S.save();
-        if(Q8.UI && Q8.UI.showToast) Q8.UI.showToast('Parking session started');
-        else if(typeof window.showToast === 'function') window.showToast('Parking session started');
+        toast('Parking session started');
     }
 
     // --- PARKING END (fragile) ---

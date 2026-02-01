@@ -245,7 +245,7 @@ Q8.Services = (function() {
             toast('Parking could not be started. Please select the zone again.');
             return;
         }
-        const displayId = zoneObj ? zoneObj.id : 'Unknown';
+        const displayId = zoneObj.id;
 
         const now = new Date();
         const session = {
