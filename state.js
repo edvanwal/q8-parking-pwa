@@ -9,7 +9,7 @@ Q8.State = (function() {
     'use strict';
 
     const _state = {
-        screen: 'login',      // 'login' | 'register' | 'parking' | 'history' | 'plates' | 'notifications'
+        screen: 'login',      // 'login' | 'register' | 'parking' | 'history' | 'plates' | 'notifications' | 'car-specs'
         language: 'en',       // 'nl' | 'en'
         rememberMe: false,
         passwordVisible: false,
@@ -45,7 +45,8 @@ Q8.State = (function() {
             sessionEndedByUser: true,
             sessionEndedByMaxTime: true,
             expiringSoonMinutes: 10
-        }
+        },
+        favorites: []     // [{ zoneUid, zoneId }]
     };
 
     /**
@@ -118,6 +119,9 @@ Q8.State = (function() {
 
         // 3. Notifications
         loadNotifications();
+
+        // 4. Favorites
+        loadFavorites();
     }
 
     // Risk: localStorage.setItem can throw (quota exceeded, private mode) - would propagate to caller.
@@ -152,6 +156,8 @@ Q8.State = (function() {
         save: save,
         savePlates: savePlates,
         saveNotifications: saveNotifications,
-        loadNotifications: loadNotifications
+        loadNotifications: loadNotifications,
+        saveFavorites: saveFavorites,
+        loadFavorites: loadFavorites
     };
 })();

@@ -1235,6 +1235,7 @@ Q8.UI = (function() {
         renderParkingView,
         renderRatesList,
         renderPlates,
+        renderCarSpecs,
         renderQuickPlateSelector,
         renderHistory,
         renderSearchResults,

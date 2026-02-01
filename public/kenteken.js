@@ -186,7 +186,7 @@ Q8.Kenteken = (function() {
                         const brandstofRow = (Array.isArray(brandstofArr) && brandstofArr.length > 0) ? brandstofArr[0] : null;
                         const main = mainArr[0];
                         const brandstofOmschrijving = brandstofRow ? (brandstofRow.brandstof_omschrijving || '') : '';
-                        const isElektrisch = /elektriciteit|elektrisch|plugin|plug-in|phev|bev|ev/i.test(brandstofOmschrijving) || (brandstofRow && (brandstofRow.brandstof_omschrijving || '').toLowerCase().indexOf('elektriciteit') !== -1);
+                        const isElektrisch = /elektriciteit|elektrisch|plugin|plug-in|phev|bev|ev/i.test(brandstofOmschrijving);
                         return {
                             found: true,
                             specs: {

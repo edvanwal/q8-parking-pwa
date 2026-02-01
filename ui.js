@@ -45,6 +45,9 @@ Q8.UI = (function() {
         if (state.screen === 'notifications') {
             renderNotifications();
         }
+        if (state.screen === 'favorites') {
+            renderFavorites();
+        }
         if (state.screen === 'plates') {
             renderPlates();
             const btnAdd = document.querySelector('[data-target="modal-add-plate"] span');
@@ -52,6 +55,7 @@ Q8.UI = (function() {
                 btnAdd.innerText = state.language === 'nl' ? 'Nieuw kenteken toevoegen' : 'Add new license plate';
             }
         }
+        if (state.screen === 'car-specs') renderCarSpecs();
         if (state.screen === 'history') renderHistory();
         if (state.screen === 'login') renderLoginUI();
 
@@ -267,6 +271,15 @@ Q8.UI = (function() {
             if (rates.length === 0 && zone && zone.rates) rates.push(...zone.rates);
             renderRatesList(list, rates);
         }
+
+        // Favorite button state
+        const favOutline = document.getElementById('fav-icon-outline');
+        const favFilled = document.getElementById('fav-icon-filled');
+        const zoneUid = state.selectedZone;
+        const zoneId = zone ? zone.id : state.selectedZone;
+        const isFav = zoneUid && (state.favorites || []).some(f => f.zoneUid === zoneUid || (f.zoneId === zoneId && !f.zoneUid));
+        if (favOutline) favOutline.style.display = isFav ? 'none' : 'block';
+        if (favFilled) favFilled.style.display = isFav ? 'block' : 'none';
     }
 
     function renderRatesList(container, rates) {
@@ -384,6 +397,129 @@ Q8.UI = (function() {
         });
 
         if (btnSetDefault) btnSetDefault.disabled = !selectionValid;
+    }
+
+    function formatAPKDate(vervaldatum_apk) {
+        if (!vervaldatum_apk || String(vervaldatum_apk).length < 8) return '—';
+        const s = String(vervaldatum_apk);
+        const y = s.slice(0, 4), m = s.slice(4, 6), d = s.slice(6, 8);
+        return d + '-' + m + '-' + y;
+    }
+
+    function renderCarSpecs() {
+        const state = S.get;
+        const list = document.getElementById('list-car-specs');
+        const intro = document.getElementById('car-specs-intro');
+        const Kenteken = (typeof Q8 !== 'undefined' && Q8.Kenteken) ? Q8.Kenteken : null;
+        const nl = state.language === 'nl';
+        if (!list) return;
+        if (intro) intro.innerText = nl ? 'Specs van je ingevulde kentekens (RDW).' : 'Specs for your registered license plates (RDW).';
+
+        list.innerHTML = '';
+        const plates = state.plates || [];
+        if (plates.length === 0) {
+            list.innerHTML = '<p class="text-secondary">' + (nl ? 'Voeg eerst kentekens toe onder License plates.' : 'Add license plates first under License plates.') + '</p>';
+            return;
+        }
+
+        const labels = {
+            merk: nl ? 'Merk' : 'Brand',
+            handelsbenaming: nl ? 'Type' : 'Type',
+            kleur: nl ? 'Kleur' : 'Colour',
+            apk: nl ? 'APK datum' : 'APK date',
+            brandstof: nl ? 'Brandstof' : 'Fuel',
+            elektrisch: nl ? 'Elektrisch' : 'Electric',
+            gewicht: nl ? 'Gewicht (kg)' : 'Weight (kg)',
+            laad_aansluiting: nl ? 'Laad aansluiting' : 'Charging connector',
+            laad_snelheid: nl ? 'Laad snelheid' : 'Charging speed'
+        };
+
+        plates.forEach(function(plate) {
+            const normalized = (Kenteken && Kenteken.normalize) ? Kenteken.normalize(plate.text || plate.id) : (plate.id || (plate.text || '').replace(/[\s\-]/g, '').toUpperCase());
+            const card = document.createElement('div');
+            card.className = 'card mb-lg car-specs-card';
+            card.style.padding = '16px 20px';
+            card.innerHTML = '<div class="font-bold text-lg mb-md" style="display:flex;align-items:center;gap:8px;">' +
+                (plate.text || plate.id) +
+                '<span class="car-specs-loading text-secondary text-sm" style="font-weight:400;">' + (nl ? 'Laden...' : 'Loading...') + '</span></div>' +
+                '<div class="car-specs-fields flex-col gap-sm" style="display:none;"></div>';
+            list.appendChild(card);
+
+            const loadingEl = card.querySelector('.car-specs-loading');
+            const fieldsEl = card.querySelector('.car-specs-fields');
+
+            if (!Kenteken || !Kenteken.getVehicleSpecs) {
+                if (loadingEl) loadingEl.textContent = nl ? 'Specs niet beschikbaar.' : 'Specs not available.';
+                return;
+            }
+
+            Kenteken.getVehicleSpecs(normalized).then(function(result) {
+                if (loadingEl) loadingEl.style.display = 'none';
+                if (!result.found || result.error) {
+                    fieldsEl.style.display = 'flex';
+                    fieldsEl.innerHTML = '<p class="text-secondary">' + (result.error ? (nl ? 'RDW tijdelijk niet bereikbaar.' : 'RDW temporarily unavailable.') : (nl ? 'Niet gevonden in RDW.' : 'Not found in RDW.')) + '</p>';
+                    return;
+                }
+                const s = result.specs;
+                const kleur = [s.eerste_kleur, s.tweede_kleur].filter(Boolean).join(', ').replace(/Niet geregistreerd/gi, '') || '—';
+                const gewicht = s.massa_ledig_voertuig || s.toegestane_maximum_massa_voertuig || '—';
+                const rows = [
+                    [labels.merk, s.merk || '—'],
+                    [labels.handelsbenaming, (s.handelsbenaming || '').trim() || '—'],
+                    [labels.kleur, kleur],
+                    [labels.apk, formatAPKDate(s.vervaldatum_apk)],
+                    [labels.brandstof, s.brandstof || '—'],
+                    [labels.elektrisch, s.elektrisch ? (nl ? 'Ja' : 'Yes') : (nl ? 'Nee' : 'No')],
+                    [labels.gewicht, gewicht],
+                    [labels.laad_aansluiting, s.laad_aansluiting || '—'],
+                    [labels.laad_snelheid, s.laad_snelheid || '—']
+                ];
+                fieldsEl.style.display = 'flex';
+                fieldsEl.innerHTML = rows.map(function(r) {
+                    return '<div class="flex justify-between gap-md" style="align-items:baseline;"><span class="text-secondary text-sm">' + r[0] + '</span><span class="text-main font-medium">' + (r[1] || '—') + '</span></div>';
+                }).join('');
+            });
+        });
+    }
+
+    function renderFavorites() {
+        const state = S.get;
+        const list = document.getElementById('list-favorites');
+        const intro = document.getElementById('fav-intro-text');
+        if (!list) return;
+        if (intro) intro.innerText = state.language === 'nl' ? 'Je favoriete parkeerzones. Tik om te starten.' : 'Your favorite parking zones. Tap to start.';
+
+        const favorites = state.favorites || [];
+        if (favorites.length === 0) {
+            list.innerHTML = `<div class="text-secondary" style="padding:24px; text-align:center; font-size:0.9rem;">${state.language === 'nl' ? 'Nog geen favorieten. Markeer zones als favoriet in de zone-details.' : 'No favorites yet. Mark zones as favorite from the zone details.'}</div>`;
+            return;
+        }
+
+        list.innerHTML = favorites.map(f => {
+            const zone = state.zones.find(z => z.uid === f.zoneUid || z.id === f.zoneUid || z.id === f.zoneId);
+            const uid = zone ? (zone.uid || zone.id) : f.zoneUid || f.zoneId;
+            const zoneId = zone ? zone.id : f.zoneId || f.zoneUid || '?';
+            const street = zone && zone.street ? zone.street : '';
+            const houseNumber = zone && zone.houseNumber ? zone.houseNumber : '';
+            const city = zone && zone.city ? zone.city : '';
+            const addr = street ? `${street}${houseNumber ? ' ' + houseNumber : ''}${city ? ', ' + city : ''}` : (city ? `${zoneId}, ${city}` : zoneId);
+            const price = zone && zone.price != null ? zone.price : null;
+            const rates = zone && zone.rates ? zone.rates : [];
+            return `
+            <div class="card flex justify-between items-center" style="padding:16px 20px; cursor:pointer;" data-action="open-overlay" data-target="sheet-zone" data-zone-uid="${uid}" data-zone="${zoneId}" data-price="${price || ''}" data-rates='${JSON.stringify(rates)}'>
+               <div class="flex-col no-pointer" style="flex:1;">
+                  <div class="font-bold text-lg no-pointer" style="line-height:1.2;">Zone ${zoneId}</div>
+                  <div class="text-secondary text-sm no-pointer" style="margin-top:2px;">${addr}</div>
+               </div>
+               <div class="flex items-center gap-sm no-pointer">
+                  ${price != null ? `<span class="font-bold text-primary no-pointer">€ ${Number(price).toFixed(2).replace('.', ',')}</span>` : ''}
+                  <button class="icon-btn ptr-enabled" data-action="remove-favorite" data-zone-uid="${uid}" data-zone-id="${zoneId}" title="${state.language === 'nl' ? 'Verwijderen' : 'Remove'}" style="padding:6px; color:#ce1818;" onclick="event.stopPropagation();">
+                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                  </button>
+               </div>
+            </div>`;
+        }).join('');
+        list.querySelectorAll('.ptr-enabled').forEach(el => { el.style.pointerEvents = 'auto'; });
     }
 
     function renderNotifications() {
@@ -540,23 +676,39 @@ Q8.UI = (function() {
             list.innerHTML = '<div class="history-empty-state">No parking history found.</div>';
         } else {
             filteredHistory.forEach(h => {
+                const zone = state.zones.find(z => z.id === h.zone || z.uid === h.zoneUid || z.uid === h.zone);
+                const zoneUid = zone ? (zone.uid || zone.id) : h.zoneUid || h.zone;
+                const zoneId = zone ? zone.id : h.zone;
+                const isFav = (state.favorites || []).some(f => f.zoneUid === zoneUid || f.zoneId === zoneId);
                 const div = document.createElement('div');
-                div.className = 'card mb-md';
+                div.className = 'card mb-md history-card-clickable';
+                div.style.cursor = 'pointer';
+                div.setAttribute('data-action', 'open-overlay');
+                div.setAttribute('data-target', 'sheet-zone');
+                div.setAttribute('data-zone-uid', zoneUid);
+                div.setAttribute('data-zone', zoneId);
+                div.setAttribute('data-price', zone && zone.price != null ? zone.price : '');
+                div.setAttribute('data-rates', JSON.stringify(zone && zone.rates ? zone.rates : []));
                 div.innerHTML = `
                     <div class="history-card-header">
                        <span class="font-bold text-lg">${h.plate}</span>
-                       <div class="zone-badge-box">
-                          <span class="icon-p" style="font-size:0.8rem;">P</span>
-                          <span style="font-weight:700;">${h.zone}</span>
+                       <div class="flex items-center gap-sm">
+                          <div class="zone-badge-box">
+                             <span class="icon-p" style="font-size:0.8rem;">P</span>
+                             <span style="font-weight:700;">${h.zone}</span>
+                          </div>
+                          <button class="icon-btn history-fav-btn" data-action="${isFav ? 'remove-favorite' : 'add-favorite-from-history'}" data-zone-uid="${zoneUid}" data-zone-id="${zoneId}" title="${isFav ? (state.language === 'nl' ? 'Verwijder uit favorieten' : 'Remove from favorites') : (state.language === 'nl' ? 'Voeg toe aan favorieten' : 'Add to favorites')}" style="padding:4px;" onclick="event.stopPropagation();">
+                             <svg width="18" height="18" viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                          </button>
                        </div>
                     </div>
-                    <div class="text-secondary text-sm mb-md">${h.street}</div>
+                    <div class="text-secondary text-sm mb-md">${h.street || ''}</div>
                     <div class="history-card-details">
                        <div>
                           <div class="history-date-label">${h.date}</div>
                           <div class="history-time-range">${h.start} - ${h.end}</div>
                        </div>
-                       <div class="history-price-tag">€ ${h.price.replace('.', ',')}</div>
+                       <div class="history-price-tag">€ ${(h.price || '').toString().replace('.', ',')}</div>
                     </div>
                 `;
                 list.appendChild(div);
@@ -704,12 +856,42 @@ Q8.UI = (function() {
         if (!container) return;
 
         const shouldShow = state.screen === 'parking' && state.searchMode === 'zone' && state.searchQuery.length >= 2 && state.activeOverlay === null;
+        const favQuick = document.getElementById('ui-favorites-quick');
+        const favs = state.favorites || [];
+        const showFavQuick = state.screen === 'parking' && !state.session && state.activeOverlay === null && favs.length > 0 && state.searchQuery.length < 2;
+        if (favQuick) {
+            favQuick.style.display = showFavQuick ? 'block' : 'none';
+            favQuick.className = showFavQuick ? 'search-results-panel search-results-panel--pill' : 'hidden';
+            if (showFavQuick) {
+                const favUids = new Set(favs.map(f => f.zoneUid || f.zoneId));
+                const favZones = favs.map(f => {
+                    const zone = state.zones.find(z => z.uid === f.zoneUid || z.id === f.zoneUid || z.id === f.zoneId);
+                    return zone ? { ...zone, zoneUid: zone.uid || zone.id } : null;
+                }).filter(Boolean);
+                favQuick.innerHTML = `
+                  <div class="text-secondary text-xs font-bold mb-sm" style="padding:12px 16px 0; letter-spacing:0.05em;">${state.language === 'nl' ? 'JE FAVORIETEN' : 'YOUR FAVORITES'}</div>
+                  ${favZones.length === 0 ? '<div class="text-secondary text-sm" style="padding:12px 16px;">' + (state.language === 'nl' ? 'Geen favorieten in deze sessie' : 'No favorites loaded') + '</div>' : favZones.map(z => {
+                    const street = z.street || '';
+                    const houseNumber = z.houseNumber || '';
+                    const city = z.city || '';
+                    const zoneId = z.id || '';
+                    const addr = street ? `${street}${houseNumber ? ' ' + houseNumber : ''}${city ? ', ' + city : ''}` : (city ? `${zoneId}, ${city}` : zoneId);
+                    return `<div class="search-result-item" data-action="open-overlay" data-target="sheet-zone" data-zone-uid="${z.uid}" data-zone="${zoneId}" data-price="${z.price}" data-rates='${JSON.stringify(z.rates || [])}'>
+                      <span class="search-result-text">♥ ${addr}</span>
+                      <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
+                    </div>`;
+                  }).join('')}
+                `;
+            }
+        }
         if (!shouldShow) {
             container.style.display = 'none';
             return;
         }
 
         const query = state.searchQuery.toLowerCase();
+        const favorites = state.favorites || [];
+        const favUids = new Set(favorites.map(f => f.zoneUid || f.zoneId));
         const matches = state.zones.filter(z => {
             const id = (z.id || '').toLowerCase();
             const name = (z.name || '').toLowerCase();
@@ -718,6 +900,10 @@ Q8.UI = (function() {
             return id.includes(query) || name.includes(query) || street.includes(query) || city.includes(query);
         })
             .sort((a,b) => {
+                const aFav = favUids.has(a.uid) || favUids.has(a.id);
+                const bFav = favUids.has(b.uid) || favUids.has(b.id);
+                if (aFav && !bFav) return -1;
+                if (!aFav && bFav) return 1;
                 if (a.id === query) return -1;
                 if (b.id === query) return 1;
                 return 0;
@@ -742,6 +928,7 @@ Q8.UI = (function() {
                 ? `${street}${houseNumber ? ' ' + houseNumber : ''}${city ? ', ' + city : ''}`
                 : (city ? `${zoneId}, ${city}` : zoneId);
             const displayAddr = regex ? addr.replace(regex, '<strong class="search-highlight">$1</strong>') : addr;
+            const isFav = favUids.has(z.uid) || favUids.has(z.id);
             return `
             <div class="search-result-item" data-action="open-overlay" data-target="sheet-zone"
                  data-zone-uid="${z.uid}"
@@ -749,7 +936,10 @@ Q8.UI = (function() {
                  data-price="${z.price}"
                  data-rates='${JSON.stringify(z.rates || [])}'>
                 <span class="search-result-text">${displayAddr}</span>
-                <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
+                <div class="flex items-center gap-sm" style="flex-shrink:0;">
+                  ${isFav ? '<span class="fav-star" title="' + (state.language === 'nl' ? 'Favoriet' : 'Favorite') + '">♥</span>' : ''}
+                  <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
+                </div>
             </div>
         `;
         }).join('');
@@ -1045,6 +1235,7 @@ Q8.UI = (function() {
         renderParkingView,
         renderRatesList,
         renderPlates,
+        renderCarSpecs,
         renderQuickPlateSelector,
         renderHistory,
         renderSearchResults,

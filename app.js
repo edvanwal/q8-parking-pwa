@@ -166,6 +166,46 @@ Q8.App = (function() {
                     break;
                 }
 
+                case 'toggle-favorite': {
+                    const zoneUid = S.get.selectedZone;
+                    if (!zoneUid) break;
+                    const zone = S.get.zones.find(z => z.uid === zoneUid || z.id === zoneUid);
+                    const zoneId = zone ? zone.id : zoneUid;
+                    const favs = S.get.favorites || [];
+                    const exists = favs.some(f => f.zoneUid === zoneUid || f.zoneId === zoneId);
+                    let next;
+                    if (exists) {
+                        next = favs.filter(f => !(f.zoneUid === zoneUid || f.zoneId === zoneId));
+                    } else {
+                        next = [...favs, { zoneUid, zoneId }];
+                    }
+                    S.update({ favorites: next });
+                    if (S.saveFavorites) S.saveFavorites();
+                    if (UI.showToast) UI.showToast(exists ? (S.get.language === 'nl' ? 'Verwijderd uit favorieten' : 'Removed from favorites') : (S.get.language === 'nl' ? 'Toegevoegd aan favorieten' : 'Added to favorites'));
+                    break;
+                }
+                case 'remove-favorite': {
+                    const zoneUid = target.getAttribute('data-zone-uid');
+                    const favs = (S.get.favorites || []).filter(f => f.zoneUid !== zoneUid);
+                    S.update({ favorites: favs });
+                    if (S.saveFavorites) S.saveFavorites();
+                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Verwijderd uit favorieten' : 'Removed from favorites');
+                    break;
+                }
+                case 'add-favorite-from-history': {
+                    const zoneUid = target.getAttribute('data-zone-uid');
+                    const zoneId = target.getAttribute('data-zone-id');
+                    if (!zoneUid && !zoneId) break;
+                    const favs = S.get.favorites || [];
+                    const exists = favs.some(f => f.zoneUid === zoneUid || f.zoneId === zoneId);
+                    if (exists) break;
+                    const next = [...favs, { zoneUid: zoneUid || zoneId, zoneId: zoneId || zoneUid }];
+                    S.update({ favorites: next });
+                    if (S.saveFavorites) S.saveFavorites();
+                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Toegevoegd aan favorieten' : 'Added to favorites');
+                    break;
+                }
+
                 case 'select-zone':
                     // Logic handled by search results clicking usually
                     break;
@@ -394,5 +434,101 @@ Q8.App = (function() {
 // --- INITIALIZATION ---
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Apply platform-specific optimizations
+    if (typeof PlatformDetection !== 'undefined') {
+        const platform = PlatformDetection.getInfo();
+        
+        // Log platform info in development
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            console.group('🔍 Q8 Parking - Platform Info');
+            console.log('OS:', platform.os);
+            console.log('Device:', platform.deviceType);
+            console.log('Standalone:', platform.standalone);
+            console.log('Has Touch:', platform.hasTouch);
+            console.log('Has Notch:', platform.hasNotch);
+            console.groupEnd();
+        }
+        
+        // iOS-specific fixes
+        if (platform.isIOS) {
+            // Prevent pull-to-refresh on iOS
+            document.body.style.overscrollBehavior = 'none';
+            
+            // Prevent iOS zoom on input focus (for inputs with font-size < 16px)
+            const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"], input[type="tel"]');
+            inputs.forEach(input => {
+                input.style.fontSize = '16px';
+            });
+            
+            // Handle iOS keyboard
+            const visualViewport = window.visualViewport;
+            if (visualViewport) {
+                visualViewport.addEventListener('resize', () => {
+                    // Adjust for virtual keyboard
+                    document.body.style.height = `${visualViewport.height}px`;
+                });
+            }
+        }
+        
+        // Android-specific fixes
+        if (platform.isAndroid) {
+            // Handle Android back button in standalone mode
+            if (platform.standalone) {
+                window.addEventListener('popstate', (e) => {
+                    // Close overlays instead of navigating back
+                    const overlay = document.querySelector('.overlay-backdrop.open');
+                    if (overlay) {
+                        e.preventDefault();
+                        Q8.State.update({ activeOverlay: null });
+                        history.pushState(null, '', window.location.href);
+                    }
+                });
+                // Push initial state for back button handling
+                history.pushState(null, '', window.location.href);
+            }
+        }
+        
+        // Track standalone mode for analytics
+        if (platform.standalone) {
+            console.log('[Q8] Running as installed PWA');
+        }
+    }
+    
+    // Initialize app
     Q8.App.init();
+    
+    // Register for app install events
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        e.preventDefault();
+        // Stash the event so it can be triggered later
+        window.deferredPrompt = e;
+        console.log('[Q8] App install available');
+    });
+    
+    window.addEventListener('appinstalled', () => {
+        console.log('[Q8] App installed successfully');
+        window.deferredPrompt = null;
+        // Optionally show a thank you message
+        if (Q8.UI && Q8.UI.showToast) {
+            Q8.UI.showToast('App installed successfully!');
+        }
+    });
+    
+    // Online/Offline handling
+    window.addEventListener('online', () => {
+        console.log('[Q8] Connection restored');
+        document.body.classList.remove('offline');
+        if (Q8.UI && Q8.UI.showToast) {
+            Q8.UI.showToast('Connection restored');
+        }
+    });
+    
+    window.addEventListener('offline', () => {
+        console.log('[Q8] Connection lost');
+        document.body.classList.add('offline');
+        if (Q8.UI && Q8.UI.showToast) {
+            Q8.UI.showToast('You are offline');
+        }
+    });
 });
