@@ -402,16 +402,16 @@ Q8.UI = (function() {
             { key: 'sessionEndedByMaxTime', label: nl ? 'Sessie beëindigd (max parkeertijd)' : 'Session ended (max parking time)' }
         ];
 
-        settingsList.innerHTML = settings.map(seting => {
-            const checked = s[seting.key] !== false;
+        settingsList.innerHTML = settings.map(setting => {
+            const checked = s[setting.key] !== false;
             let html = `
             <div class="notif-setting-row flex items-center justify-between" style="padding:12px 16px; background:var(--surface); border-radius:12px; border:1px solid var(--border);">
-                <span class="text-main font-medium" style="font-size:0.9375rem;">${seting.label}</span>
+                <span class="text-main font-medium" style="font-size:0.9375rem;">${setting.label}</span>
                 <label class="notif-toggle" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                    <input type="checkbox" data-action="toggle-notif-setting" data-key="${seting.key}" ${checked ? 'checked' : ''} style="width:20px; height:20px;">
+                    <input type="checkbox" data-action="toggle-notif-setting" data-key="${setting.key}" ${checked ? 'checked' : ''} style="width:20px; height:20px;">
                 </label>
             </div>`;
-            if (seting.hasInterval) {
+            if (setting.hasInterval) {
                 const mins = (s.expiringSoonMinutes || 10);
                 html += `
             <div class="notif-interval-row flex items-center justify-between" style="padding:12px 16px; background:var(--bg-secondary); border-radius:12px; margin-top:8px; margin-left:16px;">
