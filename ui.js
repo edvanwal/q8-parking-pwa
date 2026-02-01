@@ -773,7 +773,7 @@ Q8.UI = (function() {
         diagMaps('initGoogleMap', 'creating-map');
         map = new google.maps.Map(container, {
             center: UTRECHT_CENTER,
-            zoom: 15,
+            zoom: 16,
             disableDefaultUI: true,
             zoomControl: true,
             mapTypeControl: false,
