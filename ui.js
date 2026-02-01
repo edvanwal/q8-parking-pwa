@@ -264,6 +264,15 @@ Q8.UI = (function() {
             if (btnSheetMinus) btnSheetMinus.style.opacity = '1';
         }
 
+        // Rates section label (i18n) and tooltip
+        const ratesLabelEl = document.getElementById('details-rates-label');
+        if (ratesLabelEl) {
+            ratesLabelEl.textContent = state.language === 'nl' ? 'Tarieven' : 'Rates';
+            ratesLabelEl.title = state.language === 'nl'
+                ? 'Tariefgegevens zijn gebaseerd op RDW Open Data en zijn indicatief.'
+                : 'Rates are based on RDW Open Data and are indicative.';
+        }
+
         // Rates
         const list = document.getElementById('details-rates-list');
         if (list) {

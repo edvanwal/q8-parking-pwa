@@ -130,7 +130,8 @@ Q8.UI = (function() {
             if (elZoneLabel) elZoneLabel.innerText = state.session.zone;
 
             const plateDisplay = (state.session.plate && state.session.plate.trim()) ? state.session.plate.trim() : null;
-            const fallbackPlate = state.plates.find(p => p.id === state.selectedPlateId) || state.plates.find(p => p.default) || state.plates[0];
+            const displayPlates = getDisplayPlates();
+            const fallbackPlate = displayPlates.find(p => p.id === state.selectedPlateId) || displayPlates.find(p => p.default) || displayPlates[0];
             const elLabel = document.getElementById('active-plate-label');
             if (elLabel) elLabel.innerText = plateDisplay || (fallbackPlate ? fallbackPlate.text : '');
 
@@ -214,9 +215,10 @@ Q8.UI = (function() {
             }
         }
 
-        const selPlate = state.plates.find(p => p.id === state.selectedPlateId) ||
-                         state.plates.find(p => p.default) ||
-                         state.plates[0];
+        const displayPlates = getDisplayPlates();
+        const selPlate = displayPlates.find(p => p.id === state.selectedPlateId) ||
+                         displayPlates.find(p => p.default) ||
+                         displayPlates[0];
         const elPlate = document.getElementById('details-plate');
         if (elPlate && selPlate) {
             elPlate.innerText = selPlate.text;
@@ -262,6 +264,15 @@ Q8.UI = (function() {
             if (btnSheetMinus) btnSheetMinus.style.opacity = '0.3';
         } else {
             if (btnSheetMinus) btnSheetMinus.style.opacity = '1';
+        }
+
+        // Rates section label (i18n) and tooltip
+        const ratesLabelEl = document.getElementById('details-rates-label');
+        if (ratesLabelEl) {
+            ratesLabelEl.textContent = state.language === 'nl' ? 'Tarieven' : 'Rates';
+            ratesLabelEl.title = state.language === 'nl'
+                ? 'Tariefgegevens zijn gebaseerd op RDW Open Data en zijn indicatief.'
+                : 'Rates are based on RDW Open Data and are indicative.';
         }
 
         // Rates
