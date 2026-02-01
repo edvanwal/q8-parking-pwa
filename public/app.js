@@ -262,6 +262,7 @@ Q8.App = (function() {
     function init() {
         if(S.load) S.load();
         if(Services.checkInstallMode) Services.checkInstallMode();
+        if(UI.update) UI.update();
 
         if (S.get.installMode.active) {
             if(UI.renderInstallGate) UI.renderInstallGate();
