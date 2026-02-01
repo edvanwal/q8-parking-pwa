@@ -337,6 +337,7 @@ body {
   border-radius: 50%; outline: none; transition: background 0.2s;
 }
 .icon-btn:active { background: var(--bg-app); }
+.icon-btn:disabled { cursor: not-allowed; opacity: 0.4; }
 .no-pointer { pointer-events: none; }
 
 .btn {

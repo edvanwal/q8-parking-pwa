@@ -133,6 +133,11 @@ Q8.UI = (function() {
             if (elEnd) {
                 elEnd.innerText = state.session.end ? fmt(state.session.end) : "Until stopped";
             }
+            const btnMinus = document.querySelector('.active-end-btn[data-delta="-30"]');
+            const btnPlus = document.querySelector('.active-end-btn[data-delta="30"]');
+            if (btnMinus) btnMinus.style.opacity = state.session.end ? '1' : '0.3';
+            if (btnMinus) btnMinus.disabled = !state.session.end;
+            if (btnPlus) btnPlus.style.opacity = '1';
 
             startTimerTicker();
             updateActiveTimerDisplay();
