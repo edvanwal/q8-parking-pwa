@@ -212,7 +212,7 @@
     font-weight: 600;
     font-family: Arial, sans-serif;
     color: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+    box-shadow: none !important;
     pointer-events: auto;
     -webkit-font-smoothing: antialiased;
     outline: none !important;
