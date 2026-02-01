@@ -262,22 +262,25 @@ Q8.App = (function() {
     function init() {
         if(S.load) S.load();
         if(Services.checkInstallMode) Services.checkInstallMode();
+        if(UI.update) UI.update();
 
         if (S.get.installMode.active) {
             if(UI.renderInstallGate) UI.renderInstallGate();
         } else {
             if(Services.initAuthListener) Services.initAuthListener();
 
+            // Load map immediately - don't wait for zones
+            if(UI.initGoogleMap) UI.initGoogleMap();
+
             if(Services.loadZones) {
                 Services.loadZones().then(() => {
-                     if(UI.initGoogleMap) UI.initGoogleMap();
                      if(UI.update) UI.update();
                 }).catch(err => {
                      console.error("Zones critical fail:", err);
-                     // Fallback
-                     if(UI.initGoogleMap) UI.initGoogleMap();
                      if(UI.update) UI.update();
                 });
+            } else {
+                if(UI.update) UI.update();
             }
         }
     }
