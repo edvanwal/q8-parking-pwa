@@ -2,25 +2,84 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
+  <!-- Basic Meta Tags -->
   <title>Q8 Parking</title>
+  <meta name="description" content="Smart parking management for Q8 Liberty card holders. Find zones, manage plates, and track parking history.">
+  <meta name="keywords" content="parking, Q8, Liberty, zones, Netherlands, Amsterdam, Rotterdam, Utrecht">
+  <meta name="author" content="Q8 Liberty">
+  <meta name="robots" content="index, follow">
 
+  <!-- PWA Manifest & Theme -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#003D6B">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#003D6B">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#002347">
+
+  <!-- iOS Specific Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Q8 Parking">
+  <meta name="format-detection" content="telephone=no">
+
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon-180x180.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="icons/apple-touch-icon-167x167.png">
+
+  <!-- iOS Splash Screens -->
+  <!-- iPhone 14 Pro Max -->
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/iphone-14-pro-max.png">
+  <!-- iPhone 14 Pro -->
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/iphone-14-pro.png">
+  <!-- iPhone 14/13/12 -->
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/iphone-14.png">
+  <!-- iPhone SE -->
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash/iphone-se.png">
+  <!-- iPad Pro 12.9" -->
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash/ipad-pro-12.9.png">
+
+  <!-- Android/Chrome Specific -->
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <!-- Microsoft Specific -->
+  <meta name="msapplication-TileColor" content="#003D6B">
+  <meta name="msapplication-TileImage" content="icons/mstile-144x144.png">
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+  <link rel="shortcut icon" href="favicon.ico">
+
+  <!-- Open Graph (Social Media) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Q8 Liberty Parking">
+  <meta property="og:description" content="Smart parking management for Q8 Liberty card holders">
+  <meta property="og:image" content="icons/og-image.png">
+  <meta property="og:site_name" content="Q8 Parking">
+
+  <!-- Preconnect & Performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://maps.googleapis.com">
   <link rel="preconnect" href="https://maps.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://www.gstatic.com">
+  <link rel="dns-prefetch" href="https://firestore.googleapis.com">
 
-  <!-- Google Maps loaded early in app init (parallel with zones) -->
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Firebase (Compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-  <!-- Scripts (Cache Busted) -->
-  <!-- Scripts (Restored Standard Loader) -->
+
+  <!-- Platform Detection (Load First) -->
+  <script src="platform-detection.js?v=1.0"></script>
+
+  <!-- Application Scripts -->
   <script src="firebase-config.js?v=3.1"></script>
   <script src="utils.js?v=3.8"></script>
   <script src="state.js"></script>
@@ -28,23 +87,29 @@
   <script src="ui.js?v=5.6"></script>
   <script src="app.js?v=4.0" defer></script>
 
-
+  <!-- Service Worker Registration -->
   <script>
-    // Force Unregister Service Worker validation
     if ('serviceWorker' in navigator) {
+      // Development: Unregister service workers for clean testing
       navigator.serviceWorker.getRegistrations().then(function(registrations) {
         for(let registration of registrations) {
           registration.unregister();
         }
       });
+      
+      // Production: Enable this block when ready
+      /*
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('SW registered:', reg))
+          .catch(err => console.error('SW registration failed:', err));
+      });
+      */
     }
   </script>
-  <!-- <script src="service-worker.js?v=2.3"></script> -->
 
-  <!-- Styles (Cache Busted) -->
-  <link rel="stylesheet" href="design-system.css?v=5.5">
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#ffffff">
+  <!-- Styles -->
+  <link rel="stylesheet" href="design-system.css?v=5.6">
 </head>
 <body>
 

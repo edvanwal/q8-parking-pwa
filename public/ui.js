@@ -405,11 +405,11 @@ Q8.UI = (function() {
         settingsList.innerHTML = settings.map(setting => {
             const checked = s[setting.key] !== false;
             let html = `
-            <div class="notif-setting-row flex items-center justify-between" style="padding:12px 16px; background:var(--surface); border-radius:12px; border:1px solid var(--border);">
+            <div class="notif-setting-row flex items-center justify-between" style="padding:12px 16px; background:var(--surface); border-radius:12px; border:1px solid var(--border); cursor:pointer;" data-action="toggle-notif-setting" data-key="${setting.key}">
                 <span class="text-main font-medium" style="font-size:0.9375rem;">${setting.label}</span>
-                <label class="notif-toggle" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                    <input type="checkbox" data-action="toggle-notif-setting" data-key="${setting.key}" ${checked ? 'checked' : ''} style="width:20px; height:20px;">
-                </label>
+                <div class="notif-toggle" style="display:flex; align-items:center;">
+                    <input type="checkbox" data-key="${setting.key}" ${checked ? 'checked' : ''} style="width:20px; height:20px; pointer-events:none;">
+                </div>
             </div>`;
             if (setting.hasInterval) {
                 const mins = (s.expiringSoonMinutes || 10);
