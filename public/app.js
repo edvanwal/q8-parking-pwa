@@ -192,6 +192,19 @@ Q8.App = (function() {
                     if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Verwijderd uit favorieten' : 'Removed from favorites');
                     break;
                 }
+                case 'add-favorite-from-history': {
+                    const zoneUid = target.getAttribute('data-zone-uid');
+                    const zoneId = target.getAttribute('data-zone-id');
+                    if (!zoneUid && !zoneId) break;
+                    const favs = S.get.favorites || [];
+                    const exists = favs.some(f => f.zoneUid === zoneUid || f.zoneId === zoneId);
+                    if (exists) break;
+                    const next = [...favs, { zoneUid: zoneUid || zoneId, zoneId: zoneId || zoneUid }];
+                    S.update({ favorites: next });
+                    if (S.saveFavorites) S.saveFavorites();
+                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Toegevoegd aan favorieten' : 'Added to favorites');
+                    break;
+                }
 
                 case 'select-zone':
                     // Logic handled by search results clicking usually

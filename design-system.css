@@ -1315,3 +1315,11 @@ body {
   border-right: 6px solid transparent;
   border-top: 6px solid var(--brand-navy); /* Color match */
 }
+
+/* Kenteken RDW check result */
+.plate-rdw-result { color: var(--text-secondary); }
+.plate-rdw-result.plate-rdw-ok { color: var(--success); font-weight: 500; }
+.plate-rdw-result.plate-rdw-error { color: var(--danger); }
+.plate-rdw-result.plate-rdw-warn { color: var(--q8-text-muted); }
+.plate-rdw-result.plate-rdw-loading { color: var(--primary); font-style: italic; }
+.plate-format-error { color: var(--danger); }
