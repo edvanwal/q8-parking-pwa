@@ -208,8 +208,7 @@ Q8.Services = (function() {
             setTimeout(() => {
                 const inp = document.getElementById('inp-plate');
                 if (inp) { inp.value = ''; inp.focus(); }
-                const modal = document.getElementById('modal-add-plate');
-                const inpDesc = modal ? modal.querySelectorAll('input')[1] : null;
+                const inpDesc = document.getElementById('inp-plate-desc');
                 if (inpDesc) inpDesc.value = '';
             }, 100);
         }
