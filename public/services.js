@@ -149,6 +149,8 @@ Q8.Services = (function() {
             else if (typeof window.initGoogleMap === 'function') window.initGoogleMap();
             requestAnimationFrame(() => {
                 if (Q8.UI && typeof Q8.UI.ensureMapResized === 'function') Q8.UI.ensureMapResized();
+                const inp = document.getElementById('inp-search');
+                if (inp && !S.get.session) inp.focus();
             });
         }
     }
