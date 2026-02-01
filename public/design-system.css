@@ -825,6 +825,7 @@ body {
   transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.15);
   padding: 20px 16px;
+  border-radius: 16px 0 0 16px;
 }
 .side-menu.open { transform: translateX(0); }
 .side-menu .menu-items { flex: 1; display: flex; flex-direction: column; gap: 8px; }
