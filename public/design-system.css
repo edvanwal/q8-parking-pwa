@@ -102,14 +102,14 @@
 .map-search-float {
     position: absolute;
     top: calc(var(--safe-area-top) + 16px);
-    left: 16px;
-    right: 16px;
+    left: 8px;
+    right: 8px;
     z-index: var(--z-header);
     display: flex;
     align-items: center;
     background: var(--surface);
     border-radius: 9999px;
-    padding: 12px 48px 12px 20px;
+    padding: 12px 40px 12px 14px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
     box-sizing: border-box;
 }
@@ -126,7 +126,7 @@
 .map-search-float .map-search-input::placeholder { color: var(--text-secondary); }
 .map-search-icon-right {
     position: absolute;
-    right: 16px;
+    right: 12px;
     top: 50%;
     transform: translateY(-50%);
     display: flex;
