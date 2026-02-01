@@ -283,6 +283,39 @@ Q8.Services = (function() {
 
         S.save();
         toast('Parking session started');
+        addNotification('sessionStarted', state.language === 'nl' ? 'Parkeersessie gestart' : 'Parking session started', `${displayId} · ${plateText}`);
+    }
+
+    // --- NOTIFICATIONS ---
+    function addNotification(type, message, detail) {
+        const settings = S.get.notificationSettings;
+        const key = type === 'sessionStarted' ? 'sessionStarted' :
+            type === 'sessionExpiringSoon' ? 'sessionExpiringSoon' :
+            type === 'sessionEndedByUser' ? 'sessionEndedByUser' :
+            type === 'sessionEndedByMaxTime' ? 'sessionEndedByMaxTime' : null;
+        if (key && !settings[key]) return;
+        const item = { type, message, detail: detail || '', at: new Date().toISOString() };
+        const notifs = [...(S.get.notifications || []), item];
+        if (notifs.length > 100) notifs.shift();
+        S.update({ notifications: notifs });
+        if (S.saveNotifications) S.saveNotifications();
+        if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(message);
+        else if (typeof window.showToast === 'function') window.showToast(message);
+    }
+
+    function handleAutoEndSession(reason) {
+        const session = S.get.session;
+        if (!session) return;
+        const zone = S.get.zones.find(z => z.uid === session.zoneUid || z.id === session.zoneUid) || S.get.zones.find(z => z.id === session.zone);
+        const zoneLabel = zone ? zone.id : session.zone || '?';
+        const plate = session.plate || '?';
+        S.update({ session: null, activeOverlay: null });
+        S.save();
+        if (reason === 'sessionEndedByUser') {
+            addNotification('sessionEndedByUser', S.get.language === 'nl' ? 'Parkeersessie automatisch beëindigd (eindtijd bereikt)' : 'Parking session ended automatically (end time reached)', `${zoneLabel} · ${plate}`);
+        } else {
+            addNotification('sessionEndedByMaxTime', S.get.language === 'nl' ? 'Parkeersessie beëindigd (maximale parkeertijd bereikt)' : 'Parking session ended (maximum parking time reached)', `${zoneLabel} · ${plate}`);
+        }
     }
 
     // --- PARKING END (fragile) ---
@@ -562,6 +595,8 @@ Q8.Services = (function() {
         deletePlate,
         modifyDuration,
         setDefaultPlate,
-        checkInstallMode
+        checkInstallMode,
+        addNotification,
+        handleAutoEndSession
     };
 })();
