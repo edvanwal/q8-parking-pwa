@@ -80,7 +80,7 @@ Q8.State = (function() {
                 const parsed = JSON.parse(savedSession);
                 if (parsed) {
                     parsed.start = new Date(parsed.start);
-                    parsed.end = new Date(parsed.end);
+                    parsed.end = parsed.end != null ? new Date(parsed.end) : null;
                     if (isNaN(parsed.start.getTime())) console.warn('[PERSIST] Session start date invalid', parsed.start);
                     if (parsed.end && isNaN(parsed.end.getTime())) console.warn('[PERSIST] Session end date invalid', parsed.end);
                 }
