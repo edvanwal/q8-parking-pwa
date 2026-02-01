@@ -102,34 +102,43 @@
 .map-search-float {
     position: absolute;
     top: calc(var(--safe-area-top) + 16px);
-    left: 6px;
-    right: 6px;
+    left: 8px;
+    right: 8px;
     z-index: var(--z-header);
     display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     align-items: center;
-    gap: 6px;
+    gap: 10px;
     background: var(--surface);
     border-radius: 9999px;
-    padding: 10px 12px 10px 14px;
+    padding: 12px 16px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
     box-sizing: border-box;
+    overflow: hidden;
 }
 .map-search-float .map-search-input {
-    flex: 1;
+    flex: 1 1 0;
+    width: 0;
     min-width: 0;
     border: none;
     background: transparent;
-    font-size: 0.9375rem;
+    font-size: 1rem;
     font-family: var(--font-family);
     color: var(--q8-text);
     outline: none;
     padding: 0;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .map-search-float .map-search-input::placeholder { color: var(--text-secondary); }
 .map-search-icon-right {
-    flex-shrink: 0;
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
+    justify-content: center;
     color: var(--text-secondary);
     pointer-events: none;
 }
