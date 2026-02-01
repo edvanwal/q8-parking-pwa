@@ -1,0 +1,13 @@
+# Q8 Parking PWA - Robots.txt
+# https://www.robotstxt.org/
+
+User-agent: *
+Allow: /
+
+# Disallow development/admin paths
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /firebase-config.js
+
+# Sitemap location
+Sitemap: https://q8parking.web.app/sitemap.xml
