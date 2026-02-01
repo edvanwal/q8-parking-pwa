@@ -50,9 +50,12 @@
     auth.onAuthStateChanged(user => {
       if (user) {
         loadPortalUser(user.uid).then(profile => {
+          if (!profile) {
+            return ensurePortalUser(user).then(() => initAuth());
+          }
           portalUser = { ...user, profile };
-          tenantId = (profile && profile.tenantId) || DEFAULT_TENANT;
-          if ((profile && profile.role) === 'driver') {
+          tenantId = profile.tenantId || DEFAULT_TENANT;
+          if (profile.role === 'driver') {
             toast('Geen toegang: alleen voor fleet managers');
             auth.signOut();
             return;
