@@ -332,6 +332,22 @@ Q8.App = (function() {
             });
         }
 
+        // Live kenteken format validation (add-plate modal)
+        const inpPlate = document.getElementById('inp-plate');
+        if (inpPlate && typeof Q8 !== 'undefined' && Q8.Kenteken) {
+            function updatePlateFormatFeedback() {
+                const errEl = document.getElementById('plate-format-error');
+                if (!errEl) return;
+                const raw = inpPlate.value.trim();
+                if (!raw) { errEl.textContent = ''; errEl.style.display = 'none'; return; }
+                const v = Q8.Kenteken.validate(raw);
+                if (v.valid) { errEl.textContent = ''; errEl.style.display = 'none'; }
+                else { errEl.textContent = v.errorMessage || ''; errEl.style.display = 'block'; }
+            }
+            inpPlate.addEventListener('input', updatePlateFormatFeedback);
+            inpPlate.addEventListener('blur', updatePlateFormatFeedback);
+        }
+
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeSideMenu();
