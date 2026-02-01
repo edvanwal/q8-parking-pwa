@@ -790,16 +790,16 @@ Q8.UI = (function() {
         diagMaps('initGoogleMap', 'done');
     }
 
-    function makeCircleIcon(isSelected) {
-        const fill = isSelected ? '#ce1818' : '#1e5f8a';
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
-          <circle cx="20" cy="20" r="18" fill="${fill}" stroke="white" stroke-width="2"/>
-          <text x="20" y="26" text-anchor="middle" fill="white" font-size="18" font-weight="bold" font-family="sans-serif">P</text>
+    function makePriceMarkerIcon(priceText, isSelected) {
+        const fill = isSelected ? '#ce1818' : '#1E4A99';
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 36">
+          <path d="M 10 0 L 60 0 Q 70 0 70 10 L 70 22 Q 70 26 66 26 L 38 26 L 35 36 L 32 26 L 4 26 Q 0 26 0 22 L 0 10 Q 0 0 10 0 Z" fill="${fill}"/>
+          <text x="35" y="18" text-anchor="middle" fill="white" font-size="13" font-weight="bold" font-family="sans-serif">${priceText}</text>
         </svg>`;
         return {
             url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
-            scaledSize: new google.maps.Size(40, 40),
-            anchor: new google.maps.Point(20, 20)
+            scaledSize: new google.maps.Size(70, 36),
+            anchor: new google.maps.Point(35, 36)
         };
     }
 
