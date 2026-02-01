@@ -668,6 +668,22 @@ body {
 .rate-detail-list li { margin: 2px 0; }
 .rate-desc { color: var(--text-secondary); font-size: 0.875rem; }
 .rate-price { font-weight: 700; font-size: 1rem; }
+.sheet-rates-disclaimer {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+.sheet-estimated-cost {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--primary);
+  margin-bottom: var(--space-2);
+}
+.sheet-estimated-cost--muted {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
 .filters-clear {
   color: var(--text-secondary); font-weight: 700; font-size: 0.85rem; cursor: pointer;
 }

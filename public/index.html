@@ -529,16 +529,19 @@
         <div id="details-rates-list" class="sheet-rates-list">
             <!-- Dynamic rates injected here -->
         </div>
+        <p id="details-rates-disclaimer" class="sheet-rates-disclaimer" aria-live="polite"></p>
       </div>
 
       <div class="sheet-section sheet-section-duration">
-         <label class="input-label sheet-section-label">Parking duration (h):</label>
+         <label id="details-duration-label" class="input-label sheet-section-label">Parking duration</label>
          <div class="sheet-duration-control">
             <button class="sheet-duration-btn" data-action="mod-duration" data-delta="-15">−</button>
             <div class="sheet-duration-value" id="val-duration">2h 00m</div>
             <button class="sheet-duration-btn" data-action="mod-duration" data-delta="15">+</button>
          </div>
       </div>
+
+      <div id="details-estimated-cost" class="sheet-estimated-cost" aria-live="polite"></div>
 
       <button class="btn btn-primary btn-lg sheet-start-btn" data-action="start-session">START PARKING</button>
     </div>
