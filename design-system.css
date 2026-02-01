@@ -1188,6 +1188,38 @@ body {
     padding: 20px; border-top: 1px solid var(--border); display: flex;
 }
 
+/* Sheet Filter (matching reference design) */
+.sheet-filter-header {
+    padding: 20px; border-bottom: none; display: flex; justify-content: space-between; align-items: center;
+}
+.sheet-filter-title {
+    margin: 0; font-size: 1.25rem; font-weight: 800; color: #1E4A99;
+}
+.sheet-filter-content {
+    padding: 0 20px 20px 20px; max-height: 60vh; overflow-y: auto;
+}
+.sheet-filter-section {
+    margin-bottom: 24px;
+}
+.sheet-filter-label {
+    font-size: 0.75rem; font-weight: 700; color: #6B7280; margin-bottom: 12px; letter-spacing: 0.5px;
+}
+.sheet-filter-empty {
+    color: var(--text-secondary); font-size: 0.9rem;
+}
+.sheet-filter-date-label {
+    font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; display: block;
+}
+.sheet-filter-footer {
+    padding: 20px; border-top: 1px solid var(--border); display: flex; gap: 12px; justify-content: stretch;
+}
+.sheet-filter-clear {
+    flex: 1; justify-content: center; border: 2px solid #1E4A99; color: #1E4A99; background: white; font-weight: 700;
+}
+.sheet-filter-apply {
+    flex: 1; justify-content: center; font-size: 1rem; padding: 14px; background: #1E4A99;
+}
+
 /* --- NEW: Bottom Navigation --- */
 .bottom-nav {
   position: absolute; bottom: 0; left: 0; right: 0;
