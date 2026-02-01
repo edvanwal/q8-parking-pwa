@@ -727,6 +727,7 @@ Q8.UI = (function() {
     function updateActiveTimerDisplay() {
         const state = S.get;
         const elTimer = document.getElementById('active-timer');
+        const elLabel = document.getElementById('active-timer-label');
         if (!elTimer || !state.session) return;
 
         const now = new Date();
@@ -734,8 +735,9 @@ Q8.UI = (function() {
         const endDate = toDate(state.session.end);
         if (!startDate) return;
 
-        // 1. Open-Ended Session (Count UP)
+        // 1. Until stopped (duration=0): Count UP from 0
         if (!endDate) {
+            if (elLabel) elLabel.innerText = state.language === 'nl' ? 'Tijd geparkeerd' : 'Time';
             const diff = now - startDate;
             const h = Math.floor(diff / 3600000);
             const m = Math.floor((diff % 3600000) / 60000);
@@ -751,7 +753,8 @@ Q8.UI = (function() {
             return;
         }
 
-        // 2. Fixed Duration Session (Count DOWN)
+        // 2. Fixed duration (chosen time): Count DOWN
+        if (elLabel) elLabel.innerText = state.language === 'nl' ? 'Resterende tijd' : 'Time left';
         const diff = endDate.getTime() - now.getTime();
 
         if (diff <= 0) {
