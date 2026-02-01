@@ -613,7 +613,13 @@ Q8.UI = (function() {
         }
 
         const query = state.searchQuery.toLowerCase();
-        const matches = state.zones.filter(z => z.id.includes(query) || z.name.toLowerCase().includes(query))
+        const matches = state.zones.filter(z => {
+            const id = (z.id || '').toLowerCase();
+            const name = (z.name || '').toLowerCase();
+            const street = (z.street || '').toLowerCase();
+            const city = (z.city || '').toLowerCase();
+            return id.includes(query) || name.includes(query) || street.includes(query) || city.includes(query);
+        })
             .sort((a,b) => {
                 if (a.id === query) return -1;
                 if (b.id === query) return 1;
@@ -630,10 +636,14 @@ Q8.UI = (function() {
         const q = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const regex = q ? new RegExp(`(${q})`, 'gi') : null;
         container.innerHTML = matches.map(z => {
-            // Format: "321, Stad"
-            const zoneId = z.id || '';
+            // Format: "straatnaam + huisnummer + plaats" of fallback "zoneId, stad"
+            const street = z.street || '';
+            const houseNumber = z.houseNumber || '';
             const city = z.city || '';
-            const addr = city ? `${zoneId}, ${city}` : zoneId;
+            const zoneId = z.id || '';
+            const addr = street
+                ? `${street}${houseNumber ? ' ' + houseNumber : ''}${city ? ', ' + city : ''}`
+                : (city ? `${zoneId}, ${city}` : zoneId);
             const displayAddr = regex ? addr.replace(regex, '<strong class="search-highlight">$1</strong>') : addr;
             return `
             <div class="search-result-item" data-action="open-overlay" data-target="sheet-zone"
