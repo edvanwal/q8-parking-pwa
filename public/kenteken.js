@@ -130,17 +130,19 @@ Q8.Kenteken = (function() {
     }
 
     /**
-     * Lookup kenteken bij RDW Open Data (gratis, geen API-key).
+     * Lookup kenteken bij RDW Open Data (voertuigen + brandstof voor milieuzone).
      * @param {string} normalized Genormaliseerd kenteken (zonder streepjes)
-     * @returns {Promise<{ found: boolean, data?: { merk?: string, handelsbenaming?: string, voertuigsoort?: string } }>}
+     * @returns {Promise<{ found: boolean, data?: { merk?, handelsbenaming?, voertuigsoort?, brandstof_omschrijving?, emissiecode_omschrijving? } }>}
      */
     function lookupRDW(normalized) {
         if (!normalized || normalized.length < 6) {
             return Promise.resolve({ found: false });
         }
         const kentekenParam = encodeURIComponent(normalized);
-        const url = RDW_VOERTUIGEN_URL + '?kenteken=' + kentekenParam + '&$limit=1';
-        return fetch(url, { method: 'GET' })
+        const mainUrl = RDW_VOERTUIGEN_URL + '?kenteken=' + kentekenParam + '&$limit=1';
+        const brandstofUrl = RDW_BRANDSTOF_URL + '?kenteken=' + kentekenParam + '&$limit=1';
+
+        return fetch(mainUrl, { method: 'GET' })
             .then(function(res) {
                 if (!res.ok) throw new Error('RDW request failed: ' + res.status);
                 return res.json();
@@ -150,14 +152,23 @@ Q8.Kenteken = (function() {
                     return { found: false };
                 }
                 const row = arr[0];
-                return {
-                    found: true,
-                    data: {
-                        merk: row.merk || '',
-                        handelsbenaming: row.handelsbenaming || '',
-                        voertuigsoort: row.voertuigsoort || ''
-                    }
+                const data = {
+                    merk: row.merk || '',
+                    handelsbenaming: row.handelsbenaming || '',
+                    voertuigsoort: row.voertuigsoort || '',
+                    brandstof_omschrijving: '',
+                    emissiecode_omschrijving: ''
                 };
+                return fetch(brandstofUrl, { method: 'GET' })
+                    .then(function(res) { return res.ok ? res.json() : []; })
+                    .then(function(brandstofArr) {
+                        if (Array.isArray(brandstofArr) && brandstofArr.length > 0) {
+                            const b = brandstofArr[0];
+                            data.brandstof_omschrijving = b.brandstof_omschrijving || '';
+                            data.emissiecode_omschrijving = b.emissiecode_omschrijving != null ? String(b.emissiecode_omschrijving).trim() : '';
+                        }
+                        return { found: true, data: data };
+                    });
             })
             .catch(function(err) {
                 if (typeof Q8 !== 'undefined' && Q8.Utils && Q8.Utils.logger && Q8.Utils.logger.warn) {
@@ -167,6 +178,105 @@ Q8.Kenteken = (function() {
                 }
                 return { found: false, error: true };
             });
+    }
+
+    /**
+     * Bepaal emissieklasse-nummer uit RDW emissiecode (0-6 of Z).
+     * @param {string} emissiecode_omschrijving
+     * @returns {number|null} 0-6 of null (Z/onbekend)
+     */
+    function parseEmissieklasse(emissiecode_omschrijving) {
+        if (emissiecode_omschrijving == null || emissiecode_omschrijving === '') return null;
+        const s = String(emissiecode_omschrijving).trim().toUpperCase();
+        if (s === 'Z') return null; // zero-emissie = altijd toegestaan
+        const n = parseInt(s, 10);
+        if (!isNaN(n) && n >= 0 && n <= 6) return n;
+        return null;
+    }
+
+    /**
+     * Is deze brandstof onderworpen aan milieuzone-restricties? Alleen diesel.
+     */
+    function isDieselForMilieuzone(brandstof_omschrijving) {
+        if (!brandstof_omschrijving) return false;
+        return /diesel/i.test(String(brandstof_omschrijving));
+    }
+
+    /**
+     * Milieuzone-toegang per stad voor dit voertuig.
+     * @param {Object} vehicleData { brandstof_omschrijving?, emissiecode_omschrijving? }
+     * @returns {{ allAllowed: boolean, byCity: Array<{ city, type, allowed, minRequired, reason }>, summaryNL: string, summaryEN: string }}
+     */
+    function getMilieuzoneStatus(vehicleData) {
+        const byCity = MILIEUZONE_CITIES.map(function(m) {
+            const diesel = isDieselForMilieuzone(vehicleData.brandstof_omschrijving);
+            const klasse = parseEmissieklasse(vehicleData.emissiecode_omschrijving);
+            let allowed = true;
+            let reason = '';
+            let minRequired = null;
+            if (diesel) {
+                minRequired = m.minClass;
+                if (klasse === null) {
+                    allowed = false;
+                    reason = 'Diesel, emissieklasse onbekend – controleer op milieuzones.nl';
+                } else if (klasse < m.minClass) {
+                    allowed = false;
+                    reason = 'Diesel emissieklasse ' + klasse + ', minimaal ' + m.minClass + ' voor ' + m.type + 'e zone';
+                } else {
+                    reason = 'Diesel emissieklasse ' + klasse;
+                }
+            } else {
+                reason = 'Benzine/LPG/elektrisch – altijd toegestaan';
+            }
+            return { city: m.city, type: m.type, allowed: allowed, minRequired: minRequired, reason: reason };
+        });
+        const allAllowed = byCity.every(function(c) { return c.allowed; });
+        const denied = byCity.filter(function(c) { return !c.allowed; });
+        let summaryNL = '';
+        let summaryEN = '';
+        if (allAllowed) {
+            summaryNL = 'Toegang tot alle milieuzones (personenauto\'s).';
+            summaryEN = 'Access to all environmental zones (passenger cars).';
+        } else if (denied.length === 4) {
+            summaryNL = 'Geen toegang tot milieuzones (diesel, emissieklasse te laag of onbekend).';
+            summaryEN = 'No access to environmental zones (diesel, emission class too low or unknown).';
+        } else {
+            const cities = denied.map(function(c) { return c.city; }).join(', ');
+            summaryNL = 'Geen toegang in: ' + cities + '.';
+            summaryEN = 'No access in: ' + cities + '.';
+        }
+        return { allAllowed: allAllowed, byCity: byCity, summaryNL: summaryNL, summaryEN: summaryEN };
+    }
+
+    /**
+     * Geef aan of een plaatsnaam in een milieuzone-stad ligt (personenauto's).
+     * @param {string} cityName
+     * @returns {Object|null} { city, type, minClass } of null
+     */
+    function getMilieuzoneCityInfo(cityName) {
+        if (!cityName || typeof cityName !== 'string') return null;
+        const lower = cityName.trim().toLowerCase();
+        for (let i = 0; i < MILIEUZONE_CITIES.length; i++) {
+            const m = MILIEUZONE_CITIES[i];
+            if (m.city.toLowerCase() === lower || lower.indexOf(m.city.toLowerCase()) !== -1) {
+                return { city: m.city, type: m.type, minClass: m.minClass };
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Toegang voor één stad (voor zone-detail).
+     * @param {Object} vehicleData
+     * @param {string} cityName
+     * @returns {{ allowed: boolean, reason: string }|null} null als geen milieuzone-stad
+     */
+    function getMilieuzoneStatusForCity(vehicleData, cityName) {
+        const info = getMilieuzoneCityInfo(cityName);
+        if (!info) return null;
+        const status = getMilieuzoneStatus(vehicleData);
+        const c = status.byCity.find(function(x) { return x.city === info.city; });
+        return c ? { allowed: c.allowed, reason: c.reason } : null;
     }
 
     /**
