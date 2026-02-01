@@ -738,6 +738,7 @@ Q8.UI = (function() {
 
     let map;
     let gMarkers = [];
+    const UTRECHT_CENTER = { lat: 52.0907, lng: 5.1214 };
 
     // DIAG: Set window.Q8_DIAG = true to log Maps loading steps
     function diagMaps(tag, msg, data) {
@@ -766,10 +767,9 @@ Q8.UI = (function() {
         }
 
         diagMaps('initGoogleMap', 'creating-map');
-        const center = { lat: 52.0907, lng: 5.1214 };
         map = new google.maps.Map(container, {
-            center: center,
-            zoom: 14,
+            center: UTRECHT_CENTER,
+            zoom: 15,
             disableDefaultUI: true,
             zoomControl: true,
             mapTypeControl: false,
@@ -780,7 +780,6 @@ Q8.UI = (function() {
         });
 
         renderMapMarkers();
-        centerMapOnZones();
         google.maps.event.addListenerOnce(map, 'idle', function() {
             google.maps.event.trigger(map, 'resize');
         });
@@ -852,7 +851,6 @@ Q8.UI = (function() {
     function centerMapOnZones() {
         const state = S.get;
         if (!map) return;
-        if (state.zones.length === 0) return;
 
         const sel = state.zones.find(z => (z.uid && z.uid === state.selectedZone) || (z.id && String(z.id) === String(state.selectedZone)));
         if (sel && sel.lat && sel.lng) {
@@ -861,15 +859,8 @@ Q8.UI = (function() {
             return;
         }
 
-        const bounds = new google.maps.LatLngBounds();
-        let hasValid = false;
-        state.zones.forEach(z => {
-            if (z.lat && z.lng) {
-                bounds.extend({ lat: z.lat, lng: z.lng });
-                hasValid = true;
-            }
-        });
-        if (hasValid) map.fitBounds(bounds, { top: 80, bottom: 80, left: 20, right: 20 });
+        map.setCenter(UTRECHT_CENTER);
+        map.setZoom(15);
     }
 
     return {
