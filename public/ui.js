@@ -131,18 +131,10 @@ Q8.UI = (function() {
         // Zone Sheet
         if (state.selectedZone) renderZoneSheet();
 
-        // Search Mode
+        // Search input sync (app herkent zelf zone vs adres)
         const inpSearch = document.getElementById('inp-search');
-        const btnToggle = document.getElementById('btn-search-toggle');
-        if (inpSearch && btnToggle) {
-            const isZone = state.searchMode === 'zone';
-            inpSearch.placeholder = isZone ? 'Search by parking zone ...' : 'Search by address ...';
-            btnToggle.innerText = isZone ? 'Zone' : 'Address';
-            btnToggle.classList.toggle('map-search-toggle--zone', isZone);
-            btnToggle.classList.toggle('map-search-toggle--address', !isZone);
-            if (document.activeElement !== inpSearch) {
-                inpSearch.value = state.searchQuery;
-            }
+        if (inpSearch && document.activeElement !== inpSearch) {
+            inpSearch.value = state.searchQuery;
         }
 
         renderSearchResults();
@@ -273,7 +265,12 @@ Q8.UI = (function() {
         const finalRates = unique.length > 0 ? unique : [{time: `Geen tarieven voor ${todayNL}`, price: ''}];
 
         container.innerHTML = finalRates.map(r => {
-             const displayTime = r.time.replace(new RegExp(todayNL, 'gi'), '').replace(/Dagelijks/gi,'').trim();
+             let displayTime = r.time.replace(new RegExp(todayNL, 'gi'), '').replace(/Dagelijks/gi,'').trim();
+             const timeMatch = displayTime.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
+             if (timeMatch) {
+                 const fmt = (h, m) => (parseInt(h, 10) < 10 ? String(h).replace(/^0/, '') : h) + ':' + m;
+                 displayTime = `${fmt(timeMatch[1], timeMatch[2])} – ${fmt(timeMatch[3], timeMatch[4])}`;
+             }
              const isFree = r.price.toLowerCase().includes('free') || r.price.toLowerCase().includes('gratis');
              const color = isFree ? '#10b981' : 'var(--q8-blue)';
              const label = isFree ? 'Free parking' : r.price;
@@ -281,8 +278,8 @@ Q8.UI = (function() {
              let detail = '';
              if (r.detail) {
                  const lines = r.detail.split('|').filter(l => l && l.trim() !== '' && l !== 'Vrij parkeren');
-                 if(lines.length > 0) {
-                     detail = `<ul style="margin: 4px 0 0 16px; padding: 0; list-style-type: disc; color: var(--q8-blue); font-weight: 600; font-size: 0.9rem;">${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
+                 if (lines.length > 0) {
+                     detail = `<ul class="rate-detail-list">${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
                  }
              }
 
@@ -290,10 +287,10 @@ Q8.UI = (function() {
                 <div class="rate-item">
                     <div class="rate-dot"></div>
                     <div class="rate-info">
-                        <span class="rate-time" style="font-weight: 700; color: var(--q8-blue); font-size: 1.1rem;">${displayTime}</span>
+                        <span class="rate-time">${displayTime}</span>
                         ${detail}
                     </div>
-                    ${!isFree || label !== 'Free parking' ? `<span class="rate-price" style="font-weight: 700; color: ${color}; font-size: 1rem;">${label}</span>` : ''}
+                    ${!isFree || label !== 'Free parking' ? `<span class="rate-price" style="color: ${color};">${label}</span>` : ''}
                 </div>
              `;
         }).join('');
@@ -600,27 +597,24 @@ Q8.UI = (function() {
             return;
         }
 
-        container.className = 'search-results-panel';
+        container.className = 'search-results-panel search-results-panel--pill';
         container.style.display = 'block';
-        container.innerHTML = matches.map(z => `
+        const q = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = q ? new RegExp(`(${q})`, 'gi') : null;
+        container.innerHTML = matches.map(z => {
+            const addr = [z.id, z.name, z.city].filter(Boolean).join(', ') + (z.id || z.name || z.city ? ', Nederland' : '');
+            const displayAddr = regex ? addr.replace(regex, '<strong class="search-highlight">$1</strong>') : addr;
+            return `
             <div class="search-result-item" data-action="open-overlay" data-target="sheet-zone"
                  data-zone-uid="${z.uid}"
                  data-zone="${z.id || ''}"
                  data-price="${z.price}"
                  data-rates='${JSON.stringify(z.rates || [])}'>
-                <div class="flex items-center" style="gap: 12px; width: 100%;">
-                    <div class="zone-badge-box no-pointer" style="height: 28px; min-width: 60px;">
-                        <span class="icon-p no-pointer">P</span>
-                        <span class="no-pointer" style="font-weight:700;">${z.id}</span>
-                    </div>
-                    <div class="flex flex-col no-pointer" style="overflow: hidden;">
-                         <span class="zone-name no-pointer text-truncate" style="font-weight: 600;">${z.city || ''}</span>
-                         <span class="zone-name no-pointer text-truncate" style="font-size: 0.8rem; color: var(--text-secondary);">${z.name}</span>
-                    </div>
-                    <div class="no-pointer" style="margin-left: auto; font-weight: 700; font-size: 0.9rem; color: var(--q8-blue);">€ ${z.price.toFixed(2).replace('.', ',')}</div>
-                </div>
+                <span class="search-result-text">${displayAddr}</span>
+                <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
             </div>
-        `).join('');
+        `;
+        }).join('');
     }
 
     function renderInfoBanner() {

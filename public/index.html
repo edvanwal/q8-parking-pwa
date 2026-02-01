@@ -22,9 +22,9 @@
   <script src="firebase-config.js?v=3.1"></script>
   <script src="utils.js?v=3.8"></script>
   <script src="state.js"></script>
-  <script src="services.js"></script>
-  <script src="ui.js"></script>
-  <script src="app.js?v=3.7" defer></script>
+  <script src="services.js?v=3.9"></script>
+  <script src="ui.js?v=4.0"></script>
+  <script src="app.js?v=3.8" defer></script>
 
 
   <script>
@@ -40,7 +40,7 @@
   <!-- <script src="service-worker.js?v=2.3"></script> -->
 
   <!-- Styles (Cache Busted) -->
-  <link rel="stylesheet" href="design-system.css?v=3.8">
+  <link rel="stylesheet" href="design-system.css?v=4.1">
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#ffffff">
 </head>
@@ -217,7 +217,7 @@
 
   <!-- === VIEW: MAP (Parking & Active) === -->
   <div id="view-map" class="screen flex-col">
-    <!-- Header (bijlage 2: logo | Parking | hamburger) -->
+    <!-- Header (logo | Parking | hamburger) -->
     <header class="top-bar map-top-bar">
       <div class="brand-logo"><img src="q8-logo.png" class="header-logo" alt="Q8 Liberty"></div>
       <h1 class="page-title">Parking</h1>
@@ -226,24 +226,23 @@
       </button>
     </header>
 
-    <!-- Search bar: input | icon (rechts van input) | indicator -->
-    <div id="ui-idle-search" class="map-search-bar">
-      <input type="text" id="inp-search" class="map-search-input" placeholder="Zone of adres..." autocomplete="off">
-      <span class="map-search-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      </span>
-      <span id="search-mode-indicator" class="map-search-indicator" title="Automatisch herkend">Zone</span>
-    </div>
-    <div id="ui-search-results" class="hidden"></div>
-
-    <!-- Map area -->
+    <!-- Map area (full height under header) -->
     <div class="map-area">
       <!-- Map Surface -->
       <div id="map-container" class="map-surface">
         <!-- Markers injected by JS -->
       </div>
-      <!-- Personal Greeting: hidden per bijlage 2 -->
+      <!-- Personal Greeting: hidden -->
       <div id="personal-greeting" class="hidden" style="display:none !important;"></div>
+
+      <!-- Search bar: zwevend boven de kaart, zoekicoon rechts -->
+      <div id="ui-idle-search" class="map-search-float">
+        <input type="text" id="inp-search" class="map-search-input" placeholder="Enter a zone number or street name and place" autocomplete="off">
+        <span class="map-search-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+      </div>
+      <div id="ui-search-results" class="hidden"></div>
 
       <!-- Active Parking Overlay (inside map-area for positioning) -->
       <div id="ui-active-parking" class="active-parking-overlay hidden" style="display:none !important;">
