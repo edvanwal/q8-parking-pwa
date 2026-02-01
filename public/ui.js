@@ -354,14 +354,29 @@ Q8.UI = (function() {
         if (inpPass) inpPass.type = state.passwordVisible ? 'text' : 'password';
     }
 
+    function getDisplayPlates() {
+        const state = S.get;
+        const admin = (state.adminPlates || []).map(p => ({ ...p, source: 'admin', locked: true }));
+        const user = (state.plates || []).map(p => ({ ...p, source: p.source || 'user' }));
+        return [...admin, ...user];
+    }
+
     function renderPlates() {
         const state = S.get;
         const list = document.getElementById('list-plates');
         const btnSetDefault = document.getElementById('btn-set-default');
+        const btnAdd = document.querySelector('[data-target="modal-add-plate"]');
         if (!list) return;
         list.innerHTML = '';
 
-        const sorted = [...state.plates].sort((a,b) => a.text.localeCompare(b.text));
+        const ds = state.driverSettings || {};
+        const canAdd = ds.canAddPlates !== false && !ds.platesLocked;
+        const canEdit = !ds.platesLocked;
+
+        if (btnAdd) btnAdd.style.display = canAdd ? '' : 'none';
+
+        const displayPlates = getDisplayPlates();
+        const sorted = [...displayPlates].sort((a,b) => (a.text || a.id || '').localeCompare(b.text || b.id || ''));
         let selectionValid = false;
 
         sorted.forEach(p => {
