@@ -37,6 +37,14 @@ Q8.State = (function() {
             active: false,
             platform: 'ios',
             language: 'en'
+        },
+        notifications: [],     // { type, message, detail, at (ISO string) }
+        notificationSettings: {
+            sessionStarted: true,
+            sessionExpiringSoon: true,
+            sessionEndedByUser: true,
+            sessionEndedByMaxTime: true,
+            expiringSoonMinutes: 10
         }
     };
 
@@ -116,6 +124,22 @@ Q8.State = (function() {
 
     function savePlates() {
         localStorage.setItem('q8_plates_v1', JSON.stringify(_state.plates));
+    }
+
+    function saveNotifications() {
+        try {
+            localStorage.setItem('q8_notifications_v1', JSON.stringify(_state.notifications));
+            localStorage.setItem('q8_notif_settings_v1', JSON.stringify(_state.notificationSettings));
+        } catch (e) { console.warn('[PERSIST] Notifications save failed', e); }
+    }
+
+    function loadNotifications() {
+        try {
+            const notifs = localStorage.getItem('q8_notifications_v1');
+            if (notifs) _state.notifications = JSON.parse(notifs);
+            const settings = localStorage.getItem('q8_notif_settings_v1');
+            if (settings) _state.notificationSettings = { ..._state.notificationSettings, ...JSON.parse(settings) };
+        } catch (e) { console.warn('[PERSIST] Notifications load failed', e); }
     }
 
     return {
