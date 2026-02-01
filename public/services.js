@@ -389,7 +389,7 @@ Q8.Services = (function() {
         if (!rawVal) return toast('Please enter a license plate');
         if (rawVal.length > 12) return toast('License plate too long (max 12)');
         if (!/^[A-Z0-9-]+$/.test(rawVal)) return toast('Invalid characters');
-        if (S.get.plates.some(p => p.id !== id && p.text === rawVal)) return toast('License plate already exists');
+        if (S.get.plates.some(p => (p.id != id && p.text != id) && p.text === rawVal)) return toast('License plate already exists');
 
         const newPlates = [...S.get.plates];
         const plate = newPlates[plateIdx];
