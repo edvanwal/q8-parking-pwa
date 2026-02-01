@@ -163,15 +163,6 @@ Q8.App = (function() {
                     }
                     break;
                 }
-                case 'change-expiring-interval': {
-                    const val = parseInt(target.value, 10);
-                    if (!isNaN(val) && S.get.notificationSettings) {
-                        const next = { ...S.get.notificationSettings, expiringSoonMinutes: val };
-                        S.update({ notificationSettings: next });
-                        if (S.saveNotifications) S.saveNotifications();
-                    }
-                    break;
-                }
 
                 case 'select-zone':
                     // Logic handled by search results clicking usually
@@ -319,6 +310,14 @@ Q8.App = (function() {
             }
             if (e.target.id === 'filter-date-end') {
                 S.update({ historyFilters: { ...S.get.historyFilters, customEnd: e.target.value } });
+            }
+            if (e.target.getAttribute && e.target.getAttribute('data-action') === 'change-expiring-interval') {
+                const val = parseInt(e.target.value, 10);
+                if (!isNaN(val) && S.get.notificationSettings) {
+                    const next = { ...S.get.notificationSettings, expiringSoonMinutes: val };
+                    S.update({ notificationSettings: next });
+                    if (S.saveNotifications) S.saveNotifications();
+                }
             }
         });
 
