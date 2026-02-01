@@ -14,6 +14,7 @@ Q8.UI = (function() {
 
     const S = Q8.State;
     let _lastMarkerKey = '';
+    let _lastSelectedZone = null;
     const U = Q8.Utils;
     // Services might be circular, so access via Q8.Services literal if needed
 
@@ -97,14 +98,15 @@ Q8.UI = (function() {
         if (idleSearch) idleSearch.style.display = isActive ? 'none' : 'block';
         if (activeParking) activeParking.style.display = isActive ? 'block' : 'none';
 
-        // Markers: full render only when zones or session changed; selection uses icon update
+        // Markers: full render when zones/session change; only update icons when selection changes
         const zoneKey = `${state.zones.length}|${state.session ? '1' : '0'}`;
         const selKey = state.selectedZone || '';
-        if (zoneKey !== _lastMarkerKey.split('|')[0] + '|' + (_lastMarkerKey.split('|')[1] || '')) {
-            _lastMarkerKey = `${zoneKey}|${selKey}`;
+        if (zoneKey !== _lastMarkerKey) {
+            _lastMarkerKey = zoneKey;
+            _lastSelectedZone = selKey;
             renderMapMarkers();
-        } else if (selKey !== (_lastMarkerKey.split('|')[2] || '')) {
-            _lastMarkerKey = `${zoneKey}|${selKey}`;
+        } else if (selKey !== _lastSelectedZone) {
+            _lastSelectedZone = selKey;
             updateMarkerSelection();
         }
 
