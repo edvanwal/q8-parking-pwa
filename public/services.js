@@ -596,9 +596,9 @@ Q8.Services = (function() {
                 return;
             }
             if (result.found && result.data) {
-                const brand = (result.data.merk || '') + (result.data.handelsbenaming ? ' ' + result.data.handelsbenaming : '').trim();
+                const brand = ((result.data.merk || '') + (result.data.handelsbenaming ? ' ' + result.data.handelsbenaming : '')).trim();
                 const soort = result.data.voertuigsoort || '';
-                resultEl.textContent = (S.get.language === 'nl' ? 'Gevonden: ' : 'Found: ') + (brand.trim() || soort || 'RDW');
+                resultEl.textContent = (S.get.language === 'nl' ? 'Gevonden: ' : 'Found: ') + (brand || soort || 'RDW');
                 resultEl.classList.add('plate-rdw-ok');
             } else {
                 resultEl.textContent = S.get.language === 'nl' ? 'Niet gevonden in RDW-register.' : 'Not found in RDW register.';

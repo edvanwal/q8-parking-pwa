@@ -270,6 +270,15 @@ Q8.UI = (function() {
             if (rates.length === 0 && zone && zone.rates) rates.push(...zone.rates);
             renderRatesList(list, rates);
         }
+
+        // Favorite button state
+        const favOutline = document.getElementById('fav-icon-outline');
+        const favFilled = document.getElementById('fav-icon-filled');
+        const zoneUid = state.selectedZone;
+        const zoneId = zone ? zone.id : state.selectedZone;
+        const isFav = zoneUid && (state.favorites || []).some(f => f.zoneUid === zoneUid || (f.zoneId === zoneId && !f.zoneUid));
+        if (favOutline) favOutline.style.display = isFav ? 'none' : 'block';
+        if (favFilled) favFilled.style.display = isFav ? 'block' : 'none';
     }
 
     function renderRatesList(container, rates) {
