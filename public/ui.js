@@ -97,11 +97,15 @@ Q8.UI = (function() {
         if (idleSearch) idleSearch.style.display = isActive ? 'none' : 'block';
         if (activeParking) activeParking.style.display = isActive ? 'block' : 'none';
 
-        // Markers: only re-render when zones, selectedZone, or session changed (not on search keystrokes)
-        const markerKey = `${state.zones.length}|${state.selectedZone || ''}|${state.session ? '1' : '0'}`;
-        if (markerKey !== _lastMarkerKey) {
-            _lastMarkerKey = markerKey;
+        // Markers: full render only when zones or session changed; selection uses icon update
+        const zoneKey = `${state.zones.length}|${state.session ? '1' : '0'}`;
+        const selKey = state.selectedZone || '';
+        if (zoneKey !== _lastMarkerKey.split('|')[0] + '|' + (_lastMarkerKey.split('|')[1] || '')) {
+            _lastMarkerKey = `${zoneKey}|${selKey}`;
             renderMapMarkers();
+        } else if (selKey !== (_lastMarkerKey.split('|')[2] || '')) {
+            _lastMarkerKey = `${zoneKey}|${selKey}`;
+            updateMarkerSelection();
         }
 
         // Marker cursor (legacy DOM markers if any)
