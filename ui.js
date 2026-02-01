@@ -792,9 +792,9 @@ Q8.UI = (function() {
 
     function makePriceMarkerIcon(priceText, isSelected) {
         const fill = isSelected ? '#ce1818' : '#1E4A99';
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 44">
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 44" style="shape-rendering:geometricPrecision">
           <path d="M 12 0 L 84 0 Q 96 0 96 12 L 96 24 Q 96 32 88 32 L 52 32 L 48 44 L 44 32 L 8 32 Q 0 32 0 24 L 0 12 Q 0 0 12 0 Z" fill="${fill}"/>
-          <text x="48" y="19" text-anchor="middle" fill="white" font-size="14" font-weight="bold" font-family="sans-serif">${priceText}</text>
+          <text x="48" y="16" text-anchor="middle" dominant-baseline="central" fill="white" font-size="14" font-weight="600" font-family="Arial,sans-serif" style="-webkit-font-smoothing:antialiased">${priceText}</text>
         </svg>`;
         return {
             url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
