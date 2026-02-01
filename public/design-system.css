@@ -22,11 +22,11 @@
   /* State */
   --q8-danger: #DC2626;
 
-  /* --- Mapping to Application Variables --- */
-  --primary: var(--q8-blue-900);
-  --primary-dark: var(--q8-blue-900); /* Mapped to brand */
-  --btn-primary-bg: var(--q8-blue-900);
-  --brand-navy: var(--q8-blue-900);
+  /* --- Mapping to Application Variables (marker blue #1E4A99 door hele app) --- */
+  --primary: #1E4A99;
+  --primary-dark: #1E4A99;
+  --btn-primary-bg: #1E4A99;
+  --brand-navy: #1E4A99;
 
   --bg-app: var(--q8-bg);
   --surface: var(--q8-surface);
