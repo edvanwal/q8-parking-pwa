@@ -747,7 +747,6 @@ Q8.UI = (function() {
     // --- GOOGLE MAPS ---
 
     let map;
-    let gMarkers = [];
     const UTRECHT_CENTER = { lat: 52.0907, lng: 5.1214 };
 
     // DIAG: Set window.Q8_DIAG = true to log Maps loading steps

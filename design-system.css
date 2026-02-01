@@ -193,6 +193,44 @@
     background: #f0f0f0; /* Fallback */
 }
 
+/* Q8 Price Markers (OverlayView - fixed size, no shrink bug) */
+.q8-price-marker {
+    position: absolute;
+    width: 96px;
+    height: 44px;
+    margin-left: -48px;
+    margin-top: -44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1E4A99;
+    border-radius: 12px;
+    box-sizing: border-box;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: Arial, sans-serif;
+    color: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    pointer-events: auto;
+    -webkit-font-smoothing: antialiased;
+}
+.q8-price-marker::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    margin-left: -8px;
+    border: 8px solid transparent;
+    border-top-color: #1E4A99;
+}
+.q8-price-marker.q8-price-marker--selected {
+    background: #ce1818;
+}
+.q8-price-marker.q8-price-marker--selected::after {
+    border-top-color: #ce1818;
+}
+
 /* Leaflet Custom Marker Reset */
 .leaflet-div-icon.custom-map-marker {
     background: transparent;
