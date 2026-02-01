@@ -512,7 +512,7 @@ Q8.UI = (function() {
 
         // Only show button if we have history (or if filters are active to allow clearing)
         if (state.history.length > 0 || filters.vehicles.length > 0 || filters.dateRange !== 'all' || filters.customStart || filters.customEnd) {
-            const activeCount = filters.vehicles.length + (filters.customStart ? 1 : 0) + (filters.customEnd ? 1 : 0);
+            const activeCount = filters.vehicles.length + (filters.dateRange !== 'all' ? 1 : 0) + (filters.customStart ? 1 : 0) + (filters.customEnd ? 1 : 0);
             const badge = activeCount > 0 ? `<span class="filter-badge-count">${activeCount}</span>` : '';
 
             btnContainer.innerHTML = `
