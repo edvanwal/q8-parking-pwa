@@ -326,8 +326,8 @@ body {
 .header-logo { height: 54px; width: auto; object-fit: contain; margin-left: -4px; } /* Max size as requested */
 .login-logo-img { height: 128px; width: auto; margin: 0 auto; display: block; margin-bottom: 4px; }
 
-.page-title { font-weight: 700; font-size: 1.1rem; position: absolute; left: 50%; transform: translateX(-50%); color: var(--q8-blue-900); letter-spacing: 0.3px; }
-.top-bar .icon-btn { color: var(--q8-blue-900); }
+.page-title { font-weight: 700; font-size: 1.1rem; position: absolute; left: 50%; transform: translateX(-50%); color: #1E4A99; letter-spacing: 0.3px; }
+.top-bar .icon-btn { color: #1E4A99; }
 
 /* Components: Buttons */
 .icon-btn {
