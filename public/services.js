@@ -290,6 +290,43 @@ Q8.Services = (function() {
         else if(typeof window.showToast === 'function') window.showToast('Parking session ended');
     }
 
+    // --- MODIFY ACTIVE SESSION END TIME ---
+    function modifyActiveSessionEnd(delta) {
+        const session = S.get.session;
+        if (!session) return;
+
+        const zone = S.get.zones.find(z => z.uid === session.zoneUid || z.id === session.zoneUid) ||
+                     S.get.zones.find(z => z.id === session.zone);
+        const maxDurMins = (zone && zone.max_duration_mins && zone.max_duration_mins > 0) ? zone.max_duration_mins : 1440;
+
+        const now = new Date();
+        const stepMins = Math.abs(delta) >= 60 ? 60 : 30;
+        const stepMs = (delta > 0 ? stepMins : -stepMins) * 60000;
+
+        let newEnd;
+
+        if (!session.end) {
+            if (delta > 0) {
+                newEnd = new Date(now.getTime() + stepMins * 60000);
+                if (newEnd.getTime() - now.getTime() > maxDurMins * 60000) newEnd = new Date(now.getTime() + maxDurMins * 60000);
+            } else return;
+        } else {
+            const endDate = session.end instanceof Date ? session.end : new Date(session.end);
+            if (delta > 0) {
+                newEnd = new Date(endDate.getTime() + stepMs);
+                const maxEnd = new Date(now.getTime() + maxDurMins * 60000);
+                if (newEnd > maxEnd) newEnd = maxEnd;
+            } else {
+                const newEndTime = endDate.getTime() + stepMs;
+                if (newEndTime <= now.getTime()) newEnd = null;
+                else newEnd = new Date(newEndTime);
+            }
+        }
+
+        S.update({ session: { ...session, end: newEnd } });
+        S.save();
+    }
+
     // --- PLATE MANAGEMENT ---
 
     // --- LICENSE PLATE ADD (fragile) ---
