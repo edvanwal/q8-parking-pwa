@@ -820,26 +820,26 @@ body {
   display: block; opacity: 1; pointer-events: auto;
 }
 .side-menu {
-  position: fixed; top: 0; right: 0; bottom: 0; width: 85%; max-width: 300px;
+  position: fixed; top: 0; right: 0; bottom: 0; width: 90%; max-width: 360px;
   left: auto;
   background: var(--surface); z-index: calc(var(--z-overlay) + 1);
   transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.15);
-  padding: 36px 16px 20px;
+  padding: 40px 20px 24px;
   border-radius: 16px 0 0 16px;
 }
 .side-menu.open { transform: translateX(0); }
-.side-menu .menu-items { flex: 1; display: flex; flex-direction: column; gap: 14px; }
+.side-menu .menu-items { flex: 1; display: flex; flex-direction: column; gap: 16px; }
 /* Pill-shaped menu items (original design) */
 .side-menu .menu-item-pill {
-  display: flex; align-items: center; gap: 12px; padding: 14px 16px;
-  font-size: 0.9375rem; color: var(--text-main); cursor: pointer;
+  display: flex; align-items: center; gap: 14px; padding: 16px 18px;
+  font-size: 1rem; color: var(--text-main); cursor: pointer;
   border: none; background: #F3F4F6; border-radius: 12px;
   width: 100%; text-align: left;
 }
 .side-menu .menu-item-pill:active { background: #E5E7EB; }
 .side-menu .menu-icon-circle {
-  width: 28px; height: 28px;
+  width: 32px; height: 32px;
   display: flex; align-items: center; justify-content: center;
   color: var(--text-secondary); flex-shrink: 0;
 }
@@ -848,7 +848,7 @@ body {
   display: flex; gap: 10px; margin-top: 16px; flex-shrink: 0;
 }
 .side-menu .menu-lang-btn {
-  flex: 1; padding: 12px 10px; font-size: 0.8125rem; font-weight: 700;
+  flex: 1; padding: 14px 12px; font-size: 0.875rem; font-weight: 700;
   border-radius: 10px; cursor: pointer; text-align: center;
   border: 1.5px solid #1E4A99; background: var(--surface); color: var(--text-main);
   display: flex; align-items: center; justify-content: center; gap: 6px;
@@ -861,8 +861,8 @@ body {
   flex-shrink: 0; padding-top: 12px; margin-top: auto; margin-bottom: 16px;
 }
 .side-menu .menu-signout-btn {
-  display: block; width: 100%; padding: 14px 20px; margin: 0;
-  font-size: 0.875rem; font-weight: 700; letter-spacing: 0.03em;
+  display: block; width: 100%; padding: 16px 24px; margin: 0;
+  font-size: 0.9375rem; font-weight: 700; letter-spacing: 0.03em;
   text-transform: uppercase; color: white; background: #ce1818;
   border: none; border-radius: 12px; cursor: pointer;
 }
