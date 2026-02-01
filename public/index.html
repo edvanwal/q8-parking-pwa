@@ -113,7 +113,10 @@
 </head>
 <body>
 
-<div id="app">
+<!-- Skip Link for Accessibility -->
+<a href="#main-content" class="sr-only" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;" onfocus="this.style.left='0';this.style.width='auto';this.style.height='auto';" onblur="this.style.left='-9999px';this.style.width='1px';this.style.height='1px';">Skip to main content</a>
+
+<div id="app" role="application" aria-label="Q8 Parking Application">
 
   <!-- === VIEW: LOGIN === -->
   <div id="view-login" class="screen flex-col overflow-y-auto bg-surface">

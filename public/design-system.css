@@ -1315,3 +1315,491 @@ body {
   border-right: 6px solid transparent;
   border-top: 6px solid var(--primary);
 }
+
+
+/* ============================================ */
+/* RESPONSIVE BREAKPOINTS & CROSS-PLATFORM     */
+/* ============================================ */
+
+/* --- Safe Area Insets (Extended) --- */
+:root {
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+}
+
+/* Apply safe areas to key elements */
+.top-bar {
+  padding-top: max(0px, var(--safe-area-top));
+  padding-left: max(20px, calc(20px + var(--safe-area-left)));
+  padding-right: max(20px, calc(20px + var(--safe-area-right)));
+}
+
+.bottom-sheet {
+  padding-left: max(var(--space-3), calc(var(--space-3) + var(--safe-area-left)));
+  padding-right: max(var(--space-3), calc(var(--space-3) + var(--safe-area-right)));
+}
+
+.active-parking-card {
+  padding-bottom: max(32px, calc(32px + var(--safe-area-bottom)));
+}
+
+/* --- Very Small Phones (320px - 374px) --- */
+@media screen and (max-width: 374px) {
+  :root {
+    --space-2: 12px;
+    --space-3: 18px;
+  }
+  
+  .btn-lg {
+    font-size: 0.95rem;
+    padding: 12px;
+    height: 48px;
+  }
+  
+  .page-title {
+    font-size: 0.95rem;
+  }
+  
+  .login-logo-img {
+    height: 100px;
+  }
+  
+  .top-bar {
+    height: 60px;
+    padding: 0 12px;
+  }
+  
+  .header-logo {
+    height: 44px;
+  }
+  
+  .map-search-float {
+    left: 8px;
+    right: 8px;
+    padding: 10px 40px 10px 12px;
+  }
+  
+  .sheet-zone-title-row {
+    gap: 8px;
+  }
+  
+  .zone-badge-box--sheet {
+    height: 32px;
+  }
+  
+  .sheet-zone-plate-badge {
+    padding: 4px 10px;
+    font-size: 0.85rem;
+  }
+  
+  .sheet-duration-control {
+    padding: 6px;
+  }
+  
+  .sheet-duration-btn {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .active-parking-card {
+    padding: 16px 16px 24px 16px;
+  }
+  
+  .lang-btn {
+    padding: 10px 8px;
+    font-size: 0.75rem;
+  }
+  
+  .input-lg {
+    padding: 12px 14px;
+    font-size: 0.95rem;
+  }
+}
+
+/* --- Small Phones (375px - 389px) --- */
+@media screen and (min-width: 375px) and (max-width: 389px) {
+  .login-logo-img {
+    height: 110px;
+  }
+  
+  .lang-btn {
+    font-size: 0.8rem;
+  }
+}
+
+/* --- Standard Phones (390px - 428px) --- */
+/* Default styles apply - this is the baseline */
+
+/* --- Large Phones (429px - 480px) --- */
+@media screen and (min-width: 429px) {
+  .login-container {
+    max-width: 420px;
+  }
+  
+  .modal-card {
+    max-width: 420px;
+  }
+  
+  .top-bar {
+    height: 76px;
+  }
+  
+  .header-logo {
+    height: 58px;
+  }
+}
+
+/* --- Tablets and Desktop (481px+) --- */
+@media screen and (min-width: 481px) {
+  #app {
+    box-shadow: 0 0 60px rgba(0,0,0,0.12);
+    border-radius: 20px;
+    margin: 20px auto;
+    max-height: calc(100vh - 40px);
+  }
+  
+  body {
+    background: #f0f2f5;
+    padding: 20px;
+  }
+  
+  .login-container {
+    max-width: 400px;
+  }
+  
+  .map-search-float {
+    max-width: 450px;
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
+    width: calc(100% - 32px);
+  }
+  
+  .bottom-sheet {
+    max-width: 480px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100%);
+    border-radius: 24px 24px 0 0;
+  }
+  
+  .overlay-backdrop.open .bottom-sheet {
+    transform: translateX(-50%) translateY(0);
+  }
+  
+  .active-parking-overlay {
+    max-width: 480px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* --- Large Tablets (768px+) --- */
+@media screen and (min-width: 768px) {
+  #app {
+    max-width: 500px;
+  }
+  
+  .modal-card {
+    max-width: 450px;
+  }
+}
+
+/* --- Landscape Mode --- */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .top-bar {
+    height: 52px;
+  }
+  
+  .header-logo {
+    height: 40px;
+  }
+  
+  .login-logo-img {
+    height: 70px;
+    margin-bottom: 8px;
+  }
+  
+  .logo-block {
+    margin-top: var(--space-1);
+    margin-bottom: var(--space-2);
+  }
+  
+  .bottom-sheet {
+    max-height: 85vh;
+  }
+  
+  .active-parking-card {
+    padding: 16px 24px 20px 24px;
+  }
+  
+  .mb-xl {
+    margin-bottom: 16px;
+  }
+}
+
+/* --- Accessibility: Touch Targets --- */
+/* Ensure minimum 44x44px touch targets per WCAG 2.5.5 */
+.btn {
+  min-height: 44px;
+}
+
+.icon-btn {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.nav-item {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+.list-item {
+  min-height: 48px;
+}
+
+.search-result-item {
+  min-height: 48px;
+}
+
+.sheet-duration-btn {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.menu-item-pill {
+  min-height: 48px;
+}
+
+.filter-pill {
+  min-height: 44px;
+}
+
+/* --- Accessibility: Focus States --- */
+.btn:focus-visible,
+.icon-btn:focus-visible,
+.input-field:focus-visible,
+.menu-item-pill:focus-visible,
+.list-item:focus-visible {
+  outline: 2px solid var(--q8-blue-700);
+  outline-offset: 2px;
+}
+
+/* Remove default focus outline for mouse users */
+.btn:focus:not(:focus-visible),
+.icon-btn:focus:not(:focus-visible),
+.input-field:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* --- Accessibility: Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .overlay-backdrop .bottom-sheet {
+    transition: none;
+  }
+  
+  .toast {
+    transition: none;
+  }
+  
+  .btn:active {
+    transform: none;
+  }
+}
+
+/* --- Platform-Specific: iOS --- */
+body.platform-ios {
+  /* Disable iOS bounce effect */
+  overscroll-behavior: none;
+}
+
+body.platform-ios .content {
+  -webkit-overflow-scrolling: touch;
+}
+
+body.platform-ios input,
+body.platform-ios textarea,
+body.platform-ios select {
+  /* Prevent zoom on focus */
+  font-size: 16px;
+}
+
+/* --- Platform-Specific: Android --- */
+body.platform-android .input-field:focus {
+  /* Better visual feedback on Android */
+  border-color: var(--q8-blue-700);
+  box-shadow: 0 0 0 2px rgba(30, 74, 153, 0.15);
+}
+
+/* --- Platform-Specific: Standalone Mode --- */
+body.standalone .top-bar {
+  /* Extra padding for notched devices in standalone mode */
+  padding-top: max(12px, calc(var(--safe-area-top) + 4px));
+}
+
+body.standalone .map-search-float {
+  top: max(16px, calc(var(--safe-area-top) + 16px));
+}
+
+/* --- Dark Mode Support (Future) --- */
+@media (prefers-color-scheme: dark) {
+  /* Dark mode styles can be added here when needed */
+  /* Currently disabled - app uses light theme only */
+}
+
+/* --- High Contrast Mode --- */
+@media (prefers-contrast: high) {
+  :root {
+    --border: #333333;
+    --text-secondary: #555555;
+  }
+  
+  .btn-primary {
+    border: 2px solid white;
+  }
+  
+  .card {
+    border-width: 2px;
+  }
+}
+
+/* --- Print Styles --- */
+@media print {
+  body {
+    background: white;
+  }
+  
+  #app {
+    box-shadow: none;
+    max-width: 100%;
+  }
+  
+  .overlay-backdrop,
+  .side-menu,
+  .toast-container,
+  .map-search-float,
+  .active-parking-overlay {
+    display: none !important;
+  }
+}
+
+/* --- Touch Device Optimizations --- */
+body.has-touch {
+  /* Disable hover effects on touch devices */
+}
+
+body.has-touch .btn:hover,
+body.has-touch .icon-btn:hover,
+body.has-touch .list-item:hover {
+  background: inherit;
+}
+
+/* --- Notch Device Adjustments --- */
+body.has-notch .top-bar {
+  height: calc(72px + var(--safe-area-top));
+}
+
+body.has-notch .map-search-float {
+  top: calc(var(--safe-area-top) + 20px);
+}
+
+/* --- Loading States --- */
+.btn.loading {
+  position: relative;
+  pointer-events: none;
+  color: transparent;
+}
+
+.btn.loading::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top-color: white;
+  border-radius: 50%;
+  animation: btn-spin 0.8s linear infinite;
+}
+
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --- Skeleton Loading --- */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* --- Error States --- */
+.input-field.error {
+  border-color: var(--danger);
+  background-color: var(--danger-bg);
+}
+
+.input-field.error:focus {
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15);
+}
+
+.error-message {
+  color: var(--danger);
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+/* --- Success States --- */
+.input-field.success {
+  border-color: var(--success);
+}
+
+.success-message {
+  color: var(--success);
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+/* --- Utility: Hide on specific platforms --- */
+.hide-ios { display: block; }
+.hide-android { display: block; }
+.show-ios { display: none; }
+.show-android { display: none; }
+
+body.platform-ios .hide-ios { display: none; }
+body.platform-ios .show-ios { display: block; }
+body.platform-android .hide-android { display: none; }
+body.platform-android .show-android { display: block; }
+
+/* --- Utility: Standalone-only visibility --- */
+.standalone-only { display: none; }
+.browser-only { display: block; }
+
+body.standalone .standalone-only { display: block; }
+body.standalone .browser-only { display: none; }
+
+/* --- Screen Reader Only --- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
