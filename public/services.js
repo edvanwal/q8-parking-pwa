@@ -173,7 +173,7 @@ Q8.Services = (function() {
                 return;
             }
 
-            // Context Data Processing (matches app_recovery: uid/zone, price, rates, duration=120)
+            // Context Data Processing (uid/zone, price, rates; duration default = 0 = Until stopped)
             if (contextData) {
                 const zoneUid = contextData.uid || contextData.zone;
                 if (!zoneUid) {
