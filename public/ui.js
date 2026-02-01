@@ -281,9 +281,14 @@ Q8.UI = (function() {
                  const fmt = (h, m) => (parseInt(h, 10) < 10 ? String(h).replace(/^0/, '') : h) + ':' + m;
                  displayTime = `${fmt(timeMatch[1], timeMatch[2])} – ${fmt(timeMatch[3], timeMatch[4])}`;
              }
-             const isFree = r.price.toLowerCase().includes('free') || r.price.toLowerCase().includes('gratis');
+             const priceStr = (r.price != null && r.price !== '') ? String(r.price) : '';
+             const isFree = !priceStr ||
+                 priceStr.toLowerCase().includes('free') ||
+                 priceStr.toLowerCase().includes('gratis') ||
+                 priceStr.replace(/[^\d,.]/g, '').replace(',', '.') === '0' ||
+                 parseFloat(priceStr.replace(/[^\d,.]/g, '').replace(',', '.')) === 0;
              const color = isFree ? '#10b981' : 'var(--q8-blue)';
-             const label = isFree ? 'Free parking' : r.price;
+             const label = isFree ? 'Free' : (priceStr || r.price);
 
              let detail = '';
              if (r.detail) {
@@ -300,7 +305,7 @@ Q8.UI = (function() {
                         <span class="rate-time">${displayTime}</span>
                         ${detail}
                     </div>
-                    ${!isFree || label !== 'Free parking' ? `<span class="rate-price" style="color: ${color};">${label}</span>` : ''}
+                    <span class="rate-price" style="color: ${color};">${label}</span>
                 </div>
              `;
         }).join('');
