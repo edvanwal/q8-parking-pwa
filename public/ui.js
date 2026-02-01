@@ -398,6 +398,46 @@ Q8.UI = (function() {
         if (btnSetDefault) btnSetDefault.disabled = !selectionValid;
     }
 
+    function renderFavorites() {
+        const state = S.get;
+        const list = document.getElementById('list-favorites');
+        const intro = document.getElementById('fav-intro-text');
+        if (!list) return;
+        if (intro) intro.innerText = state.language === 'nl' ? 'Je favoriete parkeerzones. Tik om te starten.' : 'Your favorite parking zones. Tap to start.';
+
+        const favorites = state.favorites || [];
+        if (favorites.length === 0) {
+            list.innerHTML = `<div class="text-secondary" style="padding:24px; text-align:center; font-size:0.9rem;">${state.language === 'nl' ? 'Nog geen favorieten. Markeer zones als favoriet in de zone-details.' : 'No favorites yet. Mark zones as favorite from the zone details.'}</div>`;
+            return;
+        }
+
+        list.innerHTML = favorites.map(f => {
+            const zone = state.zones.find(z => z.uid === f.zoneUid || z.id === f.zoneUid || z.id === f.zoneId);
+            const uid = zone ? (zone.uid || zone.id) : f.zoneUid || f.zoneId;
+            const zoneId = zone ? zone.id : f.zoneId || f.zoneUid || '?';
+            const street = zone && zone.street ? zone.street : '';
+            const houseNumber = zone && zone.houseNumber ? zone.houseNumber : '';
+            const city = zone && zone.city ? zone.city : '';
+            const addr = street ? `${street}${houseNumber ? ' ' + houseNumber : ''}${city ? ', ' + city : ''}` : (city ? `${zoneId}, ${city}` : zoneId);
+            const price = zone && zone.price != null ? zone.price : null;
+            const rates = zone && zone.rates ? zone.rates : [];
+            return `
+            <div class="card flex justify-between items-center" style="padding:16px 20px; cursor:pointer;" data-action="open-overlay" data-target="sheet-zone" data-zone-uid="${uid}" data-zone="${zoneId}" data-price="${price || ''}" data-rates='${JSON.stringify(rates)}'>
+               <div class="flex-col no-pointer" style="flex:1;">
+                  <div class="font-bold text-lg no-pointer" style="line-height:1.2;">Zone ${zoneId}</div>
+                  <div class="text-secondary text-sm no-pointer" style="margin-top:2px;">${addr}</div>
+               </div>
+               <div class="flex items-center gap-sm no-pointer">
+                  ${price != null ? `<span class="font-bold text-primary no-pointer">€ ${Number(price).toFixed(2).replace('.', ',')}</span>` : ''}
+                  <button class="icon-btn ptr-enabled" data-action="remove-favorite" data-zone-uid="${uid}" data-zone-id="${zoneId}" title="${state.language === 'nl' ? 'Verwijderen' : 'Remove'}" style="padding:6px; color:#ce1818;" onclick="event.stopPropagation();">
+                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                  </button>
+               </div>
+            </div>`;
+        }).join('');
+        list.querySelectorAll('.ptr-enabled').forEach(el => { el.style.pointerEvents = 'auto'; });
+    }
+
     function renderNotifications() {
         const state = S.get;
         const settingsList = document.getElementById('notif-settings-list');
