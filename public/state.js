@@ -115,6 +115,9 @@ Q8.State = (function() {
             _state.plates = [{ id: '1-ABC-123', text: '1-ABC-123', description: 'Lease', default: true }];
             savePlates(); // Persist initial seed
         }
+
+        // 3. Notifications
+        loadNotifications();
     }
 
     // Risk: localStorage.setItem can throw (quota exceeded, private mode) - would propagate to caller.
@@ -143,10 +146,12 @@ Q8.State = (function() {
     }
 
     return {
-        get: _state, // Direct access to state object
+        get: _state,
         update: update,
         load: load,
         save: save,
-        savePlates: savePlates
+        savePlates: savePlates,
+        saveNotifications: saveNotifications,
+        loadNotifications: loadNotifications
     };
 })();
