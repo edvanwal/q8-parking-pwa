@@ -772,6 +772,34 @@ Q8.UI = (function() {
         if (!container) return;
 
         const shouldShow = state.screen === 'parking' && state.searchMode === 'zone' && state.searchQuery.length >= 2 && state.activeOverlay === null;
+        const favQuick = document.getElementById('ui-favorites-quick');
+        const favs = state.favorites || [];
+        const showFavQuick = state.screen === 'parking' && !state.session && state.activeOverlay === null && favs.length > 0 && state.searchQuery.length < 2;
+        if (favQuick) {
+            favQuick.style.display = showFavQuick ? 'block' : 'none';
+            favQuick.className = showFavQuick ? 'search-results-panel search-results-panel--pill' : 'hidden';
+            if (showFavQuick) {
+                const favUids = new Set(favs.map(f => f.zoneUid || f.zoneId));
+                const favZones = favs.map(f => {
+                    const zone = state.zones.find(z => z.uid === f.zoneUid || z.id === f.zoneUid || z.id === f.zoneId);
+                    return zone ? { ...zone, zoneUid: zone.uid || zone.id } : null;
+                }).filter(Boolean);
+                favQuick.innerHTML = `
+                  <div class="text-secondary text-xs font-bold mb-sm" style="padding:12px 16px 0; letter-spacing:0.05em;">${state.language === 'nl' ? 'JE FAVORIETEN' : 'YOUR FAVORITES'}</div>
+                  ${favZones.length === 0 ? '<div class="text-secondary text-sm" style="padding:12px 16px;">' + (state.language === 'nl' ? 'Geen favorieten in deze sessie' : 'No favorites loaded') + '</div>' : favZones.map(z => {
+                    const street = z.street || '';
+                    const houseNumber = z.houseNumber || '';
+                    const city = z.city || '';
+                    const zoneId = z.id || '';
+                    const addr = street ? `${street}${houseNumber ? ' ' + houseNumber : ''}${city ? ', ' + city : ''}` : (city ? `${zoneId}, ${city}` : zoneId);
+                    return `<div class="search-result-item" data-action="open-overlay" data-target="sheet-zone" data-zone-uid="${z.uid}" data-zone="${zoneId}" data-price="${z.price}" data-rates='${JSON.stringify(z.rates || [])}'>
+                      <span class="search-result-text">♥ ${addr}</span>
+                      <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
+                    </div>`;
+                  }).join('')}
+                `;
+            }
+        }
         if (!shouldShow) {
             container.style.display = 'none';
             return;
