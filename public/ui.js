@@ -805,7 +805,7 @@ Q8.UI = (function() {
         panes.overlayMouseTarget.appendChild(this.container);
     };
     PriceMarkersOverlay.prototype.draw = function() {
-        if (!this.map || !this.container || !this.getProjection()) return;
+        if (!this.getMap() || !this.container || !this.getProjection()) return;
         const proj = this.getProjection();
         const state = S.get;
         this.container.innerHTML = '';

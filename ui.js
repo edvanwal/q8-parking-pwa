@@ -795,73 +795,65 @@ Q8.UI = (function() {
         diagMaps('initGoogleMap', 'done');
     }
 
-    function makePriceMarkerIcon(priceText, isSelected) {
-        const fill = isSelected ? '#ce1818' : '#1E4A99';
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 44" style="shape-rendering:geometricPrecision">
-          <path d="M 12 0 L 84 0 Q 96 0 96 12 L 96 24 Q 96 32 88 32 L 52 32 L 48 44 L 44 32 L 8 32 Q 0 32 0 24 L 0 12 Q 0 0 12 0 Z" fill="${fill}"/>
-          <text x="48" y="16" text-anchor="middle" dominant-baseline="central" fill="white" font-size="14" font-weight="600" font-family="Arial,sans-serif" style="-webkit-font-smoothing:antialiased">${priceText}</text>
-        </svg>`;
-        return {
-            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
-            scaledSize: new google.maps.Size(96, 44),
-            anchor: new google.maps.Point(48, 44)
-        };
-    }
-
-    let _markerZones = [];
-
-    function renderMapMarkers() {
+    /* OverlayView-based markers: DOM divs with fixed CSS size - avoids Google Maps icon shrink bug */
+    function PriceMarkersOverlay() {}
+    PriceMarkersOverlay.prototype = new google.maps.OverlayView();
+    PriceMarkersOverlay.prototype.onAdd = function() {
+        this.container = document.createElement('div');
+        this.container.style.cssText = 'position:absolute;left:0;top:0;pointer-events:none;';
+        const panes = this.getPanes();
+        panes.overlayMouseTarget.appendChild(this.container);
+    };
+    PriceMarkersOverlay.prototype.draw = function() {
+        if (!this.getMap() || !this.container || !this.getProjection()) return;
+        const proj = this.getProjection();
         const state = S.get;
-        if (!map) return;
-
-        gMarkers.forEach(m => m.setMap(null));
-        gMarkers = [];
-        _markerZones = [];
-
+        this.container.innerHTML = '';
         state.zones.forEach(z => {
             if (!z.lat || !z.lng) return;
-
             const priceLabel = z.display_label || (typeof z.price === 'number'
                 ? z.price.toFixed(2).replace('.', ',')
                 : String(z.price));
             const priceText = z.price === 0 ? 'Free' : '€ ' + priceLabel.substring(0, 6);
             const isSelected = (z.uid && z.uid === state.selectedZone) || (z.id && String(z.id) === String(state.selectedZone));
-
-            const marker = new google.maps.Marker({
-                map: map,
-                position: { lat: z.lat, lng: z.lng },
-                title: 'Zone ' + (z.id || z.uid) + ' - € ' + priceLabel,
-                icon: makePriceMarkerIcon(priceText, isSelected)
-            });
-            marker.addListener('click', function() {
+            const pt = proj.fromLatLngToDivPixel(new google.maps.LatLng(z.lat, z.lng));
+            if (!pt) return;
+            const el = document.createElement('div');
+            el.className = 'q8-price-marker' + (isSelected ? ' q8-price-marker--selected' : '');
+            el.textContent = priceText;
+            el.title = 'Zone ' + (z.id || z.uid) + ' - € ' + priceLabel;
+            el.style.left = pt.x + 'px';
+            el.style.top = pt.y + 'px';
+            el.addEventListener('click', function(e) {
+                e.stopPropagation();
                 if (Q8.Services && Q8.Services.tryOpenOverlay) {
-                    Q8.Services.tryOpenOverlay('sheet-zone', {
-                        uid: z.uid,
-                        zone: z.id,
-                        price: z.price,
-                        rates: z.rates
-                    });
+                    Q8.Services.tryOpenOverlay('sheet-zone', { uid: z.uid, zone: z.id, price: z.price, rates: z.rates });
                 }
             });
-            gMarkers.push(marker);
-            _markerZones.push(z);
+            this.container.appendChild(el);
         });
+    };
+    PriceMarkersOverlay.prototype.onRemove = function() {
+        if (this.container && this.container.parentNode) {
+            this.container.parentNode.removeChild(this.container);
+        }
+    };
+
+    let priceMarkersOverlay = null;
+
+    function renderMapMarkers() {
+        if (!map) return;
+        if (!priceMarkersOverlay) {
+            priceMarkersOverlay = new PriceMarkersOverlay();
+            priceMarkersOverlay.setMap(map);
+            google.maps.event.addListener(map, 'idle', function() { if (priceMarkersOverlay) priceMarkersOverlay.draw(); });
+            google.maps.event.addListener(map, 'bounds_changed', function() { if (priceMarkersOverlay) priceMarkersOverlay.draw(); });
+        }
+        priceMarkersOverlay.draw();
     }
 
     function updateMarkerSelection() {
-        const state = S.get;
-        if (!map || gMarkers.length !== _markerZones.length) return;
-
-        gMarkers.forEach((marker, i) => {
-            const z = _markerZones[i];
-            if (!z) return;
-            const priceLabel = z.display_label || (typeof z.price === 'number'
-                ? z.price.toFixed(2).replace('.', ',')
-                : String(z.price));
-            const priceText = z.price === 0 ? 'Free' : '€ ' + priceLabel.substring(0, 6);
-            const isSelected = (z.uid && z.uid === state.selectedZone) || (z.id && String(z.id) === String(state.selectedZone));
-            marker.setIcon(makePriceMarkerIcon(priceText, isSelected));
-        });
+        if (priceMarkersOverlay) priceMarkersOverlay.draw();
     }
 
     function ensureMapResized() {
