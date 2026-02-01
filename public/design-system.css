@@ -197,13 +197,14 @@
 .q8-price-marker {
     position: absolute;
     width: 96px;
-    height: 44px;
+    height: 34px;
     margin-left: -48px;
     margin-top: -44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #1E4A99;
+    background-color: #1E4A99;
+    border: none;
     border-radius: 12px;
     box-sizing: border-box;
     cursor: pointer;
@@ -211,7 +212,7 @@
     font-weight: 600;
     font-family: Arial, sans-serif;
     color: white;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     pointer-events: auto;
     -webkit-font-smoothing: antialiased;
 }
@@ -220,12 +221,17 @@
     position: absolute;
     bottom: -10px;
     left: 50%;
-    margin-left: -8px;
-    border: 8px solid transparent;
-    border-top-color: #1E4A99;
+    margin-left: -6px;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 10px solid #1E4A99;
+    border-bottom: none;
+    background: transparent;
 }
 .q8-price-marker.q8-price-marker--selected {
-    background: #ce1818;
+    background-color: #ce1818;
 }
 .q8-price-marker.q8-price-marker--selected::after {
     border-top-color: #ce1818;
