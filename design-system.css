@@ -849,7 +849,7 @@ body {
 .side-menu .menu-lang-btn {
   flex: 1; padding: 12px 10px; font-size: 0.8125rem; font-weight: 700;
   border-radius: 10px; cursor: pointer; text-align: center;
-  border: 1.5px solid var(--border); background: var(--surface); color: var(--text-main);
+  border: 1.5px solid #1E4A99; background: var(--surface); color: var(--text-main);
   display: flex; align-items: center; justify-content: center; gap: 6px;
 }
 .side-menu .menu-lang-btn.active {
