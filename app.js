@@ -223,15 +223,42 @@ Q8.App = (function() {
                         historyFilters: {
                             ...S.get.historyFilters,
                             vehicles: [],
+                            dateRange: 'all',
                             customStart: null,
                             customEnd: null
                         }
                     });
                     break;
 
-                case 'apply-filters':
-                    S.update({ activeOverlay: null });
+                case 'toggle-filter-daterange': {
+                    const range = target.getAttribute('data-range');
+                    S.update({
+                        historyFilters: {
+                            ...S.get.historyFilters,
+                            dateRange: range || 'all',
+                            customStart: range === 'custom' ? S.get.historyFilters.customStart : null,
+                            customEnd: range === 'custom' ? S.get.historyFilters.customEnd : null
+                        }
+                    });
                     break;
+                }
+
+                case 'apply-filters': {
+                    const updates = { activeOverlay: null };
+                    if (S.get.historyFilters.dateRange === 'custom') {
+                        const inpStart = document.getElementById('filter-date-start');
+                        const inpEnd = document.getElementById('filter-date-end');
+                        if (inpStart || inpEnd) {
+                            updates.historyFilters = {
+                                ...S.get.historyFilters,
+                                customStart: inpStart?.value || null,
+                                customEnd: inpEnd?.value || null
+                            };
+                        }
+                    }
+                    S.update(updates);
+                    break;
+                }
 
                 case 'register':
                     const rEmail = document.getElementById('reg-email')?.value;

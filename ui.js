@@ -566,42 +566,59 @@ Q8.UI = (function() {
         // We'll rewrite it all to match our desired dynamic state, ensuring we keep the classes that might render styles.
         // Note: The original generic markup in index.html had .sheet-handle. We should keep it.
 
+        const dateRange = state.historyFilters.dateRange || 'all';
+        const dateRangePills = `
+            <button class="filter-pill ${dateRange === 'week' ? 'selected' : ''}" data-action="toggle-filter-daterange" data-range="week">LAST WEEK</button>
+            <button class="filter-pill ${dateRange === '30days' ? 'selected' : ''}" data-action="toggle-filter-daterange" data-range="30days">LAST 30 DAYS</button>
+            <button class="filter-pill ${dateRange === 'custom' ? 'selected' : ''}" data-action="toggle-filter-daterange" data-range="custom">CUSTOM RANGE</button>
+        `;
+
         bottomSheet.innerHTML = `
              <div class="sheet-handle"></div>
 
-             <div class="sheet-header" style="padding: 20px; border-bottom: none; display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="margin: 0; font-size: 1.2rem; font-weight: 800;">Filters</h3>
-                <button data-action="clear-filters" style="background:none; border:none; color: var(--text-secondary); font-size: 0.9rem; font-weight: 600; cursor: pointer;">Clear all</button>
+             <div class="sheet-header sheet-filter-header">
+                <h3 class="sheet-filter-title">Filters</h3>
              </div>
 
-             <div class="sheet-scroll-content" style="padding: 0 20px 20px 20px; max-height: 60vh; overflow-y: auto;">
+             <div class="sheet-scroll-content sheet-filter-content">
 
-                <div style="margin-bottom: 24px;">
-                    <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 12px; letter-spacing: 0.5px;">VEHICLE</div>
+                <div class="sheet-filter-section">
+                    <div class="sheet-filter-label">VEHICLE</div>
                     <div class="flex flex-wrap gap-sm">
-                        ${vehiclesHTML.length > 0 ? vehiclesHTML : '<span style="color:var(--text-secondary); font-size:0.9rem;">No vehicles found</span>'}
+                        ${vehiclesHTML.length > 0 ? vehiclesHTML : '<span class="sheet-filter-empty">Geen voertuigen in geschiedenis</span>'}
                     </div>
                 </div>
 
-                <div style="margin-bottom: 24px;">
-                    <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 12px; letter-spacing: 0.5px;">DATE RANGE</div>
-                    <div class="flex gap-md">
-                        <input type="${startType}" id="filter-date-start" value="${startDateVal}" placeholder="Start Date"
-                               onfocus="(this.type='date')"
-                               onblur="(this.value ? this.type='date' : this.type='text')"
-                               style="flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 12px; font-size: 1rem; color: var(--text-primary); outline: none;">
-
-                        <input type="${endType}" id="filter-date-end" value="${endDateVal}" placeholder="End Date"
-                               onfocus="(this.type='date')"
-                               onblur="(this.value ? this.type='date' : this.type='text')"
-                               style="flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 12px; font-size: 1rem; color: var(--text-primary); outline: none;">
+                <div class="sheet-filter-section">
+                    <div class="sheet-filter-label">DATE RANGE</div>
+                    <div class="flex flex-wrap gap-sm" style="margin-bottom: 12px;">
+                        ${dateRangePills}
                     </div>
+                    ${dateRange === 'custom' ? `
+                    <div class="flex gap-md" style="margin-top: 12px;">
+                        <div class="flex-col" style="flex: 1;">
+                            <label class="sheet-filter-date-label">Start date</label>
+                            <input type="${startType}" id="filter-date-start" value="${startDateVal}" placeholder="dd-mm-jjjj"
+                                   onfocus="(this.type='date')"
+                                   onblur="(this.value ? this.type='date' : this.type='text')"
+                                   class="filter-date-input">
+                        </div>
+                        <div class="flex-col" style="flex: 1;">
+                            <label class="sheet-filter-date-label">End date</label>
+                            <input type="${endType}" id="filter-date-end" value="${endDateVal}" placeholder="dd-mm-jjjj"
+                                   onfocus="(this.type='date')"
+                                   onblur="(this.value ? this.type='date' : this.type='text')"
+                                   class="filter-date-input">
+                        </div>
+                    </div>
+                    ` : ''}
                 </div>
 
              </div>
 
-             <div class="sheet-footer" style="padding: 20px; border-top: 1px solid var(--border); display: flex;">
-                 <button class="btn btn-primary" data-action="apply-filters" style="flex: 1; justify-content: center; font-size: 1.1rem; padding: 14px;">APPLY</button>
+             <div class="sheet-filter-footer">
+                 <button class="btn btn-secondary sheet-filter-clear" data-action="clear-filters">CLEAR ALL</button>
+                 <button class="btn btn-primary sheet-filter-apply" data-action="apply-filters">APPLY</button>
              </div>
         `;
 
