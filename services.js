@@ -156,7 +156,7 @@ Q8.Services = (function() {
     }
 
     function tryOpenOverlay(id, contextData = null) {
-        const allowedSwitches = ['menu-overlay', 'sheet-plate-selector', 'sheet-zone'];
+        const allowedSwitches = ['menu-overlay', 'sheet-plate-selector', 'sheet-zone', 'modal-add-plate', 'modal-edit-plate'];
 
         // Guard: Prevent overlap unless allowed
         if (S.get.activeOverlay && S.get.activeOverlay !== id && !allowedSwitches.includes(id)) {
@@ -194,7 +194,7 @@ Q8.Services = (function() {
 
         // Logic: Context Checks
         if (id === 'modal-confirm' && S.get.session === null) return;
-        if (id === 'modal-add-plate' && S.get.screen !== 'plates') return;
+        if ((id === 'modal-add-plate' || id === 'modal-edit-plate') && S.get.screen !== 'plates') return;
         if (id === 'sheet-filter' && S.get.screen !== 'history') return;
 
         S.update({ activeOverlay: id });
