@@ -166,6 +166,34 @@ Q8.App = (function() {
                     break;
                 }
 
+                case 'toggle-favorite': {
+                    const zoneUid = S.get.selectedZone;
+                    if (!zoneUid) break;
+                    const zone = S.get.zones.find(z => z.uid === zoneUid || z.id === zoneUid);
+                    const zoneId = zone ? zone.id : zoneUid;
+                    const favs = S.get.favorites || [];
+                    const exists = favs.some(f => f.zoneUid === zoneUid || (f.zoneId === zoneId && f.zoneUid === zoneUid));
+                    let next;
+                    if (exists) {
+                        next = favs.filter(f => f.zoneUid !== zoneUid && !(f.zoneId === zoneId && !f.zoneUid));
+                    } else {
+                        next = [...favs, { zoneUid, zoneId }];
+                    }
+                    S.update({ favorites: next });
+                    if (S.saveFavorites) S.saveFavorites();
+                    if (UI.showToast) UI.showToast(exists ? (S.get.language === 'nl' ? 'Verwijderd uit favorieten' : 'Removed from favorites') : (S.get.language === 'nl' ? 'Toegevoegd aan favorieten' : 'Added to favorites'));
+                    break;
+                }
+                case 'remove-favorite': {
+                    const zoneUid = target.getAttribute('data-zone-uid');
+                    const zoneId = target.getAttribute('data-zone-id');
+                    const favs = (S.get.favorites || []).filter(f => f.zoneUid !== zoneUid && f.zoneId !== zoneId);
+                    S.update({ favorites: favs });
+                    if (S.saveFavorites) S.saveFavorites();
+                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Verwijderd uit favorieten' : 'Removed from favorites');
+                    break;
+                }
+
                 case 'select-zone':
                     // Logic handled by search results clicking usually
                     break;
