@@ -585,7 +585,7 @@ Q8.UI = (function() {
                 <div class="sheet-filter-section">
                     <div class="sheet-filter-label">VEHICLE</div>
                     <div class="flex flex-wrap gap-sm">
-                        ${vehiclesHTML.length > 0 ? vehiclesHTML : '<span class="sheet-filter-empty">Geen voertuigen in geschiedenis</span>'}
+                        ${vehiclesHTML.length > 0 ? vehiclesHTML : '<span class="sheet-filter-empty">' + (state.language === 'nl' ? 'Geen voertuigen in geschiedenis' : 'No vehicles in history') + '</span>'}
                     </div>
                 </div>
 
