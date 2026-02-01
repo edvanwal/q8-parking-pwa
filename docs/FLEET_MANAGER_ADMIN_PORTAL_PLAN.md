@@ -324,4 +324,38 @@ auditLog         – userId, action, target, timestamp
 
 ---
 
+## 10. Implementatie (februari 2025)
+
+Een eerste werkende versie van het portal is gebouwd.
+
+### 10.1 Portal-URL
+
+- **Lokaal:** `http://localhost:5000/portal` (of de poort van `firebase serve`)
+- **Production:** `https://<your-project>.web.app/portal`
+
+### 10.2 Gebruik
+
+1. **Fleet manager:** Ga naar `/portal` en log in met een bestaand account. Bij eerste login wordt automatisch een fleetmanager-profiel aangemaakt.
+2. **Bestuurders uitnodigen:** Gebruikers → Bestuurder uitnodigen → vul e-mail in. De bestuurder moet zich daarna registreren in de parkeerapp; daarna verschijnt hij in de lijst.
+3. **Kentekenbeheer:** Kentekenbeheer → selecteer bestuurder → stel restricties in (mag toevoegen, vergrendeld, max. aantal) → voeg kentekens toe.
+4. **Sessies stoppen:** Actieve sessies → Stoppen.
+
+### 10.3 Koppeling met de parkeerapp
+
+- Wanneer de fleetmanager **"Kentekens vergrendeld"** aanzet, kan de bestuurder geen kentekens toevoegen, bewerken of verwijderen.
+- Wanneer **"Bestuurder mag zelf kentekens toevoegen"** uitstaat, wordt de knop "Nieuw kenteken toevoegen" verborgen.
+- Door de fleetmanager toegevoegde kentekens worden in de app getoond met de melding "Toegevoegd door fleetmanager".
+- Als de fleetmanager een sessie stopt, wordt de actieve sessie in de app direct beëindigd (real-time sync).
+
+### 10.4 Firestore-collecties
+
+| Collectie | Documenten |
+|-----------|------------|
+| `users` | Per gebruiker: email, displayName, tenantId, role, driverSettings, adminPlates |
+| `sessions` | Per parkeersessie: userId, tenantId, zone, plate, start, end, status |
+| `invites` | Uitnodigingen: email, tenantId, role, createdBy |
+| `tenants` | Instellingen per tenant: autoStopEnabled, autoStopTime |
+
+---
+
 *Dit plan is gebaseerd op de huidige app-architectuur, state-variabelen en een benchmark van parkeerapps in Nederland. Aanvullingen en aanpassingen zijn mogelijk.*
