@@ -323,13 +323,49 @@ Q8.Services = (function() {
             end: S.get.duration === 0 ? null : new Date(now.getTime() + S.get.duration * 60000)
         };
 
-        S.update({
-            session: session,
-            activeOverlay: null,
-            selectedZone: null
-        });
+        const userId = (typeof firebase !== 'undefined' && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : null;
+        const userEmail = (typeof firebase !== 'undefined' && firebase.auth().currentUser) ? firebase.auth().currentUser.email : null;
+        const tId = S.get.tenantId || DEFAULT_TENANT;
 
-        S.save();
+        if (db && userId) {
+            const sessionData = {
+                userId,
+                userEmail,
+                tenantId: tId,
+                zone: displayId,
+                zoneUid: S.get.selectedZone,
+                plate: plateText,
+                start: firebase.firestore.Timestamp.fromDate(now),
+                end: session.end ? firebase.firestore.Timestamp.fromDate(session.end) : null,
+                status: 'active'
+            };
+            db.collection('sessions').add(sessionData).then(ref => {
+                session.sessionId = ref.id;
+                S.update({
+                    session: session,
+                    activeOverlay: null,
+                    selectedZone: null
+                });
+                S.save();
+                listenSessionStopped(ref.id);
+            }).catch(err => {
+                console.warn('[PARKING] Firestore session write failed', err);
+                S.update({
+                    session: session,
+                    activeOverlay: null,
+                    selectedZone: null
+                });
+                S.save();
+            });
+        } else {
+            S.update({
+                session: session,
+                activeOverlay: null,
+                selectedZone: null
+            });
+            S.save();
+        }
+
         toast('Parking session started');
         addNotification('sessionStarted', S.get.language === 'nl' ? 'Parkeersessie gestart' : 'Parking session started', `${displayId} · ${plateText}`);
     }
