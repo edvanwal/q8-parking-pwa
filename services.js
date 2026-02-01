@@ -82,6 +82,18 @@ Q8.Services = (function() {
         if (window.Q8_DIAG) console.log('[DIAG_FIREBASE]', tag, msg, data || '');
     }
 
+    // Exclude garage and non-street-parking zones (straatparkeren only)
+    const EXCLUDED_USAGE = ['VERGUNP', 'BEWONERP', 'DEELAUTOP', 'VERGUNZ', 'GPK', 'BEDRIJFP', 'BEZOEKBDP', 'ONTHEFFING', 'GARAGEP', 'CARPOOL', 'GEBIEDVRIJ', 'MILIEUZONE', 'ZE_ONTHEF', 'GSL_ONTHEF', 'GPKB', 'TERREINP'];
+    function isStreetParkingZone(z) {
+        const uid = (z.usageid || z.usage || '').toUpperCase();
+        if (uid && EXCLUDED_USAGE.includes(uid)) return false;
+        const name = (z.name || z.id || '').toLowerCase();
+        if (/garage|p\+r|carpool|parkeerplaats\s*[0-9]/.test(name)) return false;
+        const rates = z.rates || [];
+        if (rates.some(r => /garage/i.test(r.detail || ''))) return false;
+        return true;
+    }
+
     function loadZones() {
         return new Promise((resolve, reject) => {
             if (U && U.debug) U.debug('DATA', "Setting up Firestore zones listener...");
@@ -89,10 +101,10 @@ Q8.Services = (function() {
             if (!db) { diag('loadZones', 'no-db-fallback'); return resolve([]); }
 
             db.collection('zones').limit(2000).onSnapshot((snapshot) => {
-                const zones = [];
+                const raw = [];
                 snapshot.forEach((doc) => {
                     const data = doc.data();
-                    zones.push({
+                    raw.push({
                         ...data,
                         uid: doc.id,
                         lat: parseFloat(data.lat),
@@ -100,8 +112,8 @@ Q8.Services = (function() {
                         price: parseFloat(data.price)
                     });
                 });
-
-                diag('onSnapshot', 'received', { count: zones.length });
+                const zones = raw.filter(isStreetParkingZone);
+                diag('onSnapshot', 'received', { raw: raw.length, streetOnly: zones.length });
                 if (zones.length > 0) {
                     requestAnimationFrame(() => {
                         S.update({ zones: zones });
