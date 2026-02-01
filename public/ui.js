@@ -45,6 +45,9 @@ Q8.UI = (function() {
         if (state.screen === 'notifications') {
             renderNotifications();
         }
+        if (state.screen === 'favorites') {
+            renderFavorites();
+        }
         if (state.screen === 'plates') {
             renderPlates();
             const btnAdd = document.querySelector('[data-target="modal-add-plate"] span');
