@@ -154,6 +154,25 @@ Q8.App = (function() {
                     Services.setDefaultPlate();
                     break;
 
+                case 'toggle-notif-setting': {
+                    const key = target.getAttribute('data-key');
+                    if (key && S.get.notificationSettings) {
+                        const next = { ...S.get.notificationSettings, [key]: !!target.checked };
+                        S.update({ notificationSettings: next });
+                        if (S.saveNotifications) S.saveNotifications();
+                    }
+                    break;
+                }
+                case 'change-expiring-interval': {
+                    const val = parseInt(target.value, 10);
+                    if (!isNaN(val) && S.get.notificationSettings) {
+                        const next = { ...S.get.notificationSettings, expiringSoonMinutes: val };
+                        S.update({ notificationSettings: next });
+                        if (S.saveNotifications) S.saveNotifications();
+                    }
+                    break;
+                }
+
                 case 'select-zone':
                     // Logic handled by search results clicking usually
                     break;
