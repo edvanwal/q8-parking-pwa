@@ -92,6 +92,19 @@ if (runTest("Pricing: Flat Rate Calculation", () => {
     assertNear(Utils.calculateCost(0, 5.0), 0.0);
 })) passed++;
 
+// TEST 1b: Estimated cost display logic (zone sheet)
+total++;
+if (runTest("Pricing: Estimated cost formatting for zone sheet", () => {
+    const durationMins = 90;
+    const hourlyRate = 3.0;
+    const cost = Utils.calculateCost(durationMins, hourlyRate);
+    assertNear(cost, 4.5);
+    const formatted = cost.toFixed(2).replace('.', ',');
+    assertEquals(formatted, '4,50');
+    // Edge: duration 0 -> no numeric estimate
+    assertEquals(Utils.calculateCost(0, 2.0), 0.0);
+})) passed++;
+
 // TEST 2: State Initialization
 total++;
 if (runTest("State: Initialization Defaults", () => {
