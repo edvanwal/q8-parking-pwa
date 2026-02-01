@@ -792,14 +792,14 @@ Q8.UI = (function() {
 
     function makePriceMarkerIcon(priceText, isSelected) {
         const fill = isSelected ? '#ce1818' : '#1E4A99';
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 36">
-          <path d="M 10 0 L 60 0 Q 70 0 70 10 L 70 22 Q 70 26 66 26 L 38 26 L 35 36 L 32 26 L 4 26 Q 0 26 0 22 L 0 10 Q 0 0 10 0 Z" fill="${fill}"/>
-          <text x="35" y="18" text-anchor="middle" fill="white" font-size="13" font-weight="bold" font-family="sans-serif">${priceText}</text>
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 44">
+          <path d="M 12 0 L 84 0 Q 96 0 96 12 L 96 24 Q 96 32 88 32 L 52 32 L 48 44 L 44 32 L 8 32 Q 0 32 0 24 L 0 12 Q 0 0 12 0 Z" fill="${fill}"/>
+          <text x="48" y="19" text-anchor="middle" fill="white" font-size="14" font-weight="bold" font-family="sans-serif">${priceText}</text>
         </svg>`;
         return {
             url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
-            scaledSize: new google.maps.Size(70, 36),
-            anchor: new google.maps.Point(35, 36)
+            scaledSize: new google.maps.Size(96, 44),
+            anchor: new google.maps.Point(48, 44)
         };
     }
 
