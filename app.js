@@ -195,6 +195,7 @@ Q8.App = (function() {
                     break;
 
                 case 'logout':
+                    closeSideMenu();
                     Services.logoutUser();
                     break;
 
