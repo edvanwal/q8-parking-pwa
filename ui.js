@@ -448,20 +448,16 @@ Q8.UI = (function() {
                 itemDate.setHours(0,0,0,0);
 
                 let validStart = true;
-                if (filters.customStart) {
-                    const startRaw = new Date(filters.customStart);
+                if (dateStart) {
+                    const startRaw = new Date(dateStart);
                     startRaw.setHours(0,0,0,0);
                     if (itemDate < startRaw) validStart = false;
                 }
 
                 let validEnd = true;
-                if (filters.customEnd) {
-                    const endRaw = new Date(filters.customEnd);
+                if (dateEnd) {
+                    const endRaw = new Date(dateEnd);
                     endRaw.setHours(0,0,0,0);
-                    if (itemDate > endRaw) validEnd = false; // Strictly greater than end date 00:00 means we might miss "today"?
-                    // Actually if end date is 2024-01-20, we want to include items ON that day.
-                    // So itemDate <= endRaw?
-                    // if itemDate is 20th 00:00 and endRaw is 20th 00:00, it matches.
                     if (itemDate > endRaw) validEnd = false;
                 }
 
