@@ -816,20 +816,14 @@ Q8.UI = (function() {
             const priceLabel = z.display_label || (typeof z.price === 'number'
                 ? z.price.toFixed(2).replace('.', ',')
                 : String(z.price));
-            const labelText = z.price === 0 ? 'Free' : '€' + priceLabel.substring(0, 6);
+            const priceText = z.price === 0 ? 'Free' : '€ ' + priceLabel.substring(0, 6);
             const isSelected = (z.uid && z.uid === state.selectedZone) || (z.id && String(z.id) === String(state.selectedZone));
 
             const marker = new google.maps.Marker({
                 map: map,
                 position: { lat: z.lat, lng: z.lng },
                 title: 'Zone ' + (z.id || z.uid) + ' - € ' + priceLabel,
-                icon: makeCircleIcon(isSelected),
-                label: {
-                    text: labelText,
-                    color: isSelected ? '#ce1818' : '#1e5f8a',
-                    fontWeight: 'bold',
-                    fontSize: '11px'
-                }
+                icon: makePriceMarkerIcon(priceText, isSelected)
             });
             marker.addListener('click', function() {
                 if (Q8.Services && Q8.Services.tryOpenOverlay) {
