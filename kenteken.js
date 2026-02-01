@@ -12,6 +12,7 @@ Q8.Kenteken = (function() {
 
     // RDW Open Data: Gekentekende voertuigen (Socrata)
     const RDW_VOERTUIGEN_URL = 'https://opendata.rdw.nl/resource/m9d7-ebf2.json';
+    const RDW_BRANDSTOF_URL = 'https://opendata.rdw.nl/resource/8ys7-d773.json';
 
     /**
      * Normaliseer invoer: hoofdletters, alleen letters/cijfers (geen streepjes/spaties).
