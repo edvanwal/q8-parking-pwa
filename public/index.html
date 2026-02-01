@@ -551,9 +551,9 @@
 
 
   <!-- === OVERLAY: ADD PLATE (Modal) === -->
-  <div id="modal-add-plate" class="overlay-backdrop justify-center items-center" data-action="close-overlay">
-     <div class="card modal-card">
-        <h2 class="font-bold text-lg mb-lg">Add license plate</h2>
+  <div id="modal-add-plate" class="overlay-backdrop justify-center items-center" data-action="close-overlay" role="dialog" aria-modal="true" aria-labelledby="add-plate-title">
+     <div class="card modal-card" role="document">
+        <h2 id="add-plate-title" class="font-bold text-lg mb-lg">Add license plate</h2>
 
         <div class="mb-md">
            <label class="input-label">License plate</label>
@@ -573,9 +573,9 @@
   </div>
 
   <!-- === OVERLAY: EDIT PLATE (Modal) === -->
-  <div id="modal-edit-plate" class="overlay-backdrop justify-center items-center" data-action="close-overlay">
-     <div class="card modal-card">
-        <h2 class="font-bold text-lg mb-lg">Edit license plate</h2>
+  <div id="modal-edit-plate" class="overlay-backdrop justify-center items-center" data-action="close-overlay" role="dialog" aria-modal="true" aria-labelledby="edit-plate-title">
+     <div class="card modal-card" role="document">
+        <h2 id="edit-plate-title" class="font-bold text-lg mb-lg">Edit license plate</h2>
 
         <div class="mb-md">
            <label class="input-label">License plate</label>
@@ -596,9 +596,9 @@
 
 
   <!-- === OVERLAY: CONFIRM END (Modal) === -->
-  <div id="modal-confirm" class="overlay-backdrop justify-center items-center" data-action="close-overlay">
-     <div class="card modal-card">
-        <h2 class="font-bold text-lg mb-sm">End Parking?</h2>
+  <div id="modal-confirm" class="overlay-backdrop justify-center items-center" data-action="close-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-desc">
+     <div class="card modal-card" role="document">
+        <h2 id="confirm-title" class="font-bold text-lg mb-sm">End Parking?</h2>
         <p class="text-secondary mb-lg" style="line-height:1.5;">Are you sure you want to stop this parking session?</p>
         <div class="flex gap-md">
            <button class="btn btn-secondary" data-action="close-overlay">CANCEL</button>
