@@ -780,10 +780,10 @@ Q8.UI = (function() {
             center: UTRECHT_CENTER,
             zoom: 16,
             disableDefaultUI: true,
-            zoomControl: true,
+            zoomControl: false,
             mapTypeControl: false,
             streetViewControl: false,
-            fullscreenControl: true,
+            fullscreenControl: false,
             clickableIcons: false,
             gestureHandling: 'greedy'
         });
