@@ -30,16 +30,58 @@ Q8.Services = (function() {
 
     // --- AUTH SERVICES ---
 
+    const DEFAULT_TENANT = 'default';
+
+    function ensureAppUser(user) {
+        if (!db || !user) return Promise.resolve();
+        const email = (user.email || '').toLowerCase();
+        return db.collection('users').doc(user.uid).get().then(doc => {
+            if (doc.exists) {
+                const data = doc.data();
+                S.update({ driverSettings: data.driverSettings || {} });
+                return data;
+            }
+            return db.collection('invites').where('email', '==', email).limit(1).get().then(invSnap => {
+                const invite = !invSnap.empty ? invSnap.docs[0].data() : null;
+                const tenantId = invite ? invite.tenantId : DEFAULT_TENANT;
+                const role = invite ? (invite.role || 'driver') : 'driver';
+                return db.collection('users').doc(user.uid).set({
+                    email: user.email,
+                    displayName: user.displayName || user.email.split('@')[0],
+                    tenantId,
+                    role,
+                    driverSettings: { canAddPlates: true, maxPlates: 0, platesLocked: false },
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => ({ tenantId, role, driverSettings: {} }));
+            });
+        }).then(data => {
+            fetchDriverSettings(user.uid);
+            return data;
+        });
+    }
+
+    function fetchDriverSettings(uid) {
+        if (!db || !uid) return;
+        db.collection('users').doc(uid).onSnapshot(doc => {
+            if (doc.exists) {
+                const data = doc.data();
+                S.update({ driverSettings: data.driverSettings || {} });
+            }
+        }, () => {});
+    }
+
     function initAuthListener() {
         if (!auth) return;
         auth.onAuthStateChanged(user => {
             if (user) {
                 if (U && U.debug) U.debug('AUTH', "User Logged In", user.email);
+                ensureAppUser(user);
                 if (S.get.screen === 'login' || S.get.screen === 'register') {
                     setScreen('parking');
                 }
             } else {
                 if (U && U.debug) U.debug('AUTH', "No User / Logged Out");
+                S.update({ driverSettings: {} });
                 if (S.get.screen !== 'register') {
                     setScreen('login');
                 }
