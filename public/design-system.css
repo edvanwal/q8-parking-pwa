@@ -857,7 +857,7 @@ body {
 }
 .side-menu .menu-flag { font-size: 1rem; }
 .side-menu .menu-bottom {
-  flex-shrink: 0; padding-top: 12px; margin-top: auto;
+  flex-shrink: 0; padding-top: 12px; margin-top: auto; margin-bottom: 16px;
 }
 .side-menu .menu-signout-btn {
   display: block; width: 100%; padding: 14px 20px; margin: 0;
