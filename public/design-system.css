@@ -657,7 +657,7 @@ body {
   border-radius: 50%; margin-top: 6px; flex-shrink: 0;
 }
 .rate-info { flex: 1; }
-.rate-time { color: var(--q8-blue-900); font-weight: 700; font-size: 1rem; display: block; }
+.rate-time { color: var(--primary); font-weight: 700; font-size: 1rem; display: block; }
 .rate-detail-list {
   margin: 6px 0 0 16px; padding: 0;
   list-style-type: disc;
