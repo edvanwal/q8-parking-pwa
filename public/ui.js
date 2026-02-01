@@ -185,10 +185,15 @@ Q8.UI = (function() {
                 const limitBadge = maxDurLabel
                     ? `<span style="font-size: 0.8rem; background: var(--bg-secondary); color: var(--text-secondary); padding: 2px 8px; border-radius: 12px; font-weight: 500;">${maxDurLabel}</span>`
                     : '';
+                const addrParts = [];
+                if (zone.street) addrParts.push(zone.street);
+                if (zone.houseNumber) addrParts.push(zone.houseNumber);
+                const addrLine = addrParts.length ? addrParts.join(' ') : '';
+                const cityLine = zone.city || '';
                 const detailsHTML = `
                     <div id="zone-extra-details" class="flex-col gap-xs" style="width:100%; margin-top: 8px;">
-                        <div class="flex items-center justify-between">
-                            <span style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">${zone.city || ''}</span>
+                        <div class="flex items-center justify-between flex-wrap gap-y-1">
+                            <span style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">${addrLine ? addrLine + (cityLine ? ', ' : '') + cityLine : cityLine || zone.id || ''}</span>
                             ${limitBadge}
                         </div>
                         ${holidayWarning}
