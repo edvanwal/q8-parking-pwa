@@ -103,20 +103,20 @@ Q8.Services = (function() {
 
                 diag('onSnapshot', 'received', { count: zones.length });
                 if (zones.length > 0) {
-                    S.update({ zones: zones });
-                    if (U && U.debug) U.debug('DATA', `Live sync: ${zones.length} zones loaded.`);
-                    diag('onSnapshot', 'zones-updated');
+                    requestAnimationFrame(() => {
+                        S.update({ zones: zones });
+                        if (U && U.debug) U.debug('DATA', `Live sync: ${zones.length} zones loaded.`);
+                        diag('onSnapshot', 'zones-updated');
 
-                    // Update Map Markers (Check Q8.UI or fallback)
-                    if (Q8.UI && typeof Q8.UI.renderMapMarkers === 'function') Q8.UI.renderMapMarkers();
-                    else if (typeof window.renderMapMarkers === 'function') window.renderMapMarkers();
+                        if (Q8.UI && typeof Q8.UI.renderMapMarkers === 'function') Q8.UI.renderMapMarkers();
+                        else if (typeof window.renderMapMarkers === 'function') window.renderMapMarkers();
 
-                    if (Q8.UI && typeof Q8.UI.centerMapOnZones === 'function') Q8.UI.centerMapOnZones();
-                    else if (typeof window.centerMapOnZones === 'function') window.centerMapOnZones();
+                        if (Q8.UI && typeof Q8.UI.centerMapOnZones === 'function') Q8.UI.centerMapOnZones();
+                        else if (typeof window.centerMapOnZones === 'function') window.centerMapOnZones();
 
-                    // Debug Overlay
-                    const debugEl = document.getElementById('debug-status');
-                    if(debugEl) debugEl.innerText = `Zones: ${zones.length}`;
+                        const debugEl = document.getElementById('debug-status');
+                        if(debugEl) debugEl.innerText = `Zones: ${zones.length}`;
+                    });
                 }
                 resolve(zones);
             }, (error) => {
