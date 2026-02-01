@@ -156,7 +156,7 @@ Q8.Services = (function() {
     }
 
     function tryOpenOverlay(id, contextData = null) {
-        const allowedSwitches = ['menu-overlay', 'sheet-plate-selector', 'sheet-zone'];
+        const allowedSwitches = ['menu-overlay', 'sheet-plate-selector', 'sheet-zone', 'modal-add-plate', 'modal-edit-plate'];
 
         // Guard: Prevent overlap unless allowed
         if (S.get.activeOverlay && S.get.activeOverlay !== id && !allowedSwitches.includes(id)) {
