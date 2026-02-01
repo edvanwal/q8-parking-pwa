@@ -592,23 +592,39 @@ Q8.UI = (function() {
             list.innerHTML = '<div class="history-empty-state">No parking history found.</div>';
         } else {
             filteredHistory.forEach(h => {
+                const zone = state.zones.find(z => z.id === h.zone || z.uid === h.zoneUid || z.uid === h.zone);
+                const zoneUid = zone ? (zone.uid || zone.id) : h.zoneUid || h.zone;
+                const zoneId = zone ? zone.id : h.zone;
+                const isFav = (state.favorites || []).some(f => f.zoneUid === zoneUid || f.zoneId === zoneId);
                 const div = document.createElement('div');
-                div.className = 'card mb-md';
+                div.className = 'card mb-md history-card-clickable';
+                div.style.cursor = 'pointer';
+                div.setAttribute('data-action', 'open-overlay');
+                div.setAttribute('data-target', 'sheet-zone');
+                div.setAttribute('data-zone-uid', zoneUid);
+                div.setAttribute('data-zone', zoneId);
+                div.setAttribute('data-price', zone && zone.price != null ? zone.price : '');
+                div.setAttribute('data-rates', JSON.stringify(zone && zone.rates ? zone.rates : []));
                 div.innerHTML = `
                     <div class="history-card-header">
                        <span class="font-bold text-lg">${h.plate}</span>
-                       <div class="zone-badge-box">
-                          <span class="icon-p" style="font-size:0.8rem;">P</span>
-                          <span style="font-weight:700;">${h.zone}</span>
+                       <div class="flex items-center gap-sm">
+                          <div class="zone-badge-box">
+                             <span class="icon-p" style="font-size:0.8rem;">P</span>
+                             <span style="font-weight:700;">${h.zone}</span>
+                          </div>
+                          <button class="icon-btn history-fav-btn" data-action="${isFav ? 'remove-favorite' : 'add-favorite-from-history'}" data-zone-uid="${zoneUid}" data-zone-id="${zoneId}" title="${isFav ? (state.language === 'nl' ? 'Verwijder uit favorieten' : 'Remove from favorites') : (state.language === 'nl' ? 'Voeg toe aan favorieten' : 'Add to favorites')}" style="padding:4px;" onclick="event.stopPropagation();">
+                             <svg width="18" height="18" viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                          </button>
                        </div>
                     </div>
-                    <div class="text-secondary text-sm mb-md">${h.street}</div>
+                    <div class="text-secondary text-sm mb-md">${h.street || ''}</div>
                     <div class="history-card-details">
                        <div>
                           <div class="history-date-label">${h.date}</div>
                           <div class="history-time-range">${h.start} - ${h.end}</div>
                        </div>
-                       <div class="history-price-tag">€ ${h.price.replace('.', ',')}</div>
+                       <div class="history-price-tag">€ ${(h.price || '').toString().replace('.', ',')}</div>
                     </div>
                 `;
                 list.appendChild(div);

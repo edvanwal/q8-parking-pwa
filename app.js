@@ -113,6 +113,7 @@ Q8.App = (function() {
                 case 'start-session': Services.handleStartParking(); break;
                 case 'confirm-end': Services.handleEndParking(); break;
                 case 'save-plate': Services.saveNewPlate(); break;
+                case 'check-plate': if (Services.checkPlateRDW) Services.checkPlateRDW(); break;
 
                 case 'edit-plate': {
                     const plateId = target.getAttribute('data-id');
