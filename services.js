@@ -504,17 +504,19 @@ Q8.Services = (function() {
         const Kenteken = (typeof Q8 !== 'undefined' && Q8.Kenteken) ? Q8.Kenteken : null;
         let normalized = rawVal.replace(/[\s\-]/g, '').toUpperCase();
         let formatValid = true;
+        let formatError = '';
 
         if (Kenteken) {
             const v = Kenteken.validate(rawVal);
             formatValid = v.valid;
+            formatError = v.errorMessage || '';
             normalized = v.normalized;
         } else {
             if (normalized.length > 8) return toast('License plate too long');
             if (!/^[A-Z0-9]+$/.test(normalized)) return toast('Letters and digits only');
         }
 
-        if (!formatValid) return toast(Kenteken ? (Kenteken.validate(rawVal).errorMessage || 'Invalid format') : 'Invalid license plate format');
+        if (!formatValid) return toast(formatError || 'Invalid license plate format');
         if (S.get.plates.some(p => (p.id != id && p.text != id) && (p.text === normalized || p.id === normalized))) return toast('License plate already exists');
 
         const displayText = Kenteken && Kenteken.formatDisplay ? Kenteken.formatDisplay(normalized) : normalized;
@@ -698,6 +700,7 @@ Q8.Services = (function() {
         modifyActiveSessionEnd,
         saveNewPlate,
         updatePlate,
+        checkPlateRDW,
         deletePlate,
         modifyDuration,
         setDefaultPlate,

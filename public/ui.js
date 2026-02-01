@@ -800,6 +800,7 @@ Q8.UI = (function() {
                 ? `${street}${houseNumber ? ' ' + houseNumber : ''}${city ? ', ' + city : ''}`
                 : (city ? `${zoneId}, ${city}` : zoneId);
             const displayAddr = regex ? addr.replace(regex, '<strong class="search-highlight">$1</strong>') : addr;
+            const isFav = favUids.has(z.uid) || favUids.has(z.id);
             return `
             <div class="search-result-item" data-action="open-overlay" data-target="sheet-zone"
                  data-zone-uid="${z.uid}"
@@ -807,7 +808,10 @@ Q8.UI = (function() {
                  data-price="${z.price}"
                  data-rates='${JSON.stringify(z.rates || [])}'>
                 <span class="search-result-text">${displayAddr}</span>
-                <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
+                <div class="flex items-center gap-sm" style="flex-shrink:0;">
+                  ${isFav ? '<span class="fav-star" title="' + (state.language === 'nl' ? 'Favoriet' : 'Favorite') + '">♥</span>' : ''}
+                  <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
+                </div>
             </div>
         `;
         }).join('');
