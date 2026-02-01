@@ -612,7 +612,10 @@ Q8.UI = (function() {
         const q = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const regex = q ? new RegExp(`(${q})`, 'gi') : null;
         container.innerHTML = matches.map(z => {
-            const addr = [z.id, z.name, z.city].filter(Boolean).join(', ') + (z.id || z.name || z.city ? ', Nederland' : '');
+            // Format: "321, City Zone 321, City, Nederland" (like original app)
+            const zoneId = z.id || '';
+            const city = z.city || '';
+            const addr = city ? `${zoneId}, ${city} Zone ${zoneId}, ${city}, Nederland` : zoneId;
             const displayAddr = regex ? addr.replace(regex, '<strong class="search-highlight">$1</strong>') : addr;
             return `
             <div class="search-result-item" data-action="open-overlay" data-target="sheet-zone"
