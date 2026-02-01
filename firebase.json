@@ -12,6 +12,14 @@
         "destination": "/preview/map.html"
       },
       {
+        "source": "/portal",
+        "destination": "/portal/index.html"
+      },
+      {
+        "source": "/portal/**",
+        "destination": "/portal/index.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
