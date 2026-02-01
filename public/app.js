@@ -157,7 +157,8 @@ Q8.App = (function() {
                 case 'toggle-notif-setting': {
                     const key = target.getAttribute('data-key');
                     if (key && S.get.notificationSettings) {
-                        const next = { ...S.get.notificationSettings, [key]: !!target.checked };
+                        const curr = !!S.get.notificationSettings[key];
+                        const next = { ...S.get.notificationSettings, [key]: !curr };
                         S.update({ notificationSettings: next });
                         if (S.saveNotifications) S.saveNotifications();
                     }
