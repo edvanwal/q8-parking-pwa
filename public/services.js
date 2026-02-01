@@ -38,7 +38,11 @@ Q8.Services = (function() {
         return db.collection('users').doc(user.uid).get().then(doc => {
             if (doc.exists) {
                 const data = doc.data();
-                S.update({ driverSettings: data.driverSettings || {}, tenantId: data.tenantId || DEFAULT_TENANT });
+                S.update({
+                    driverSettings: data.driverSettings || {},
+                    adminPlates: data.adminPlates || [],
+                    tenantId: data.tenantId || DEFAULT_TENANT
+                });
                 fetchDriverSettings(user.uid);
                 return data;
             }
