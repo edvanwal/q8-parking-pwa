@@ -583,8 +583,13 @@ Q8.Services = (function() {
         if (Kenteken && Kenteken.lookupRDW) {
             Kenteken.lookupRDW(normalized).then(function(result) {
                 if (result.found && result.data) {
+                    const vd = { ...S.get.vehicleDataByPlate, [normalized]: result.data };
+                    S.update({ vehicleDataByPlate: vd });
                     const brand = (result.data.merk || '') + (result.data.handelsbenaming ? ' ' + result.data.handelsbenaming : '');
-                    toast(S.get.language === 'nl' ? 'Kenteken toegevoegd (gecontroleerd: ' + (brand.trim() || 'RDW') + ')' : 'License plate added (verified: ' + (brand.trim() || 'RDW') + ')');
+                    const mz = Kenteken.getMilieuzoneStatus ? Kenteken.getMilieuzoneStatus(result.data) : null;
+                    const mzTxt = mz ? (S.get.language === 'nl' ? mz.summaryNL : mz.summaryEN) : '';
+                    const msg = (S.get.language === 'nl' ? 'Kenteken toegevoegd (gecontroleerd: ' + (brand.trim() || 'RDW') + ')' : 'License plate added (verified: ' + (brand.trim() || 'RDW') + ')') + (mzTxt ? '. ' + mzTxt : '');
+                    toast(msg);
                 } else if (result.error) {
                     toast(S.get.language === 'nl' ? 'Kenteken toegevoegd (controle RDW tijdelijk niet beschikbaar)' : 'License plate added (RDW check temporarily unavailable)');
                 } else {
@@ -765,9 +770,16 @@ Q8.Services = (function() {
                 return;
             }
             if (result.found && result.data) {
+                const vd = { ...S.get.vehicleDataByPlate, [v.normalized]: result.data };
+                S.update({ vehicleDataByPlate: vd });
                 const brand = ((result.data.merk || '') + (result.data.handelsbenaming ? ' ' + result.data.handelsbenaming : '')).trim();
                 const soort = result.data.voertuigsoort || '';
-                resultEl.textContent = (S.get.language === 'nl' ? 'Gevonden: ' : 'Found: ') + (brand || soort || 'RDW');
+                let txt = (S.get.language === 'nl' ? 'Gevonden: ' : 'Found: ') + (brand || soort || 'RDW');
+                if (Kenteken.getMilieuzoneStatus) {
+                    const mz = Kenteken.getMilieuzoneStatus(result.data);
+                    txt += '. ' + (S.get.language === 'nl' ? mz.summaryNL : mz.summaryEN);
+                }
+                resultEl.textContent = txt;
                 resultEl.classList.add('plate-rdw-ok');
             } else {
                 resultEl.textContent = S.get.language === 'nl' ? 'Niet gevonden in RDW-register.' : 'Not found in RDW register.';
