@@ -118,16 +118,14 @@
       }, err => console.error('Users snapshot error', err));
   }
 
-  function createUser(email, password, displayName) {
-    return auth.createUserWithEmailAndPassword(email, password).then(cred => {
-      return db.collection('users').doc(cred.user.uid).set({
-        email,
-        displayName: displayName || email.split('@')[0],
-        tenantId,
-        role: 'driver',
-        driverSettings: { canAddPlates: true, maxPlates: 0, platesLocked: false },
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(() => cred.user.uid);
+  function inviteUser(email, displayName) {
+    return db.collection('invites').add({
+      email: email.toLowerCase().trim(),
+      displayName: (displayName || '').trim() || null,
+      tenantId,
+      role: 'driver',
+      createdBy: auth.currentUser.uid,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
   }
 
@@ -335,12 +333,11 @@
     $('add-user-form').addEventListener('submit', e => {
       e.preventDefault();
       const email = $('add-user-email').value.trim();
-      const password = $('add-user-password').value;
       const name = $('add-user-name').value.trim();
-      createUser(email, password, name || undefined).then(() => {
-        toast('Bestuurder aangemaakt');
+      inviteUser(email, name || undefined).then(() => {
+        toast('Uitnodiging opgeslagen. Bestuurder verschijnt na registratie in de app.');
         $('modal-add-user').classList.add('hidden');
-      }).catch(err => toast(err.message || 'Fout bij aanmaken'));
+      }).catch(err => toast(err.message || 'Fout bij opslaan'));
     });
 
     document.addEventListener('click', e => {
