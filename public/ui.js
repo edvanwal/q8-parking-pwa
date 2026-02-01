@@ -13,6 +13,7 @@ Q8.UI = (function() {
     'use strict';
 
     const S = Q8.State;
+    let _lastMarkerKey = '';
     const U = Q8.Utils;
     // Services might be circular, so access via Q8.Services literal if needed
 
