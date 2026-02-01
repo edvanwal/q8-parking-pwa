@@ -119,6 +119,9 @@ Q8.State = (function() {
 
         // 3. Notifications
         loadNotifications();
+
+        // 4. Favorites
+        loadFavorites();
     }
 
     // Risk: localStorage.setItem can throw (quota exceeded, private mode) - would propagate to caller.
@@ -153,6 +156,8 @@ Q8.State = (function() {
         save: save,
         savePlates: savePlates,
         saveNotifications: saveNotifications,
-        loadNotifications: loadNotifications
+        loadNotifications: loadNotifications,
+        saveFavorites: saveFavorites,
+        loadFavorites: loadFavorites
     };
 })();
