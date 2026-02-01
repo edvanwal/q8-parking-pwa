@@ -244,15 +244,17 @@ Q8.App = (function() {
                 }
 
                 case 'apply-filters': {
-                    const inpStart = document.getElementById('filter-date-start');
-                    const inpEnd = document.getElementById('filter-date-end');
-                    let updates = { activeOverlay: null };
-                    if (inpStart || inpEnd) {
-                        updates.historyFilters = {
-                            ...S.get.historyFilters,
-                            customStart: inpStart ? inpStart.value || null : S.get.historyFilters.customStart,
-                            customEnd: inpEnd ? inpEnd.value || null : S.get.historyFilters.customEnd
-                        };
+                    const updates = { activeOverlay: null };
+                    if (S.get.historyFilters.dateRange === 'custom') {
+                        const inpStart = document.getElementById('filter-date-start');
+                        const inpEnd = document.getElementById('filter-date-end');
+                        if (inpStart || inpEnd) {
+                            updates.historyFilters = {
+                                ...S.get.historyFilters,
+                                customStart: inpStart?.value || null,
+                                customEnd: inpEnd?.value || null
+                            };
+                        }
                     }
                     S.update(updates);
                     break;

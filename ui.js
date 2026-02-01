@@ -426,7 +426,16 @@ Q8.UI = (function() {
         }
 
         // B. Date Filter
-        if (filters.customStart || filters.customEnd) {
+        let dateStart = filters.customStart;
+        let dateEnd = filters.customEnd;
+        if (filters.dateRange === 'week' || filters.dateRange === '30days') {
+            const now = new Date();
+            dateEnd = now.toISOString().slice(0, 10);
+            const d = new Date(now);
+            d.setDate(d.getDate() - (filters.dateRange === 'week' ? 7 : 30));
+            dateStart = d.toISOString().slice(0, 10);
+        }
+        if (dateStart || dateEnd) {
             filteredHistory = filteredHistory.filter(h => {
                 if (!h.date) return true;
 
