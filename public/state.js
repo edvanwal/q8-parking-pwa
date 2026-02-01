@@ -9,7 +9,7 @@ Q8.State = (function() {
     'use strict';
 
     const _state = {
-        screen: 'login',      // 'login' | 'register' | 'parking' | 'history' | 'plates' | 'notifications'
+        screen: 'login',      // 'login' | 'register' | 'parking' | 'history' | 'plates' | 'notifications' | 'car-specs'
         language: 'en',       // 'nl' | 'en'
         rememberMe: false,
         passwordVisible: false,

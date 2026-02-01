@@ -356,6 +356,23 @@
   </div>
 
 
+  <!-- === VIEW: CAR SPECS === -->
+  <div id="view-car-specs" class="screen flex-col hidden" role="region" aria-label="Car specifications">
+    <header class="top-bar">
+      <div class="brand-logo"><img src="q8-logo.png" class="header-logo" alt="Q8 Liberty"></div>
+      <h1 class="page-title">Cars specs</h1>
+      <button class="icon-btn" data-action="toggle-menu" aria-label="Open menu">
+         <svg class="no-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M5 7H19C19.5523 7 20 7.44772 20 8C20 8.55228 19.5523 9 19 9H5C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7ZM5 12C4.44772 12 4 11.5523 4 11C4 10.4477 4.44772 10 5 10H19C19.5523 10 20 10.4477 20 11C20 11.5523 19.5523 12 19 12H5ZM5 17C4.44772 17 4 16.5523 4 16C4 15.4477 4.44772 15 5 15H19C19.5523 15 20 15.4477 20 16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16Z" fill="currentColor"/></svg>
+      </button>
+    </header>
+    <div class="content padding-container" style="flex:1; overflow-y:auto;">
+      <p id="car-specs-intro" class="text-secondary text-sm mb-lg">Specs van je ingevulde kentekens (RDW).</p>
+      <div id="list-car-specs" class="flex-col gap-lg">
+        <!-- Injected by ui.js -->
+      </div>
+    </div>
+  </div>
+
   <!-- === VIEW: PLATES === -->
   <div id="view-plates" class="screen flex-col hidden" role="region" aria-label="License plates management">
     <header class="top-bar">
