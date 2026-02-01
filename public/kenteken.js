@@ -69,7 +69,12 @@ Q8.Kenteken = (function() {
         /^[BDFGHJKLMNPRSTXZ]\d{3}[BDFGHJKLMNPRSTXZ]{2}$/, // 8: X-999-XX
         /^\d{3}[BDFGHJKLMNPRSTXZ][BDFGHJKLMNPRSTXZ]{2}$/, // 9: 999-X-XX
         /^[BDFGHJKLMNPRSTXZ]{2}[BDFGHJKLMNPRSTXZ]\d{3}$/, // 10: XX-X-999
-        /^\d{3}[BDFGHJKLMNPRSTXZ]{2}[BDFGHJKLMNPRSTXZ]$/  // 11: 999-XX-X
+        /^\d{3}[BDFGHJKLMNPRSTXZ]{2}[BDFGHJKLMNPRSTXZ]$/, // 11: 999-XX-X
+        /^\d{2}[BDFGHJKLMNPRSTXZ]{2}\d{3}$/,           // 2 (7): 99-XX-999
+        /^[BDFGHJKLMNPRSTXZ]{2}\d{3}\d{2}$/,           // 7 (7): XX-999-99
+        /^\d{3}[BDFGHJKLMNPRSTXZ]{2}\d{2}$/,           // 11 (7): 999-XX-99
+        /^\d{2}\d{3}[BDFGHJKLMNPRSTXZ]{2}$/,           // 3 (7): 99-999-XX
+        /^[BDFGHJKLMNPRSTXZ]\d{2}[BDFGHJKLMNPRSTXZ]{2}\d{2}$/ // 4 (7): X-99-XX-99 (lenient 7)
     ];
 
     /**
