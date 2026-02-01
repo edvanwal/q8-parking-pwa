@@ -194,7 +194,7 @@ Q8.Services = (function() {
 
         // Logic: Context Checks
         if (id === 'modal-confirm' && S.get.session === null) return;
-        if (id === 'modal-add-plate' && S.get.screen !== 'plates') return;
+        if ((id === 'modal-add-plate' || id === 'modal-edit-plate') && S.get.screen !== 'plates') return;
         if (id === 'sheet-filter' && S.get.screen !== 'history') return;
 
         S.update({ activeOverlay: id });
