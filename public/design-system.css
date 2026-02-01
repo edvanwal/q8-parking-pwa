@@ -161,7 +161,7 @@
     transition: background 0.2s, color 0.2s;
 }
 .map-search-toggle--zone {
-    background: var(--q8-blue-900);
+    background: var(--primary);
     color: white;
 }
 .map-search-toggle--address {
@@ -414,7 +414,7 @@ body {
 }
 .marker:active { transform: translate(-50%, -100%) scale(0.95); }
 .marker-content {
-  background: var(--q8-blue-600); /* Matches footer/nav */
+  background: var(--primary); /* Matches footer/nav */
   color: white;
   padding: 5px 10px; /* Smaller */
   border-radius: var(--radius-pill);
@@ -462,7 +462,7 @@ body {
   width: 40px; height: 40px;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  color: var(--q8-blue-900); /* Brand Navy */
+  color: var(--primary); /* Brand Navy */
   cursor: pointer;
 }
 
@@ -474,7 +474,7 @@ body {
   height: 52px;
   padding: 0 16px;
   border-radius: 16px;
-  background: var(--q8-blue-900);
+  background: var(--primary);
   color: var(--q8-text-inverse); /* #FFFFFF */
   border: none;
   box-shadow: var(--shadow-float);
@@ -733,7 +733,7 @@ body {
 
 .bg-surface { background: var(--surface) !important; }
 .bg-white { background: white !important; }
-.text-brand-navy { color: var(--brand-navy); }
+.text-brand-navy { color: var(--primary); }
 .text-xxs { font-size: 0.65rem; }
 .pad-badge-sm { padding: 2px 6px; }
 .pointer { cursor: pointer; }
@@ -799,8 +799,8 @@ body {
 .search-result-item:last-child { border-bottom: none; }
 .search-result-item:active { background: var(--bg-app); }
 .search-result-text { flex: 1; font-size: 0.95rem; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; }
-.search-result-text .search-highlight { color: var(--q8-blue-900); font-weight: 700; }
-.search-result-price { font-weight: 700; font-size: 0.9rem; color: var(--q8-blue-900); flex-shrink: 0; }
+.search-result-text .search-highlight { color: var(--primary); font-weight: 700; }
+.search-result-price { font-weight: 700; font-size: 0.9rem; color: var(--primary); flex-shrink: 0; }
 
 .menu-drawer {
   position: absolute; top: 0; bottom: 0; left: 0; width: 85%; max-width: 320px;
@@ -1224,7 +1224,7 @@ body {
 .bottom-nav {
   position: absolute; bottom: 0; left: 0; right: 0;
   height: 80px; /* Taller for curve effect */
-  background: var(--brand-navy); /* #003D6B per Figma/Variable */
+  background: var(--primary);
   display: flex; justify-content: space-between; align-items: center;
   padding: 0 16px;
   z-index: var(--z-header); /* High z-index */
@@ -1256,14 +1256,14 @@ body {
   border-radius: 50%;
   background: #FFC000; /* Q8 Yellow rough match */
   background: var(--q8-yellow-500);
-  border: 4px solid var(--brand-navy); /* To blend with bar */
+  border: 4px solid var(--primary);
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   cursor: pointer;
   transition: transform 0.1s;
 }
 .nav-fab-main:active { transform: scale(0.95); }
-.nav-fab-main span { font-size: 2rem; color: var(--brand-navy); font-weight: 900; }
+.nav-fab-main span { font-size: 2rem; color: var(--primary); font-weight: 900; }
 
 /* --- NEW: Floating Search Bar --- */
 .floating-search-bar {
@@ -1291,7 +1291,7 @@ body {
 /* --- NEW: Figma Style Map Markers --- */
 /* Overwriting previous marker styles */
 .marker-price-pill {
-  background: var(--brand-navy); /* Dark Blue */
+  background: var(--primary);
   color: white;
   padding: 6px 14px;
   border-radius: 8px; /* Slightly rounded rect */
@@ -1312,5 +1312,5 @@ body {
   width: 0; height: 0;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
-  border-top: 6px solid var(--brand-navy); /* Color match */
+  border-top: 6px solid var(--primary);
 }
