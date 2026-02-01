@@ -386,6 +386,73 @@ Q8.UI = (function() {
         if (btnSetDefault) btnSetDefault.disabled = !selectionValid;
     }
 
+    function renderNotifications() {
+        const state = S.get;
+        const settingsList = document.getElementById('notif-settings-list');
+        const historyList = document.getElementById('notif-history-list');
+        if (!settingsList || !historyList) return;
+
+        const s = state.notificationSettings || {};
+        const nl = state.language === 'nl';
+
+        const settings = [
+            { key: 'sessionStarted', label: nl ? 'Parkeersessie gestart' : 'Parking session started' },
+            { key: 'sessionExpiringSoon', label: nl ? 'Parkeersessie verloopt binnenkort' : 'Parking session expiring soon', hasInterval: true },
+            { key: 'sessionEndedByUser', label: nl ? 'Sessie beëindigd (eindtijd)' : 'Session ended (end time reached)' },
+            { key: 'sessionEndedByMaxTime', label: nl ? 'Sessie beëindigd (max parkeertijd)' : 'Session ended (max parking time)' }
+        ];
+
+        settingsList.innerHTML = settings.map(seting => {
+            const checked = s[seting.key] !== false;
+            let html = `
+            <div class="notif-setting-row flex items-center justify-between" style="padding:12px 16px; background:var(--surface); border-radius:12px; border:1px solid var(--border);">
+                <span class="text-main font-medium" style="font-size:0.9375rem;">${seting.label}</span>
+                <label class="notif-toggle" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                    <input type="checkbox" data-action="toggle-notif-setting" data-key="${seting.key}" ${checked ? 'checked' : ''} style="width:20px; height:20px;">
+                </label>
+            </div>`;
+            if (seting.hasInterval) {
+                const mins = (s.expiringSoonMinutes || 10);
+                html += `
+            <div class="notif-interval-row flex items-center justify-between" style="padding:12px 16px; background:var(--bg-secondary); border-radius:12px; margin-top:8px; margin-left:16px;">
+                <span class="text-secondary" style="font-size:0.875rem;">${nl ? 'Waarschuw minuten van tevoren:' : 'Warn minutes before:'}</span>
+                <select data-action="change-expiring-interval" style="padding:6px 12px; border-radius:8px; font-size:0.9rem;">
+                    ${[5,10,15,20,30].map(m => `<option value="${m}" ${mins === m ? 'selected' : ''}>${m} min</option>`).join('')}
+                </select>
+            </div>`;
+            }
+            return html;
+        }).join('');
+
+        const notifs = (state.notifications || []).slice().reverse().slice(0, 50);
+        const typeLabel = (t) => {
+            if (t === 'sessionStarted') return nl ? 'Gestart' : 'Started';
+            if (t === 'sessionExpiringSoon') return nl ? 'Verloopt' : 'Expiring';
+            if (t === 'sessionEndedByUser') return nl ? 'Beëindigd (tijd)' : 'Ended (time)';
+            if (t === 'sessionEndedByMaxTime') return nl ? 'Beëindigd (max)' : 'Ended (max)';
+            return t;
+        };
+        const fmtDate = (iso) => {
+            const d = new Date(iso);
+            const now = new Date();
+            const sameDay = d.toDateString() === now.toDateString();
+            return sameDay ? d.toLocaleTimeString(nl ? 'nl-NL' : 'en-GB', { hour: '2-digit', minute: '2-digit' }) : d.toLocaleDateString(nl ? 'nl-NL' : 'en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+        };
+        historyList.innerHTML = notifs.length === 0
+            ? `<div class="text-secondary" style="padding:24px; text-align:center; font-size:0.9rem;">${nl ? 'Geen notificaties' : 'No notifications'}</div>`
+            : notifs.map(n => `
+            <div class="notif-history-item card" style="padding:12px 16px;">
+                <div class="flex justify-between items-start gap-sm">
+                    <div>
+                        <div class="font-bold text-main" style="font-size:0.9375rem;">${n.message}</div>
+                        ${n.detail ? `<div class="text-secondary text-sm" style="margin-top:2px;">${n.detail}</div>` : ''}
+                    </div>
+                    <span class="badge badge-neutral text-xs" style="flex-shrink:0;">${typeLabel(n.type)}</span>
+                </div>
+                <div class="text-secondary text-xs" style="margin-top:8px;">${fmtDate(n.at)}</div>
+            </div>`).join('');
+    }
+
     function renderQuickPlateSelector() {
         const state = S.get;
         const list = document.getElementById('quick-plate-list');
