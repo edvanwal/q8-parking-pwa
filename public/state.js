@@ -45,7 +45,8 @@ Q8.State = (function() {
             sessionEndedByUser: true,
             sessionEndedByMaxTime: true,
             expiringSoonMinutes: 10
-        }
+        },
+        favorites: []     // [{ zoneUid, zoneId }]
     };
 
     /**

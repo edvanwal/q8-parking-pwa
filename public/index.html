@@ -82,6 +82,7 @@
   <!-- Application Scripts -->
   <script src="firebase-config.js?v=3.1"></script>
   <script src="utils.js?v=3.8"></script>
+  <script src="kenteken.js?v=1.0"></script>
   <script src="state.js"></script>
   <script src="services.js?v=4.0"></script>
   <script src="ui.js?v=5.6"></script>
@@ -599,7 +600,7 @@
   <div id="modal-confirm" class="overlay-backdrop justify-center items-center" data-action="close-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-desc">
      <div class="card modal-card" role="document">
         <h2 id="confirm-title" class="font-bold text-lg mb-sm">End Parking?</h2>
-        <p class="text-secondary mb-lg" style="line-height:1.5;">Are you sure you want to stop this parking session?</p>
+        <p id="confirm-desc" class="text-secondary mb-lg" style="line-height:1.5;">Are you sure you want to stop this parking session?</p>
         <div class="flex gap-md">
            <button class="btn btn-secondary" data-action="close-overlay">CANCEL</button>
            <button class="btn btn-danger" data-action="confirm-end">END PARKING</button>
@@ -612,8 +613,10 @@
     <div id="toast" class="toast">Success</div>
   </div>
 
+  </main>
+
   <!-- === SIDEBAR MENU (from right, matches original design) === -->
-  <div id="side-menu" class="side-menu">
+  <nav id="side-menu" class="side-menu" role="navigation" aria-label="Main navigation">
       <div class="menu-items">
           <div class="menu-item-pill" data-action="nav-to" data-target="parking">
              <span class="menu-icon-circle">

@@ -545,6 +545,68 @@ Q8.Services = (function() {
         toast(S.get.language === 'nl' ? 'Kenteken bijgewerkt' : 'License plate updated');
     }
 
+    /**
+     * Controleren bij RDW (gratis): valideer kenteken en toon RDW-resultaat in #plate-rdw-result.
+     */
+    function checkPlateRDW() {
+        const inp = document.getElementById('inp-plate');
+        const resultEl = document.getElementById('plate-rdw-result');
+        const Kenteken = (typeof Q8 !== 'undefined' && Q8.Kenteken) ? Q8.Kenteken : null;
+        const toast = (msg) => {
+            if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg);
+            else if (typeof window.showToast === 'function') window.showToast(msg);
+        };
+
+        if (!resultEl) return;
+        resultEl.textContent = '';
+        resultEl.className = 'plate-rdw-result';
+
+        const rawVal = inp ? inp.value.trim() : '';
+        if (!rawVal) {
+            resultEl.textContent = S.get.language === 'nl' ? 'Voer eerst een kenteken in.' : 'Enter a license plate first.';
+            resultEl.classList.add('plate-rdw-error');
+            return;
+        }
+
+        if (!Kenteken) {
+            resultEl.textContent = S.get.language === 'nl' ? 'Validatie niet beschikbaar.' : 'Validation not available.';
+            resultEl.classList.add('plate-rdw-error');
+            return;
+        }
+
+        const v = Kenteken.validate(rawVal);
+        if (!v.valid) {
+            resultEl.textContent = v.errorMessage || (S.get.language === 'nl' ? 'Ongeldig kentekenformaat' : 'Invalid format');
+            resultEl.classList.add('plate-rdw-error');
+            return;
+        }
+
+        resultEl.textContent = S.get.language === 'nl' ? 'Controleren bij RDW...' : 'Checking RDW...';
+        resultEl.classList.add('plate-rdw-loading');
+
+        Kenteken.lookupRDW(v.normalized).then(function(result) {
+            resultEl.classList.remove('plate-rdw-loading');
+            if (result.error) {
+                resultEl.textContent = S.get.language === 'nl' ? 'RDW tijdelijk niet bereikbaar.' : 'RDW temporarily unavailable.';
+                resultEl.classList.add('plate-rdw-error');
+                return;
+            }
+            if (result.found && result.data) {
+                const brand = (result.data.merk || '') + (result.data.handelsbenaming ? ' ' + result.data.handelsbenaming : '').trim();
+                const soort = result.data.voertuigsoort || '';
+                resultEl.textContent = (S.get.language === 'nl' ? 'Gevonden: ' : 'Found: ') + (brand.trim() || soort || 'RDW');
+                resultEl.classList.add('plate-rdw-ok');
+            } else {
+                resultEl.textContent = S.get.language === 'nl' ? 'Niet gevonden in RDW-register.' : 'Not found in RDW register.';
+                resultEl.classList.add('plate-rdw-warn');
+            }
+        }).catch(function() {
+            resultEl.classList.remove('plate-rdw-loading');
+            resultEl.textContent = S.get.language === 'nl' ? 'Controle mislukt.' : 'Check failed.';
+            resultEl.classList.add('plate-rdw-error');
+        });
+    }
+
     // --- DURATION CHANGE (fragile) ---
     // Risk: Silent return if sheet-zone not active (e.g. +/− clicked when overlay closed).
     // Risk: delta is NaN if data-delta attribute missing or invalid.
@@ -638,6 +700,7 @@ Q8.Services = (function() {
         modifyActiveSessionEnd,
         saveNewPlate,
         updatePlate,
+        checkPlateRDW,
         deletePlate,
         modifyDuration,
         setDefaultPlate,
