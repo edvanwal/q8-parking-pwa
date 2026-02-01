@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Q8 Fleet Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../design-system.css">
+  <link rel="stylesheet" href="portal.css">
+</head>
+<body class="portal-body">
+  <div id="portal-app">
+    <!-- LOGIN -->
+    <div id="view-login" class="portal-view">
+      <div class="portal-login-box">
+        <img src="../q8-logo.png" alt="Q8" class="portal-logo">
+        <h1 class="portal-title">Fleet Manager Portal</h1>
+        <p class="portal-subtitle">Beheer uw wagenpark en bestuurders</p>
+        <form id="login-form" class="portal-form">
+          <input type="email" id="login-email" class="input-field" placeholder="E-mailadres" required>
+          <input type="password" id="login-password" class="input-field" placeholder="Wachtwoord" required>
+          <button type="submit" class="btn btn-primary btn-block" id="btn-login">Inloggen</button>
+          <p id="login-error" class="portal-error hidden"></p>
+        </form>
+        <p class="portal-hint"><a href="/">← Terug naar de parkeerapp</a></p>
+      </div>
+    </div>
+
+    <!-- MAIN PORTAL (na login) -->
+    <div id="view-portal" class="portal-view hidden">
+      <aside class="portal-sidebar">
+        <div class="sidebar-header">
+          <img src="../q8-logo.png" alt="Q8" class="sidebar-logo">
+          <span>Fleet Portal</span>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="#" class="nav-item active" data-section="dashboard">
+            <span class="nav-icon">📊</span>
+            <span>Dashboard</span>
+          </a>
+          <a href="#" class="nav-item" data-section="users">
+            <span class="nav-icon">👥</span>
+            <span>Gebruikers</span>
+          </a>
+          <a href="#" class="nav-item" data-section="sessions">
+            <span class="nav-icon">🅿️</span>
+            <span>Actieve sessies</span>
+          </a>
+          <a href="#" class="nav-item" data-section="settings">
+            <span class="nav-icon">⚙️</span>
+            <span>Instellingen</span>
+          </a>
+          <a href="#" class="nav-item" data-section="plates">
+            <span class="nav-icon">🚗</span>
+            <span>Kentekenbeheer</span>
+          </a>
+        </nav>
+        <div class="sidebar-footer">
+          <span id="portal-user-email" class="text-secondary text-sm"></span>
+          <button class="btn btn-secondary btn-sm" id="btn-portal-logout">Uitloggen</button>
+        </div>
+      </aside>
+
+      <main class="portal-main">
+        <header class="portal-header">
+          <h1 id="portal-section-title">Dashboard</h1>
+        </header>
+
+        <div id="section-dashboard" class="portal-section">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-value" id="stat-active-sessions">0</span>
+              <span class="stat-label">Actieve parkeersessies</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value" id="stat-drivers">0</span>
+              <span class="stat-label">Bestuurders</span>
+            </div>
+          </div>
+          <div class="portal-card">
+            <h2>Overzicht</h2>
+            <p class="text-secondary">Welkom in het Fleet Manager Portal. Gebruik het menu om gebruikers te beheren, actieve sessies te monitoren en kentekeninstellingen aan te passen.</p>
+          </div>
+        </div>
+
+        <div id="section-users" class="portal-section hidden">
+          <div class="portal-card">
+            <div class="card-header">
+              <h2>Bestuurders</h2>
+              <button class="btn btn-primary" id="btn-add-user">+ Nieuwe bestuurder</button>
+            </div>
+            <div id="users-list" class="table-container">
+              <table class="portal-table">
+                <thead>
+                  <tr><th>E-mail</th><th>Naam</th><th>Rol</th><th>Kentekenbeheer</th><th></th></tr>
+                </thead>
+                <tbody id="users-tbody"></tbody>
+              </table>
+              <p id="users-empty" class="text-secondary text-center pad-lg hidden">Nog geen bestuurders. Voeg er een toe.</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="section-sessions" class="portal-section hidden">
+          <div class="portal-card">
+            <h2>Actieve parkeersessies</h2>
+            <div id="sessions-list" class="table-container">
+              <table class="portal-table">
+                <thead>
+                  <tr><th>Bestuurder</th><th>Zone</th><th>Kenteken</th><th>Gestart</th><th></th></tr>
+                </thead>
+                <tbody id="sessions-tbody"></tbody>
+              </table>
+              <p id="sessions-empty" class="text-secondary text-center pad-lg">Geen actieve sessies</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="section-settings" class="portal-section hidden">
+          <div class="portal-card">
+            <h2>Tenant instellingen</h2>
+            <div class="form-group">
+              <label>Auto-stop tijd (alle sessies stoppen)</label>
+              <div class="flex gap-md align-center">
+                <input type="time" id="setting-auto-stop" class="input-field" style="max-width:120px;">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="setting-auto-stop-enabled">
+                  <span>Ingeschakeld</span>
+                </label>
+              </div>
+            </div>
+            <button class="btn btn-primary" id="btn-save-settings">Opslaan</button>
+          </div>
+        </div>
+
+        <div id="section-plates" class="portal-section hidden">
+          <div class="portal-card">
+            <h2>Kentekenbeheer per bestuurder</h2>
+            <p class="text-secondary mb-lg">Selecteer een bestuurder om kentekens toe te voegen of restricties in te stellen.</p>
+            <div class="form-group mb-lg">
+              <label>Bestuurder selecteren</label>
+              <select id="plates-driver-select" class="input-field">
+                <option value="">-- Selecteer bestuurder --</option>
+              </select>
+            </div>
+            <div id="plates-driver-panel" class="hidden">
+              <div class="form-group mb-md">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="plates-can-add">
+                  <span>Bestuurder mag zelf kentekens toevoegen</span>
+                </label>
+              </div>
+              <div class="form-group mb-md">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="plates-locked">
+                  <span>Kentekens vergrendeld (bestuurder kan niets wijzigen)</span>
+                </label>
+              </div>
+              <div class="form-group mb-md">
+                <label>Max. aantal kentekens (0 = onbeperkt)</label>
+                <input type="number" id="plates-max" class="input-field" min="0" value="0" style="max-width:100px;">
+              </div>
+              <button class="btn btn-primary mb-lg" id="btn-save-plates-settings">Instellingen opslaan</button>
+              <hr class="portal-hr">
+              <h3 class="mb-md">Kentekens toevoegen</h3>
+              <div class="flex gap-md mb-md">
+                <input type="text" id="plates-add-input" class="input-field" placeholder="1-ABC-123">
+                <button class="btn btn-secondary" id="btn-add-plate-driver">Toevoegen</button>
+              </div>
+              <div id="plates-driver-list" class="plates-list"></div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Modal: Nieuwe bestuurder -->
+    <div id="modal-add-user" class="portal-modal hidden">
+      <div class="modal-content">
+        <h2>Nieuwe bestuurder</h2>
+        <form id="add-user-form">
+          <div class="form-group">
+            <label>E-mail</label>
+            <input type="email" id="add-user-email" class="input-field" required>
+          </div>
+          <div class="form-group">
+            <label>Wachtwoord</label>
+            <input type="password" id="add-user-password" class="input-field" minlength="6" required>
+          </div>
+          <div class="form-group">
+            <label>Naam (optioneel)</label>
+            <input type="text" id="add-user-name" class="input-field" placeholder="Jan Jansen">
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" id="btn-cancel-add-user">Annuleren</button>
+            <button type="submit" class="btn btn-primary">Aanmaken</button>
+          </div>
+        </form>
+      </div>
+      <div class="modal-backdrop" data-action="close-modal"></div>
+    </div>
+
+    <!-- Toast -->
+    <div id="portal-toast" class="portal-toast hidden"></div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="../firebase-config.js"></script>
+  <script src="portal.js"></script>
+</body>
+</html>
