@@ -38,7 +38,7 @@ Q8.Services = (function() {
         return db.collection('users').doc(user.uid).get().then(doc => {
             if (doc.exists) {
                 const data = doc.data();
-                S.update({ driverSettings: data.driverSettings || {} });
+                S.update({ driverSettings: data.driverSettings || {}, tenantId: data.tenantId || DEFAULT_TENANT });
                 fetchDriverSettings(user.uid);
                 return data;
             }
@@ -54,6 +54,7 @@ Q8.Services = (function() {
                     driverSettings: { canAddPlates: true, maxPlates: 0, platesLocked: false },
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 }).then(() => {
+                    S.update({ tenantId });
                     fetchDriverSettings(user.uid);
                     return { tenantId, role, driverSettings: {} };
                 });
