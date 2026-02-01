@@ -200,4 +200,21 @@ Prioriteit voor maximale begrijpelijkheid en perceptie van nauwkeurigheid: **1 (
 
 ---
 
+## 7. Implementatie (februari 2025)
+
+De volgende onderdelen uit het plan zijn geïmplementeerd:
+
+| Onderdeel | Status | Bestanden |
+|-----------|--------|-----------|
+| **Geschatte kosten in zonesheet** | ✅ | `public/ui.js`, `ui.js`, `public/index.html`, `index.html`: blok `#details-estimated-cost`; `calculateCost(duration, zone.price \|\| selectedZoneRate)`; NL/EN teksten. |
+| **Disclaimer bij tarieven** | ✅ | Zelfde bestanden: `#details-rates-disclaimer` met "Tarieven zijn indicatief…" / "Rates are indicative…". |
+| **Label duration** | ✅ | HTML: label "Parking duration (h)" → "Parking duration" met id `details-duration-label`; in `renderZoneSheet` NL "Duur" / EN "Parking duration". |
+| **Toelichting bij Rates** | ✅ | Label "Rates" heeft id `details-rates-label`; in JS wordt tekst (Rates/Tarieven) en tooltip (RDW Open Data) op taal gezet. |
+| **CSS** | ✅ | `public/design-system.css`, `design-system.css`: `.sheet-rates-disclaimer`, `.sheet-estimated-cost`, `.sheet-estimated-cost--muted`. |
+| **Tests** | ✅ | `tests/test_core.js`: TEST 1b "Pricing: Estimated cost formatting for zone sheet" (calculateCost + formatting); mocks voor Q8, saveFavorites, loadFavorites. |
+
+**Opmerking:** De test "Services: Add/Delete Plate" faalt door plate-normalisatie (1-TEST-999 → 1TEST999); dat is een bestaand gedrag, geen gevolg van deze wijzigingen.
+
+---
+
 *Einde rapport*

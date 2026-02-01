@@ -14,6 +14,14 @@ Q8.Kenteken = (function() {
     const RDW_VOERTUIGEN_URL = 'https://opendata.rdw.nl/resource/m9d7-ebf2.json';
     const RDW_BRANDSTOF_URL = 'https://opendata.rdw.nl/resource/8ys7-d773.json';
 
+    /** Milieuzones personenauto's: stad, type (groen=min 4, blauw=min 5), minimale emissieklasse diesel */
+    const MILIEUZONE_CITIES = [
+        { city: 'Amsterdam', type: 'blauw', minClass: 5 },
+        { city: 'Utrecht', type: 'blauw', minClass: 5 },
+        { city: 'Arnhem', type: 'groen', minClass: 4 },
+        { city: 'Den Haag', type: 'groen', minClass: 4 }
+    ];
+
     /**
      * Normaliseer invoer: hoofdletters, alleen letters/cijfers (geen streepjes/spaties).
      * @param {string} input
