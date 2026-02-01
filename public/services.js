@@ -283,7 +283,7 @@ Q8.Services = (function() {
 
         S.save();
         toast('Parking session started');
-        addNotification('sessionStarted', state.language === 'nl' ? 'Parkeersessie gestart' : 'Parking session started', `${displayId} · ${plateText}`);
+        addNotification('sessionStarted', S.get.language === 'nl' ? 'Parkeersessie gestart' : 'Parking session started', `${displayId} · ${plateText}`);
     }
 
     // --- NOTIFICATIONS ---

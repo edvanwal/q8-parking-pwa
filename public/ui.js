@@ -42,6 +42,9 @@ Q8.UI = (function() {
         }
 
         // 4. Content Lists
+        if (state.screen === 'notifications') {
+            renderNotifications();
+        }
         if (state.screen === 'plates') {
             renderPlates();
             const btnAdd = document.querySelector('[data-target="modal-add-plate"] span');
