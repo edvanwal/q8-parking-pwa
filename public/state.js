@@ -49,7 +49,8 @@ Q8.State = (function() {
         favorites: [],    // [{ zoneUid, zoneId }]
         driverSettings: {}, // { canAddPlates, maxPlates, platesLocked } - from Firestore
         adminPlates: [],   // Plates toegevoegd door fleetmanager - from Firestore
-        tenantId: null     // Set when user logs in, for session writes
+        tenantId: null,    // Set when user logs in, for session writes
+        vehicleDataByPlate: {} // { [normalizedPlateId]: { merk, handelsbenaming, brandstof_omschrijving, emissiecode_omschrijving } } - from RDW lookup, for milieuzone
     };
 
     /**

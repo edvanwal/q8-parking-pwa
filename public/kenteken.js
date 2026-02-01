@@ -304,6 +304,7 @@ Q8.Kenteken = (function() {
                         const brandstofRow = (Array.isArray(brandstofArr) && brandstofArr.length > 0) ? brandstofArr[0] : null;
                         const main = mainArr[0];
                         const brandstofOmschrijving = brandstofRow ? (brandstofRow.brandstof_omschrijving || '') : '';
+                        const emissiecode = brandstofRow && brandstofRow.emissiecode_omschrijving != null ? String(brandstofRow.emissiecode_omschrijving).trim() : '';
                         const isElektrisch = /elektriciteit|elektrisch|plugin|plug-in|phev|bev|ev/i.test(brandstofOmschrijving);
                         return {
                             found: true,
@@ -316,6 +317,7 @@ Q8.Kenteken = (function() {
                                 tweede_kleur: main.tweede_kleur || '',
                                 vervaldatum_apk: main.vervaldatum_apk || '',
                                 brandstof: brandstofOmschrijving || '—',
+                                emissiecode_omschrijving: emissiecode,
                                 elektrisch: isElektrisch,
                                 massa_ledig_voertuig: main.massa_ledig_voertuig != null ? String(main.massa_ledig_voertuig) : '',
                                 toegestane_maximum_massa_voertuig: main.toegestane_maximum_massa_voertuig != null ? String(main.toegestane_maximum_massa_voertuig) : '',
@@ -339,6 +341,9 @@ Q8.Kenteken = (function() {
         validateFormat: validateFormat,
         validate: validate,
         lookupRDW: lookupRDW,
-        getVehicleSpecs: getVehicleSpecs
+        getVehicleSpecs: getVehicleSpecs,
+        getMilieuzoneStatus: getMilieuzoneStatus,
+        getMilieuzoneCityInfo: getMilieuzoneCityInfo,
+        getMilieuzoneStatusForCity: getMilieuzoneStatusForCity
     };
 })();

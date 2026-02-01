@@ -479,7 +479,7 @@ Q8.UI = (function() {
         if (intro) intro.innerText = nl ? 'Specs van je ingevulde kentekens (RDW).' : 'Specs for your registered license plates (RDW).';
 
         list.innerHTML = '';
-        const plates = state.plates || [];
+        const plates = getDisplayPlates();
         if (plates.length === 0) {
             list.innerHTML = '<p class="text-secondary">' + (nl ? 'Voeg eerst kentekens toe onder License plates.' : 'Add license plates first under License plates.') + '</p>';
             return;
