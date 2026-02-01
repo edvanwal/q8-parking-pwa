@@ -111,11 +111,10 @@ Q8.UI = (function() {
             const elZoneLabel = document.getElementById('active-zone-label');
             if (elZoneLabel) elZoneLabel.innerText = state.session.zone;
 
-            const selPlate = state.plates.find(p => p.id === state.selectedPlateId) ||
-                             state.plates.find(p => p.default) ||
-                             state.plates[0];
+            const plateDisplay = (state.session.plate && state.session.plate.trim()) ? state.session.plate.trim() : null;
+            const fallbackPlate = state.plates.find(p => p.id === state.selectedPlateId) || state.plates.find(p => p.default) || state.plates[0];
             const elLabel = document.getElementById('active-plate-label');
-            if (elLabel && selPlate) elLabel.innerText = selPlate.text;
+            if (elLabel) elLabel.innerText = plateDisplay || (fallbackPlate ? fallbackPlate.text : '');
 
             const elStart = document.getElementById('lbl-start');
             const elEnd = document.getElementById('lbl-end');
