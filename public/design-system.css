@@ -559,9 +559,17 @@ body {
   border-radius: 50%; margin-top: 6px; flex-shrink: 0;
 }
 .rate-info { flex: 1; }
-.rate-time { color: var(--text-main); font-weight: 700; font-size: 0.95rem; display: block; }
+.rate-time { color: var(--q8-blue-900); font-weight: 700; font-size: 1rem; display: block; }
+.rate-detail-list {
+  margin: 6px 0 0 16px; padding: 0;
+  list-style-type: disc;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.rate-detail-list li { margin: 2px 0; }
 .rate-desc { color: var(--text-secondary); font-size: 0.875rem; }
-.rate-price { font-weight: 700; color: var(--text-main); }
+.rate-price { font-weight: 700; font-size: 1rem; }
 .filters-clear {
   color: var(--text-secondary); font-weight: 700; font-size: 0.85rem; cursor: pointer;
 }
