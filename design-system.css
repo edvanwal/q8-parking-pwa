@@ -328,6 +328,7 @@ body {
 
 .page-title { font-weight: 700; font-size: 1.1rem; position: absolute; left: 50%; transform: translateX(-50%); color: #1E4A99; letter-spacing: 0.3px; }
 .top-bar .icon-btn { color: #1E4A99; }
+.top-bar .icon-btn[data-action="toggle-menu"] svg { width: 28px; height: 28px; }
 
 /* Components: Buttons */
 .icon-btn {
