@@ -82,15 +82,16 @@ Q8.Services = (function() {
         if (window.Q8_DIAG) console.log('[DIAG_FIREBASE]', tag, msg, data || '');
     }
 
-    // Exclude garage and non-street-parking zones (straatparkeren only)
+    // Exclude garage and non-street-parking zones (alleen straatparkeren)
     const EXCLUDED_USAGE = ['VERGUNP', 'BEWONERP', 'DEELAUTOP', 'VERGUNZ', 'GPK', 'BEDRIJFP', 'BEZOEKBDP', 'ONTHEFFING', 'GARAGEP', 'CARPOOL', 'GEBIEDVRIJ', 'MILIEUZONE', 'ZE_ONTHEF', 'GSL_ONTHEF', 'GPKB', 'TERREINP'];
+    const NON_STREET_PATTERNS = /garage|p\+r|p&r|carpool|transferium|parkeergarage/i;
     function isStreetParkingZone(z) {
         const uid = (z.usageid || z.usage || '').toUpperCase();
         if (uid && EXCLUDED_USAGE.includes(uid)) return false;
         const name = (z.name || z.id || '').toLowerCase();
-        if (/garage|p\+r|carpool/.test(name)) return false;
+        if (NON_STREET_PATTERNS.test(name)) return false;
         const rates = z.rates || [];
-        if (rates.some(r => /garage/i.test(r.detail || ''))) return false;
+        if (rates.some(r => NON_STREET_PATTERNS.test(r.detail || ''))) return false;
         return true;
     }
 
