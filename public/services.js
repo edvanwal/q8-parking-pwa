@@ -316,10 +316,12 @@ Q8.Services = (function() {
         }
         const displayId = zoneObj.id;
 
-        const selPlate = S.get.plates.find(p => p.id === S.get.selectedPlateId) ||
-                         S.get.plates.find(p => p.default) ||
-                         S.get.plates[0];
-        const plateText = selPlate ? selPlate.text : '';
+        const adminPlates = (S.get.adminPlates || []).map(p => ({ id: p.id, text: p.text || p.id, default: false }));
+        const allPlates = [...adminPlates, ...(S.get.plates || [])];
+        const selPlate = allPlates.find(p => p.id === S.get.selectedPlateId) ||
+                         allPlates.find(p => p.default) ||
+                         allPlates[0];
+        const plateText = selPlate ? (selPlate.text || selPlate.id) : '';
 
         const now = new Date();
         const session = {
@@ -506,6 +508,24 @@ Q8.Services = (function() {
 
     // --- LICENSE PLATE ADD (with free kenteken validation) ---
     function saveNewPlate() {
+        const ds = S.get.driverSettings || {};
+        if (ds.platesLocked) {
+            toast(S.get.language === 'nl' ? 'Kentekens zijn vergrendeld door de fleetmanager' : 'License plates are locked by fleet manager');
+            return;
+        }
+        if (ds.canAddPlates === false) {
+            toast(S.get.language === 'nl' ? 'Je mag geen kentekens toevoegen' : 'You are not allowed to add license plates');
+            return;
+        }
+        const maxPlates = (ds.maxPlates || 0);
+        if (maxPlates > 0) {
+            const adminCount = (S.get.adminPlates || []).length;
+            const userCount = (S.get.plates || []).length;
+            if (adminCount + userCount >= maxPlates) {
+                toast(S.get.language === 'nl' ? 'Maximum aantal kentekens bereikt' : 'Maximum number of license plates reached');
+                return;
+            }
+        }
         const inp = document.getElementById('inp-plate');
         if (!inp) {
             console.warn('[PLATES] saveNewPlate: #inp-plate not found');

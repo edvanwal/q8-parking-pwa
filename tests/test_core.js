@@ -21,6 +21,7 @@ global.window = {
     matchMedia: () => ({ matches: false }),
     navigator: { userAgent: 'Node' }
 };
+global.Q8 = global.window.Q8;
 global.localStorage = localStorageMock;
 global.document = {
     getElementById: () => ({ innerText: '', value: '', style: {} }),

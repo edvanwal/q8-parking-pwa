@@ -657,9 +657,10 @@ Q8.UI = (function() {
         const list = document.getElementById('quick-plate-list');
         if (!list) return;
         list.innerHTML = '';
-        const activePlateId = state.selectedPlateId || (state.plates.find(p => p.default) || state.plates[0])?.id;
+        const displayPlates = getDisplayPlates();
+        const activePlateId = state.selectedPlateId || (displayPlates.find(p => p.default) || displayPlates[0])?.id;
 
-        state.plates.forEach(p => {
+        displayPlates.forEach(p => {
             const isSelected = p.id === activePlateId;
             const div = document.createElement('div');
             div.className = `card flex justify-between items-center ${isSelected ? 'selected' : ''}`;
