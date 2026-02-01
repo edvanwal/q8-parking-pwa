@@ -795,56 +795,60 @@ Q8.UI = (function() {
         diagMaps('initGoogleMap', 'done');
     }
 
-    /* OverlayView-based markers: DOM divs with fixed CSS size - avoids Google Maps icon shrink bug */
-    function PriceMarkersOverlay() {}
-    PriceMarkersOverlay.prototype = new google.maps.OverlayView();
-    PriceMarkersOverlay.prototype.onAdd = function() {
-        this.container = document.createElement('div');
-        this.container.style.cssText = 'position:absolute;left:0;top:0;pointer-events:none;';
-        const panes = this.getPanes();
-        panes.overlayMouseTarget.appendChild(this.container);
-    };
-    PriceMarkersOverlay.prototype.draw = function() {
-        if (!this.getMap() || !this.container || !this.getProjection()) return;
-        const proj = this.getProjection();
-        const state = S.get;
-        this.container.innerHTML = '';
-        state.zones.forEach(z => {
-            if (!z.lat || !z.lng) return;
-            const priceLabel = z.display_label || (typeof z.price === 'number'
-                ? z.price.toFixed(2).replace('.', ',')
-                : String(z.price));
-            const priceText = z.price === 0 ? 'Free' : '€ ' + priceLabel.substring(0, 6);
-            const isSelected = (z.uid && z.uid === state.selectedZone) || (z.id && String(z.id) === String(state.selectedZone));
-            const pt = proj.fromLatLngToDivPixel(new google.maps.LatLng(z.lat, z.lng));
-            if (!pt) return;
-            const el = document.createElement('div');
-            el.className = 'q8-price-marker' + (isSelected ? ' q8-price-marker--selected' : '');
-            el.textContent = priceText;
-            el.title = 'Zone ' + (z.id || z.uid) + ' - € ' + priceLabel;
-            el.style.left = pt.x + 'px';
-            el.style.top = pt.y + 'px';
-            el.addEventListener('click', function(e) {
-                e.stopPropagation();
-                if (Q8.Services && Q8.Services.tryOpenOverlay) {
-                    Q8.Services.tryOpenOverlay('sheet-zone', { uid: z.uid, zone: z.id, price: z.price, rates: z.rates });
-                }
-            });
-            this.container.appendChild(el);
-        });
-    };
-    PriceMarkersOverlay.prototype.onRemove = function() {
-        if (this.container && this.container.parentNode) {
-            this.container.parentNode.removeChild(this.container);
-        }
-    };
-
+    /* OverlayView-based markers: defined only when google.maps exists */
     let priceMarkersOverlay = null;
 
+    function createPriceMarkersOverlay() {
+        function PriceMarkersOverlay() {}
+        PriceMarkersOverlay.prototype = new google.maps.OverlayView();
+        PriceMarkersOverlay.prototype.onAdd = function() {
+            this.container = document.createElement('div');
+            this.container.style.cssText = 'position:absolute;left:0;top:0;pointer-events:none;';
+            const panes = this.getPanes();
+            if (panes && panes.overlayMouseTarget) panes.overlayMouseTarget.appendChild(this.container);
+        };
+        PriceMarkersOverlay.prototype.draw = function() {
+            if (!this.getMap() || !this.container || !this.getProjection()) return;
+            const proj = this.getProjection();
+            const state = S.get;
+            this.container.innerHTML = '';
+            (state.zones || []).forEach(z => {
+                if (!z.lat || !z.lng) return;
+                const priceLabel = z.display_label || (typeof z.price === 'number'
+                    ? z.price.toFixed(2).replace('.', ',')
+                    : String(z.price));
+                const priceText = z.price === 0 ? 'Free' : '€ ' + priceLabel.substring(0, 6);
+                const isSelected = (z.uid && z.uid === state.selectedZone) || (z.id && String(z.id) === String(state.selectedZone));
+                const pt = proj.fromLatLngToDivPixel(new google.maps.LatLng(z.lat, z.lng));
+                if (!pt) return;
+                const el = document.createElement('div');
+                el.className = 'q8-price-marker' + (isSelected ? ' q8-price-marker--selected' : '');
+                el.textContent = priceText;
+                el.title = 'Zone ' + (z.id || z.uid) + ' - € ' + priceLabel;
+                el.style.left = pt.x + 'px';
+                el.style.top = pt.y + 'px';
+                const zoneData = { uid: z.uid, zone: z.id, price: z.price, rates: z.rates };
+                el.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    if (Q8.Services && Q8.Services.tryOpenOverlay) {
+                        Q8.Services.tryOpenOverlay('sheet-zone', zoneData);
+                    }
+                });
+                this.container.appendChild(el);
+            });
+        };
+        PriceMarkersOverlay.prototype.onRemove = function() {
+            if (this.container && this.container.parentNode) {
+                this.container.parentNode.removeChild(this.container);
+            }
+        };
+        return new PriceMarkersOverlay();
+    }
+
     function renderMapMarkers() {
-        if (!map) return;
+        if (!map || typeof google === 'undefined' || !google.maps) return;
         if (!priceMarkersOverlay) {
-            priceMarkersOverlay = new PriceMarkersOverlay();
+            priceMarkersOverlay = createPriceMarkersOverlay();
             priceMarkersOverlay.setMap(map);
             google.maps.event.addListener(map, 'idle', function() { if (priceMarkersOverlay) priceMarkersOverlay.draw(); });
             google.maps.event.addListener(map, 'bounds_changed', function() { if (priceMarkersOverlay) priceMarkersOverlay.draw(); });
