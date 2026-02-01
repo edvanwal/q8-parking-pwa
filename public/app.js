@@ -172,10 +172,10 @@ Q8.App = (function() {
                     const zone = S.get.zones.find(z => z.uid === zoneUid || z.id === zoneUid);
                     const zoneId = zone ? zone.id : zoneUid;
                     const favs = S.get.favorites || [];
-                    const exists = favs.some(f => f.zoneUid === zoneUid || (f.zoneId === zoneId && f.zoneUid === zoneUid));
+                    const exists = favs.some(f => f.zoneUid === zoneUid || f.zoneId === zoneId);
                     let next;
                     if (exists) {
-                        next = favs.filter(f => f.zoneUid !== zoneUid && !(f.zoneId === zoneId && !f.zoneUid));
+                        next = favs.filter(f => f.zoneUid !== zoneUid && f.zoneId !== zoneId);
                     } else {
                         next = [...favs, { zoneUid, zoneId }];
                     }

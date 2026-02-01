@@ -161,11 +161,66 @@ Q8.Kenteken = (function() {
             });
     }
 
+    /**
+     * Haal volledige voertuig-specs op (main + brandstof) voor Cars specs-pagina.
+     * @param {string} normalized Genormaliseerd kenteken
+     * @returns {Promise<{ found: boolean, specs?: object, error?: boolean }>}
+     */
+    function getVehicleSpecs(normalized) {
+        if (!normalized || normalized.length < 6) {
+            return Promise.resolve({ found: false });
+        }
+        const k = encodeURIComponent(normalized);
+        const mainUrl = RDW_VOERTUIGEN_URL + '?kenteken=' + k + '&$limit=1';
+        const brandstofUrl = RDW_BRANDSTOF_URL + '?kenteken=' + k + '&$limit=1';
+
+        return fetch(mainUrl, { method: 'GET' })
+            .then(function(res) { return res.ok ? res.json() : []; })
+            .then(function(mainArr) {
+                if (!Array.isArray(mainArr) || mainArr.length === 0) {
+                    return { found: false, main: null, brandstof: null };
+                }
+                return fetch(brandstofUrl, { method: 'GET' })
+                    .then(function(res) { return res.ok ? res.json() : []; })
+                    .then(function(brandstofArr) {
+                        const brandstofRow = (Array.isArray(brandstofArr) && brandstofArr.length > 0) ? brandstofArr[0] : null;
+                        const main = mainArr[0];
+                        const brandstofOmschrijving = brandstofRow ? (brandstofRow.brandstof_omschrijving || '') : '';
+                        const isElektrisch = /elektriciteit|elektrisch|plugin|plug-in|phev|bev|ev/i.test(brandstofOmschrijving) || (brandstofRow && (brandstofRow.brandstof_omschrijving || '').toLowerCase().indexOf('elektriciteit') !== -1);
+                        return {
+                            found: true,
+                            specs: {
+                                kenteken: main.kenteken || normalized,
+                                merk: main.merk || '',
+                                handelsbenaming: main.handelsbenaming || '',
+                                voertuigsoort: main.voertuigsoort || '',
+                                eerste_kleur: main.eerste_kleur || '',
+                                tweede_kleur: main.tweede_kleur || '',
+                                vervaldatum_apk: main.vervaldatum_apk || '',
+                                brandstof: brandstofOmschrijving || '—',
+                                elektrisch: isElektrisch,
+                                massa_ledig_voertuig: main.massa_ledig_voertuig != null ? String(main.massa_ledig_voertuig) : '',
+                                toegestane_maximum_massa_voertuig: main.toegestane_maximum_massa_voertuig != null ? String(main.toegestane_maximum_massa_voertuig) : '',
+                                laad_aansluiting: '—',
+                                laad_snelheid: '—'
+                            }
+                        };
+                    });
+            })
+            .catch(function(err) {
+                if (typeof Q8 !== 'undefined' && Q8.Utils && Q8.Utils.logger && Q8.Utils.logger.warn) {
+                    Q8.Utils.logger.warn('Kenteken getVehicleSpecs failed', err);
+                }
+                return { found: false, error: true };
+            });
+    }
+
     return {
         normalize: normalize,
         formatDisplay: formatDisplay,
         validateFormat: validateFormat,
         validate: validate,
-        lookupRDW: lookupRDW
+        lookupRDW: lookupRDW,
+        getVehicleSpecs: getVehicleSpecs
     };
 })();
