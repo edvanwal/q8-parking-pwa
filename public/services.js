@@ -247,10 +247,16 @@ Q8.Services = (function() {
         }
         const displayId = zoneObj.id;
 
+        const selPlate = S.get.plates.find(p => p.id === S.get.selectedPlateId) ||
+                         S.get.plates.find(p => p.default) ||
+                         S.get.plates[0];
+        const plateText = selPlate ? selPlate.text : '';
+
         const now = new Date();
         const session = {
             zone: displayId,
             zoneUid: S.get.selectedZone,
+            plate: plateText,
             start: now,
             end: S.get.duration === 0 ? null : new Date(now.getTime() + S.get.duration * 60000)
         };
