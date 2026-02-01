@@ -857,7 +857,8 @@ body {
 .side-menu .menu-lang-btn.active {
   background: #1E4A99; color: white; border-color: #1E4A99;
 }
-.side-menu .menu-flag { font-size: 1rem; }
+.side-menu .menu-lang-flag { display: inline-flex; margin-right: 6px; flex-shrink: 0; }
+.side-menu .menu-lang-flag svg { display: block; border-radius: 2px; }
 .side-menu .menu-bottom {
   flex-shrink: 0; padding-top: 12px; margin-top: auto; margin-bottom: 16px;
 }
