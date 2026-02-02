@@ -490,10 +490,12 @@ Q8.Services = (function() {
         }
         const displayId = zoneObj.id;
 
-        const selPlate = S.get.plates.find(p => p.id === S.get.selectedPlateId) ||
-                         S.get.plates.find(p => p.default) ||
-                         S.get.plates[0];
-        const plateText = selPlate ? selPlate.text : '';
+        const adminPlates = (S.get.adminPlates || []).map(p => ({ id: p.id, text: p.text || p.id, default: false }));
+        const allPlates = [...adminPlates, ...(S.get.plates || [])];
+        const selPlate = allPlates.find(p => p.id === S.get.selectedPlateId) ||
+                         allPlates.find(p => p.default) ||
+                         allPlates[0];
+        const plateText = selPlate ? (selPlate.text || selPlate.id) : '';
 
         const now = new Date();
         const endDate = S.get.duration === 0 ? null : new Date(now.getTime() + S.get.duration * 60000);
