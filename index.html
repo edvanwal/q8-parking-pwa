@@ -300,6 +300,13 @@
 
     <!-- Map area (full height under header) -->
     <div class="map-area" role="region" aria-label="Parking map">
+      <!-- Zones loading indicator -->
+      <div id="zones-loading-overlay" class="zones-loading-overlay hidden" aria-live="polite">
+        <div class="zones-loading-content">
+          <div class="zones-loading-spinner"></div>
+          <p class="zones-loading-text">Loading parking zones...</p>
+        </div>
+      </div>
       <!-- Map Surface -->
       <div id="map-container" class="map-surface">
         <!-- Markers injected by JS -->
