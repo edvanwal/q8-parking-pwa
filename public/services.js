@@ -389,14 +389,28 @@ Q8.Services = (function() {
             .sort((a, b) => a._distKm - b._distKm);
     }
 
-    /** Update state.nearbyFacilities from state.facilities + state.userLocation. */
+    /** Update state.nearbyFacilities from state.facilities + ref point (user or selected zone). */
     function updateNearbyFacilities() {
-        const { facilities, userLocation, nearbyFacilitiesRadiusKm } = S.get;
-        if (!userLocation || userLocation.lat == null || userLocation.lng == null) {
+        const { facilities, userLocation, nearbyFacilitiesRadiusKm, nearbyFacilitiesRef, selectedZone, zones } = S.get;
+        let lat = null, lng = null;
+        if (nearbyFacilitiesRef === 'zone' && selectedZone && zones && zones.length) {
+            const zone = zones.find(z => (z.uid === selectedZone) || (z.id && String(z.id) === String(selectedZone)));
+            if (zone && zone.lat != null && zone.lng != null) {
+                lat = parseFloat(zone.lat);
+                lng = parseFloat(zone.lng);
+            }
+        }
+        if (lat == null || lng == null) {
+            if (userLocation && userLocation.lat != null && userLocation.lng != null) {
+                lat = userLocation.lat;
+                lng = userLocation.lng;
+            }
+        }
+        if (lat == null || lng == null) {
             S.update({ nearbyFacilities: [] });
             return;
         }
-        const nearby = getNearbyFacilities(facilities, userLocation.lat, userLocation.lng, nearbyFacilitiesRadiusKm);
+        const nearby = getNearbyFacilities(facilities, lat, lng, nearbyFacilitiesRadiusKm);
         S.update({ nearbyFacilities: nearby });
     }
 
