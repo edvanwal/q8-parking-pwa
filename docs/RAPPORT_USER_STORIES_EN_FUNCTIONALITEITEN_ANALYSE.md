@@ -433,8 +433,8 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 | # | Nieuwe User Story | Rationale |
 |---|-------------------|-----------|
-| 5 | **Export parkeerhistorie (CSV/PDF)** | Declaratie en boekhouding |
-| 6 | **Push-notificatie bij bijna verlopen** | Voorkomt vergeten sessies |
+| 4 | **Export parkeerhistorie (CSV/PDF)** | Declaratie en boekhouding (billing export in `functions/billing.js`) |
+| 5 | **Push-notificatie bij bijna verlopen** | Voorkomt vergeten sessies (FCM + permissie flow aanwezig) |
 | 7 | **Adres-zoeken met geocoding** | Betere UX bij onbekende zones |
 | 8 | **Sessie verlengen vanuit actieve kaart** | Snellere actie zonder zone opnieuw te openen |
 | 9 | **Gebruiksdagen beperken** | Fleet Manager Plan – allowedDays |
@@ -463,10 +463,9 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 | Risico | Scenario | Gevolg |
 |--------|----------|--------|
-| **Geen historie** | Chauffeur wil declareren | Geen data beschikbaar |
-| **localStorage gewist** | Privémodus, opschonen browser | Sessie en kentekens verdwenen |
-| **Netwerk uit tijdens laden** | Slechte verbinding | Kaart leeg, geen duidelijke fout |
-| **Sessie langer dan zone-max** | Geen automatische stop | Chauffeur moet zelf stoppen |
+| **localStorage gewist** | Privémodus, opschonen browser | Sessie en kentekens verdwenen (historie blijft in Firestore) |
+| **Netwerk uit tijdens laden** | Slechte verbinding | Kaart timeout 15 sec, loading overlay |
+| **Sessie langer dan zone-max** | Toast bij bereiken limiet | Chauffeur wordt gewaarschuwd |
 | **Geen bevestiging bij verwijderen** | Kenteken per ongeluk verwijderd | Direct weg |
 
 ### 7.3 Architectuur / onderhoud
