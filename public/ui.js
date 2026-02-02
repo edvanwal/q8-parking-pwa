@@ -69,6 +69,12 @@ Q8.UI = (function() {
         if (state.installMode.active) {
             renderInstallGate();
         }
+    } catch (err) {
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:update',message:'exception',data:{message:String(err&&err.message),stack:(err&&err.stack)?String(err.stack).slice(0,200):''},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H4'})}).catch(function(){});
+        // #endregion
+        throw err;
+    }
     }
 
     function renderParkingView() {
@@ -1202,12 +1208,11 @@ Q8.UI = (function() {
         if (!container || map) return;
 
         if (typeof google === 'undefined' || !google.maps) {
-            // #region agent log
-            var apiKey = (typeof firebaseConfig !== 'undefined') ? (firebaseConfig.googleMapsApiKey || '') : '';
-            fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:initGoogleMap',message:'loading script',data:{apiKeyLength:apiKey.length},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(function(){});
-            // #endregion
             diagMaps('initGoogleMap', 'loading-script');
             const apiKey = (typeof firebaseConfig !== 'undefined') ? firebaseConfig.googleMapsApiKey : '';
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:initGoogleMap',message:'loading script',data:{apiKeyLength:(apiKey||'').length},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(function(){});
+            // #endregion
             const script = document.createElement('script');
             script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMapCallback`;
             script.async = true;
