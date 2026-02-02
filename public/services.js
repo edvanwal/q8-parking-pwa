@@ -809,20 +809,27 @@ Q8.Services = (function() {
         const now = new Date();
         const stepMins = Math.abs(delta) >= 60 ? 60 : 30;
         const stepMs = (delta > 0 ? stepMins : -stepMins) * 60000;
+        const maxEnd = new Date(now.getTime() + maxDurMins * 60000);
 
         let newEnd;
+        let hitLimit = false;
 
         if (!session.end) {
             if (delta > 0) {
                 newEnd = new Date(now.getTime() + stepMins * 60000);
-                if (newEnd.getTime() - now.getTime() > maxDurMins * 60000) newEnd = new Date(now.getTime() + maxDurMins * 60000);
+                if (newEnd > maxEnd) {
+                    newEnd = maxEnd;
+                    hitLimit = true;
+                }
             } else return;
         } else {
             const endDate = session.end instanceof Date ? session.end : new Date(session.end);
             if (delta > 0) {
                 newEnd = new Date(endDate.getTime() + stepMs);
-                const maxEnd = new Date(now.getTime() + maxDurMins * 60000);
-                if (newEnd > maxEnd) newEnd = maxEnd;
+                if (newEnd > maxEnd) {
+                    newEnd = maxEnd;
+                    hitLimit = true;
+                }
             } else {
                 const newEndTime = endDate.getTime() + stepMs;
                 if (newEndTime <= now.getTime()) newEnd = null;
@@ -832,6 +839,20 @@ Q8.Services = (function() {
 
         S.update({ session: { ...session, end: newEnd } });
         S.save();
+
+        if (hitLimit && delta > 0) {
+            const toast = (msg) => {
+                if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg, 'error');
+                else if (typeof window.showToast === 'function') window.showToast(msg, 'error');
+            };
+            if (maxDurMins >= 1440) {
+                toast('Max parking duration reached');
+            } else {
+                const hours = Math.floor(maxDurMins / 60);
+                const hoursStr = hours === 1 ? '1 hour' : `${hours} hours`;
+                toast(`Maximum parking duration for this zone is ${hoursStr}`);
+            }
+        }
     }
 
     // --- PLATE MANAGEMENT ---
@@ -1105,7 +1126,23 @@ Q8.Services = (function() {
             else newDur -= 60;
         }
 
-        S.update({ duration: Math.min(newDur, maxDur) });
+        const capped = Math.min(newDur, maxDur);
+        const hitLimit = delta > 0 && newDur > maxDur;
+        S.update({ duration: capped });
+
+        if (hitLimit) {
+            const toast = (msg) => {
+                if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg, 'error');
+                else if (typeof window.showToast === 'function') window.showToast(msg, 'error');
+            };
+            if (maxDur >= 1440) {
+                toast('Max parking duration reached');
+            } else {
+                const hours = Math.floor(maxDur / 60);
+                const hoursStr = hours === 1 ? '1 hour' : `${hours} hours`;
+                toast(`Maximum parking duration for this zone is ${hoursStr}`);
+            }
+        }
     }
 
     // --- LICENSE PLATE SET DEFAULT (fragile) ---
