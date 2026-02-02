@@ -375,7 +375,10 @@ def run_update():
                     steps = [s['step'] for s in m['source_slots'] if s['rate'] > 0]
                     if steps:
                         avg_step = max(set(steps), key=steps.count)
-                        if avg_step >= 10:
+                        if avg_step >= 480:
+                            day_amt = next((s['amt'] for s in m['source_slots'] if s.get('step', 0) >= 480 and s['rate'] > 0), m['amt'])
+                            display_price_label = f"\u20ac {day_amt:.2f} / dag"
+                        elif avg_step >= 10:
                             step_price = (m['rate'] / 60) * avg_step
                             display_price_label = f"\u20ac {step_price:.2f} / {int(avg_step)} min"
 
