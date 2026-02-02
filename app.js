@@ -92,14 +92,26 @@ Q8.App = (function() {
                     Services.tryOpenOverlay('sheet-plate-selector');
                     break;
 
-                case 'select-quick-plate':
-                    // Risk: selectedZone can be null if sheet was closed and reopened, or zone not yet set.
+                case 'open-plate-selector-from-confirm':
+                    S.update({ plateSelectorReturnTo: 'modal-confirm-start' });
+                    UI.renderQuickPlateSelector();
+                    Services.tryOpenOverlay('sheet-plate-selector');
+                    break;
+
+                case 'select-quick-plate': {
                     const qId = target.getAttribute('data-id');
                     if (!qId) console.warn('[PLATE_SELECT] select-quick-plate: no data-id');
                     S.update({ selectedPlateId: qId });
-                    if (!S.get.selectedZone) console.warn('[PLATE_SELECT] Reopening zone sheet with no selectedZone');
-                    Services.tryOpenOverlay('sheet-zone', { uid: S.get.selectedZone });
+                    const returnTo = S.get.plateSelectorReturnTo;
+                    if (returnTo === 'modal-confirm-start') {
+                        S.update({ plateSelectorReturnTo: null });
+                        Services.tryOpenOverlay('modal-confirm-start');
+                    } else {
+                        if (!S.get.selectedZone) console.warn('[PLATE_SELECT] Reopening zone sheet with no selectedZone');
+                        Services.tryOpenOverlay('sheet-zone', { uid: S.get.selectedZone });
+                    }
                     break;
+                }
 
                 case 'open-overlay': {
                     // Risk: JSON.parse on data-rates throws if malformed. data-zone-uid/zone missing = empty context.
