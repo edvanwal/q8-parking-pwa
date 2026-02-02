@@ -416,10 +416,10 @@ Q8.Services = (function() {
 
     function loadFacilities() {
         if (!db) {
-            S.update({ facilities: [], facilitiesLoading: false });
+            S.update({ facilities: [], facilitiesLoading: false, facilitiesLoadError: null });
             return Promise.resolve([]);
         }
-        S.update({ facilitiesLoading: true });
+        S.update({ facilitiesLoading: true, facilitiesLoadError: null });
         return db.collection('facilities').limit(2000).get()
             .then(snapshot => {
                 const facilities = [];
@@ -432,13 +432,14 @@ Q8.Services = (function() {
                         lng: d.lng != null ? parseFloat(d.lng) : null
                     });
                 });
-                S.update({ facilities, facilitiesLoading: false });
+                S.update({ facilities, facilitiesLoading: false, facilitiesLoadError: null });
                 updateNearbyFacilities();
                 if (Q8.UI && typeof Q8.UI.renderMapMarkers === 'function') Q8.UI.renderMapMarkers();
                 return facilities;
             })
             .catch(err => {
-                S.update({ facilities: [], facilitiesLoading: false });
+                const msg = (err && err.message) ? err.message : (S.get.language === 'nl' ? 'Garages & P+R konden niet worden geladen.' : 'Could not load garages & P+R.');
+                S.update({ facilities: [], facilitiesLoading: false, facilitiesLoadError: msg });
                 console.warn('Facilities load failed:', err);
                 return [];
             });
