@@ -119,13 +119,24 @@ Q8.UI = (function() {
         if (idleSearch) idleSearch.style.display = isActive ? 'none' : 'block';
         if (activeParking) activeParking.style.display = isActive ? 'block' : 'none';
 
-        // Zones loading indicator
+        // Zones loading / error indicator
         const zonesLoadingEl = document.getElementById('zones-loading-overlay');
+        const zonesErrorEl = document.getElementById('zones-load-error');
         if (zonesLoadingEl) {
             const loading = state.zonesLoading === true;
-            zonesLoadingEl.classList.toggle('hidden', !loading);
+            const hasError = !loading && state.zonesLoadError;
+            zonesLoadingEl.classList.toggle('hidden', loading || hasError);
             const textEl = zonesLoadingEl.querySelector('.zones-loading-text');
             if (textEl) textEl.textContent = state.language === 'nl' ? 'Parkeerzones laden...' : 'Loading parking zones...';
+        }
+        if (zonesErrorEl) {
+            const hasError = !state.zonesLoading && state.zonesLoadError;
+            zonesErrorEl.classList.toggle('hidden', !hasError);
+            const msgEl = zonesErrorEl.querySelector('.zones-error-text');
+            const nl = state.language === 'nl';
+            if (msgEl) msgEl.textContent = nl ? 'Kan parkeerzones niet laden. Controleer uw internetverbinding.' : 'Could not load parking zones. Check your internet connection.';
+            const retryBtn = zonesErrorEl.querySelector('[data-action="retry-load-zones"]');
+            if (retryBtn) retryBtn.textContent = nl ? 'Opnieuw proberen' : 'Retry';
         }
 
         // Show message when opened as file (map does not work from file://)

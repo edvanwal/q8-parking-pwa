@@ -310,6 +310,11 @@ Q8.App = (function() {
                     if (Q8.Utils && Q8.Utils.exportHistoryToPrint) Q8.Utils.exportHistoryToPrint(S.get);
                     break;
 
+                case 'retry-load-zones':
+                    S.update({ zonesLoadError: null, zonesLoading: true });
+                    if (Services && Services.loadZones) Services.loadZones().catch(() => {});
+                    break;
+
                 case 'set-search-mode': {
                     const mode = target.getAttribute('data-mode') || 'zone';
                     if (S.get.searchMode === mode) break;
