@@ -162,18 +162,32 @@ Dit kan in een latere iteratie.
 
 ---
 
-## 6. Wat heb ik van jou nodig om te starten?
+## 6. Vastgelegde keuzes (voor Fase 2b)
 
-1. **Bevestiging “in de buurt”**  
-   Alleen huidige locatie, of ook rond gekozen zone? En standaardstraal (bijv. 2 km)?
+- **“In de buurt”:** Start met (A) straal rond huidige locatie; standaardstraal 2 km. Later optioneel: ook rond gekozen zone.
+- **Waar tonen:** Kaart (aparte markertype garage/P+R) + lijst “Garages & P+R in de buurt” (sectie in zone-sheet of op kaartscherm).
+- **Types:** Alleen garage + P+R; Carpool uitsluiten.
 
-2. **Plaats in de UI**  
-   Alleen kaart-markers, of ook een vaste sectie (bijv. “Garages & P+R in de buurt” in het zone-sheet of op de kaartscherm)?
+## 7. Fase 2a – Script uitvoeren
 
-3. **Types**  
-   Alleen garage + P+R, of ook Carpool-locaties?
+**Script:** `scripts/fetch_npropendata_facilities.py`
 
-Daarna kan het script (Fase 2a) en daarna de app-integratie (Fase 2b) concreet worden uitgewerkt.
+- **Dry-run (geen Firestore):**  
+  `python scripts/fetch_npropendata_facilities.py --dry-run`  
+  Optioneel: `--limit 50` om het aantal requests te beperken.
+- **Live (naar Firestore):**  
+  Vanuit projectroot, met `service-account.json` (of `q8-parking-pwa-firebase-adminsdk-*.json`) in de root:  
+  `python scripts/fetch_npropendata_facilities.py`
+- **API:** Static data van npropendata staat onder `parkingFacilityInformation` (o.a. `accessPoints`, `tariffs`); het script leest daaruit.
+
+Aanbevolen: 1× per week draaien (cron/scheduled task) om `facilities` te verversen.
+
+## 8. Wat nog nodig is voor Fase 2b (app)
+
+1. **Bevestiging UI-plaatsing**  
+   Sectie “Garages & P+R in de buurt” in zone-sheet, of apart paneel/knop op kaartscherm?
+2. **Straal instelbaar**  
+   Optioneel: gebruikersinstelling voor straal (1 / 2 / 5 km).
 
 ---
 
