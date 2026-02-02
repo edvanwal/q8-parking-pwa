@@ -23,6 +23,7 @@ Q8.Services = (function() {
     }
     const auth = (typeof firebase !== 'undefined') ? firebase.auth() : null;
     const db = (typeof firebase !== 'undefined') ? firebase.firestore() : null;
+    const messaging = (typeof firebase !== 'undefined' && firebase.messaging) ? firebase.messaging() : null;
 
     // Helper shortcuts
     const S = Q8.State;
