@@ -179,7 +179,6 @@
         </div>
 
         <button class="btn btn-primary btn-lg" data-action="login" aria-label="Sign in to your account">SIGN IN</button>
-        <p class="text-secondary text-sm mt-md" style="margin-top:12px;">Klik op SIGN IN om naar het parkeerscherm te gaan (e-mail en wachtwoord staan al ingevuld).</p>
       </form>
 
       <!-- Footer -->
@@ -308,26 +307,6 @@
       <!-- Map Surface -->
       <div id="map-container" class="map-surface">
         <!-- Markers injected by JS -->
-      </div>
-      <!-- Message when opened as file (no map) - shown by ui.js -->
-      <div id="map-file-warning" class="hidden" style="display:none; position:absolute; left:16px; right:16px; top:50%; transform:translateY(-50%); background:var(--surface); border:2px solid var(--primary); border-radius:16px; padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.1); z-index:50; max-width:400px; margin:0 auto;">
-        <p class="font-bold text-main" style="margin:0 0 12px; font-size:1.1rem;">Kaart niet zichtbaar</p>
-        <p class="text-secondary" style="margin:0 0 16px; font-size:0.95rem; line-height:1.5;">De app is als bestand geopend. De kaart werkt alleen als u de app via een lokale server opent.</p>
-        <p class="text-main" style="margin:0 0 8px; font-size:0.9rem; font-weight:600;">Stappen:</p>
-        <ol class="text-secondary" style="margin:0 0 16px; padding-left:20px; font-size:0.9rem; line-height:1.6;">
-          <li>Open <strong>Command Prompt</strong> of <strong>Terminal</strong>.</li>
-          <li>Ga naar de projectmap (bijv. <code style="background:#eee; padding:2px 6px; border-radius:4px;">cd "B2B parkeren backend"</code>).</li>
-          <li>Typ: <code style="background:#eee; padding:2px 6px; border-radius:4px;">npx serve public</code></li>
-          <li>Open in de browser: <strong>http://localhost:3000</strong></li>
-        </ol>
-        <p class="text-secondary" style="margin:0; font-size:0.85rem;">Geen npx? Installeer eerst Node.js van nodejs.org.</p>
-      </div>
-      <!-- Message when map fails to load (e.g. API key / localhost) - shown by ui.js -->
-      <div id="map-load-error" class="hidden" style="display:none; position:absolute; left:16px; right:16px; top:50%; transform:translateY(-50%); background:var(--surface); border:2px solid #c00; border-radius:16px; padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.1); z-index:50; max-width:400px; margin:0 auto;">
-        <p class="font-bold text-main" style="margin:0 0 12px; font-size:1.1rem;">Kaart kon niet laden</p>
-        <p id="map-load-error-text" class="text-secondary" style="margin:0 0 16px; font-size:0.95rem; line-height:1.5;">De Google Maps-kaart is niet beschikbaar. Controleer uw internet of probeer het later opnieuw.</p>
-        <p id="map-load-error-link" class="text-secondary" style="margin:0 0 12px; font-size:0.95rem; line-height:1.5;"></p>
-        <p class="text-secondary" style="margin:0; font-size:0.85rem;">Draait u op localhost? Voeg in Google Cloud Console bij de Maps API-sleutel <strong>http://localhost:*</strong> toe als toegestane referrer.</p>
       </div>
       <!-- Personal Greeting: hidden -->
       <div id="personal-greeting" class="hidden" style="display:none !important;"></div>
@@ -510,6 +489,10 @@
         </div>
         <div class="list-item" data-action="nav-to" data-target="plates">
           <span>License plates</span>
+          <span class="text-secondary">›</span>
+        </div>
+        <div class="list-item" data-action="nav-to" data-target="car-specs">
+          <span>Cars specs</span>
           <span class="text-secondary">›</span>
         </div>
 

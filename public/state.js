@@ -9,8 +9,9 @@ Q8.State = (function() {
     'use strict';
 
     const _state = {
-        screen: 'login',      // 'login' | 'register' | 'parking' | 'history' | 'plates' | 'notifications' | 'car-specs'
+        screen: 'login',      // 'login' | 'register' | 'parking' | 'history' | 'plates' | 'notifications' | 'car-specs' | 'car-specs'
         language: 'en',       // 'nl' | 'en'
+        darkMode: false,      // true = dark theme
         rememberMe: false,
         passwordVisible: false,
         infoBanner: null,     // { type: 'info', text: string, dismissible: boolean }
@@ -20,12 +21,12 @@ Q8.State = (function() {
         selectedZoneRate: 2.0, // Default uurtarief
         searchMode: 'zone',   // 'zone' | 'address'
         searchQuery: '',      // Current input in search bar
-        geocodeMatches: [],
+        geocodeMatches: [],   // Zones near geocoded address (address search)
         geocodeLoading: false,
         duration: 0,          // 0 = "Until stopped" (No fixed end time)
         zones: [],            // Populated continuously via Firestore
         zonesLoading: true,   // True while zones are being loaded
-        zonesLoadError: null, // Error when zones fail to load (network etc.)
+        zonesLoadError: null, // Error message when zones fail to load (network etc.)
         // State "live" in localStorage, fallback naar 1 default
         plates: [],
         selectedPlateId: null, // Track currently selected plate in list
@@ -50,11 +51,7 @@ Q8.State = (function() {
             sessionEndedByMaxTime: true,
             expiringSoonMinutes: 10
         },
-        favorites: [],    // [{ zoneUid, zoneId }]
-        driverSettings: {}, // { canAddPlates, maxPlates, platesLocked } - from Firestore
-        adminPlates: [],   // Plates toegevoegd door fleetmanager - from Firestore
-        tenantId: null,    // Set when user logs in, for session writes
-        vehicleDataByPlate: {} // { [normalizedPlateId]: { merk, handelsbenaming, brandstof_omschrijving, emissiecode_omschrijving } } - from RDW lookup, for milieuzone
+        favorites: []     // [{ zoneUid, zoneId }]
     };
 
     /**
@@ -137,6 +134,24 @@ Q8.State = (function() {
 
         // 4. Favorites
         loadFavorites();
+
+        // 5. Dark mode
+        try {
+            const d = localStorage.getItem('q8_dark_v1');
+            if (d !== null) _state.darkMode = d === 'true';
+        } catch (e) { /* ignore */ }
+        applyTheme(_state.darkMode);
+    }
+
+    function applyTheme(dark) {
+        const html = document.documentElement;
+        if (dark) {
+            html.setAttribute('data-theme', 'dark');
+            html.style.colorScheme = 'dark';
+        } else {
+            html.setAttribute('data-theme', 'light');
+            html.style.colorScheme = 'light';
+        }
     }
 
     // Risk: localStorage can throw (quota exceeded, private mode) - wrap in try-catch.
@@ -181,6 +196,12 @@ Q8.State = (function() {
         } catch (e) { console.warn('[PERSIST] Favorites load failed', e); }
     }
 
+    function setDarkMode(value) {
+        _state.darkMode = !!value;
+        applyTheme(_state.darkMode);
+        try { localStorage.setItem('q8_dark_v1', _state.darkMode ? 'true' : 'false'); } catch (e) {}
+    }
+
     return {
         get: _state,
         update: update,
@@ -190,6 +211,8 @@ Q8.State = (function() {
         saveNotifications: saveNotifications,
         loadNotifications: loadNotifications,
         saveFavorites: saveFavorites,
-        loadFavorites: loadFavorites
+        loadFavorites: loadFavorites,
+        setDarkMode: setDarkMode,
+        applyTheme: applyTheme
     };
 })();

@@ -21,7 +21,6 @@ Q8.UI = (function() {
     // --- CORE RENDERER ---
 
     function update() {
-        try {
         const state = S.get; // Access raw state object
 
         // 1. Screens
@@ -39,16 +38,6 @@ Q8.UI = (function() {
 
         // 3. Parking View (Map Interaction & UI Overlays)
         if (state.screen === 'parking') {
-            // Set fallback message timeout first (so it runs even if renderParkingView throws)
-            var isFile = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
-            if (!isFile) {
-                if (_mapLoadCheckTimeout) clearTimeout(_mapLoadCheckTimeout);
-                _mapLoadCheckTimeout = setTimeout(function() {
-                    _mapLoadCheckTimeout = null;
-                    if (map) return;
-                    showMapLoadError('De kaart laadt niet. Op de publieke website werkt de kaart vaak wel.', true);
-                }, 2500);
-            }
             renderParkingView();
         }
 
@@ -76,9 +65,6 @@ Q8.UI = (function() {
         if (state.installMode.active) {
             renderInstallGate();
         }
-    } catch (err) {
-        throw err;
-    }
     }
 
     function renderParkingView() {
@@ -139,25 +125,6 @@ Q8.UI = (function() {
             if (retryBtn) retryBtn.textContent = nl ? 'Opnieuw proberen' : 'Retry';
         }
 
-        // Show message when opened as file (map does not work from file://)
-        var mapFileWarning = document.getElementById('map-file-warning');
-        var mapContainerEl = document.getElementById('map-container');
-        var isFileProtocol = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
-        if (mapFileWarning) {
-            if (isFileProtocol) {
-                mapFileWarning.classList.remove('hidden');
-                mapFileWarning.style.display = 'block';
-                if (mapContainerEl) mapContainerEl.style.display = 'none';
-            } else {
-                mapFileWarning.classList.add('hidden');
-                mapFileWarning.style.display = 'none';
-                if (mapContainerEl) mapContainerEl.style.display = '';
-            }
-        }
-
-        // Init map when on parking view and map not yet created (e.g. after refresh or race)
-        if (!isFileProtocol && !map) initGoogleMap();
-
         // Markers: full render when zones/session change; only update icons when selection changes (avoids shrink bug)
         const zoneKey = `${state.zones.length}|${state.session ? '1' : '0'}`;
         const selKey = state.selectedZone || '';
@@ -183,8 +150,7 @@ Q8.UI = (function() {
             if (elZoneLabel) elZoneLabel.innerText = state.session.zone;
 
             const plateDisplay = (state.session.plate && state.session.plate.trim()) ? state.session.plate.trim() : null;
-            const displayPlates = getDisplayPlates();
-            const fallbackPlate = displayPlates.find(p => p.id === state.selectedPlateId) || displayPlates.find(p => p.default) || displayPlates[0];
+            const fallbackPlate = state.plates.find(p => p.id === state.selectedPlateId) || state.plates.find(p => p.default) || state.plates[0];
             const elLabel = document.getElementById('active-plate-label');
             if (elLabel) elLabel.innerText = plateDisplay || (fallbackPlate ? fallbackPlate.text : '');
 
@@ -218,10 +184,12 @@ Q8.UI = (function() {
 
         renderSearchResults();
 
-        // Side menu: sync language button active state (EN = blue, white text)
+        // Side menu: sync language and dark mode
         document.querySelectorAll('.side-menu .menu-lang-btn').forEach(btn => {
             btn.classList.toggle('active', btn.getAttribute('data-lang') === state.language);
         });
+        const btnDark = document.getElementById('btn-dark-mode');
+        if (btnDark) btnDark.setAttribute('aria-pressed', state.darkMode ? 'true' : 'false');
     }
 
     function renderZoneSheet() {
@@ -254,33 +222,6 @@ Q8.UI = (function() {
                 if (zone.houseNumber) addrParts.push(zone.houseNumber);
                 const addrLine = addrParts.length ? addrParts.join(' ') : '';
                 const cityLine = zone.city || '';
-                const Kenteken = (typeof Q8 !== 'undefined' && Q8.Kenteken) ? Q8.Kenteken : null;
-                const cityInfo = Kenteken && Kenteken.getMilieuzoneCityInfo ? Kenteken.getMilieuzoneCityInfo(zone.city) : null;
-                const vehicleData = state.vehicleDataByPlate && state.selectedPlateId ? state.vehicleDataByPlate[state.selectedPlateId] : null;
-                const mzStatus = (cityInfo && vehicleData && Kenteken.getMilieuzoneStatusForCity) ? Kenteken.getMilieuzoneStatusForCity(vehicleData, zone.city) : null;
-                let milieuzoneBlock = '';
-                if (cityInfo) {
-                    if (mzStatus) {
-                        const allowedTxt = state.language === 'nl'
-                            ? (mzStatus.allowed ? 'Uw voertuig is toegestaan in deze milieuzone.' : 'Uw voertuig mag niet in deze milieuzone.')
-                            : (mzStatus.allowed ? 'Your vehicle is allowed in this environmental zone.' : 'Your vehicle is not allowed in this environmental zone.');
-                        const color = mzStatus.allowed ? 'var(--success)' : 'var(--danger)';
-                        milieuzoneBlock = `<div class="zone-milieuzone" style="margin-top: 8px; padding: 8px 10px; background: var(--bg-secondary); border-radius: 8px; font-size: 0.85rem;">
-                            <span style="font-weight: 600;">${state.language === 'nl' ? 'Milieuzone ' : 'Environmental zone '}${cityInfo.city}</span>
-                            <span style="display:block; margin-top: 4px; color: ${color}; font-weight: 500;">${allowedTxt}</span>
-                            <a href="https://www.milieuzones.nl" target="_blank" rel="noopener" style="font-size: 0.8rem; color: var(--primary); margin-top: 4px; display: inline-block;">milieuzones.nl</a>
-                        </div>`;
-                    } else {
-                        const hintTxt = state.language === 'nl'
-                            ? 'Deze zone ligt in een milieuzone. Controleer uw kenteken op milieuzones.nl.'
-                            : 'This zone is in an environmental zone. Check your license plate at milieuzones.nl.';
-                        milieuzoneBlock = `<div class="zone-milieuzone" style="margin-top: 8px; padding: 8px 10px; background: var(--bg-secondary); border-radius: 8px; font-size: 0.85rem;">
-                            <span style="font-weight: 600;">${state.language === 'nl' ? 'Milieuzone ' : 'Environmental zone '}${cityInfo.city}</span>
-                            <span style="display:block; margin-top: 4px; color: var(--text-secondary);">${hintTxt}</span>
-                            <a href="https://www.milieuzones.nl" target="_blank" rel="noopener" style="font-size: 0.8rem; color: var(--primary); margin-top: 4px; display: inline-block;">milieuzones.nl</a>
-                        </div>`;
-                    }
-                }
                 const detailsHTML = `
                     <div id="zone-extra-details" class="flex-col gap-xs" style="width:100%; margin-top: 8px;">
                         <div class="flex items-center justify-between flex-wrap gap-y-1">
@@ -288,7 +229,6 @@ Q8.UI = (function() {
                             ${limitBadge}
                         </div>
                         ${holidayWarning}
-                        ${milieuzoneBlock}
                     </div>
                 `;
                 const sheetZoneHeader = document.querySelector('#sheet-zone .sheet-zone-header');
@@ -299,10 +239,9 @@ Q8.UI = (function() {
             }
         }
 
-        const displayPlates = getDisplayPlates();
-        const selPlate = displayPlates.find(p => p.id === state.selectedPlateId) ||
-                         displayPlates.find(p => p.default) ||
-                         displayPlates[0];
+        const selPlate = state.plates.find(p => p.id === state.selectedPlateId) ||
+                         state.plates.find(p => p.default) ||
+                         state.plates[0];
         const elPlate = document.getElementById('details-plate');
         if (elPlate && selPlate) {
             elPlate.innerText = selPlate.text;
@@ -482,36 +421,18 @@ Q8.UI = (function() {
         if (inpPass) inpPass.type = state.passwordVisible ? 'text' : 'password';
     }
 
-    function getDisplayPlates() {
-        const state = S.get;
-        const admin = (state.adminPlates || []).map(p => ({ ...p, source: 'admin', locked: true }));
-        const user = (state.plates || []).map(p => ({ ...p, source: p.source || 'user' }));
-        return [...admin, ...user];
-    }
-
     function renderPlates() {
         const state = S.get;
         const list = document.getElementById('list-plates');
         const btnSetDefault = document.getElementById('btn-set-default');
-        const btnAdd = document.querySelector('[data-target="modal-add-plate"]');
         if (!list) return;
         list.innerHTML = '';
 
-        const ds = state.driverSettings || {};
-        const canAdd = ds.canAddPlates !== false && !ds.platesLocked;
-        const canEdit = !ds.platesLocked;
-
-        if (btnAdd) btnAdd.style.display = canAdd ? '' : 'none';
-
-        const displayPlates = getDisplayPlates();
-        const sorted = [...displayPlates].sort((a,b) => (a.text || a.id || '').localeCompare(b.text || b.id || ''));
+        const sorted = [...state.plates].sort((a,b) => a.text.localeCompare(b.text));
         let selectionValid = false;
 
         sorted.forEach(p => {
             const isSelected = state.selectedPlateId === p.id;
-            const isAdminPlate = p.source === 'admin' || p.locked;
-            const showEditDelete = canEdit && !isAdminPlate;
-
             const div = document.createElement('div');
             div.className = `card flex justify-between items-center mb-md ${isSelected ? 'selected' : ''}`;
             div.style.padding = '16px 20px';
@@ -523,18 +444,17 @@ Q8.UI = (function() {
 
             div.innerHTML = `
                 <div class="flex flex-col pointer-events-none" style="flex:1; gap: 2px;">
-                   <div class="font-bold text-lg" style="line-height: 1.2;">${p.text || p.id}</div>
+                   <div class="font-bold text-lg" style="line-height: 1.2;">${p.text}</div>
                    ${p.description ? `<div class="text-secondary text-sm" style="font-weight: 400;">${p.description}</div>` : ''}
-                   ${isAdminPlate ? `<div class="text-secondary text-xs" style="margin-top:2px;">${state.language === 'nl' ? 'Toegevoegd door fleetmanager' : 'Added by fleet manager'}</div>` : ''}
                 </div>
                 <div class="flex items-center gap-md pointer-events-none" style="margin-left: 16px;">
                     ${p.default ? `<div class="badge badge-success">${badgeLabel}</div>` : ''}
-                    ${showEditDelete ? `<button class="icon-btn ptr-enabled" style="color:var(--text-secondary); padding: 4px;" data-action="edit-plate" data-id="${p.id}" title="${state.language === 'nl' ? 'Bewerken' : 'Edit'}">
+                    <button class="icon-btn ptr-enabled" style="color:var(--text-secondary); padding: 4px;" data-action="edit-plate" data-id="${p.id}" title="${state.language === 'nl' ? 'Bewerken' : 'Edit'}">
                          <svg class="no-pointer" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M21.1213 2.70705C19.9497 1.53548 18.0503 1.53547 16.8787 2.70705L15.1989 4.38685L7.29289 12.2928C7.16473 12.421 7.07382 12.5816 7.02986 12.7574L6.02986 16.7574C5.94466 17.0982 6.04451 17.4587 6.29289 17.707C6.54127 17.9554 6.90176 18.0553 7.24254 17.9701L11.2425 16.9701C11.4184 16.9261 11.5789 16.8352 11.7071 16.707L19.5556 8.85857L21.2929 7.12126C22.4645 5.94969 22.4645 4.05019 21.2929 2.87862L21.1213 2.70705ZM18.2929 4.12126C18.6834 3.73074 19.3166 3.73074 19.7071 4.12126L19.8787 4.29283C20.2692 4.68336 20.2692 5.31653 19.8787 5.70705L18.8622 6.72357L17.3068 5.10738L18.2929 4.12126ZM15.8923 6.52185L17.4477 8.13804L10.4888 15.097L8.37437 15.6256L8.90296 13.5112L15.8923 6.52185ZM4 7.99994C4 7.44766 4.44772 6.99994 5 6.99994H10C10.5523 6.99994 11 6.55223 11 5.99994C11 5.44766 10.5523 4.99994 10 4.99994H5C3.34315 4.99994 2 6.34309 2 7.99994V18.9999C2 20.6568 3.34315 21.9999 5 21.9999H16C17.6569 21.9999 19 20.6568 19 18.9999V13.9999C19 13.4477 18.5523 12.9999 18 12.9999C17.4477 12.9999 17 13.4477 17 13.9999V18.9999C17 19.5522 16.5523 19.9999 16 19.9999H5C4.44772 19.9999 4 19.5522 4 18.9999V7.99994Z" fill="currentColor"/></svg>
                     </button>
                     <button class="icon-btn ptr-enabled" style="color:var(--text-secondary); padding: 4px;" data-action="delete-plate" data-id="${p.id}">
                          <svg class="no-pointer" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V6H17H19C19.5523 6 20 6.44772 20 7C20 7.55228 19.5523 8 19 8H18V18C18 19.6569 16.6569 21 15 21H9C7.34315 21 6 19.6569 6 18V8H5C4.44772 8 4 7.55228 4 7C4 6.44772 4.44772 6 5 6H7H9V5ZM10 8H8V18C8 18.5523 8.44772 19 9 19H15C15.5523 19 16 18.5523 16 18V8H14H10ZM13 6H11V5H13V6ZM10 9C10.5523 9 11 9.44772 11 10V17C11 17.5523 10.5523 18 10 18C9.44772 18 9 17.5523 9 17V10C9 9.44772 9.44772 9 10 9ZM14 9C14.5523 9 15 9.44772 15 10V17C15 17.5523 14.5523 18 14 18C13.4477 18 13 17.5523 13 17V10C13 9.44772 13.4477 9 14 9Z" fill="currentColor"/></svg>
-                    </button>` : ''}
+                    </button>
                 </div>
             `;
             div.querySelectorAll('.ptr-enabled').forEach(el => { el.style.pointerEvents = 'auto'; });
@@ -563,7 +483,7 @@ Q8.UI = (function() {
         if (intro) intro.innerText = nl ? 'Specs van je ingevulde kentekens (RDW).' : 'Specs for your registered license plates (RDW).';
 
         list.innerHTML = '';
-        const plates = getDisplayPlates();
+        const plates = state.plates || [];
         if (plates.length === 0) {
             list.innerHTML = '<p class="text-secondary">' + (nl ? 'Voeg eerst kentekens toe onder License plates.' : 'Add license plates first under License plates.') + '</p>';
             return;
@@ -741,10 +661,9 @@ Q8.UI = (function() {
         const list = document.getElementById('quick-plate-list');
         if (!list) return;
         list.innerHTML = '';
-        const displayPlates = getDisplayPlates();
-        const activePlateId = state.selectedPlateId || (displayPlates.find(p => p.default) || displayPlates[0])?.id;
+        const activePlateId = state.selectedPlateId || (state.plates.find(p => p.default) || state.plates[0])?.id;
 
-        displayPlates.forEach(p => {
+        state.plates.forEach(p => {
             const isSelected = p.id === activePlateId;
             const div = document.createElement('div');
             div.className = `card flex justify-between items-center ${isSelected ? 'selected' : ''}`;
@@ -1269,34 +1188,11 @@ Q8.UI = (function() {
     // --- GOOGLE MAPS ---
 
     let map;
-    var _mapLoadCheckTimeout = null;
-    var _mapScriptLoading = false;
     const UTRECHT_CENTER = { lat: 52.0907, lng: 5.1214 };
 
     // DIAG: Set window.Q8_DIAG = true to log Maps loading steps
     function diagMaps(tag, msg, data) {
         if (window.Q8_DIAG) console.log('[DIAG_MAPS]', tag, msg, data || '');
-    }
-
-    function showMapLoadError(message, showPublicLink) {
-        var el = document.getElementById('map-load-error');
-        var textEl = document.getElementById('map-load-error-text');
-        var linkEl = document.getElementById('map-load-error-link');
-        var container = document.getElementById('map-container');
-        var fileWarning = document.getElementById('map-file-warning');
-        if (fileWarning) { fileWarning.classList.add('hidden'); fileWarning.style.display = 'none'; }
-        if (container) container.style.display = 'none';
-        if (el) {
-            if (textEl && message) textEl.textContent = message;
-            if (linkEl) linkEl.innerHTML = showPublicLink ? 'Probeer de app op de publieke website: <a href="https://q8-parking-pwa.web.app" target="_blank" rel="noopener" class="font-bold" style="color:var(--primary);">q8-parking-pwa.web.app</a>' : '';
-            el.classList.remove('hidden');
-            el.style.display = 'block';
-        }
-    }
-
-    function hideMapLoadError() {
-        var el = document.getElementById('map-load-error');
-        if (el) { el.classList.add('hidden'); el.style.display = 'none'; }
     }
 
     function initGoogleMap() {
@@ -1305,20 +1201,13 @@ Q8.UI = (function() {
         if (!container || map) return;
 
         if (typeof google === 'undefined' || !google.maps) {
-            if (_mapScriptLoading) return;
-            _mapScriptLoading = true;
             diagMaps('initGoogleMap', 'loading-script');
             const apiKey = (typeof firebaseConfig !== 'undefined') ? firebaseConfig.googleMapsApiKey : '';
             const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async&callback=initMapCallback`;
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMapCallback`;
             script.async = true;
-            script.onerror = function() {
-                _mapScriptLoading = false;
-                diagMaps('initGoogleMap', 'script-load-error');
-                showMapLoadError('Het laden van de Google Maps-script is mislukt. Controleer uw internetverbinding of of de API-sleutel localhost toestaat.');
-            };
+            script.onerror = function() { diagMaps('initGoogleMap', 'script-load-error'); };
             window.initMapCallback = function() {
-                 _mapScriptLoading = false;
                  diagMaps('initGoogleMap', 'callback-fired');
                  if(Q8.UI && Q8.UI.initGoogleMap) Q8.UI.initGoogleMap();
                  else initGoogleMap();
@@ -1328,36 +1217,22 @@ Q8.UI = (function() {
         }
 
         diagMaps('initGoogleMap', 'creating-map');
-        hideMapLoadError();
-        try {
-            map = new google.maps.Map(container, {
-                center: UTRECHT_CENTER,
-                zoom: 16,
-                disableDefaultUI: true,
-                zoomControl: false,
-                mapTypeControl: false,
-                streetViewControl: false,
-                fullscreenControl: false,
-                clickableIcons: false,
-                gestureHandling: 'greedy'
-            });
-        } catch (err) {
-            showMapLoadError('De kaart kon niet worden aangemaakt. Bij localhost: voeg in Google Cloud Console bij de Maps API-sleutel http://localhost:* toe als referrer.');
-            if (window.Q8_DIAG) console.error('[DIAG_MAPS] Map create error', err);
-            return;
-        }
+        map = new google.maps.Map(container, {
+            center: UTRECHT_CENTER,
+            zoom: 16,
+            disableDefaultUI: true,
+            zoomControl: false,
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: false,
+            clickableIcons: false,
+            gestureHandling: 'greedy'
+        });
 
-        if (_mapLoadCheckTimeout) { clearTimeout(_mapLoadCheckTimeout); _mapLoadCheckTimeout = null; }
         renderMapMarkers();
         google.maps.event.addListenerOnce(map, 'idle', function() {
             google.maps.event.trigger(map, 'resize');
         });
-        // Delayed resize so container has final size after layout
-        setTimeout(function() {
-            if (map && typeof google !== 'undefined' && google.maps) {
-                google.maps.event.trigger(map, 'resize');
-            }
-        }, 400);
         diagMaps('initGoogleMap', 'done');
     }
 

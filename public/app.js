@@ -62,12 +62,30 @@ Q8.App = (function() {
                     closeSideMenu(); // Close menu when navigating
                     if (Services && Services.setScreen) Services.setScreen(targetId);
                     break;
-                case 'toggle-search-mode':
-                    const newMode = S.get.searchMode === 'zone' ? 'address' : 'zone';
-                    S.update({ searchMode: newMode, searchQuery: '' });
+                case 'set-search-mode': {
+                    const mode = target.getAttribute('data-mode') || 'zone';
+                    if (S.get.searchMode === mode) break;
+                    S.update({ searchMode: mode, searchQuery: '', geocodeMatches: [], geocodeLoading: false });
                     const inp = document.getElementById('inp-search');
-                    if (inp) { inp.value = ''; inp.focus(); }
+                    if (inp) {
+                        inp.value = '';
+                        inp.placeholder = mode === 'address' ? (S.get.language === 'nl' ? 'Straat en plaats' : 'Street and city') : (S.get.language === 'nl' ? 'Zone of straatnaam' : 'Zone or street name');
+                        inp.focus();
+                    }
+                    document.querySelectorAll('.search-mode-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-mode') === mode));
                     break;
+                }
+                case 'toggle-search-mode': {
+                    const newMode = S.get.searchMode === 'zone' ? 'address' : 'zone';
+                    S.update({ searchMode: newMode, searchQuery: '', geocodeMatches: [], geocodeLoading: false });
+                    const inp = document.getElementById('inp-search');
+                    if (inp) {
+                        inp.value = '';
+                        inp.placeholder = newMode === 'address' ? (S.get.language === 'nl' ? 'Straat en plaats' : 'Street and city') : (S.get.language === 'nl' ? 'Zone of straatnaam' : 'Zone or street name');
+                        inp.focus();
+                    }
+                    break;
+                }
 
                 case 'open-plate-selector':
                     UI.renderQuickPlateSelector();
@@ -84,6 +102,7 @@ Q8.App = (function() {
                     break;
 
                 case 'open-overlay': {
+                    // Risk: JSON.parse on data-rates throws if malformed. data-zone-uid/zone missing = empty context.
                     const context = {
                         uid: target.getAttribute('data-zone-uid'),
                         zone: target.getAttribute('data-zone'),
@@ -264,6 +283,15 @@ Q8.App = (function() {
                     S.update({ language: target.getAttribute('data-lang') });
                     closeSideMenu();
                     break;
+
+                case 'toggle-dark':
+                    const nextDark = !S.get.darkMode;
+                    if (S.setDarkMode) S.setDarkMode(nextDark);
+                    else S.update({ darkMode: nextDark });
+                    const btnDark = document.getElementById('btn-dark-mode');
+                    if (btnDark) btnDark.setAttribute('aria-pressed', nextDark ? 'true' : 'false');
+                    break;
+
                 case 'set-gate-lang':
                      S.update({ installMode: { ...S.get.installMode, language: target.getAttribute('data-lang') } });
                      UI.renderInstallGate();
@@ -314,20 +342,6 @@ Q8.App = (function() {
                     S.update({ zonesLoadError: null, zonesLoading: true });
                     if (Services && Services.loadZones) Services.loadZones().catch(() => {});
                     break;
-
-                case 'set-search-mode': {
-                    const mode = target.getAttribute('data-mode') || 'zone';
-                    if (S.get.searchMode === mode) break;
-                    S.update({ searchMode: mode, searchQuery: '', geocodeMatches: [], geocodeLoading: false });
-                    const inp = document.getElementById('inp-search');
-                    if (inp) {
-                        inp.value = '';
-                        inp.placeholder = mode === 'address' ? (S.get.language === 'nl' ? 'Straat en plaats' : 'Street and city') : (S.get.language === 'nl' ? 'Zone of straatnaam' : 'Zone or street name');
-                        inp.focus();
-                    }
-                    document.querySelectorAll('.search-mode-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-mode') === mode));
-                    break;
-                }
 
                 case 'toggle-filter-vehicle':
                     const vPlate = target.getAttribute('data-plate');
@@ -490,7 +504,8 @@ Q8.App = (function() {
         } else {
             if(Services.initAuthListener) Services.initAuthListener();
 
-            // Map is created when user opens parking screen (setScreen('parking')) so container has real size
+            // Load map immediately - don't wait for zones
+            if(UI.initGoogleMap) UI.initGoogleMap();
 
             if(Services.loadZones) {
                 Services.loadZones().then(() => {

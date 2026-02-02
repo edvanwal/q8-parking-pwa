@@ -30,77 +30,7 @@ Q8.Services = (function() {
 
     // --- AUTH SERVICES ---
 
-    const DEFAULT_TENANT = 'default';
-
-    function ensureAppUser(user) {
-        if (!db || !user) return Promise.resolve();
-        const email = (user.email || '').toLowerCase();
-        return db.collection('users').doc(user.uid).get().then(doc => {
-            if (doc.exists) {
-                const data = doc.data();
-                S.update({
-                    driverSettings: data.driverSettings || {},
-                    adminPlates: data.adminPlates || [],
-                    tenantId: data.tenantId || DEFAULT_TENANT
-                });
-                fetchDriverSettings(user.uid);
-                return data;
-            }
-            return db.collection('invites').where('email', '==', email).limit(1).get().then(invSnap => {
-                const invite = !invSnap.empty ? invSnap.docs[0].data() : null;
-                const tenantId = invite ? invite.tenantId : DEFAULT_TENANT;
-                const role = invite ? (invite.role || 'driver') : 'driver';
-                return db.collection('users').doc(user.uid).set({
-                    email: user.email,
-                    displayName: user.displayName || user.email.split('@')[0],
-                    tenantId,
-                    role,
-                    driverSettings: { canAddPlates: true, maxPlates: 0, platesLocked: false },
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => {
-                    S.update({ tenantId });
-                    fetchDriverSettings(user.uid);
-                    return { tenantId, role, driverSettings: {} };
-                });
-            });
-        });
-    }
-
-    function fetchDriverSettings(uid) {
-        if (!db || !uid) return;
-        db.collection('users').doc(uid).onSnapshot(doc => {
-            if (doc.exists) {
-                const data = doc.data();
-                const adminPlates = data.adminPlates || [];
-                const userPlates = data.userPlates || [];
-                S.update({
-                    driverSettings: data.driverSettings || {},
-                    adminPlates
-                });
-                if (userPlates.length > 0) {
-                    S.update({ plates: userPlates });
-                    if (S.savePlates) S.savePlates();
-                }
-            }
-        }, () => {});
-    }
-
-    function syncUserPlatesToFirestore(plates) {
-        const uid = auth && auth.currentUser ? auth.currentUser.uid : null;
-        if (!db || !uid) return Promise.resolve();
-        const userPlates = (plates || S.get.plates || []).filter(p => !(S.get.adminPlates || []).some(a => a.id === p.id));
-        return db.collection('users').doc(uid).update({
-            userPlates,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).catch(() => {});
-    }
-
-    function removeUserPlateFromFirestore(plateId) {
-        const uid = auth && auth.currentUser ? auth.currentUser.uid : null;
-        if (!db || !uid) return Promise.resolve();
-        const plates = (S.get.plates || []).filter(p => p.id !== plateId);
-        return syncUserPlatesToFirestore(plates);
-    }
+    let _historyUnsub = null;
 
     function restoreSessionFromFirestore(uid) {
         if (!db || !uid || S.get.session) return Promise.resolve();
@@ -137,7 +67,6 @@ Q8.Services = (function() {
             if (user) {
                 if (U && U.debug) U.debug('AUTH', "User Logged In", user.email);
                 restoreSessionFromFirestore(user.uid);
-                ensureAppUser(user);
                 if (S.get.screen === 'login' || S.get.screen === 'register') {
                     setScreen('parking');
                 }
@@ -145,7 +74,7 @@ Q8.Services = (function() {
             } else {
                 if (U && U.debug) U.debug('AUTH', "No User / Logged Out");
                 if (_historyUnsub) { _historyUnsub(); _historyUnsub = null; }
-                S.update({ history: [], driverSettings: {} });
+                S.update({ history: [] });
                 if (S.get.screen !== 'register') {
                     setScreen('login');
                 }
@@ -153,40 +82,11 @@ Q8.Services = (function() {
         });
     }
 
-    function loginUser(email, password) {
-        if (U && U.debug) U.debug('AUTH', 'Attempting Login', email);
-        return auth.signInWithEmailAndPassword(email, password)
-            .then(() => {
-                S.save();
-                // updateUI handled by listener
-            });
+    function getTenantId() {
+        const user = auth && auth.currentUser;
+        if (!user) return 'default';
+        return 'default';
     }
-
-    function registerUser(email, password) {
-        if (U && U.debug) U.debug('AUTH', 'Attempting Register', email);
-        return auth.createUserWithEmailAndPassword(email, password)
-            .then(() => {
-                S.save();
-            });
-    }
-
-    function sendPasswordResetEmail(email) {
-        if (!auth) return Promise.reject(new Error('Auth not available'));
-        return auth.sendPasswordResetEmail(email);
-    }
-
-    function logoutUser() {
-        if (U && U.debug) U.debug('AUTH', 'Logging Out');
-        return auth.signOut().then(() => {
-            S.update({
-                activeOverlay: null,
-                session: null
-            });
-            try { localStorage.removeItem('q8_parking_session'); } catch (e) { /* ignore */ }
-        });
-    }
-
-    let _historyUnsub = null;
 
     function haversineKm(lat1, lon1, lat2, lon2) {
         const R = 6371;
@@ -227,10 +127,6 @@ Q8.Services = (function() {
         });
     }
 
-    function getTenantId() {
-        return S.get.tenantId || 'default';
-    }
-
     function loadHistory(userId) {
         if (!db || !userId) return;
         if (_historyUnsub) _historyUnsub();
@@ -261,6 +157,39 @@ Q8.Services = (function() {
             }, (err) => {
                 console.error('Transactions listener error:', err);
             });
+    }
+
+    function loginUser(email, password) {
+        if (U && U.debug) U.debug('AUTH', 'Attempting Login', email);
+        return auth.signInWithEmailAndPassword(email, password)
+            .then(() => {
+                S.save();
+                // updateUI handled by listener
+            });
+    }
+
+    function registerUser(email, password) {
+        if (U && U.debug) U.debug('AUTH', 'Attempting Register', email);
+        return auth.createUserWithEmailAndPassword(email, password)
+            .then(() => {
+                S.save();
+            });
+    }
+
+    function sendPasswordResetEmail(email) {
+        if (!auth) return Promise.reject(new Error('Auth not available'));
+        return auth.sendPasswordResetEmail(email);
+    }
+
+    function logoutUser() {
+        if (U && U.debug) U.debug('AUTH', 'Logging Out');
+        return auth.signOut().then(() => {
+            S.update({
+                activeOverlay: null,
+                session: null
+            });
+            try { localStorage.removeItem('q8_parking_session'); } catch (e) { /* ignore */ }
+        });
     }
 
     // --- DATA SERVICES ---
@@ -350,11 +279,9 @@ Q8.Services = (function() {
         S.update(updates);
 
         // Map: init when parking visible, resize when map exists
-        if (name === 'parking') {
-            if (!S.get.installMode.active) {
-                if (Q8.UI && typeof Q8.UI.initGoogleMap === 'function') Q8.UI.initGoogleMap();
-                else if (typeof window.initGoogleMap === 'function') window.initGoogleMap();
-            }
+        if (name === 'parking' && !S.get.installMode.active) {
+            if (Q8.UI && typeof Q8.UI.initGoogleMap === 'function') Q8.UI.initGoogleMap();
+            else if (typeof window.initGoogleMap === 'function') window.initGoogleMap();
             requestAnimationFrame(() => {
                 if (Q8.UI && typeof Q8.UI.ensureMapResized === 'function') Q8.UI.ensureMapResized();
                 const inp = document.getElementById('inp-search');
@@ -403,10 +330,6 @@ Q8.Services = (function() {
         // Logic: Context Checks
         if (id === 'modal-confirm' && S.get.session === null) return;
         if ((id === 'modal-add-plate' || id === 'modal-edit-plate') && S.get.screen !== 'plates') return;
-        if (id === 'modal-add-plate') {
-            const ds = S.get.driverSettings || {};
-            if (ds.platesLocked || ds.canAddPlates === false) return;
-        }
         if (id === 'sheet-filter' && S.get.screen !== 'history') return;
 
         S.update({ activeOverlay: id });
@@ -422,10 +345,6 @@ Q8.Services = (function() {
                 if (inp) { inp.value = ''; inp.focus(); }
                 const inpDesc = document.getElementById('inp-plate-desc');
                 if (inpDesc) inpDesc.value = '';
-                const resultEl = document.getElementById('plate-rdw-result');
-                if (resultEl) { resultEl.textContent = ''; resultEl.className = 'plate-rdw-result'; }
-                const errEl = document.getElementById('plate-format-error');
-                if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
             }, 100);
         }
         if (id === 'modal-forgot-password') {
@@ -472,14 +391,12 @@ Q8.Services = (function() {
             toast(S.get.language === 'nl' ? 'Zone niet meer beschikbaar. Selecteer de zone opnieuw.' : 'Zone no longer available. Please select the zone again.');
             return;
         }
-
         const ds = S.get.driverSettings || {};
         const nowCheck = new Date();
         const dayOfWeek = nowCheck.getDay();
         const allowedDays = ds.allowedDays;
         if (Array.isArray(allowedDays) && allowedDays.length > 0 && !allowedDays.includes(dayOfWeek)) {
-            const nl = S.get.language === 'nl';
-            toast(nl ? 'Parkeren is niet toegestaan op deze dag. Neem contact op met uw fleetmanager.' : 'Parking is not allowed on this day. Contact your fleet manager.');
+            toast(S.get.language === 'nl' ? 'Parkeren is niet toegestaan op deze dag.' : 'Parking is not allowed on this day.');
             return;
         }
         if (ds.allowedTimeStart || ds.allowedTimeEnd) {
@@ -489,81 +406,63 @@ Q8.Services = (function() {
                 const m = String(t).match(/^(\d{1,2}):(\d{2})/);
                 return m ? parseInt(m[1], 10) * 60 + parseInt(m[2], 10) : null;
             };
-            const startM = parseTime(ds.allowedTimeStart);
-            const endM = parseTime(ds.allowedTimeEnd);
+            const startM = parseTime(ds.allowedTimeStart), endM = parseTime(ds.allowedTimeEnd);
             if (startM != null && mins < startM) {
-                toast(S.get.language === 'nl' ? 'Parkeren is nog niet toegestaan. Geldige starttijd: ' + ds.allowedTimeStart : 'Parking not yet allowed. Valid start time: ' + ds.allowedTimeStart);
+                toast(S.get.language === 'nl' ? 'Parkeren nog niet toegestaan.' : 'Parking not yet allowed.');
                 return;
             }
             if (endM != null && mins > endM) {
-                toast(S.get.language === 'nl' ? 'Parkeren niet meer toegestaan vandaag. Geldige eindtijd: ' + ds.allowedTimeEnd : 'Parking no longer allowed today. Valid end time: ' + ds.allowedTimeEnd);
+                toast(S.get.language === 'nl' ? 'Parkeren niet meer toegestaan vandaag.' : 'Parking no longer allowed today.');
                 return;
             }
         }
-
         const displayId = zoneObj.id;
 
-        const adminPlates = (S.get.adminPlates || []).map(p => ({ id: p.id, text: p.text || p.id, default: false }));
-        const allPlates = [...adminPlates, ...(S.get.plates || [])];
-        const selPlate = allPlates.find(p => p.id === S.get.selectedPlateId) ||
-                         allPlates.find(p => p.default) ||
-                         allPlates[0];
-        const plateText = selPlate ? (selPlate.text || selPlate.id) : '';
+        const selPlate = S.get.plates.find(p => p.id === S.get.selectedPlateId) ||
+                         S.get.plates.find(p => p.default) ||
+                         S.get.plates[0];
+        const plateText = selPlate ? selPlate.text : '';
 
         const now = new Date();
+        const endDate = S.get.duration === 0 ? null : new Date(now.getTime() + S.get.duration * 60000);
         const session = {
             zone: displayId,
             zoneUid: S.get.selectedZone,
             plate: plateText,
             start: now,
-            end: S.get.duration === 0 ? null : new Date(now.getTime() + S.get.duration * 60000)
+            end: endDate
         };
 
-        const userId = (typeof firebase !== 'undefined' && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : null;
-        const userEmail = (typeof firebase !== 'undefined' && firebase.auth().currentUser) ? firebase.auth().currentUser.email : null;
-        const tId = S.get.tenantId || DEFAULT_TENANT;
+        const userId = auth && auth.currentUser ? auth.currentUser.uid : null;
+        const tenantId = getTenantId();
+
+        S.update({ session, activeOverlay: null, selectedZone: null });
+        S.save();
 
         if (db && userId) {
             const sessionData = {
                 userId,
-                userEmail,
-                tenantId: tId,
+                tenantId,
                 zone: displayId,
                 zoneUid: S.get.selectedZone,
                 plate: plateText,
                 start: firebase.firestore.Timestamp.fromDate(now),
-                end: session.end ? firebase.firestore.Timestamp.fromDate(session.end) : null,
-                status: 'active'
+                end: endDate ? firebase.firestore.Timestamp.fromDate(endDate) : null,
+                status: 'active',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
-            db.collection('sessions').add(sessionData).then(ref => {
-                session.sessionId = ref.id;
-                S.update({
-                    session: session,
-                    activeOverlay: null,
-                    selectedZone: null
-                });
+            db.collection('sessions').add(sessionData).then((docRef) => {
+                session.sessionDocId = docRef.id;
+                S.update({ session });
                 S.save();
-                listenSessionStopped(ref.id);
-            }).catch(err => {
-                console.warn('[PARKING] Firestore session write failed', err);
-                S.update({
-                    session: session,
-                    activeOverlay: null,
-                    selectedZone: null
-                });
-                S.save();
+            }).catch((err) => {
+                console.error('Firestore session create failed:', err);
             });
-        } else {
-            S.update({
-                session: session,
-                activeOverlay: null,
-                selectedZone: null
-            });
-            S.save();
         }
 
         toast('Parking session started');
         addNotification('sessionStarted', S.get.language === 'nl' ? 'Parkeersessie gestart' : 'Parking session started', `${displayId} · ${plateText}`);
+        if (endDate && requestNotificationPermission) requestNotificationPermission();
     }
 
     // --- NOTIFICATIONS ---
@@ -581,20 +480,24 @@ Q8.Services = (function() {
         if (S.saveNotifications) S.saveNotifications();
         if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(message);
         else if (typeof window.showToast === 'function') window.showToast(message);
+
+        if (type === 'sessionExpiringSoon' && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+            try {
+                new Notification('Q8 Parking', { body: message, icon: '/icons/favicon-32x32.png', tag: 'parking-expiring' });
+            } catch (e) { /* ignore */ }
+        }
+    }
+
+    function requestNotificationPermission() {
+        if (typeof Notification === 'undefined') return;
+        if (Notification.permission === 'default') {
+            Notification.requestPermission().then(() => {});
+        }
     }
 
     function handleAutoEndSession(reason) {
         const session = S.get.session;
         if (!session) return;
-        const sessionId = session.sessionId;
-        if (db && sessionId) {
-            db.collection('sessions').doc(sessionId).update({
-                status: 'ended',
-                endedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                endedBy: reason || 'maxTime'
-            }).catch(() => {});
-        }
-        if (_sessionListenerUnsub) { _sessionListenerUnsub(); _sessionListenerUnsub = null; }
         const zone = S.get.zones.find(z => z.uid === session.zoneUid || z.id === session.zoneUid) || S.get.zones.find(z => z.id === session.zone);
         const zoneLabel = zone ? zone.id : session.zone || '?';
         const plate = session.plate || '?';
@@ -607,23 +510,6 @@ Q8.Services = (function() {
         }
     }
 
-    let _sessionListenerUnsub = null;
-
-    function listenSessionStopped(sessionId) {
-        if (_sessionListenerUnsub) _sessionListenerUnsub();
-        if (!db || !sessionId) return;
-        _sessionListenerUnsub = db.collection('sessions').doc(sessionId).onSnapshot(doc => {
-            const data = doc.data();
-            if (data && data.status === 'ended') {
-                if (_sessionListenerUnsub) { _sessionListenerUnsub(); _sessionListenerUnsub = null; }
-                S.update({ session: null, activeOverlay: null });
-                S.save();
-                if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast('Parkeersessie beëindigd door fleetmanager');
-                else if (typeof window.showToast === 'function') window.showToast('Parkeersessie beëindigd door fleetmanager');
-            }
-        }, () => {});
-    }
-
     // --- PARKING END (fragile) ---
     // Risk: Silent return if no session (e.g. already ended, or state desync).
     function handleEndParking() {
@@ -633,7 +519,6 @@ Q8.Services = (function() {
             return;
         }
 
-        const sessionId = session.sessionId;
         const now = new Date();
         const startDate = session.start instanceof Date ? session.start : new Date(session.start);
         const endDate = session.end ? (session.end instanceof Date ? session.end : new Date(session.end)) : now;
@@ -643,22 +528,16 @@ Q8.Services = (function() {
         const durationMins = Math.round((endDate.getTime() - startDate.getTime()) / 60000);
         const cost = U && U.calculateCost ? U.calculateCost(durationMins, hourlyRate) : (durationMins / 60) * hourlyRate;
 
-        if (db && sessionId) {
-            db.collection('sessions').doc(sessionId).update({
-                status: 'ended',
-                endedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                endedBy: 'user'
-            }).catch(() => {});
-        }
-        if (_sessionListenerUnsub) { _sessionListenerUnsub(); _sessionListenerUnsub = null; }
-
         S.update({ session: null, activeOverlay: null });
         S.save();
 
         if (db && auth && auth.currentUser) {
+            const userId = auth.currentUser.uid;
+            const tenantId = getTenantId();
+
             const transactionData = {
-                userId: auth.currentUser.uid,
-                tenantId: getTenantId(),
+                userId,
+                tenantId,
                 zone: session.zone,
                 zoneUid: session.zoneUid,
                 plate: session.plate || '',
@@ -668,7 +547,18 @@ Q8.Services = (function() {
                 cost: Math.round(cost * 100) / 100,
                 endedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
-            db.collection('transactions').add(transactionData).catch((err) => console.error('Transaction add failed:', err));
+
+            if (session.sessionDocId) {
+                db.collection('sessions').doc(session.sessionDocId).update({
+                    status: 'ended',
+                    endedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    endedBy: 'user'
+                }).catch((err) => console.warn('Session update failed:', err));
+            }
+
+            db.collection('transactions').add(transactionData).catch((err) => {
+                console.error('Transaction add failed:', err);
+            });
         }
 
         addNotification('sessionEndedByUser', S.get.language === 'nl' ? 'Parkeersessie beëindigd' : 'Parking session ended', `${session.zone} · ${session.plate || ''}`);
@@ -717,24 +607,6 @@ Q8.Services = (function() {
 
     // --- LICENSE PLATE ADD (with free kenteken validation) ---
     function saveNewPlate() {
-        const ds = S.get.driverSettings || {};
-        if (ds.platesLocked) {
-            toast(S.get.language === 'nl' ? 'Kentekens zijn vergrendeld door de fleetmanager' : 'License plates are locked by fleet manager');
-            return;
-        }
-        if (ds.canAddPlates === false) {
-            toast(S.get.language === 'nl' ? 'Je mag geen kentekens toevoegen' : 'You are not allowed to add license plates');
-            return;
-        }
-        const maxPlates = (ds.maxPlates || 0);
-        if (maxPlates > 0) {
-            const adminCount = (S.get.adminPlates || []).length;
-            const userCount = (S.get.plates || []).length;
-            if (adminCount + userCount >= maxPlates) {
-                toast(S.get.language === 'nl' ? 'Maximum aantal kentekens bereikt' : 'Maximum number of license plates reached');
-                return;
-            }
-        }
         const inp = document.getElementById('inp-plate');
         if (!inp) {
             console.warn('[PLATES] saveNewPlate: #inp-plate not found');
@@ -749,7 +621,7 @@ Q8.Services = (function() {
             else if (typeof window.showToast === 'function') window.showToast(msg);
         };
 
-        if (!rawVal) return toast(S.get.language === 'nl' ? 'Voer een kenteken in' : 'Please enter a license plate');
+        if (!rawVal) return toast('Please enter a license plate');
 
         const Kenteken = (typeof Q8 !== 'undefined' && Q8.Kenteken) ? Q8.Kenteken : null;
         let normalized = rawVal.replace(/[\s\-]/g, '').toUpperCase();
@@ -762,12 +634,12 @@ Q8.Services = (function() {
             formatError = v.errorMessage || '';
             normalized = v.normalized;
         } else {
-            if (normalized.length > 8) return toast(S.get.language === 'nl' ? 'Kenteken te lang' : 'License plate too long');
-            if (!/^[A-Z0-9]+$/.test(normalized)) return toast(S.get.language === 'nl' ? 'Alleen letters en cijfers' : 'Letters and digits only');
+            if (normalized.length > 8) return toast('License plate too long');
+            if (!/^[A-Z0-9]+$/.test(normalized)) return toast('Letters and digits only');
         }
 
-        if (!formatValid) return toast(formatError || (S.get.language === 'nl' ? 'Ongeldig kentekenformaat' : 'Invalid license plate format'));
-        if (S.get.plates.some(p => p.text === normalized || p.id === normalized)) return toast(S.get.language === 'nl' ? 'Dit kenteken bestaat al' : 'License plate already exists');
+        if (!formatValid) return toast(formatError || 'Invalid license plate format');
+        if (S.get.plates.some(p => p.text === normalized || p.id === normalized)) return toast('License plate already exists');
 
         const isFirst = S.get.plates.length === 0;
         const displayText = Kenteken && Kenteken.formatDisplay ? Kenteken.formatDisplay(normalized) : normalized;
@@ -784,18 +656,12 @@ Q8.Services = (function() {
         });
 
         S.savePlates();
-        syncUserPlatesToFirestore(newPlates);
 
         if (Kenteken && Kenteken.lookupRDW) {
             Kenteken.lookupRDW(normalized).then(function(result) {
                 if (result.found && result.data) {
-                    const vd = { ...S.get.vehicleDataByPlate, [normalized]: result.data };
-                    S.update({ vehicleDataByPlate: vd });
                     const brand = (result.data.merk || '') + (result.data.handelsbenaming ? ' ' + result.data.handelsbenaming : '');
-                    const mz = Kenteken.getMilieuzoneStatus ? Kenteken.getMilieuzoneStatus(result.data) : null;
-                    const mzTxt = mz ? (S.get.language === 'nl' ? mz.summaryNL : mz.summaryEN) : '';
-                    const msg = (S.get.language === 'nl' ? 'Kenteken toegevoegd (gecontroleerd: ' + (brand.trim() || 'RDW') + ')' : 'License plate added (verified: ' + (brand.trim() || 'RDW') + ')') + (mzTxt ? '. ' + mzTxt : '');
-                    toast(msg);
+                    toast(S.get.language === 'nl' ? 'Kenteken toegevoegd (gecontroleerd: ' + (brand.trim() || 'RDW') + ')' : 'License plate added (verified: ' + (brand.trim() || 'RDW') + ')');
                 } else if (result.error) {
                     toast(S.get.language === 'nl' ? 'Kenteken toegevoegd (controle RDW tijdelijk niet beschikbaar)' : 'License plate added (RDW check temporarily unavailable)');
                 } else {
@@ -812,16 +678,6 @@ Q8.Services = (function() {
     // --- LICENSE PLATE DELETE (fragile) ---
     // Risk: id from data-id may not match (type coercion: id vs text).
     function deletePlate(id) {
-        const ds = S.get.driverSettings || {};
-        if (ds.platesLocked) {
-            toast(S.get.language === 'nl' ? 'Kentekens zijn vergrendeld door de fleetmanager' : 'License plates are locked by fleet manager');
-            return;
-        }
-        const adminPlates = (S.get.adminPlates || []).map(p => p.id);
-        if (adminPlates.includes(id)) {
-            toast(S.get.language === 'nl' ? 'Admin-kentekens kunnen niet worden verwijderd' : 'Admin plates cannot be removed');
-            return;
-        }
         if (id == null || id === '') {
             console.warn('[PLATES] deletePlate: no id provided');
             return;
@@ -850,7 +706,6 @@ Q8.Services = (function() {
         });
 
         S.savePlates();
-        removeUserPlateFromFirestore(id);
         const toast = (msg) => {
             if(Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg);
             else if(typeof window.showToast === 'function') window.showToast(msg);
@@ -859,16 +714,6 @@ Q8.Services = (function() {
     }
 
     function updatePlate(id, newText, newDescription) {
-        const ds = S.get.driverSettings || {};
-        if (ds.platesLocked) {
-            toast(S.get.language === 'nl' ? 'Kentekens zijn vergrendeld door de fleetmanager' : 'License plates are locked by fleet manager');
-            return;
-        }
-        const adminPlates = (S.get.adminPlates || []).map(p => p.id);
-        if (adminPlates.includes(id)) {
-            toast(S.get.language === 'nl' ? 'Admin-kentekens kunnen niet worden bewerkt' : 'Admin plates cannot be edited');
-            return;
-        }
         if (id == null || id === '') {
             console.warn('[PLATES] updatePlate: no id provided');
             return;
@@ -884,7 +729,7 @@ Q8.Services = (function() {
             if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg);
             else if (typeof window.showToast === 'function') window.showToast(msg);
         };
-        if (!rawVal) return toast(S.get.language === 'nl' ? 'Voer een kenteken in' : 'Please enter a license plate');
+        if (!rawVal) return toast('Please enter a license plate');
 
         const Kenteken = (typeof Q8 !== 'undefined' && Q8.Kenteken) ? Q8.Kenteken : null;
         let normalized = rawVal.replace(/[\s\-]/g, '').toUpperCase();
@@ -897,12 +742,12 @@ Q8.Services = (function() {
             formatError = v.errorMessage || '';
             normalized = v.normalized;
         } else {
-            if (normalized.length > 8) return toast(S.get.language === 'nl' ? 'Kenteken te lang' : 'License plate too long');
-            if (!/^[A-Z0-9]+$/.test(normalized)) return toast(S.get.language === 'nl' ? 'Alleen letters en cijfers' : 'Letters and digits only');
+            if (normalized.length > 8) return toast('License plate too long');
+            if (!/^[A-Z0-9]+$/.test(normalized)) return toast('Letters and digits only');
         }
 
-        if (!formatValid) return toast(formatError || (S.get.language === 'nl' ? 'Ongeldig kentekenformaat' : 'Invalid license plate format'));
-        if (S.get.plates.some(p => (p.id != id && p.text != id) && (p.text === normalized || p.id === normalized))) return toast(S.get.language === 'nl' ? 'Dit kenteken bestaat al' : 'License plate already exists');
+        if (!formatValid) return toast(formatError || 'Invalid license plate format');
+        if (S.get.plates.some(p => (p.id != id && p.text != id) && (p.text === normalized || p.id === normalized))) return toast('License plate already exists');
 
         const displayText = Kenteken && Kenteken.formatDisplay ? Kenteken.formatDisplay(normalized) : normalized;
         const newPlates = [...S.get.plates];
@@ -927,7 +772,6 @@ Q8.Services = (function() {
         });
 
         S.savePlates();
-        syncUserPlatesToFirestore(newPlates);
         toast(S.get.language === 'nl' ? 'Kenteken bijgewerkt' : 'License plate updated');
     }
 
@@ -978,16 +822,9 @@ Q8.Services = (function() {
                 return;
             }
             if (result.found && result.data) {
-                const vd = { ...S.get.vehicleDataByPlate, [v.normalized]: result.data };
-                S.update({ vehicleDataByPlate: vd });
                 const brand = ((result.data.merk || '') + (result.data.handelsbenaming ? ' ' + result.data.handelsbenaming : '')).trim();
                 const soort = result.data.voertuigsoort || '';
-                let txt = (S.get.language === 'nl' ? 'Gevonden: ' : 'Found: ') + (brand || soort || 'RDW');
-                if (Kenteken.getMilieuzoneStatus) {
-                    const mz = Kenteken.getMilieuzoneStatus(result.data);
-                    txt += '. ' + (S.get.language === 'nl' ? mz.summaryNL : mz.summaryEN);
-                }
-                resultEl.textContent = txt;
+                resultEl.textContent = (S.get.language === 'nl' ? 'Gevonden: ' : 'Found: ') + (brand || soort || 'RDW');
                 resultEl.classList.add('plate-rdw-ok');
             } else {
                 resultEl.textContent = S.get.language === 'nl' ? 'Niet gevonden in RDW-register.' : 'Not found in RDW register.';
@@ -1058,7 +895,6 @@ Q8.Services = (function() {
         });
 
         S.savePlates();
-        syncUserPlatesToFirestore(newPlates);
         if(Q8.UI && Q8.UI.showToast) Q8.UI.showToast('Default plate updated');
         else if(typeof window.showToast === 'function') window.showToast('Default plate updated');
     }
@@ -1102,6 +938,7 @@ Q8.Services = (function() {
         setDefaultPlate,
         checkInstallMode,
         addNotification,
-        handleAutoEndSession
+        handleAutoEndSession,
+        requestNotificationPermission
     };
 })();
