@@ -443,6 +443,61 @@ exports.exportParkingSessions = functions
  * Export monthly_subscriptions as CSV or JSON.
  * Callable with: { format: 'csv'|'json', filters: { company_id?, billing_period? } }
  */
+/**
+ * When a transaction is created, create a parking_sessions document for billing.
+ */
+exports.onTransactionCreated = functions
+    .region('europe-west1')
+    .firestore
+    .document('transactions/{txId}')
+    .onCreate(async (snap, context) => {
+        const tx = snap.data();
+        const txId = snap.id;
+        const userId = tx.userId;
+        const tenantId = tx.tenantId || 'default';
+
+        let userData = {};
+        let tenantData = {};
+        if (userId) {
+            const u = await db.collection('users').doc(userId).get();
+            userData = u.exists ? u.data() : {};
+        }
+        const tn = await db.collection('tenants').doc(tenantId).get();
+        tenantData = tn.exists ? tn.data() : {};
+
+        const startTs = tx.start && (tx.start.toDate ? tx.start.toDate() : new Date(tx.start));
+        const endTs = tx.end && (tx.end.toDate ? tx.end.toDate() : new Date(tx.end));
+        const durationSeconds = startTs && endTs ? Math.round((endTs - startTs) / 1000) : null;
+
+        const cost = Number(tx.cost ?? tx.price ?? 0);
+        const psData = createParkingSessionDoc({
+            provider_transaction_id: txId,
+            user_id: userId,
+            user_name: userData.displayName || userData.email?.split('@')[0] || '',
+            user_email: userData.email ?? null,
+            company_id: tenantId,
+            company_name: tenantData.name || tenantData.companyName || tenantId,
+            card_number: userData.card_number || `MIGRATED-${userId}`,
+            card_type: userData.card_type || 'fuel_card',
+            source_system: 'app',
+            start_datetime: tx.start,
+            end_datetime: tx.end,
+            duration_seconds: durationSeconds,
+            zone_id: tx.zoneUid || tx.zone,
+            zone_name: tx.zone,
+            city: tx.street ? null : null,
+            license_plate: tx.plate ?? null,
+            parking_amount_excl_vat: cost,
+        });
+
+        psData.start_datetime = tx.start;
+        psData.end_datetime = tx.end;
+        psData.created_at = tx.endedAt || admin.firestore.FieldValue.serverTimestamp();
+
+        await db.collection('parking_sessions').add(psData);
+        return null;
+    });
+
 exports.exportMonthlySubscriptions = functions
     .region('europe-west1')
     .https

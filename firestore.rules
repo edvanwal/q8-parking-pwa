@@ -77,5 +77,19 @@ service cloud.firestore {
       allow create: if isFleetManager() && request.resource.data.tenantId == userTenantId();
       allow update, delete: if false;
     }
+
+    // parking_sessions: billing export, fleetmanager read within tenant; create via Cloud Function only
+    match /parking_sessions/{psId} {
+      allow read: if isFleetManager() && resource.data.company_id == userTenantId();
+      allow create: if false;
+      allow update, delete: if false;
+    }
+
+    // monthly_subscriptions: billing, fleetmanager read within tenant; create via admin/Cloud Function
+    match /monthly_subscriptions/{subId} {
+      allow read: if isFleetManager() && resource.data.company_id == userTenantId();
+      allow create: if false;
+      allow update, delete: if false;
+    }
   }
 }
