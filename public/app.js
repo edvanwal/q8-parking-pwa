@@ -143,7 +143,6 @@ Q8.App = (function() {
                     const zoneObj = S.get.zones && (S.get.zones.find(z => z.uid === S.get.selectedZone) || S.get.zones.find(z => z.id === S.get.selectedZone));
                     if (zoneObj && Services.hasDayPass && Services.hasDayPass(zoneObj)) {
                         const cost = Services.getDayPassCost && Services.getDayPassCost(zoneObj);
-                        const zoneLabel = zoneObj.id || zoneObj.uid || '?';
                         const costStr = cost != null ? ` €${String(cost).replace('.', ',')}` : '';
                         const titleEl = document.getElementById('confirm-daypass-title');
                         const descEl = document.getElementById('confirm-daypass-desc');
@@ -228,10 +227,8 @@ Q8.App = (function() {
                         Services.sendPasswordResetEmail(email).then(() => {
                             if (resultEl) { resultEl.style.display = 'block'; resultEl.textContent = S.get.language === 'nl' ? 'Resetlink verzonden! Check je e-mail.' : 'Reset link sent! Check your email.'; resultEl.style.color = 'var(--success, #10b981)'; }
                             S.update({ activeOverlay: null });
-                            if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Resetlink verzonden' : 'Reset link sent', 'success');
                         }).catch((err) => {
                             if (resultEl) { resultEl.style.display = 'block'; resultEl.textContent = err.message || (S.get.language === 'nl' ? 'Fout bij verzenden.' : 'Failed to send.'); resultEl.style.color = 'var(--danger)'; }
-                            if (UI.showToast) UI.showToast(err.message || (S.get.language === 'nl' ? 'Fout bij verzenden' : 'Failed to send'), 'error');
                         });
                     }
                     break;
@@ -274,7 +271,7 @@ Q8.App = (function() {
                     }
                     S.update({ favorites: next });
                     if (S.saveFavorites) S.saveFavorites();
-                    if (UI.showToast) UI.showToast(exists ? (S.get.language === 'nl' ? 'Verwijderd uit favorieten' : 'Removed from favorites') : (S.get.language === 'nl' ? 'Toegevoegd aan favorieten' : 'Added to favorites'), 'success');
+                    if (UI.showToast) UI.showToast(exists ? (S.get.language === 'nl' ? 'Verwijderd uit favorieten' : 'Removed from favorites') : (S.get.language === 'nl' ? 'Toegevoegd aan favorieten' : 'Added to favorites'));
                     break;
                 }
                 case 'remove-favorite': {
@@ -282,7 +279,7 @@ Q8.App = (function() {
                     const favs = (S.get.favorites || []).filter(f => f.zoneUid !== zoneUid);
                     S.update({ favorites: favs });
                     if (S.saveFavorites) S.saveFavorites();
-                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Verwijderd uit favorieten' : 'Removed from favorites', 'success');
+                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Verwijderd uit favorieten' : 'Removed from favorites');
                     break;
                 }
                 case 'add-favorite-from-history': {
@@ -295,7 +292,7 @@ Q8.App = (function() {
                     const next = [...favs, { zoneUid: zoneUid || zoneId, zoneId: zoneId || zoneUid }];
                     S.update({ favorites: next });
                     if (S.saveFavorites) S.saveFavorites();
-                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Toegevoegd aan favorieten' : 'Added to favorites', 'success');
+                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Toegevoegd aan favorieten' : 'Added to favorites');
                     break;
                 }
 
@@ -334,14 +331,14 @@ Q8.App = (function() {
                     const email = document.getElementById('inp-email')?.value;
                     const password = document.getElementById('inp-password')?.value;
                     if (!email || !password) {
-                         if(UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Voer e-mail en wachtwoord in' : 'Please enter email and password', 'error');
+                         if(UI.showToast) UI.showToast('Please enter email and password');
                          return;
                     }
                     target.innerText = 'SIGNING IN...';
                     target.disabled = true;
                     Services.loginUser(email, password).catch(err => {
                          console.error(err);
-                         if(UI.showToast) UI.showToast(err.message, 'error');
+                         if(UI.showToast) UI.showToast(err.message);
                     }).finally(() => {
                          target.innerText = 'SIGN IN';
                          target.disabled = false;
@@ -359,12 +356,11 @@ Q8.App = (function() {
 
                 case 'export-history-csv':
                     if (Q8.Utils && Q8.Utils.exportHistoryToCSV) Q8.Utils.exportHistoryToCSV(S.get);
-                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'CSV gedownload' : 'CSV downloaded', 'success');
+                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'CSV gedownload' : 'CSV downloaded');
                     break;
 
                 case 'export-history-print':
                     if (Q8.Utils && Q8.Utils.exportHistoryToPrint) Q8.Utils.exportHistoryToPrint(S.get);
-                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Printdialoog geopend' : 'Print dialog opened', 'success');
                     break;
 
                 case 'retry-load-zones':
@@ -434,18 +430,18 @@ Q8.App = (function() {
                     const rConf = document.getElementById('reg-password-confirm')?.value;
 
                     if (!rEmail || !rPass) {
-                        if(UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Vul alle velden in' : 'Please fill in all fields', 'error');
+                        if(UI.showToast) UI.showToast('Please fill in all fields');
                         return;
                     }
                     if (rPass !== rConf) {
-                        if(UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Wachtwoorden komen niet overeen' : 'Passwords do not match', 'error');
+                        if(UI.showToast) UI.showToast('Passwords do not match');
                         return;
                     }
 
                     target.innerText = 'CREATING ACCOUNT...';
                     target.disabled = true;
                     Services.registerUser(rEmail, rPass).catch(err => {
-                         if(UI.showToast) UI.showToast(err.message, 'error');
+                         if(UI.showToast) UI.showToast(err.message);
                     }).finally(() => {
                          target.innerText = 'REGISTER';
                          target.disabled = false;
@@ -639,7 +635,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.deferredPrompt = null;
         // Optionally show a thank you message
         if (Q8.UI && Q8.UI.showToast) {
-            Q8.UI.showToast(S.get && S.get.language === 'nl' ? 'App geïnstalleerd' : 'App installed successfully!', 'success');
+            Q8.UI.showToast('App installed successfully!');
         }
     });
     
@@ -648,7 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('[Q8] Connection restored');
         document.body.classList.remove('offline');
         if (Q8.UI && Q8.UI.showToast) {
-            Q8.UI.showToast(S.get && S.get.language === 'nl' ? 'Verbinding hersteld' : 'Connection restored', 'success');
+            Q8.UI.showToast('Connection restored');
         }
     });
     
@@ -656,7 +652,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('[Q8] Connection lost');
         document.body.classList.add('offline');
         if (Q8.UI && Q8.UI.showToast) {
-            Q8.UI.showToast(S.get && S.get.language === 'nl' ? 'Je bent offline' : 'You are offline', 'error');
+            Q8.UI.showToast('You are offline');
         }
     });
 });

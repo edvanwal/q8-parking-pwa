@@ -9,7 +9,6 @@ const firebaseConfig = {
   appId: "1:410808537958:web:6877e9435f1a78bcd12ea7",
   measurementId: "G-0L45RNP4XK",
   googleMapsApiKey: "AIzaSyD82bW_EOKkbNYc4y5G9sJcauLc_j1t8p4",
-  // VAPID key for push notifications - generate in Firebase Console if empty
   messagingVapidKey: ""
 };
 

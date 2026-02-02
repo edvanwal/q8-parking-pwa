@@ -52,8 +52,8 @@ Q8.State = (function() {
             expiringSoonMinutes: 10
         },
         favorites: [],        // [{ zoneUid, zoneId }]
-        driverSettings: {},   // Fleet manager settings (allowedDays, etc.)
-        adminPlates: [],      // Plates from fleet manager (Firestore)
+        driverSettings: {},   // Fleet manager settings (public only)
+        adminPlates: [],      // Plates from fleet manager (public only)
         tenantId: 'default'
     };
 

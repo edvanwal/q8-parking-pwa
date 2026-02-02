@@ -1061,17 +1061,12 @@ Q8.UI = (function() {
         `;
     }
 
-    function showToast(msg, type) {
+    function showToast(msg) {
         const t = document.getElementById('toast');
         if (!t) return;
         t.innerText = msg;
-        t.classList.remove('toast--success', 'toast--error');
-        if (type === 'success') t.classList.add('toast--success');
-        else if (type === 'error') t.classList.add('toast--error');
         t.classList.add('show');
-        const duration = typeof msg === 'string' && msg.length > 60 ? 4000 : 3000;
-        clearTimeout(t._toastTimeout);
-        t._toastTimeout = setTimeout(() => t.classList.remove('show'), duration);
+        setTimeout(() => t.classList.remove('show'), 3000);
     }
 
     function renderInstallGate() {
