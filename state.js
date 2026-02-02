@@ -11,6 +11,7 @@ Q8.State = (function() {
     const _state = {
         screen: 'login',      // 'login' | 'register' | 'parking' | 'history' | 'plates' | 'notifications' | 'car-specs' | 'car-specs'
         language: 'en',       // 'nl' | 'en'
+        darkMode: false,      // true = dark theme
         rememberMe: false,
         passwordVisible: false,
         infoBanner: null,     // { type: 'info', text: string, dismissible: boolean }
@@ -125,6 +126,24 @@ Q8.State = (function() {
 
         // 4. Favorites
         loadFavorites();
+
+        // 5. Dark mode
+        try {
+            const d = localStorage.getItem('q8_dark_v1');
+            if (d !== null) _state.darkMode = d === 'true';
+        } catch (e) { /* ignore */ }
+        applyTheme(_state.darkMode);
+    }
+
+    function applyTheme(dark) {
+        const html = document.documentElement;
+        if (dark) {
+            html.setAttribute('data-theme', 'dark');
+            html.style.colorScheme = 'dark';
+        } else {
+            html.setAttribute('data-theme', 'light');
+            html.style.colorScheme = 'light';
+        }
     }
 
     // Risk: localStorage.setItem can throw (quota exceeded, private mode) - would propagate to caller.
@@ -163,6 +182,12 @@ Q8.State = (function() {
             const saved = localStorage.getItem('q8_favorites_v1');
             if (saved) _state.favorites = JSON.parse(saved);
         } catch (e) { console.warn('[PERSIST] Favorites load failed', e); }
+    }
+
+    function setDarkMode(value) {
+        _state.darkMode = !!value;
+        applyTheme(_state.darkMode);
+        try { localStorage.setItem('q8_dark_v1', _state.darkMode ? 'true' : 'false'); } catch (e) {}
     }
 
     return {

@@ -1726,10 +1726,44 @@ body.standalone .map-search-float {
   top: max(16px, calc(var(--safe-area-top) + 16px));
 }
 
-/* --- Dark Mode Support (Future) --- */
+/* --- Dark Mode (data-theme="dark" on html) --- */
+html[data-theme="dark"],
+html[data-theme="dark"] body {
+  --q8-bg: #111827;
+  --q8-surface: #1F2937;
+  --q8-surface-2: #374151;
+  --q8-border: #4B5563;
+  --q8-input: #374151;
+  --q8-text: #F9FAFB;
+  --q8-text-muted: #9CA3AF;
+  --q8-text-inverse: #111827;
+  --bg-app: #111827;
+  --surface: #1F2937;
+  --bg-secondary: #374151;
+  --border: #4B5563;
+  --input-border: #4B5563;
+  --text-main: #F9FAFB;
+  --text-primary: #F9FAFB;
+  --text-secondary: #9CA3AF;
+  --text-tertiary: #9CA3AF;
+  --text-inverse: #111827;
+  --danger-bg: #450A0A;
+  --success-bg: #022C22;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-card: 0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -1px rgba(0,0,0,0.2);
+  --shadow-float: 0 10px 15px -3px rgba(0,0,0,0.4), 0 4px 6px -2px rgba(0,0,0,0.2);
+}
+html[data-theme="dark"] .zones-loading-overlay {
+  background: rgba(17,24,39,0.95);
+}
+html[data-theme="dark"] .skeleton {
+  background: linear-gradient(90deg, #374151 25%, #4B5563 50%, #374151 75%);
+}
+/* Auto dark mode from system preference when no explicit choice */
 @media (prefers-color-scheme: dark) {
-  /* Dark mode styles can be added here when needed */
-  /* Currently disabled - app uses light theme only */
+  html:not([data-theme="light"]) {
+    color-scheme: dark;
+  }
 }
 
 /* --- High Contrast Mode --- */
