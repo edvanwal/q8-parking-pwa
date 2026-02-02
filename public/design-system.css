@@ -823,7 +823,7 @@ body {
 /* Toast - header area, with progress bar & close */
 .toast-container {
   position: fixed;
-  top: calc(56px + var(--safe-area-top));
+  top: calc(72px + var(--safe-area-top));
   left: 12px; right: 12px;
   display: flex; justify-content: center; align-items: flex-start;
   pointer-events: none;
