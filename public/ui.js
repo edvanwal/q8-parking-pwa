@@ -1099,16 +1099,65 @@ Q8.UI = (function() {
             document.body.appendChild(gate);
         }
         const isEn = state.installMode.language === 'en';
+        const platform = state.installMode.platform || 'generic';
+
+        const t = {
+            title: isEn ? 'Install app' : 'App installeren',
+            subtitle: isEn ? 'Add Q8 Parking to your home screen for the best experience' : 'Voeg Q8 Parking toe aan je startscherm voor de beste ervaring',
+            iosTitle: isEn ? 'Install on iPhone / iPad' : 'Installeren op iPhone / iPad',
+            iosStep1: isEn ? 'Open this page in <b>Safari</b>' : 'Open deze pagina in <b>Safari</b>',
+            iosStep2: isEn ? 'Tap the <b>Share</b> button' : 'Tik op het <b>Deel</b>-icoon',
+            iosStep2Sub: isEn ? '(square with arrow pointing up, bottom of screen)' : '(vierkant met pijl omhoog, onderaan)',
+            iosStep3: isEn ? 'Tap <b>Add to Home Screen</b>' : 'Tik op <b>Zet op beginscherm</b>',
+            iosStep4: isEn ? 'Tap <b>Add</b> (top right)' : 'Tik op <b>Voeg toe</b> (rechtsboven)',
+            androidTitle: isEn ? 'Install on Android' : 'Installeren op Android',
+            androidStep1: isEn ? 'Open this page in <b>Chrome</b>' : 'Open deze pagina in <b>Chrome</b>',
+            androidStep2: isEn ? 'Tap the <b>menu</b> (⋮, top right)' : 'Tik op het <b>menu</b> (⋮, rechtsboven)',
+            androidStep3: isEn ? 'Tap <b>Install app</b> or <b>Add to Home screen</b>' : 'Tik op <b>App installeren</b> of <b>Toevoegen aan startscherm</b>',
+            androidStep4: isEn ? 'Confirm with <b>Install</b> or <b>Add</b>' : 'Bevestig met <b>Installeren</b> of <b>Toevoegen</b>',
+            bothNote: isEn ? 'Use Safari on iOS, Chrome on Android.' : 'Gebruik Safari op iOS, Chrome op Android.',
+        };
+
+        const iosSteps = `
+            <div class="install-card" style="margin-bottom:20px;">
+                <div class="card-section-title">${t.iosTitle}</div>
+                <div class="timeline-steps">
+                    <div class="step-item"><span class="step-badge">1</span><div class="step-content">${t.iosStep1}<div class="step-sub">${t.bothNote}</div></div></div>
+                    <div class="step-item"><span class="step-badge">2</span><div class="step-content">${t.iosStep2}<div class="step-sub">${t.iosStep2Sub}</div></div></div>
+                    <div class="step-item"><span class="step-badge">3</span><div class="step-content">${t.iosStep3}</div></div>
+                    <div class="step-item"><span class="step-badge">4</span><div class="step-content">${t.iosStep4}</div></div>
+                </div>
+            </div>
+        `;
+        const androidSteps = `
+            <div class="install-card" style="margin-bottom:20px;">
+                <div class="card-section-title">${t.androidTitle}</div>
+                <div class="timeline-steps">
+                    <div class="step-item"><span class="step-badge">1</span><div class="step-content">${t.androidStep1}<div class="step-sub">${t.bothNote}</div></div></div>
+                    <div class="step-item"><span class="step-badge">2</span><div class="step-content">${t.androidStep2}</div></div>
+                    <div class="step-item"><span class="step-badge">3</span><div class="step-content">${t.androidStep3}</div></div>
+                    <div class="step-item"><span class="step-badge">4</span><div class="step-content">${t.androidStep4}</div></div>
+                </div>
+            </div>
+        `;
+        const genericContent = platform === 'ios' ? iosSteps : (platform === 'android' ? androidSteps : (iosSteps + androidSteps));
+
         gate.innerHTML = `
             <div class="install-container">
                 <div class="install-lang-toggle">
                     <button class="toggle-btn ${isEn ? 'active' : ''}" data-action="set-gate-lang" data-lang="en">EN</button>
                     <button class="toggle-btn ${!isEn ? 'active' : ''}" data-action="set-gate-lang" data-lang="nl">NL</button>
                 </div>
-                <div class="install-content">
-                    <h1>Install App</h1>
-                    <p>Please add to home screen</p>
+                <div class="install-brand">
+                    <img src="q8-logo.png" alt="Q8" class="install-logo">
+                    <h1 class="install-title">${t.title}</h1>
+                    <p class="install-subtitle">${t.subtitle}</p>
                 </div>
+                <div class="install-alert">
+                    <div class="alert-title">${isEn ? 'Install required' : 'Installatie vereist'}</div>
+                    <div class="alert-desc">${isEn ? 'Install the app on your phone to use Q8 Parking. Follow the steps below.' : 'Installeer de app op je telefoon om Q8 Parking te gebruiken. Volg de stappen hieronder.'}</div>
+                </div>
+                ${genericContent}
             </div>
         `;
     }
