@@ -337,6 +337,23 @@ Q8.App = (function() {
                     if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Toegevoegd aan favorieten' : 'Added to favorites', 'success');
                     break;
                 }
+                case 'edit-favorite-name': {
+                    const zoneUid = target.getAttribute('data-zone-uid');
+                    const zoneId = target.getAttribute('data-zone-id');
+                    if (!zoneUid && !zoneId) break;
+                    const favs = S.get.favorites || [];
+                    const fav = favs.find(f => (f.zoneUid === zoneUid || f.zoneId === zoneUid) || (f.zoneUid === zoneId || f.zoneId === zoneId));
+                    if (!fav) break;
+                    const current = (fav.name || '').trim();
+                    const promptMsg = S.get.language === 'nl' ? 'Naam voor deze favoriet (bijv. Werk, Thuis):' : 'Name for this favorite (e.g. Work, Home):';
+                    const newName = (prompt(promptMsg, current) || '').trim();
+                    if (newName === current) break;
+                    const next = favs.map(f => (f === fav) ? { ...f, name: newName || undefined } : f);
+                    S.update({ favorites: next });
+                    if (S.saveFavorites) S.saveFavorites();
+                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Naam bijgewerkt' : 'Name updated', 'success');
+                    break;
+                }
 
                 case 'select-zone':
                     // Logic handled by search results clicking usually
