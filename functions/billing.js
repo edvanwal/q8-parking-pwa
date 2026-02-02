@@ -8,28 +8,6 @@
 const admin = require('firebase-admin');
 
 /**
- * Build a Firestore query for parking_sessions with optional filters.
- * @param {FirebaseFirestore.CollectionReference} coll
- * @param {Object} filters - { company_id?, user_id?, card_number?, billing_period? }
- * @returns {FirebaseFirestore.Query}
- */
-function buildParkingSessionsQuery(coll, filters = {}) {
-  let q = coll.orderBy('start_datetime', 'asc');
-  if (filters.company_id) q = coll.where('company_id', '==', filters.company_id).orderBy('start_datetime', 'asc');
-  if (filters.user_id) q = coll.where('user_id', '==', filters.user_id).orderBy('start_datetime', 'asc');
-  if (filters.card_number) q = coll.where('card_number', '==', filters.card_number).orderBy('start_datetime', 'asc');
-
-  if (filters.billing_period) {
-    const [y, m] = String(filters.billing_period).split('-').map(Number);
-    const start = new Date(Date.UTC(y, m - 1, 1, 0, 0, 0, 0));
-    const end = new Date(Date.UTC(y, m, 0, 23, 59, 59, 999));
-    q = (q.where ? q : coll).where('start_datetime', '>=', admin.firestore.Timestamp.fromDate(start))
-      .where('start_datetime', '<=', admin.firestore.Timestamp.fromDate(end));
-  }
-  return q;
-}
-
-/**
  * Normalize a parking session doc for export (Firestore Timestamp -> ISO string, numbers).
  */
 function normalizeSessionForExport(doc) {
