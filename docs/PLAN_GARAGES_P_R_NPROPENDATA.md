@@ -2,7 +2,7 @@
 
 **Doel:** Naast straatparkeren garages en P+R “in de buurt” tonen (kaart + lijst). Data uit **npropendata.rdw.nl** (SPDP); integratie in de bestaande app zonder de huidige straatparkeer-pipeline te breken.
 
-**Status:** Fase 2a geïmplementeerd (script); Fase 2b (app) nog te doen.
+**Status:** Fase 2a en 2b geïmplementeerd (script + app).
 
 ---
 
@@ -156,7 +156,7 @@ Dit kan in een latere iteratie.
 | Fase | Inhoud | Geschat |
 |------|--------|---------|
 | **2a** | Script `fetch_npropendata_facilities.py`: facility-lijst ophalen, filteren op garage + P+R, static data parsen, Firestore `facilities` vullen. | 1–2 dag |
-| **2b** | App: facilities ophalen, filter “in de buurt” (2 km rond gebruiker), markers op kaart + sectie “Garages & P+R in de buurt”. | 1–2 dag |
+| **2b** | App: facilities ophalen, filter “in de buurt” (2 km rond gebruiker), markers op kaart + sectie “Garages & P+R in de buurt”. | ✓ Gedaan |
 | **2c** | (Optioneel) “In de buurt” ook t.o.v. gekozen zone; straal instelbaar. | 0,5 dag |
 | **2d** | (Optioneel) Dynamische bezetting waar `dynamicDataUrl` beschikbaar is. | 1 dag |
 
