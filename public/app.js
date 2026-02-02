@@ -163,7 +163,7 @@ Q8.App = (function() {
                 }
                 case 'confirm-start-daypass':
                     S.update({ activeOverlay: null });
-                    Services.handleStartParking();
+                    Services.handleStartParking({ fromDayPassConfirm: true });
                     break;
                 case 'confirm-end': Services.handleEndParking(); break;
                 case 'save-plate': Services.saveNewPlate(); break;

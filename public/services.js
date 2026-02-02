@@ -495,7 +495,8 @@ Q8.Services = (function() {
         return match ? match[0].replace(',', '.') : (dagkaartRate.price || null);
     }
 
-    function handleStartParking() {
+    function handleStartParking(options) {
+        const skipOverlayCheck = options && options.fromDayPassConfirm === true;
         if (S.get.session) {
             console.warn('[PARKING_START] Blocked: session already active');
             toast('You already have an active parking session.');
@@ -506,7 +507,7 @@ Q8.Services = (function() {
             toast('Select a parking zone first.');
             return;
         }
-        if (S.get.activeOverlay !== 'sheet-zone') {
+        if (!skipOverlayCheck && S.get.activeOverlay !== 'sheet-zone') {
             console.warn('[PARKING_START] Blocked: overlay is not sheet-zone', S.get.activeOverlay);
             toast('Open a zone to start parking.');
             return;
