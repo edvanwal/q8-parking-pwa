@@ -1579,6 +1579,14 @@ body {
   .modal-card {
     max-width: 450px;
   }
+  
+  /* Sheet zelfde breedte als app op desktop */
+  .bottom-sheet {
+    max-width: 500px;
+  }
+  .active-parking-overlay {
+    max-width: 500px;
+  }
 }
 
 /* --- Landscape Mode --- */
