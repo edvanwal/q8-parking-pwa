@@ -1199,8 +1199,10 @@ Q8.UI = (function() {
         }
 
         diagMaps('initGoogleMap', 'creating-map');
+        const state = S.get;
+        const initialCenter = (state.userLocation && state.userLocation.lat != null) ? { lat: state.userLocation.lat, lng: state.userLocation.lng } : UTRECHT_CENTER;
         map = new google.maps.Map(container, {
-            center: UTRECHT_CENTER,
+            center: initialCenter,
             zoom: 16,
             disableDefaultUI: true,
             zoomControl: false,

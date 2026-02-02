@@ -20,6 +20,7 @@ Q8.State = (function() {
         session: null,        // Start on fresh load with null
         selectedZone: null,   // De momenteel geselecteerde zone (door klik op marker)
         selectedZoneRate: 2.0, // Default uurtarief
+        userLocation: null,   // { lat, lng } when user grants geolocation
         searchMode: 'zone',   // 'zone' | 'address'
         searchQuery: '',      // Current input in search bar
         geocodeMatches: [],   // Zones near geocoded address (address search)
