@@ -149,6 +149,19 @@ Q8.State = (function() {
         } catch (e) { console.warn('[PERSIST] Notifications load failed', e); }
     }
 
+    function saveFavorites() {
+        try {
+            localStorage.setItem('q8_favorites_v1', JSON.stringify(_state.favorites));
+        } catch (e) { console.warn('[PERSIST] Favorites save failed', e); }
+    }
+
+    function loadFavorites() {
+        try {
+            const saved = localStorage.getItem('q8_favorites_v1');
+            if (saved) _state.favorites = JSON.parse(saved);
+        } catch (e) { console.warn('[PERSIST] Favorites load failed', e); }
+    }
+
     return {
         get: _state,
         update: update,
