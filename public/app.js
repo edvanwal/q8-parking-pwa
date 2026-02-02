@@ -228,8 +228,10 @@ Q8.App = (function() {
                         Services.sendPasswordResetEmail(email).then(() => {
                             if (resultEl) { resultEl.style.display = 'block'; resultEl.textContent = S.get.language === 'nl' ? 'Resetlink verzonden! Check je e-mail.' : 'Reset link sent! Check your email.'; resultEl.style.color = 'var(--success, #10b981)'; }
                             S.update({ activeOverlay: null });
+                            if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Resetlink verzonden' : 'Reset link sent', 'success');
                         }).catch((err) => {
                             if (resultEl) { resultEl.style.display = 'block'; resultEl.textContent = err.message || (S.get.language === 'nl' ? 'Fout bij verzenden.' : 'Failed to send.'); resultEl.style.color = 'var(--danger)'; }
+                            if (UI.showToast) UI.showToast(err.message || (S.get.language === 'nl' ? 'Fout bij verzenden' : 'Failed to send'), 'error');
                         });
                     }
                     break;
@@ -637,7 +639,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.deferredPrompt = null;
         // Optionally show a thank you message
         if (Q8.UI && Q8.UI.showToast) {
-            Q8.UI.showToast('App installed successfully!');
+            Q8.UI.showToast(S.get && S.get.language === 'nl' ? 'App geïnstalleerd' : 'App installed successfully!', 'success');
         }
     });
     
@@ -646,7 +648,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('[Q8] Connection restored');
         document.body.classList.remove('offline');
         if (Q8.UI && Q8.UI.showToast) {
-            Q8.UI.showToast('Connection restored');
+            Q8.UI.showToast(S.get && S.get.language === 'nl' ? 'Verbinding hersteld' : 'Connection restored', 'success');
         }
     });
     
@@ -654,7 +656,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('[Q8] Connection lost');
         document.body.classList.add('offline');
         if (Q8.UI && Q8.UI.showToast) {
-            Q8.UI.showToast('You are offline');
+            Q8.UI.showToast(S.get && S.get.language === 'nl' ? 'Je bent offline' : 'You are offline', 'error');
         }
     });
 });
