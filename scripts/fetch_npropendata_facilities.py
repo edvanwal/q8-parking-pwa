@@ -180,6 +180,17 @@ def main():
                 results.append(doc)
             if (i + 1) % 50 == 0:
                 print(f"  Progress: {i + 1}/{len(to_fetch)}")
+    if args.dry_run and not results and to_fetch:
+        # Debug: fetch first one and print raw keys
+        first = to_fetch[0]
+        try:
+            raw = fetch_json(first.get("staticDataUrl"))
+            ap = (raw.get("accessPoints") or [None])[0]
+            locs = (ap.get("accessPointLocation") or [None]) if ap else [None]
+            loc = locs[0] if locs else None
+            print(f"  Debug first: accessPoints len={len(raw.get('accessPoints') or [])}, loc={loc}", file=sys.stderr)
+        except Exception as e:
+            print(f"  Debug error: {e}", file=sys.stderr)
 
     print(f"Parsed {len(results)} facilities with valid coordinates.")
 
