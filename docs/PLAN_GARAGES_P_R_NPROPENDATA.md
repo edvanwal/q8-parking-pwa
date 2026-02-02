@@ -81,6 +81,13 @@ Voorgestelde velden (minimaal voor “in de buurt” + kaart):
 | `street` | string | optioneel (adres) |
 | `tariffSummary` | string | optioneel; bijv. eerste `tariffDescription` of “€ X / Y min” |
 | `dynamicDataUrl` | string | optioneel; voor later “X plekken vrij” |
+| `capacity` | number | optioneel; totaal aantal plekken (specifications[0]) |
+| `chargingPointCapacity` | number | optioneel; laadplekken |
+| `disabledAccess` | boolean | optioneel; rolstoeltoegankelijk |
+| `minimumHeightInMeters` | number | optioneel; max hoogte |
+| `operatorUrl` | string | optioneel; website beheerder |
+| `openingTimesSummary` | string | optioneel; "24/7" of "Ma-Vr 07:00-23:00" |
+| `paymentMethods` | array string | optioneel; bv. ["Maestro","Visa","Coins"] |
 | `updated_at` | string | timestamp laatste refresh |
 
 Geen volledige static JSON in Firestore bewaren (te groot); alleen wat de app nodig heeft.
