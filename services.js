@@ -205,7 +205,7 @@ Q8.Services = (function() {
                 diag('onSnapshot', 'received', { raw: raw.length, streetOnly: zones.length });
                 if (zones.length > 0) {
                     requestAnimationFrame(() => {
-                        S.update({ zones: zones, zonesLoading: false });
+                        S.update({ zones: zones, zonesLoading: false, zonesLoadError: null });
                         if (U && U.debug) U.debug('DATA', `Live sync: ${zones.length} zones loaded.`);
                         diag('onSnapshot', 'zones-updated');
 
@@ -219,11 +219,12 @@ Q8.Services = (function() {
                         if(debugEl) debugEl.innerText = `Zones: ${zones.length}`;
                     });
                 } else {
-                    S.update({ zonesLoading: false });
+                    S.update({ zones: zones, zonesLoading: false, zonesLoadError: null });
                 }
                 resolve(zones);
             }, (error) => {
-                S.update({ zonesLoading: false });
+                const msg = error && error.message ? error.message : 'Network error';
+                S.update({ zonesLoading: false, zonesLoadError: msg });
                 diag('onSnapshot', 'error', error && error.message);
                 console.error("Firestore zones sync error:", error);
                 reject(error);
