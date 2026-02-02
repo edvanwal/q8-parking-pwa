@@ -435,8 +435,8 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 |---|-------------------|-----------|
 | 4 | **Export parkeerhistorie (CSV/PDF)** | Declaratie en boekhouding (billing export in `functions/billing.js`) |
 | 5 | **Push-notificatie bij bijna verlopen** | Voorkomt vergeten sessies (FCM + permissie flow aanwezig) |
-| 7 | **Adres-zoeken met geocoding** | Betere UX bij onbekende zones |
-| 8 | **Sessie verlengen vanuit actieve kaart** | Snellere actie zonder zone opnieuw te openen |
+| 6 | **Gebruiksdagen beperken** | Fleet Manager Plan – allowedDays |
+| 7 | **Bulk kentekens voor poolauto's** | Fleet Manager Plan |
 | 9 | **Gebruiksdagen beperken** | Fleet Manager Plan – allowedDays |
 | 10 | **Bulk kentekens voor poolauto’s** | Fleet Manager Plan |
 
