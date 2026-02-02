@@ -1051,6 +1051,7 @@ Q8.Services = (function() {
         checkInstallMode,
         addNotification,
         handleAutoEndSession,
-        requestNotificationPermission
+        requestNotificationPermission,
+        syncNotificationSettingsToFirestore
     };
 })();
