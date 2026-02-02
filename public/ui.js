@@ -267,14 +267,17 @@ Q8.UI = (function() {
             : 1440;
 
         if (state.duration >= zoneMax) {
+            const maxMsgText = zoneMax >= 1440
+                ? 'Max parking duration reached'
+                : `Maximum parking duration for this zone is ${Math.floor(zoneMax / 60)} ${Math.floor(zoneMax / 60) === 1 ? 'hour' : 'hours'}`;
             if (!elMaxMsg) {
                  const msg = document.createElement('div');
                  msg.id = 'duration-max-msg';
                  msg.style.cssText = 'color: #D92D20; font-size: 0.75rem; font-weight: 600; margin-top: 4px; text-align: center; width: 100%;';
-                 msg.innerText = zoneMax >= 1440
-                     ? 'Max parking duration reached'
-                     : `Maximum parking duration for this zone is ${Math.floor(zoneMax / 60)} ${Math.floor(zoneMax / 60) === 1 ? 'hour' : 'hours'}`;
+                 msg.innerText = maxMsgText;
                  elDur?.parentNode?.appendChild(msg);
+            } else {
+                 elMaxMsg.innerText = maxMsgText;
             }
             if (btnSheetPlus) btnSheetPlus.style.opacity = '0.3';
         } else {
