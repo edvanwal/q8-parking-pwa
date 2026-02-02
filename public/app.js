@@ -156,13 +156,19 @@ Q8.App = (function() {
                         if (okBtn) okBtn.textContent = S.get.language === 'nl' ? 'JA, STARTEN' : 'YES, START';
                         Services.tryOpenOverlay('modal-confirm-daypass');
                     } else {
-                        Services.handleStartParking();
+                        Services.tryOpenOverlay('modal-confirm-start');
                     }
                     break;
                 }
-                case 'confirm-start-daypass':
-                    S.update({ activeOverlay: null });
-                    Services.handleStartParking({ fromDayPassConfirm: true });
+                case 'confirm-start-daypass': {
+                    const nl = S.get.language === 'nl';
+                    const daypassNote = nl ? 'Let op: dit is een zone met dagkaart.' : 'Note: this zone has a day pass.';
+                    Services.tryOpenOverlay('modal-confirm-start', { daypassNote });
+                    break;
+                }
+                case 'confirm-start-session':
+                    S.update({ activeOverlay: null, plateSelectorReturnTo: null });
+                    Services.handleStartParking({ fromConfirmStart: true });
                     break;
                 case 'confirm-end': Services.handleEndParking(); break;
                 case 'save-plate': Services.saveNewPlate(); break;
