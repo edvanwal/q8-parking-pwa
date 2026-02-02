@@ -425,10 +425,10 @@ Q8.UI = (function() {
             const moreInfo = (f.operatorUrl) ? ' <a href="' + f.operatorUrl + '" target="_blank" rel="noopener" class="facility-more-info text-secondary text-xs" style="margin-left:6px;">' + (nl ? 'Meer info' : 'More info') + '</a>' : '';
             return '<div class="facility-row" role="listitem" style="padding:10px 0; border-bottom:1px solid var(--border-color);" aria-label="' + (f.name || (f.type === 'p_r' ? 'P+R' : 'Garage')) + ', ' + (addr || f.city || '') + ', ' + dist + '">' +
                 '<a href="https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(f.lat + ',' + f.lng) + '" target="_blank" rel="noopener" style="text-decoration:none; color:inherit;">' +
-                '<div class="font-semibold">' + (f.name || (f.type === 'p_r' ? 'P+R' : 'Garage')) + moreInfo + '</div>' +
+                '<div class="font-semibold">' + (f.name || (f.type === 'p_r' ? 'P+R' : 'Garage')) + '</div>' +
                 (addr ? '<div class="text-secondary text-sm">' + addr + '</div>' : '') +
                 metaLine +
-                '<div class="flex justify-between items-center gap-2 mt-1">' + tariff + '<span class="text-secondary text-sm">' + dist + '</span></div></a></div>';
+                '<div class="flex justify-between items-center gap-2 mt-1">' + tariff + '<span class="text-secondary text-sm">' + dist + '</span></div></a>' + moreInfo + '</div>';
         }).join('');
     }
 
