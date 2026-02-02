@@ -218,12 +218,41 @@ Dit kan in een latere iteratie.
 
 Aanbevolen: 1× per week draaien (cron/scheduled task) om `facilities` te verversen.
 
-## 8. Wat nog nodig is voor Fase 2b (app)
+## 8. Wat kan er nog beter?
 
-1. **Bevestiging UI-plaatsing**  
-   Sectie “Garages & P+R in de buurt” in zone-sheet, of apart paneel/knop op kaartscherm?
-2. **Straal instelbaar**  
-   Optioneel: gebruikersinstelling voor straal (1 / 2 / 5 km).
+### Garages & P+R (plan)
+
+| Verbetering | Beschrijving | Moeite |
+|-------------|--------------|--------|
+| **Fase 2c** | “In de buurt” ook t.o.v. **gekozen zone** (niet alleen locatie); **straal instelbaar** (1 / 2 / 5 km) in instellingen. | 0,5 dag |
+| **Fase 2d** | **Dynamische bezetting**: voor facilities met `dynamicDataUrl` de SPDP-URL ophalen en “ca. X plekken vrij” tonen in lijst en/of op kaart. | 1 dag |
+| **Zichtbaarheid** | Sectie “Garages & P+R” ook bereikbaar **zonder** zone te selecteren (bijv. knop op kaartscherm of apart paneel). | 0,5 dag |
+| **Meer info** | Link naar **operatorUrl** (website beheerder) per facility (“Meer info” / “Website”). | Klein |
+| **Foutafhandeling** | Duidelijke melding als `facilities` niet laden (netwerk/Firestore); retry-optie. | Klein |
+
+### Script & data
+
+| Verbetering | Beschrijving | Moeite |
+|-------------|--------------|--------|
+| **Cron** | Script 1× per week draaien via cron/scheduled task; in README of plan vastleggen. | Klein |
+| **Robuustheid** | Retries bij netwerkfout of 5xx; tijdelijk overslaan van één facility bij parsefout (nu stille skip). | Klein |
+| **Incrementeel** | Alleen facilities verversen waar `staticDataLastUpdated` gewijzigd is (minder requests, sneller). | Medium |
+| **Meerdere accessPoints** | Bij garages met meerdere ingangen: tweede/derde coördinaat of aparte “ingang”-markers (nu alleen eerste punt). | Medium |
+
+### App algemeen
+
+| Verbetering | Beschrijving | Moeite |
+|-------------|--------------|--------|
+| **Performance** | Bij >2000 facilities: overwegen Firestore-geoquery of server-side filter op afstand i.p.v. alle docs ophalen. | Medium |
+| **i18n** | Facility-labels (24/7, plekken, laadplekken, Toegankelijk, Pinnen/Contant) in vertaalset voor Engels. | Klein |
+| **Toegankelijkheid** | Facility-markers en lijst items voor screenreaders (aria-label, role). | Klein |
+
+### Aansluiting NPR-rapport (RAPPORT_NPR_RDW_SHPV_PARKERDATA_ANALYSE.md)
+
+- **F1 (disclaimer):** Vaste disclaimer in zone-sheet (“Tarieven indicatief; bron: RDW Open Data”) – nu alleen tooltip bij Tarieven.
+- **F2 (geschatte kosten):** Geschatte kosten zichtbaar in zone-sheet (niet alleen bij stoppen).
+- **E2 (dynamische data):** Zie Fase 2d hierboven.
+- **E3 (alle dagen):** Uitklapbare “Bekijk alle dagen” voor tarieven in zone-sheet.
 
 ---
 
