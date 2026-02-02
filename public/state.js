@@ -22,6 +22,7 @@ Q8.State = (function() {
         searchQuery: '',      // Current input in search bar
         duration: 0,          // 0 = "Until stopped" (No fixed end time)
         zones: [],            // Populated continuously via Firestore
+        zonesLoading: true,   // True while zones are being loaded
         // State "live" in localStorage, fallback naar 1 default
         plates: [],
         selectedPlateId: null, // Track currently selected plate in list

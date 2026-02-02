@@ -115,6 +115,11 @@ Q8.Services = (function() {
             });
     }
 
+    function sendPasswordResetEmail(email) {
+        if (!auth) return Promise.reject(new Error('Auth not available'));
+        return auth.sendPasswordResetEmail(email);
+    }
+
     function logoutUser() {
         if (U && U.debug) U.debug('AUTH', 'Logging Out');
         return auth.signOut().then(() => {
