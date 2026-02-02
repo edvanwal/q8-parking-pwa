@@ -131,15 +131,12 @@ Q8.UI = (function() {
             }
         }
 
-        // If not file://: after 2.5s show error with public URL link if map still not visible
+        // If not file://: after 2.5s show error with public URL link if map still not created
         if (!isFileProtocol) {
             if (_mapLoadCheckTimeout) clearTimeout(_mapLoadCheckTimeout);
             _mapLoadCheckTimeout = setTimeout(function() {
                 _mapLoadCheckTimeout = null;
                 if (map) return;
-                var container = document.getElementById('map-container');
-                var rect = container ? container.getBoundingClientRect() : null;
-                if (rect && rect.width >= 50 && rect.height >= 50) return;
                 showMapLoadError('De kaart laadt niet op localhost. Op de publieke website werkt de kaart vaak wel.', true);
             }, 2500);
         }
