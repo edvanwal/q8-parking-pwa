@@ -503,7 +503,7 @@ Q8.App = (function() {
             }
         });
 
-        // Event Listener for Search Input
+        // Event Listener for Search Input (auto-detects zone vs address from query)
         let geocodeTimeout = null;
         const searchInput = document.getElementById('inp-search');
         if(searchInput) {
@@ -511,7 +511,8 @@ Q8.App = (function() {
                 const q = e.target.value;
                 S.update({ searchQuery: q });
                 UI.renderSearchResults();
-                if (S.get.searchMode === 'address' && Services.geocodeAndSearch) {
+                const mode = Services.detectSearchMode ? Services.detectSearchMode(q) : 'zone';
+                if (mode === 'address' && Services.geocodeAndSearch && q.trim().length >= 3) {
                     if (geocodeTimeout) clearTimeout(geocodeTimeout);
                     geocodeTimeout = setTimeout(() => {
                         geocodeTimeout = null;

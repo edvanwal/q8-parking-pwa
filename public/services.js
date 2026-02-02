@@ -1098,6 +1098,7 @@ Q8.Services = (function() {
         sendPasswordResetEmail,
         loadZones,
         geocodeAndSearch,
+        detectSearchMode,
         setScreen,
         tryOpenOverlay,
         handleStartParking,
