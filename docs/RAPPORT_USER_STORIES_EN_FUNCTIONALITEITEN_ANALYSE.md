@@ -1,4 +1,4 @@
-﻿# Uitgebreid Rapport: User Stories, Functionaliteiten & Code-analyse
+# Uitgebreid Rapport: User Stories, Functionaliteiten & Code-analyse
 ## Q8 Parking B2B PWA
 
 **Versie:** 1.1  
@@ -544,4 +544,4 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ---
 
-*Dit rapport is gebaseerd op code-analyse van de Q8 Parking B2B PWA (februari 2025) en best practices voor user stories en documentatie.*
+*Dit rapport is gebaseerd op code-analyse van de Q8 Parking B2B PWA (februari 2026) en best practices voor user stories en documentatie.*
