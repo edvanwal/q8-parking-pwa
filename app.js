@@ -136,8 +136,13 @@ Q8.App = (function() {
                 }
 
                 case 'close-overlay': {
-                    const wasPlateSelector = S.get.activeOverlay === 'sheet-plate-selector';
-                    S.update({ activeOverlay: null, ...(wasPlateSelector && { plateSelectorReturnTo: null }) });
+                    const current = S.get.activeOverlay;
+                    const returnTo = S.get.plateSelectorReturnTo;
+                    if (current === 'sheet-plate-selector' && returnTo === 'modal-confirm-start') {
+                        S.update({ activeOverlay: returnTo, plateSelectorReturnTo: null });
+                    } else {
+                        S.update({ activeOverlay: null, ...(current === 'sheet-plate-selector' && { plateSelectorReturnTo: null }) });
+                    }
                     break;
                 }
 
