@@ -1207,6 +1207,7 @@ Q8.UI = (function() {
     // --- GOOGLE MAPS ---
 
     let map;
+    var _mapLoadCheckTimeout = null;
     const UTRECHT_CENTER = { lat: 52.0907, lng: 5.1214 };
 
     // DIAG: Set window.Q8_DIAG = true to log Maps loading steps
@@ -1214,15 +1215,17 @@ Q8.UI = (function() {
         if (window.Q8_DIAG) console.log('[DIAG_MAPS]', tag, msg, data || '');
     }
 
-    function showMapLoadError(message) {
+    function showMapLoadError(message, showPublicLink) {
         var el = document.getElementById('map-load-error');
         var textEl = document.getElementById('map-load-error-text');
+        var linkEl = document.getElementById('map-load-error-link');
         var container = document.getElementById('map-container');
         var fileWarning = document.getElementById('map-file-warning');
         if (fileWarning) { fileWarning.classList.add('hidden'); fileWarning.style.display = 'none'; }
         if (container) container.style.display = 'none';
         if (el) {
             if (textEl && message) textEl.textContent = message;
+            if (linkEl) linkEl.innerHTML = showPublicLink ? 'Probeer de app op de publieke website: <a href="https://q8-parking-pwa.web.app" target="_blank" rel="noopener" class="font-bold" style="color:var(--primary);">q8-parking-pwa.web.app</a>' : '';
             el.classList.remove('hidden');
             el.style.display = 'block';
         }
