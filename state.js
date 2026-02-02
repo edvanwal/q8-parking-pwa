@@ -146,13 +146,17 @@ Q8.State = (function() {
         }
     }
 
-    // Risk: localStorage.setItem can throw (quota exceeded, private mode) - would propagate to caller.
+    // Risk: localStorage can throw (quota exceeded, private mode) - wrap in try-catch.
     function save() {
-        localStorage.setItem('q8_parking_session', JSON.stringify(_state.session));
+        try {
+            localStorage.setItem('q8_parking_session', JSON.stringify(_state.session));
+        } catch (e) { console.warn('[PERSIST] Session save failed', e); }
     }
 
     function savePlates() {
-        localStorage.setItem('q8_plates_v1', JSON.stringify(_state.plates));
+        try {
+            localStorage.setItem('q8_plates_v1', JSON.stringify(_state.plates));
+        } catch (e) { console.warn('[PERSIST] Plates save failed', e); }
     }
 
     function saveNotifications() {
