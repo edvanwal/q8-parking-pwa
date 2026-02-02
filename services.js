@@ -99,7 +99,8 @@ Q8.Services = (function() {
         return new Promise((resolve, reject) => {
             if (U && U.debug) U.debug('DATA', "Setting up Firestore zones listener...");
             diag('loadZones', 'start', { db: !!db });
-            if (!db) { diag('loadZones', 'no-db-fallback'); return resolve([]); }
+            S.update({ zonesLoading: true });
+            if (!db) { S.update({ zonesLoading: false }); diag('loadZones', 'no-db-fallback'); return resolve([]); }
 
             db.collection('zones').limit(2000).onSnapshot((snapshot) => {
                 const raw = [];
@@ -117,7 +118,7 @@ Q8.Services = (function() {
                 diag('onSnapshot', 'received', { raw: raw.length, streetOnly: zones.length });
                 if (zones.length > 0) {
                     requestAnimationFrame(() => {
-                        S.update({ zones: zones });
+                        S.update({ zones: zones, zonesLoading: false });
                         if (U && U.debug) U.debug('DATA', `Live sync: ${zones.length} zones loaded.`);
                         diag('onSnapshot', 'zones-updated');
 
@@ -130,9 +131,12 @@ Q8.Services = (function() {
                         const debugEl = document.getElementById('debug-status');
                         if(debugEl) debugEl.innerText = `Zones: ${zones.length}`;
                     });
+                } else {
+                    S.update({ zonesLoading: false });
                 }
                 resolve(zones);
             }, (error) => {
+                S.update({ zonesLoading: false });
                 diag('onSnapshot', 'error', error && error.message);
                 console.error("Firestore zones sync error:", error);
                 reject(error);
