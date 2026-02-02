@@ -74,6 +74,7 @@
 
 /* Prevent text cursor (I-beam) on non-input elements - desktop UX */
 #app, .screen, .bottom-sheet, .overlay-backdrop { cursor: default; }
+#app .card:not([data-action]) { cursor: default; }
 #app input, #app textarea, #app [contenteditable="true"] { cursor: text; }
 
 /* Map layout (bijlage 2: header + search + map area) */
