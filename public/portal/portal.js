@@ -31,7 +31,7 @@
     const el = $(sectionId);
     if (el) el.classList.remove('hidden');
     $all('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.section === sectionId.replace('section-', '')));
-    const titles = { dashboard: 'Dashboard', users: 'Gebruikers', sessions: 'Actieve sessies', settings: 'Instellingen', plates: 'Kentekenbeheer', auditlog: 'Auditlog' };
+    const titles = { dashboard: 'Dashboard', users: 'Users', sessions: 'Active sessions', settings: 'Settings', plates: 'License plate management', auditlog: 'Audit log' };
     const titleEl = $('portal-section-title');
     if (titleEl) titleEl.textContent = titles[sectionId.replace('section-', '')] || sectionId;
   }
@@ -238,7 +238,7 @@
   const ACTION_LABELS = {
     user_invited: 'Bestuurder uitgenodigd',
     session_stopped: 'Sessie gestopt',
-    tenant_settings_saved: 'Instellingen opgeslagen',
+    tenant_settings_saved: 'Settings saved',
     driver_settings_updated: 'Kentekeninstellingen gewijzigd',
     plate_added: 'Kenteken toegevoegd',
     plate_removed: 'Kenteken verwijderd',

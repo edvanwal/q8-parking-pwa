@@ -207,39 +207,39 @@
         <div id="section-auditlog" class="portal-section hidden">
           <div class="portal-card">
             <h2>Auditlog</h2>
-            <p class="text-secondary mb-lg">Overzicht van acties door fleetmanagers. Compliance en traceerbaarheid.</p>
+            <p class="text-secondary mb-lg">Overview of actions by fleet managers. Compliance and traceability.</p>
             <div class="table-container">
               <table class="portal-table">
                 <thead>
-                  <tr><th>Datum/tijd</th><th>Actie</th><th>Door</th><th>Details</th></tr>
+                  <tr><th>Date/time</th><th>Action</th><th>By</th><th>Details</th></tr>
                 </thead>
                 <tbody id="auditlog-tbody"></tbody>
               </table>
-              <p id="auditlog-empty" class="text-secondary text-center pad-lg hidden">Geen auditlog-gegevens</p>
+              <p id="auditlog-empty" class="text-secondary text-center pad-lg hidden">No audit log data</p>
             </div>
-            <button class="btn btn-outline btn-sm mt-md" id="btn-refresh-auditlog">Vernieuwen</button>
+            <button class="btn btn-outline btn-sm mt-md" id="btn-refresh-auditlog">Refresh</button>
           </div>
         </div>
       </main>
     </div>
 
-    <!-- Modal: Bestuurder uitnodigen -->
+    <!-- Modal: Invite driver -->
     <div id="modal-add-user" class="portal-modal hidden">
       <div class="modal-content">
-        <h2>Bestuurder uitnodigen</h2>
-        <p class="text-secondary mb-lg" style="font-size:0.9rem;">Stuur het e-mailadres door. De bestuurder registreert zich in de parkeerapp en verschijnt daarna hier.</p>
+        <h2>Invite driver</h2>
+        <p class="text-secondary mb-lg" style="font-size:0.9rem;">Enter the email address. The driver registers in the parking app and will appear here.</p>
         <form id="add-user-form">
           <div class="form-group">
-            <label>E-mailadres</label>
-            <input type="email" id="add-user-email" class="input-field" placeholder="jan@bedrijf.nl" required>
+            <label>Email address</label>
+            <input type="email" id="add-user-email" class="input-field" placeholder="user@company.com" required>
           </div>
           <div class="form-group">
-            <label>Naam (optioneel)</label>
-            <input type="text" id="add-user-name" class="input-field" placeholder="Jan Jansen">
+            <label>Name (optional)</label>
+            <input type="text" id="add-user-name" class="input-field" placeholder="John Doe">
           </div>
           <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" id="btn-cancel-add-user">Annuleren</button>
-            <button type="submit" class="btn btn-primary">Uitnodiging opslaan</button>
+            <button type="button" class="btn btn-secondary" id="btn-cancel-add-user">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save invitation</button>
           </div>
         </form>
       </div>
