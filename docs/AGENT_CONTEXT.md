@@ -72,6 +72,10 @@ The backend consists of Python scripts focused on fetching, cleaning, and enrich
 - **Web Root**: `public` folder is specified as the public root, though source files currently reside in the project root.
 - **Command**: `firebase deploy` (likely from a GitHub Action or local terminal).
 
+## Parkeerdata & standaarden
+
+- **NPR, RDW, SHPV, SPDP:** Zie uitgebreide analyse, conclusies en **aanbevelingen voor de agent** in `docs/RAPPORT_NPR_RDW_SHPV_PARKERDATA_ANALYSE.md`. Daarin: opbouw RDW-datasets, gebruik open data vs. NPR, SPDP/NEN-EN 12414, en aanbevelingen voor live-omgeving (data, frontend, tests, uitbreiding).
+
 ## Developer Notes
 
 - **No Package Manager**: The project does not currently use a root `package.json` for frontend dependencies. Libraries are loaded via CDN in `index.html`.
