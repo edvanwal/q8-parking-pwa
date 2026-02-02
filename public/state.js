@@ -16,6 +16,7 @@ Q8.State = (function() {
         passwordVisible: false,
         infoBanner: null,     // { type: 'info', text: string, dismissible: boolean }
         activeOverlay: null,
+        plateSelectorReturnTo: null, // When plate selector opened from confirm-start modal: 'modal-confirm-start'
         session: null,        // Start on fresh load with null
         selectedZone: null,   // De momenteel geselecteerde zone (door klik op marker)
         selectedZoneRate: 2.0, // Default uurtarief
