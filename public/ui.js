@@ -327,6 +327,35 @@ Q8.UI = (function() {
         const isFav = zoneUid && (state.favorites || []).some(f => f.zoneUid === zoneUid || (f.zoneId === zoneId && !f.zoneUid));
         if (favOutline) favOutline.style.display = isFav ? 'none' : 'block';
         if (favFilled) favFilled.style.display = isFav ? 'block' : 'none';
+
+        // Garages & P+R in de buurt
+        const sectionFacilities = document.getElementById('sheet-section-facilities');
+        const listFacilities = document.getElementById('details-nearby-facilities-list');
+        if (sectionFacilities && listFacilities) {
+            const nl = state.language === 'nl';
+            const nearby = state.nearbyFacilities || [];
+            const hasLocation = state.userLocation && state.userLocation.lat != null;
+            if (!hasLocation) {
+                sectionFacilities.style.display = 'block';
+                listFacilities.innerHTML = '<div class="text-secondary text-sm" style="padding:8px 0;">' + (nl ? 'Sta locatie toe om garages en P+R in de buurt te zien.' : 'Allow location to see garages and P+R nearby.') + '</div>';
+            } else if (nearby.length === 0) {
+                sectionFacilities.style.display = 'block';
+                listFacilities.innerHTML = '<div class="text-secondary text-sm" style="padding:8px 0;">' + (nl ? 'Geen garages of P+R binnen 2 km.' : 'No garages or P+R within 2 km.') + '</div>';
+            } else {
+                sectionFacilities.style.display = 'block';
+                const labelFacilities = sectionFacilities.querySelector('.sheet-section-label');
+                if (labelFacilities) labelFacilities.textContent = nl ? 'Garages & P+R in de buurt' : 'Garages & P+R nearby';
+                listFacilities.innerHTML = nearby.map(f => {
+                    const dist = (f._distKm != null) ? (f._distKm < 1 ? (f._distKm * 1000).toFixed(0) + ' m' : f._distKm.toFixed(1).replace('.', ',') + ' km') : '';
+                    const tariff = f.tariffSummary ? '<span class="text-secondary text-sm">' + f.tariffSummary + '</span>' : '';
+                    const addr = [f.street, f.city].filter(Boolean).join(', ') || f.city || '';
+                    return '<a href="https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(f.lat + ',' + f.lng) + '" target="_blank" rel="noopener" class="facility-row" style="display:block; padding:10px 0; border-bottom:1px solid var(--border-color); text-decoration:none; color:inherit;">' +
+                        '<div class="font-semibold">' + (f.name || (f.type === 'p_r' ? 'P+R' : 'Garage')) + '</div>' +
+                        (addr ? '<div class="text-secondary text-sm">' + addr + '</div>' : '') +
+                        '<div class="flex justify-between items-center gap-2 mt-1">' + tariff + '<span class="text-secondary text-sm">' + dist + '</span></div></a>';
+                }).join('');
+            }
+        }
     }
 
     function renderRatesList(container, rates) {
