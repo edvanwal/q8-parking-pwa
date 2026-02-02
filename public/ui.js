@@ -178,6 +178,23 @@ Q8.UI = (function() {
         // Zone Sheet
         if (state.selectedZone) renderZoneSheet();
 
+        // Standalone Garages & P+R sheet
+        if (state.activeOverlay === 'sheet-facilities') renderFacilitiesSheet();
+
+        // Facilities radius/ref buttons (zone sheet and standalone) – sync active state
+        const radiusKm = state.nearbyFacilitiesRadiusKm || 2;
+        document.querySelectorAll('.facilities-radius-btn, .facilities-radius-btn-sheet').forEach(btn => {
+            const k = parseInt(btn.getAttribute('data-km'), 10);
+            btn.classList.toggle('btn-primary', k === radiusKm);
+            btn.classList.toggle('btn-secondary', k !== radiusKm);
+        });
+        const ref = state.nearbyFacilitiesRef || 'user';
+        document.querySelectorAll('.facilities-ref-btn, .facilities-ref-btn-sheet').forEach(btn => {
+            const r = btn.getAttribute('data-ref');
+            btn.classList.toggle('btn-primary', r === ref);
+            btn.classList.toggle('btn-outline', r !== ref);
+        });
+
         // Search input sync
         const inpSearch = document.getElementById('inp-search');
         if (inpSearch && document.activeElement !== inpSearch) {
