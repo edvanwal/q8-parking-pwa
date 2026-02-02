@@ -62,12 +62,17 @@ Q8.App = (function() {
                     closeSideMenu(); // Close menu when navigating
                     if (Services && Services.setScreen) Services.setScreen(targetId);
                     break;
-                case 'toggle-search-mode':
+                case 'toggle-search-mode': {
                     const newMode = S.get.searchMode === 'zone' ? 'address' : 'zone';
-                    S.update({ searchMode: newMode, searchQuery: '' });
+                    S.update({ searchMode: newMode, searchQuery: '', geocodeMatches: [], geocodeLoading: false });
                     const inp = document.getElementById('inp-search');
-                    if (inp) { inp.value = ''; inp.focus(); }
+                    if (inp) {
+                        inp.value = '';
+                        inp.placeholder = newMode === 'address' ? (S.get.language === 'nl' ? 'Straat en plaats' : 'Street and city') : (S.get.language === 'nl' ? 'Zone of straatnaam' : 'Zone or street name');
+                        inp.focus();
+                    }
                     break;
+                }
 
                 case 'open-plate-selector':
                     UI.renderQuickPlateSelector();
@@ -418,11 +423,22 @@ Q8.App = (function() {
         });
 
         // Event Listener for Search Input
+        let geocodeTimeout = null;
         const searchInput = document.getElementById('inp-search');
         if(searchInput) {
             searchInput.addEventListener('input', (e) => {
-                S.update({ searchQuery: e.target.value });
+                const q = e.target.value;
+                S.update({ searchQuery: q });
                 UI.renderSearchResults();
+                if (S.get.searchMode === 'address' && Services.geocodeAndSearch) {
+                    if (geocodeTimeout) clearTimeout(geocodeTimeout);
+                    geocodeTimeout = setTimeout(() => {
+                        geocodeTimeout = null;
+                        Services.geocodeAndSearch(q);
+                    }, 600);
+                } else {
+                    S.update({ geocodeMatches: [], geocodeLoading: false });
+                }
             });
         }
 
