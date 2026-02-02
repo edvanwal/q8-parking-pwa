@@ -507,7 +507,7 @@ Q8.Services = (function() {
     }
 
     function handleStartParking(options) {
-        const skipOverlayCheck = options && options.fromDayPassConfirm === true;
+        const skipOverlayCheck = options && (options.fromDayPassConfirm === true || options.fromConfirmStart === true);
         if (S.get.session) {
             console.warn('[PARKING_START] Blocked: session already active');
             toast(S.get.language === 'nl' ? 'Je hebt al een actieve parkeersessie' : 'You already have an active parking session.', 'error');
