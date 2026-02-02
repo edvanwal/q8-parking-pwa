@@ -378,6 +378,35 @@ Q8.Services = (function() {
             toast('Parking could not be started. Please select the zone again.');
             return;
         }
+
+        const ds = S.get.driverSettings || {};
+        const nowCheck = new Date();
+        const dayOfWeek = nowCheck.getDay();
+        const allowedDays = ds.allowedDays;
+        if (Array.isArray(allowedDays) && allowedDays.length > 0 && !allowedDays.includes(dayOfWeek)) {
+            const nl = S.get.language === 'nl';
+            toast(nl ? 'Parkeren is niet toegestaan op deze dag. Neem contact op met uw fleetmanager.' : 'Parking is not allowed on this day. Contact your fleet manager.');
+            return;
+        }
+        if (ds.allowedTimeStart || ds.allowedTimeEnd) {
+            const mins = nowCheck.getHours() * 60 + nowCheck.getMinutes();
+            const parseTime = (t) => {
+                if (!t) return null;
+                const m = String(t).match(/^(\d{1,2}):(\d{2})/);
+                return m ? parseInt(m[1], 10) * 60 + parseInt(m[2], 10) : null;
+            };
+            const startM = parseTime(ds.allowedTimeStart);
+            const endM = parseTime(ds.allowedTimeEnd);
+            if (startM != null && mins < startM) {
+                toast(S.get.language === 'nl' ? 'Parkeren is nog niet toegestaan. Geldige starttijd: ' + ds.allowedTimeStart : 'Parking not yet allowed. Valid start time: ' + ds.allowedTimeStart);
+                return;
+            }
+            if (endM != null && mins > endM) {
+                toast(S.get.language === 'nl' ? 'Parkeren niet meer toegestaan vandaag. Geldige eindtijd: ' + ds.allowedTimeEnd : 'Parking no longer allowed today. Valid end time: ' + ds.allowedTimeEnd);
+                return;
+            }
+        }
+
         const displayId = zoneObj.id;
 
         const adminPlates = (S.get.adminPlates || []).map(p => ({ id: p.id, text: p.text || p.id, default: false }));
