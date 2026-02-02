@@ -1379,6 +1379,7 @@ Q8.UI = (function() {
         renderLoginUI,
         renderInfoBanner,
         showToast,
+        dismissToast,
         renderInstallGate,
         startTimerTicker,
         updateActiveTimerDisplay,
