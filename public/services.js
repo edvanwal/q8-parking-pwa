@@ -414,7 +414,8 @@ Q8.Services = (function() {
         const zoneObj = S.get.zones.find(z => z.uid === S.get.selectedZone) || S.get.zones.find(z => z.id === S.get.selectedZone);
         if (!zoneObj) {
             console.warn('[PARKING_START] Zone not found in zones list', S.get.selectedZone, 'zones count:', S.get.zones.length);
-            toast('Parking could not be started. Please select the zone again.');
+            S.update({ selectedZone: null, selectedZoneRates: null });
+            toast(S.get.language === 'nl' ? 'Zone niet meer beschikbaar. Selecteer de zone opnieuw.' : 'Zone no longer available. Please select the zone again.');
             return;
         }
 

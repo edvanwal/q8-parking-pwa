@@ -85,9 +85,17 @@ Q8.State = (function() {
 
     function load() {
         Q8.Utils.debug('STATE', 'Loading local state...');
+        let savedSession, savedPlates;
+        try {
+            savedSession = localStorage.getItem('q8_parking_session');
+            savedPlates = localStorage.getItem('q8_plates_v1');
+        } catch (e) {
+            console.warn('[PERSIST] localStorage access failed (private mode?)', e);
+            savedSession = null;
+            savedPlates = null;
+        }
 
         // 1. Session
-        const savedSession = localStorage.getItem('q8_parking_session');
         if (savedSession) {
             try {
                 const parsed = JSON.parse(savedSession);
@@ -105,7 +113,6 @@ Q8.State = (function() {
         }
 
         // 2. Plates
-        const savedPlates = localStorage.getItem('q8_plates_v1');
         if (savedPlates) {
             try {
                 _state.plates = JSON.parse(savedPlates);
