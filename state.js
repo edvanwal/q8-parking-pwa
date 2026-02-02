@@ -199,6 +199,8 @@ Q8.State = (function() {
         saveNotifications: saveNotifications,
         loadNotifications: loadNotifications,
         saveFavorites: saveFavorites,
-        loadFavorites: loadFavorites
+        loadFavorites: loadFavorites,
+        setDarkMode: setDarkMode,
+        applyTheme: applyTheme
     };
 })();

@@ -1759,11 +1759,37 @@ html[data-theme="dark"] .zones-loading-overlay {
 html[data-theme="dark"] .skeleton {
   background: linear-gradient(90deg, #374151 25%, #4B5563 50%, #374151 75%);
 }
-/* Auto dark mode from system preference when no explicit choice */
-@media (prefers-color-scheme: dark) {
-  html:not([data-theme="light"]) {
-    color-scheme: dark;
-  }
+/* Dark mode toggle button */
+.dark-mode-toggle {
+  width: 48px;
+  height: 28px;
+  border-radius: 14px;
+  border: 2px solid var(--border);
+  background: var(--bg-secondary);
+  cursor: pointer;
+  position: relative;
+  transition: 0.2s;
+  padding: 0;
+}
+.dark-mode-toggle .dark-mode-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary);
+  transition: 0.2s;
+}
+.dark-mode-toggle[aria-pressed="true"] .dark-mode-thumb {
+  left: 24px;
+}
+.dark-mode-toggle[aria-pressed="true"] {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+.dark-mode-toggle[aria-pressed="true"] .dark-mode-thumb {
+  background: white;
 }
 
 /* --- High Contrast Mode --- */
