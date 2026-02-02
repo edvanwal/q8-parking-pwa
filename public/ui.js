@@ -923,9 +923,13 @@ Q8.UI = (function() {
                     const zoneId = z.id || '';
                     const addr = street ? `${street}${houseNumber ? ' ' + houseNumber : ''}${city ? ', ' + city : ''}` : (city ? `${zoneId}, ${city}` : zoneId);
                     const line = zoneId ? `${zoneId} · ${addr}` : addr;
-                    return `<div class="search-result-item" data-action="open-overlay" data-target="sheet-zone" data-zone-uid="${z.uid}" data-zone="${zoneId}" data-price="${z.price}" data-rates='${JSON.stringify(z.rates || [])}'>
-                      <span class="search-result-text">♥ ${line}</span>
-                      <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
+                    const uid = z.uid || z.id;
+                    return `<div class="search-result-item" data-action="open-overlay" data-target="sheet-zone" data-zone-uid="${uid}" data-zone="${zoneId}" data-price="${z.price}" data-rates='${JSON.stringify(z.rates || [])}'>
+                      <span class="search-result-text">${line}</span>
+                      <div class="flex items-center gap-sm" style="flex-shrink:0;">
+                        <button type="button" class="icon-btn fav-star-btn ptr-enabled" data-action="remove-favorite" data-zone-uid="${uid}" data-zone-id="${zoneId}" title="${state.language === 'nl' ? 'Verwijder uit favorieten' : 'Remove from favorites'}" onclick="event.stopPropagation();" style="padding:4px; color:var(--danger); background:transparent; border:none;">♥</button>
+                        <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
+                      </div>
                     </div>`;
                   }).join('')}
                 `;
@@ -954,12 +958,14 @@ Q8.UI = (function() {
                 const addr = street ? `${street}${houseNumber ? ' ' + houseNumber : ''}${city ? ', ' + city : ''}` : (city ? `${zoneId}, ${city}` : zoneId);
                 const line = zoneId ? `${zoneId} · ${addr}` : addr;
                 const isFav = favUids.has(z.uid) || favUids.has(z.id);
+                const uid = z.uid || z.id;
+                const zoneId = z.id || z.uid || '';
                 return `<div class="search-result-item" data-action="open-overlay" data-target="sheet-zone"
-                     data-zone-uid="${z.uid}" data-zone="${z.id || ''}" data-price="${z.price}"
+                     data-zone-uid="${uid}" data-zone="${zoneId}" data-price="${z.price}"
                      data-rates='${JSON.stringify(z.rates || [])}'>
                     <span class="search-result-text">${line}</span>
                     <div class="flex items-center gap-sm" style="flex-shrink:0;">
-                      ${isFav ? '<span class="fav-star">♥</span>' : ''}
+                      ${isFav ? `<button type="button" class="icon-btn fav-star-btn ptr-enabled" data-action="remove-favorite" data-zone-uid="${uid}" data-zone-id="${zoneId}" title="${state.language === 'nl' ? 'Verwijder uit favorieten' : 'Remove from favorites'}" onclick="event.stopPropagation();" style="padding:4px; color:var(--danger); background:transparent; border:none;">♥</button>` : ''}
                       <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
                     </div>
                 </div>`;
@@ -1012,15 +1018,17 @@ Q8.UI = (function() {
             const line = zoneId ? `${zoneId} · ${addr}` : addr;
             const displayAddr = regex ? line.replace(regex, '<strong class="search-highlight">$1</strong>') : line;
             const isFav = favUids.has(z.uid) || favUids.has(z.id);
+            const uid = z.uid || z.id;
+            const zoneId = z.id || z.uid || '';
             return `
             <div class="search-result-item" data-action="open-overlay" data-target="sheet-zone"
-                 data-zone-uid="${z.uid}"
-                 data-zone="${z.id || ''}"
+                 data-zone-uid="${uid}"
+                 data-zone="${zoneId}"
                  data-price="${z.price}"
                  data-rates='${JSON.stringify(z.rates || [])}'>
                 <span class="search-result-text">${displayAddr}</span>
                 <div class="flex items-center gap-sm" style="flex-shrink:0;">
-                  ${isFav ? '<span class="fav-star" title="' + (state.language === 'nl' ? 'Favoriet' : 'Favorite') + '">♥</span>' : ''}
+                  ${isFav ? `<button type="button" class="icon-btn fav-star-btn ptr-enabled" data-action="remove-favorite" data-zone-uid="${uid}" data-zone-id="${zoneId}" title="${state.language === 'nl' ? 'Verwijder uit favorieten' : 'Remove from favorites'}" onclick="event.stopPropagation();" style="padding:4px; color:var(--danger); background:transparent; border:none;">♥</button>` : ''}
                   <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
                 </div>
             </div>
