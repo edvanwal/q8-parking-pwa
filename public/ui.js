@@ -534,10 +534,10 @@ Q8.UI = (function() {
         const list = document.getElementById('list-favorites');
         const intro = document.getElementById('fav-intro-text');
         if (!list) return;
-        if (intro) intro.innerText = state.language === 'nl' ? 'Je favoriete parkeerzones. Tik om te starten.' : 'Your favorite parking zones. Tap to start.';
+        if (intro) intro.innerText = state.language === 'nl' ? 'Je favoriete parkeerzones. Sleep om volgorde te wijzigen.' : 'Your favorite parking zones. Drag to reorder.';
         const rateDisclaimer = state.language === 'nl' ? 'Tarieven zijn indicatief (RDW Open Data)' : 'Rates are indicative (RDW Open Data)';
 
-        const favorites = state.favorites || [];
+        const favorites = (state.favorites || []).slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
         if (favorites.length === 0) {
             list.innerHTML = `<div class="text-secondary" style="padding:24px; text-align:center; font-size:0.9rem;">${state.language === 'nl' ? 'Nog geen favorieten. Markeer zones als favoriet in de zone-details.' : 'No favorites yet. Mark zones as favorite from the zone details.'}</div>`;
             return;
