@@ -56,7 +56,7 @@
           portalUser = { ...user, profile };
           tenantId = profile.tenantId || DEFAULT_TENANT;
           if (profile.role === 'driver') {
-            toast('Geen toegang: alleen voor fleet managers');
+            toast('Access denied: fleet managers only');
             auth.signOut();
             return;
           }
@@ -313,7 +313,7 @@
           <td>${s.zone || '-'}</td>
           <td>${s.plate || '-'}</td>
           <td>${startStr}</td>
-          <td><button class="btn btn-sm btn-danger stop-session" data-id="${s.id}">Stop</button></td>
+          <td><button class="btn btn-sm btn-danger stop-session" data-id="${s.id}">Stoppen</button></td>
         </tr>
       `;
     }).join('');
@@ -420,7 +420,7 @@
       const email = $('add-user-email').value.trim();
       const name = $('add-user-name').value.trim();
       inviteUser(email, name || undefined).then(() => {
-        toast('Uitnodiging opgeslagen. Bestuurder verschijnt na registratie in de app.');
+        toast('Invitation saved. Driver will appear after registration in the app.');
         $('modal-add-user').classList.add('hidden');
       }).catch(err => toast(err.message || 'Save failed'));
     });
@@ -448,7 +448,7 @@
         const uid = removePlate.dataset.uid;
         const plateId = removePlate.dataset.plate;
         removePlateFromUser(uid, plateId).then(() => {
-          toast('Kenteken verwijderd');
+          toast('License plate removed');
           loadUsers(users => {
             const user = users.find(u => u.id === uid);
             renderPlatesPanel(user);
