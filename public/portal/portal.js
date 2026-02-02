@@ -109,6 +109,37 @@
     showView('view-login');
   }
 
+  // --- Audit Log ---
+  function writeAuditLog(action, details) {
+    const user = auth.currentUser;
+    if (!user || !db) return Promise.resolve();
+    return db.collection('auditLog').add({
+      tenantId,
+      actorId: user.uid,
+      actorEmail: user.email || '',
+      action,
+      details: details || {},
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(err => console.warn('Audit log write failed:', err));
+  }
+
+  function loadAuditLog(cb, limit = 100) {
+    db.collection('auditLog')
+      .where('tenantId', '==', tenantId)
+      .orderBy('createdAt', 'desc')
+      .limit(limit)
+      .get()
+      .then(snap => {
+        const items = [];
+        snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+        cb(items);
+      })
+      .catch(err => {
+        console.error('Audit log load error', err);
+        cb([]);
+      });
+  }
+
   // --- Firestore: Users ---
   function loadUsers(cb) {
     usersUnsub = db.collection('users')
@@ -122,21 +153,23 @@
   }
 
   function inviteUser(email, displayName) {
+    const e = email.toLowerCase().trim();
+    const n = (displayName || '').trim() || null;
     return db.collection('invites').add({
-      email: email.toLowerCase().trim(),
-      displayName: (displayName || '').trim() || null,
+      email: e,
+      displayName: n,
       tenantId,
       role: 'driver',
       createdBy: auth.currentUser.uid,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    }).then(() => writeAuditLog('user_invited', { email: e, displayName: n }));
   }
 
   function updateDriverSettings(uid, settings) {
     return db.collection('users').doc(uid).update({
       driverSettings: settings,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    }).then(() => writeAuditLog('driver_settings_updated', { userId: uid, settings }));
   }
 
   function addPlateToUser(uid, plateText) {
@@ -150,7 +183,7 @@
         locked: true
       }),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    }).then(() => writeAuditLog('plate_added', { userId: uid, plate: normalized }));
   }
 
   function removePlateFromUser(uid, plateId) {
@@ -160,7 +193,7 @@
       return doc.ref.update({
         adminPlates,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
+      }).then(() => writeAuditLog('plate_removed', { userId: uid, plateId }));
     });
   }
 
@@ -177,10 +210,13 @@
   }
 
   function stopSession(sessionId) {
-    return db.collection('sessions').doc(sessionId).update({
-      status: 'ended',
-      endedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      endedBy: 'portal'
+    return db.collection('sessions').doc(sessionId).get().then(doc => {
+      const data = doc.exists ? doc.data() : {};
+      return db.collection('sessions').doc(sessionId).update({
+        status: 'ended',
+        endedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        endedBy: 'portal'
+      }).then(() => writeAuditLog('session_stopped', { sessionId, zone: data.zone, plate: data.plate, userId: data.userId }));
     });
   }
 
@@ -195,7 +231,7 @@
     return db.collection('tenants').doc(tenantId).set({
       ...settings,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
+    }, { merge: true }).then(() => writeAuditLog('tenant_settings_saved', settings));
   }
 
   // --- Render ---
