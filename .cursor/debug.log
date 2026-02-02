@@ -1,0 +1,2 @@
+{"location":"app.js:init","message":"init entry","data":{"installModeActive":false,"screen":"login"},"timestamp":1770029916707,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"app.js:init","message":"init branch - map created when parking screen shown","data":{},"timestamp":1770029916708,"sessionId":"debug-session","hypothesisId":"H5"}
