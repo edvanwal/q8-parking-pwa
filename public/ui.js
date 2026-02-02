@@ -543,7 +543,10 @@ Q8.UI = (function() {
             return;
         }
 
-        list.innerHTML = favorites.map(f => {
+        const gripSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.5;"><path d="M8 6h2v2H8V6zm0 5h2v2H8v-2zm0 5h2v2H8v-2zm5-10h2v2h-2V6zm0 5h2v2h-2v-2zm0 5h2v2h-2v-2z"/></svg>';
+        const editSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+
+        list.innerHTML = favorites.map((f, idx) => {
             const zone = state.zones.find(z => z.uid === f.zoneUid || z.id === f.zoneUid || z.id === f.zoneId);
             const uid = zone ? (zone.uid || zone.id) : f.zoneUid || f.zoneId;
             const zoneId = zone ? zone.id : f.zoneId || f.zoneUid || '?';
@@ -551,23 +554,62 @@ Q8.UI = (function() {
             const houseNumber = zone && zone.houseNumber ? zone.houseNumber : '';
             const city = zone && zone.city ? zone.city : '';
             const addr = street ? `${street}${houseNumber ? ' ' + houseNumber : ''}${city ? ', ' + city : ''}` : (city ? `${zoneId}, ${city}` : zoneId);
+            const title = (f.name && f.name.trim()) ? f.name.trim() : `Zone ${zoneId}`;
             const price = zone && zone.price != null ? zone.price : null;
             const rates = zone && zone.rates ? zone.rates : [];
+            const editTitle = state.language === 'nl' ? 'Naam wijzigen' : 'Edit name';
             return `
-            <div class="card flex justify-between items-center" style="padding:16px 20px; cursor:pointer;" data-action="open-overlay" data-target="sheet-zone" data-zone-uid="${uid}" data-zone="${zoneId}" data-price="${price || ''}" data-rates='${JSON.stringify(rates)}'>
-               <div class="flex-col no-pointer" style="flex:1;">
-                  <div class="font-bold text-lg no-pointer" style="line-height:1.2;">Zone ${zoneId}</div>
-                  <div class="text-secondary text-sm no-pointer" style="margin-top:2px;">${addr}</div>
+            <div class="card flex justify-between items-center fav-card-draggable" style="padding:16px 20px; cursor:pointer;" draggable="true" data-fav-idx="${idx}"
+                 data-action="open-overlay" data-target="sheet-zone" data-zone-uid="${uid}" data-zone="${zoneId}" data-price="${price || ''}" data-rates='${JSON.stringify(rates)}'>
+               <div class="flex items-center gap-sm no-pointer" style="flex:1; min-width:0;">
+                  <span class="fav-drag-handle" style="flex-shrink:0; cursor:grab; padding:4px; margin:-4px;" onclick="event.stopPropagation();">${gripSvg}</span>
+                  <div class="flex-col no-pointer" style="flex:1; min-width:0;">
+                     <div class="font-bold text-lg no-pointer" style="line-height:1.2;">${title}</div>
+                     <div class="text-secondary text-sm no-pointer" style="margin-top:2px;">${addr}</div>
+                  </div>
                </div>
                <div class="flex items-center gap-sm no-pointer">
                   ${price != null ? `<span class="font-bold text-primary no-pointer">€ ${Number(price).toFixed(2).replace('.', ',')}</span>` : ''}
-                  <button class="icon-btn ptr-enabled" data-action="remove-favorite" data-zone-uid="${uid}" data-zone-id="${zoneId}" title="${state.language === 'nl' ? 'Verwijderen' : 'Remove'}" style="padding:6px; color:#ce1818;" onclick="event.stopPropagation();">
+                  <button type="button" class="icon-btn ptr-enabled" data-action="edit-favorite-name" data-zone-uid="${uid}" data-zone-id="${zoneId}" title="${editTitle}" style="padding:6px; color:var(--text-secondary);" onclick="event.stopPropagation();">${editSvg}</button>
+                  <button type="button" class="icon-btn ptr-enabled" data-action="remove-favorite" data-zone-uid="${uid}" data-zone-id="${zoneId}" title="${state.language === 'nl' ? 'Verwijderen' : 'Remove'}" style="padding:6px; color:#ce1818;" onclick="event.stopPropagation();">
                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                   </button>
                </div>
             </div>`;
         }).join('') + `<div class="rate-disclaimer text-secondary text-xs" style="padding:12px 20px 0; line-height:1.3;">${rateDisclaimer}</div>`;
+
         list.querySelectorAll('.ptr-enabled').forEach(el => { el.style.pointerEvents = 'auto'; });
+
+        let _draggedIdx = null;
+        list.querySelectorAll('.fav-card-draggable').forEach((el, idx) => {
+            el.addEventListener('dragstart', (e) => {
+                _draggedIdx = idx;
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', String(idx));
+                el.classList.add('fav-dragging');
+            });
+            el.addEventListener('dragend', () => {
+                el.classList.remove('fav-dragging');
+                _draggedIdx = null;
+            });
+            el.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                if (_draggedIdx !== null && _draggedIdx !== idx) el.classList.add('fav-drag-over');
+            });
+            el.addEventListener('dragleave', () => el.classList.remove('fav-drag-over'));
+            el.addEventListener('drop', (e) => {
+                e.preventDefault();
+                el.classList.remove('fav-drag-over');
+                if (_draggedIdx === null || _draggedIdx === idx) return;
+                const favs = (S.get.favorites || []).slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+                const [moved] = favs.splice(_draggedIdx, 1);
+                favs.splice(idx, 0, moved);
+                const next = favs.map((f, i) => ({ ...f, order: i }));
+                S.update({ favorites: next });
+                if (S.saveFavorites) S.saveFavorites();
+            });
+        });
     }
 
     function renderNotifications() {
