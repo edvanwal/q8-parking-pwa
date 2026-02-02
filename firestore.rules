@@ -1,0 +1,89 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function userRole() {
+      return getUserData().role;
+    }
+
+    function userTenantId() {
+      return getUserData().tenantId;
+    }
+
+    function isFleetManager() {
+      return isAuthenticated() && userRole() == 'fleetmanager';
+    }
+
+    function isDriver() {
+      return isAuthenticated() && userRole() == 'driver';
+    }
+
+    function sameTenant(tenantId) {
+      return isAuthenticated() && userTenantId() == tenantId;
+    }
+
+    // Users: alleen eigen doc lezen/schrijven, fleetmanager kan binnen tenant
+    match /users/{userId} {
+      allow read, write: if isAuthenticated() && (
+        request.auth.uid == userId ||
+        (isFleetManager() && get(/databases/$(database)/documents/users/$(userId)).data.tenantId == userTenantId())
+      );
+    }
+
+    // Invites: fleetmanager kan maken binnen eigen tenant
+    match /invites/{inviteId} {
+      allow read: if isAuthenticated() && sameTenant(resource.data.tenantId);
+      allow create: if isFleetManager() && request.resource.data.tenantId == userTenantId();
+      allow update, delete: if isFleetManager() && resource.data.tenantId == userTenantId();
+    }
+
+    // Sessions: driver eigen sessies, fleetmanager binnen tenant
+    match /sessions/{sessionId} {
+      allow read: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid ||
+        (isFleetManager() && resource.data.tenantId == userTenantId())
+      );
+      allow create: if isDriver() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid ||
+        (isFleetManager() && resource.data.tenantId == userTenantId())
+      );
+    }
+
+    // Transactions: alleen eigen lezen, schrijven via sessie-einde
+    match /transactions/{txId} {
+      allow read: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid ||
+        (isFleetManager() && resource.data.tenantId == userTenantId())
+      );
+      allow create: if isDriver() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // Zones: lezen voor iedereen (publiek), schrijven admin-only (nu geen write)
+    match /zones/{zoneId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Tenants: fleetmanager eigen tenant
+    match /tenants/{tenantId} {
+      allow read, write: if isFleetManager() && tenantId == userTenantId();
+    }
+
+    // AuditLog: alleen fleetmanager lezen binnen tenant
+    match /auditLog/{logId} {
+      allow read: if isFleetManager() && resource.data.tenantId == userTenantId();
+      allow create: if isFleetManager() && request.resource.data.tenantId == userTenantId();
+      allow update, delete: if false;
+    }
+  }
+}

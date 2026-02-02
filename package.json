@@ -1,0 +1,22 @@
+{
+  "name": "q8-parking-pwa",
+  "version": "1.0.0",
+  "description": "Q8 Liberty Parking PWA - Smart parking management",
+  "scripts": {
+    "sync": "node scripts/sync-to-public.js",
+    "deploy": "npm run sync && firebase deploy",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:firestore": "firebase deploy --only firestore"
+  },
+  "dependencies": {
+    "firebase-tools": "^13.0.0"
+  },
+  "devDependencies": {},
+  "cdnDependencies": {
+    "firebase": "10.7.1",
+    "google-fonts-mulish": "https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800&display=swap"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
