@@ -88,24 +88,14 @@
   <script src="ui.js?v=5.6"></script>
   <script src="app.js?v=4.0" defer></script>
 
-  <!-- Service Worker Registration -->
+  <!-- Service Worker Registration (offline PWA support) -->
   <script>
     if ('serviceWorker' in navigator) {
-      // Development: Unregister service workers for clean testing
-      navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        for(let registration of registrations) {
-          registration.unregister();
-        }
-      });
-      
-      // Production: Enable this block when ready
-      /*
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('SW registered:', reg))
-          .catch(err => console.error('SW registration failed:', err));
+          .then(reg => console.log('[PWA] Service Worker registered:', reg.scope))
+          .catch(err => console.warn('[PWA] SW registration failed:', err));
       });
-      */
     }
   </script>
 
