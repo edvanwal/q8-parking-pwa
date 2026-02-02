@@ -135,9 +135,11 @@ Q8.App = (function() {
                     break;
                 }
 
-                case 'close-overlay':
-                    S.update({ activeOverlay: null });
+                case 'close-overlay': {
+                    const wasPlateSelector = S.get.activeOverlay === 'sheet-plate-selector';
+                    S.update({ activeOverlay: null, ...(wasPlateSelector && { plateSelectorReturnTo: null }) });
                     break;
+                }
 
                 case 'mod-duration':
                     const delta = parseInt(target.getAttribute('data-delta'), 10);
