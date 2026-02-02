@@ -115,6 +115,19 @@ Q8.UI = (function() {
         if (idleSearch) idleSearch.style.display = isActive ? 'none' : 'block';
         if (activeParking) activeParking.style.display = isActive ? 'block' : 'none';
 
+        // Show message when opened as file (map does not work from file://)
+        var mapFileWarning = document.getElementById('map-file-warning');
+        var isFileProtocol = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
+        if (mapFileWarning) {
+            if (isFileProtocol) {
+                mapFileWarning.classList.remove('hidden');
+                mapFileWarning.style.display = 'block';
+            } else {
+                mapFileWarning.classList.add('hidden');
+                mapFileWarning.style.display = 'none';
+            }
+        }
+
         // Markers: full render when zones/session change; only update icons when selection changes (avoids shrink bug)
         const zoneKey = `${state.zones.length}|${state.session ? '1' : '0'}`;
         const selKey = state.selectedZone || '';
