@@ -429,6 +429,27 @@ Q8.App = (function() {
                     if (Services && Services.loadZones) Services.loadZones().catch(() => {});
                     break;
 
+                case 'retry-load-facilities':
+                    S.update({ facilitiesLoadError: null, facilitiesLoading: true });
+                    if (Services && Services.retryLoadFacilities) Services.retryLoadFacilities();
+                    break;
+
+                case 'set-facilities-radius': {
+                    const km = target.getAttribute('data-km');
+                    if (Services && Services.setFacilitiesRadius) Services.setFacilitiesRadius(km);
+                    if (UI && UI.update) UI.update();
+                    break;
+                }
+                case 'set-facilities-ref': {
+                    const ref = target.getAttribute('data-ref');
+                    if (Services && Services.setFacilitiesRef) Services.setFacilitiesRef(ref);
+                    if (UI && UI.update) UI.update();
+                    break;
+                }
+                case 'toggle-all-rates':
+                    if (UI && UI.toggleAllRates) UI.toggleAllRates();
+                    break;
+
                 case 'toggle-filter-vehicle':
                     const vPlate = target.getAttribute('data-plate');
                     const currentVehicles = S.get.historyFilters.vehicles;

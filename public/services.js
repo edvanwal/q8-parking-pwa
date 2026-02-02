@@ -414,6 +414,23 @@ Q8.Services = (function() {
         S.update({ nearbyFacilities: nearby });
     }
 
+    function setFacilitiesRadius(km) {
+        const k = parseInt(km, 10);
+        if (k === 1 || k === 2 || k === 5) {
+            S.update({ nearbyFacilitiesRadiusKm: k });
+            updateNearbyFacilities();
+            if (Q8.UI && typeof Q8.UI.renderMapMarkers === 'function') Q8.UI.renderMapMarkers();
+        }
+    }
+
+    function setFacilitiesRef(ref) {
+        if (ref === 'user' || ref === 'zone') {
+            S.update({ nearbyFacilitiesRef: ref });
+            updateNearbyFacilities();
+            if (Q8.UI && typeof Q8.UI.renderMapMarkers === 'function') Q8.UI.renderMapMarkers();
+        }
+    }
+
     const FACILITIES_RETRY_COUNT = 2;
     const FACILITIES_RETRY_DELAY_MS = 800;
 
@@ -1286,6 +1303,9 @@ Q8.Services = (function() {
         loadZones,
         loadFacilities,
         updateNearbyFacilities,
+        setFacilitiesRadius,
+        setFacilitiesRef,
+        retryLoadFacilities: () => loadFacilities(0),
         geocodeAndSearch,
         detectSearchMode,
         setScreen,
