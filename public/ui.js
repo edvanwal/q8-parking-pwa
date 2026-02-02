@@ -348,45 +348,137 @@ Q8.UI = (function() {
         // Garages & P+R in de buurt
         const sectionFacilities = document.getElementById('sheet-section-facilities');
         const listFacilities = document.getElementById('details-nearby-facilities-list');
+        const radiusKm = state.nearbyFacilitiesRadiusKm || 2;
         if (sectionFacilities && listFacilities) {
             const nl = state.language === 'nl';
             const nearby = state.nearbyFacilities || [];
             const hasLocation = state.userLocation && state.userLocation.lat != null;
-            if (!hasLocation) {
+            const hasZoneRef = state.nearbyFacilitiesRef === 'zone' && state.selectedZone && state.zones && state.zones.length;
+            if (state.facilitiesLoadError) {
                 sectionFacilities.style.display = 'block';
-                listFacilities.innerHTML = '<div class="text-secondary text-sm" style="padding:8px 0;">' + (nl ? 'Sta locatie toe om garages en P+R in de buurt te zien.' : 'Allow location to see garages and P+R nearby.') + '</div>';
+                listFacilities.innerHTML = '<div class="text-secondary text-sm" style="padding:8px 0; color:var(--danger);">' + state.facilitiesLoadError + '</div>' +
+                    '<button type="button" class="btn btn-secondary btn-sm mt-sm" data-action="retry-load-facilities">' + (nl ? 'Opnieuw proberen' : 'Retry') + '</button>';
+            } else if (!hasLocation && !hasZoneRef) {
+                sectionFacilities.style.display = 'block';
+                listFacilities.innerHTML = '<div class="text-secondary text-sm" style="padding:8px 0;">' + (nl ? 'Sta locatie toe of kies een zone om garages en P+R in de buurt te zien.' : 'Allow location or select a zone to see garages and P+R nearby.') + '</div>';
             } else if (nearby.length === 0) {
                 sectionFacilities.style.display = 'block';
-                listFacilities.innerHTML = '<div class="text-secondary text-sm" style="padding:8px 0;">' + (nl ? 'Geen garages of P+R binnen 2 km.' : 'No garages or P+R within 2 km.') + '</div>';
+                listFacilities.innerHTML = '<div class="text-secondary text-sm" style="padding:8px 0;">' + (nl ? 'Geen garages of P+R binnen ' + radiusKm + ' km.' : 'No garages or P+R within ' + radiusKm + ' km.') + '</div>';
             } else {
                 sectionFacilities.style.display = 'block';
                 const labelFacilities = sectionFacilities.querySelector('.sheet-section-label');
                 if (labelFacilities) labelFacilities.textContent = nl ? 'Garages & P+R in de buurt' : 'Garages & P+R nearby';
-                listFacilities.innerHTML = nearby.map(f => {
-                    const dist = (f._distKm != null) ? (f._distKm < 1 ? (f._distKm * 1000).toFixed(0) + ' m' : f._distKm.toFixed(1).replace('.', ',') + ' km') : '';
-                    const tariff = f.tariffSummary ? '<span class="text-secondary text-sm">' + f.tariffSummary + '</span>' : '';
-                    const addr = [f.street, f.city].filter(Boolean).join(', ') || f.city || '';
-                    const meta = [];
-                    if (f.openingTimesSummary) meta.push(f.openingTimesSummary);
-                    if (f.capacity != null && f.capacity > 0) meta.push(f.capacity + (nl ? ' plekken' : ' spaces'));
-                    if (f.chargingPointCapacity != null && f.chargingPointCapacity > 0) meta.push(f.chargingPointCapacity + (nl ? ' laadplekken' : ' EV'));
-                    if (f.disabledAccess) meta.push(nl ? 'Toegankelijk' : 'Accessible');
-                    const paymentLabels = { Maestro: 'Pinnen', MasterCard: 'Pinnen', Visa: 'Pinnen', VPay: 'Pinnen', Banknotes: 'Contant', Coins: 'Contant' };
-                    const methods = (f.paymentMethods || []).filter(Boolean);
-                    const payHint = [...new Set(methods.map(m => paymentLabels[m] || m))].slice(0, 2).join(', ');
-                    if (payHint) meta.push(payHint);
-                    const metaLine = meta.length ? '<div class="text-secondary text-xs mt-0.5">' + meta.join(' · ') + '</div>' : '';
-                    return '<a href="https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(f.lat + ',' + f.lng) + '" target="_blank" rel="noopener" class="facility-row" style="display:block; padding:10px 0; border-bottom:1px solid var(--border-color); text-decoration:none; color:inherit;">' +
-                        '<div class="font-semibold">' + (f.name || (f.type === 'p_r' ? 'P+R' : 'Garage')) + '</div>' +
-                        (addr ? '<div class="text-secondary text-sm">' + addr + '</div>' : '') +
-                        metaLine +
-                        '<div class="flex justify-between items-center gap-2 mt-1">' + tariff + '<span class="text-secondary text-sm">' + dist + '</span></div></a>';
-                }).join('');
+                listFacilities.innerHTML = buildFacilitiesListHtml(state, nearby);
+            }
+        }
+
+        // Rates disclaimer (F1)
+        const disclaimerEl = document.getElementById('zone-rates-disclaimer');
+        if (disclaimerEl) disclaimerEl.textContent = state.language === 'nl' ? 'Tarieven zijn indicatief; bron: RDW Open Data.' : 'Rates are indicative; source: RDW Open Data.';
+
+        // Estimated cost (F2)
+        const estSection = document.getElementById('sheet-section-estimated-cost');
+        const estEl = document.getElementById('details-estimated-cost');
+        if (estSection && estEl) {
+            const dur = state.duration || 0;
+            const rate = (zone && zone.price != null) ? parseFloat(zone.price) : (state.selectedZoneRate || 2);
+            let cost = null;
+            if (dur > 0 && rate > 0) {
+                const hours = dur / 60;
+                cost = Math.round(hours * rate * 100) / 100;
+            }
+            estSection.style.display = (cost != null && cost > 0) ? 'block' : 'none';
+            estEl.textContent = cost != null ? '€ ' + cost.toFixed(2).replace('.', ',') : '—';
+        }
+
+        // All-rates section visibility and button text (E3)
+        const allRatesSection = document.getElementById('sheet-section-all-rates');
+        const allRatesList = document.getElementById('details-all-rates-list');
+        const rates = state.selectedZoneRates || (zone && zone.rates) || [];
+        if (allRatesSection) allRatesSection.style.display = rates.length > 0 ? 'block' : 'none';
+        const btnToggleAll = document.getElementById('btn-toggle-all-rates');
+        if (btnToggleAll) {
+            btnToggleAll.textContent = state.language === 'nl' ? 'Bekijk alle dagen' : 'View all days';
+            btnToggleAll.setAttribute('aria-expanded', (allRatesList && allRatesList.style.display === 'block') ? 'true' : 'false');
+        }
+    }
+
+    function buildFacilitiesListHtml(state, nearby) {
+        const nl = state.language === 'nl';
+        return nearby.map(f => {
+            const dist = (f._distKm != null) ? (f._distKm < 1 ? (f._distKm * 1000).toFixed(0) + ' m' : f._distKm.toFixed(1).replace('.', ',') + ' km') : '';
+            const tariff = f.tariffSummary ? '<span class="text-secondary text-sm">' + f.tariffSummary + '</span>' : '';
+            const addr = [f.street, f.city].filter(Boolean).join(', ') || f.city || '';
+            const meta = [];
+            if (f.availableCapacity != null && f.availableCapacity >= 0) meta.push((nl ? 'ca. ' : 'ca. ') + f.availableCapacity + (nl ? ' plekken vrij' : ' spaces available'));
+            if (f.openingTimesSummary) meta.push(f.openingTimesSummary);
+            if (f.capacity != null && f.capacity > 0) meta.push(f.capacity + (nl ? ' plekken' : ' spaces'));
+            if (f.chargingPointCapacity != null && f.chargingPointCapacity > 0) meta.push(f.chargingPointCapacity + (nl ? ' laadplekken' : ' EV'));
+            if (f.disabledAccess) meta.push(nl ? 'Toegankelijk' : 'Accessible');
+            const paymentLabels = { Maestro: 'Pinnen', MasterCard: 'Pinnen', Visa: 'Pinnen', VPay: 'Pinnen', Banknotes: 'Contant', Coins: 'Contant' };
+            const methods = (f.paymentMethods || []).filter(Boolean);
+            const payHint = [...new Set(methods.map(m => paymentLabels[m] || m))].slice(0, 2).join(', ');
+            if (payHint) meta.push(payHint);
+            const metaLine = meta.length ? '<div class="text-secondary text-xs mt-0.5">' + meta.join(' · ') + '</div>' : '';
+            const moreInfo = (f.operatorUrl) ? '<a href="' + f.operatorUrl + '" target="_blank" rel="noopener" class="facility-more-info text-secondary text-xs" style="margin-left:8px;" onclick="event.stopPropagation();">' + (nl ? 'Meer info' : 'More info') + '</a>' : '';
+            return '<a href="https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(f.lat + ',' + f.lng) + '" target="_blank" rel="noopener" class="facility-row" role="listitem" style="display:block; padding:10px 0; border-bottom:1px solid var(--border-color); text-decoration:none; color:inherit;" aria-label="' + (f.name || (f.type === 'p_r' ? 'P+R' : 'Garage')) + ', ' + (addr || f.city || '') + ', ' + dist + '">' +
+                '<div class="font-semibold">' + (f.name || (f.type === 'p_r' ? 'P+R' : 'Garage')) + moreInfo + '</div>' +
+                (addr ? '<div class="text-secondary text-sm">' + addr + '</div>' : '') +
+                metaLine +
+                '<div class="flex justify-between items-center gap-2 mt-1">' + tariff + '<span class="text-secondary text-sm">' + dist + '</span></div></a>';
+        }).join('');
+    }
+
+    function renderFacilitiesSheet() {
+        const state = S.get;
+        const nl = state.language === 'nl';
+        const titleEl = document.getElementById('sheet-facilities-title');
+        if (titleEl) titleEl.textContent = nl ? 'Garages & P+R in de buurt' : 'Garages & P+R nearby';
+        const errEl = document.getElementById('facilities-load-error-sheet');
+        const retryBtn = document.getElementById('facilities-retry-btn');
+        if (errEl) {
+            errEl.classList.toggle('hidden', !state.facilitiesLoadError);
+            errEl.textContent = state.facilitiesLoadError || '';
+            errEl.style.color = 'var(--danger)';
+        }
+        if (retryBtn) {
+            retryBtn.classList.toggle('hidden', !state.facilitiesLoadError);
+            retryBtn.textContent = nl ? 'Opnieuw proberen' : 'Retry';
+        }
+        const listEl = document.getElementById('sheet-facilities-list');
+        if (listEl) {
+            const nearby = state.nearbyFacilities || [];
+            const radiusKm = state.nearbyFacilitiesRadiusKm || 2;
+            const hasRef = (state.userLocation && state.userLocation.lat != null) || (state.nearbyFacilitiesRef === 'zone' && state.selectedZone && state.zones && state.zones.length);
+            if (state.facilitiesLoading) {
+                listEl.innerHTML = '<div class="text-secondary text-sm">' + (nl ? 'Laden...' : 'Loading...') + '</div>';
+            } else if (!hasRef) {
+                listEl.innerHTML = '<div class="text-secondary text-sm">' + (nl ? 'Sta locatie toe of selecteer een zone om garages en P+R te zien.' : 'Allow location or select a zone to see garages and P+R.') + '</div>';
+            } else if (nearby.length === 0) {
+                listEl.innerHTML = '<div class="text-secondary text-sm">' + (nl ? 'Geen garages of P+R binnen ' + radiusKm + ' km.' : 'No garages or P+R within ' + radiusKm + ' km.') + '</div>';
+            } else {
+                listEl.innerHTML = buildFacilitiesListHtml(state, nearby);
             }
         }
     }
 
-    function renderRatesList(container, rates) {
+    function toggleAllRates() {
+        const list = document.getElementById('details-all-rates-list');
+        const btn = document.getElementById('btn-toggle-all-rates');
+        if (!list || !btn) return;
+        const isOpen = list.style.display === 'block';
+        list.style.display = isOpen ? 'none' : 'block';
+        btn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+        btn.textContent = (Q8.State.get.language === 'nl' ? (isOpen ? 'Bekijk alle dagen' : 'Sluiten') : (isOpen ? 'View all days' : 'Close'));
+        if (!isOpen && list.innerHTML === '') {
+            const rates = Q8.State.get.selectedZoneRates || [];
+            const zone = (Q8.State.get.zones || []).find(z => z.uid === Q8.State.get.selectedZone) || (Q8.State.get.zones || []).find(z => z.id === Q8.State.get.selectedZone);
+            const allRates = rates.length ? rates : (zone && zone.rates) || [];
+            renderRatesList(list, allRates, true);
+        }
+    }
+
+    function renderRatesList(container, rates, allDays) {
         if (!rates || rates.length === 0) {
             container.innerHTML = '<div class="rate-item">No rate info</div>';
             return;
@@ -395,7 +487,7 @@ Q8.UI = (function() {
         const daysNL = ["Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag"];
         const todayNL = daysNL[new Date().getDay()];
 
-        const filtered = rates.filter(r => {
+        const filtered = allDays ? rates : rates.filter(r => {
             const t = (r.time || '').toLowerCase();
             return t.includes(todayNL.toLowerCase()) || t.includes('dagelijks') || t.includes('daily') || t === '24/7' || t.includes('check zone');
         });
