@@ -31,7 +31,7 @@
     const el = $(sectionId);
     if (el) el.classList.remove('hidden');
     $all('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.section === sectionId.replace('section-', '')));
-    const titles = { dashboard: 'Dashboard', users: 'Gebruikers', sessions: 'Actieve sessies', settings: 'Instellingen', plates: 'Kentekenbeheer' };
+    const titles = { dashboard: 'Dashboard', users: 'Gebruikers', sessions: 'Actieve sessies', settings: 'Instellingen', plates: 'Kentekenbeheer', auditlog: 'Auditlog' };
     const titleEl = $('portal-section-title');
     if (titleEl) titleEl.textContent = titles[sectionId.replace('section-', '')] || sectionId;
   }
@@ -235,6 +235,40 @@
   }
 
   // --- Render ---
+  const ACTION_LABELS = {
+    user_invited: 'Bestuurder uitgenodigd',
+    session_stopped: 'Sessie gestopt',
+    tenant_settings_saved: 'Instellingen opgeslagen',
+    driver_settings_updated: 'Kentekeninstellingen gewijzigd',
+    plate_added: 'Kenteken toegevoegd',
+    plate_removed: 'Kenteken verwijderd',
+    plates_bulk_added: 'Bulk kentekens toegevoegd'
+  };
+
+  function renderAuditLog(items) {
+    const tbody = $('auditlog-tbody');
+    const empty = $('auditlog-empty');
+    if (!tbody) return;
+    if (!items || items.length === 0) {
+      tbody.innerHTML = '';
+      if (empty) empty.classList.remove('hidden');
+      return;
+    }
+    if (empty) empty.classList.add('hidden');
+    tbody.innerHTML = items.map(item => {
+      const ts = item.createdAt && item.createdAt.toDate ? item.createdAt.toDate() : null;
+      const dateStr = ts ? ts.toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' }) : '-';
+      const label = ACTION_LABELS[item.action] || item.action;
+      const details = item.details ? JSON.stringify(item.details) : '';
+      return `<tr>
+        <td>${dateStr}</td>
+        <td>${label}</td>
+        <td>${item.actorEmail || '-'}</td>
+        <td style="font-size:0.85rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;" title="${details.replace(/"/g, '&quot;')}">${details || '-'}</td>
+      </tr>`;
+    }).join('');
+  }
+
   function renderUsers(users) {
     const tbody = $('users-tbody');
     const empty = $('users-empty');
@@ -348,6 +382,10 @@
       const user = users.find(u => u.id === uid);
       renderPlatesPanel(user);
     });
+
+    $('btn-refresh-auditlog')?.addEventListener('click', () => {
+      loadAuditLog(items => renderAuditLog(items));
+    });
   }
 
   // --- Event Handlers ---
@@ -362,7 +400,10 @@
       n.addEventListener('click', e => {
         e.preventDefault();
         const section = n.dataset.section;
-        if (section) showSection('section-' + section);
+        if (section) {
+          showSection('section-' + section);
+          if (section === 'auditlog') loadAuditLog(items => renderAuditLog(items));
+        }
       });
     });
 
