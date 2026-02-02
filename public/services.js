@@ -431,6 +431,46 @@ Q8.Services = (function() {
         }
     }
 
+    /** Fetch dynamic occupancy (SPDP) for facilities with dynamicDataUrl; update state.facilityOccupancy. */
+    function fetchFacilityOccupancies() {
+        const nearby = S.get.nearbyFacilities || [];
+        const withUrl = nearby.filter(f => f.dynamicDataUrl && f.id).slice(0, 15);
+        if (withUrl.length === 0) return;
+        const occupancy = { ...(S.get.facilityOccupancy || {}) };
+        let pending = withUrl.length;
+        withUrl.forEach(f => {
+            fetch(f.dynamicDataUrl).then(r => r.text()).then(text => {
+                const cap = parseAvailableCapacityFromSpdp(text);
+                if (cap != null && cap >= 0) occupancy[f.id] = cap;
+                pending--;
+                if (pending === 0) {
+                    S.update({ facilityOccupancy: occupancy });
+                    if (Q8.UI && typeof Q8.UI.update === 'function') Q8.UI.update();
+                }
+            }).catch(() => {
+                pending--;
+                if (pending === 0) {
+                    S.update({ facilityOccupancy: occupancy });
+                    if (Q8.UI && typeof Q8.UI.update === 'function') Q8.UI.update();
+                }
+            });
+        });
+    }
+
+    function parseAvailableCapacityFromSpdp(text) {
+        if (!text || typeof text !== 'string') return null;
+        const s = text.trim();
+        if (s.startsWith('{')) {
+            try {
+                const j = JSON.parse(s);
+                const v = j.availableCapacity ?? j.AvailableCapacity ?? j.available ?? (j.ParkingFacilityStatus && j.ParkingFacilityStatus.availableCapacity);
+                return typeof v === 'number' ? v : (typeof v === 'string' ? parseInt(v, 10) : null);
+            } catch (_) { return null; }
+        }
+        const m = s.match(/<AvailableCapacity[^>]*>(\d+)<\/AvailableCapacity>/i) || s.match(/availableCapacity["\s:]+(\d+)/i);
+        return m ? parseInt(m[1], 10) : null;
+    }
+
     const FACILITIES_RETRY_COUNT = 2;
     const FACILITIES_RETRY_DELAY_MS = 800;
 
@@ -456,6 +496,7 @@ Q8.Services = (function() {
                 S.update({ facilities, facilitiesLoading: false, facilitiesLoadError: null });
                 updateNearbyFacilities();
                 if (Q8.UI && typeof Q8.UI.renderMapMarkers === 'function') Q8.UI.renderMapMarkers();
+                fetchFacilityOccupancies();
                 return facilities;
             })
             .catch(err => {
