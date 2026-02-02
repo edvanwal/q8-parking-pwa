@@ -366,6 +366,7 @@ Q8.Services = (function() {
 
         toast('Parking session started');
         addNotification('sessionStarted', S.get.language === 'nl' ? 'Parkeersessie gestart' : 'Parking session started', `${displayId} · ${plateText}`);
+        if (endDate && requestNotificationPermission) requestNotificationPermission();
     }
 
     // --- NOTIFICATIONS ---
@@ -840,6 +841,7 @@ Q8.Services = (function() {
         setDefaultPlate,
         checkInstallMode,
         addNotification,
-        handleAutoEndSession
+        handleAutoEndSession,
+        requestNotificationPermission
     };
 })();
