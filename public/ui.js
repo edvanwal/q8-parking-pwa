@@ -117,14 +117,17 @@ Q8.UI = (function() {
 
         // Show message when opened as file (map does not work from file://)
         var mapFileWarning = document.getElementById('map-file-warning');
+        var mapContainer = document.getElementById('map-container');
         var isFileProtocol = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
         if (mapFileWarning) {
             if (isFileProtocol) {
                 mapFileWarning.classList.remove('hidden');
                 mapFileWarning.style.display = 'block';
+                if (mapContainer) mapContainer.style.display = 'none';
             } else {
                 mapFileWarning.classList.add('hidden');
                 mapFileWarning.style.display = 'none';
+                if (mapContainer) mapContainer.style.display = '';
             }
         }
 
