@@ -33,7 +33,7 @@ function buildParkingSessionsQuery(coll, filters = {}) {
  * Normalize a parking session doc for export (Firestore Timestamp -> ISO string, numbers).
  */
 function normalizeSessionForExport(doc) {
-  const d = typeof doc.data === 'function' ? doc.data() : doc;
+  const d = typeof doc.data === 'function' ? doc.data() : (doc.data || doc);
   const id = doc.id || d.session_id;
   const toIso = (v) => {
     if (!v) return null;
