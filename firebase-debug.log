@@ -1,0 +1,21 @@
+[debug] [2026-02-02T21:19:32.287Z] ----------------------------------------------------------------------
+[debug] [2026-02-02T21:19:32.290Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting
+[debug] [2026-02-02T21:19:32.291Z] CLI Version:   15.5.1
+[debug] [2026-02-02T21:19:32.291Z] Platform:      win32
+[debug] [2026-02-02T21:19:32.291Z] Node Version:  v24.12.0
+[debug] [2026-02-02T21:19:32.291Z] Time:          Mon Feb 02 2026 22:19:32 GMT+0100 (Midden-Europese standaardtijd)
+[debug] [2026-02-02T21:19:32.291Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-02-02T21:19:34.320Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-02T21:19:34.320Z] > authorizing via signed-in user (edwin.vanwalsum@gmail.com)
+[debug] [2026-02-02T21:19:34.320Z] [iam] checking project q8-parking-pwa for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-02-02T21:19:34.321Z] Checked if tokens are valid: false, expires at: 1770056789176
+[debug] [2026-02-02T21:19:34.321Z] Checked if tokens are valid: false, expires at: 1770056789176
+[debug] [2026-02-02T21:19:34.322Z] > refreshing access token with scopes: []
+[debug] [2026-02-02T21:19:34.323Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-02-02T21:19:34.323Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-02-02T21:19:34.403Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-02-02T21:19:34.403Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-02-02T21:19:34.412Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa:testIamPermissions [none]
+[debug] [2026-02-02T21:19:34.412Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa:testIamPermissions  x-goog-user-project=q8-parking-pwa
+[debug] [2026-02-02T21:19:34.412Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
