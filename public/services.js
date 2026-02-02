@@ -472,6 +472,10 @@ Q8.Services = (function() {
     // Risk: Silent return if guard fails (user thinks they started but didn't).
     // Risk: zoneObj undefined if zones not loaded or uid/id mismatch.
     // Risk: plates empty - session would have no plate; UI may show wrong label.
+    function toast(msg, type) {
+        if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg, type);
+        else if (typeof window.showToast === 'function') window.showToast(msg, type);
+    }
 
     // Dagkaart detection: zone has day pass (from isDayPass or rates with "Dagkaart" in detail)
     function hasDayPass(zone) {
@@ -495,17 +499,17 @@ Q8.Services = (function() {
         const skipOverlayCheck = options && options.fromDayPassConfirm === true;
         if (S.get.session) {
             console.warn('[PARKING_START] Blocked: session already active');
-            toast('You already have an active parking session.');
+            toast(S.get.language === 'nl' ? 'Je hebt al een actieve parkeersessie' : 'You already have an active parking session.', 'error');
             return;
         }
         if (!S.get.selectedZone) {
             console.warn('[PARKING_START] Blocked: no selectedZone');
-            toast('Select a parking zone first.');
+            toast(S.get.language === 'nl' ? 'Selecteer eerst een parkeerzone' : 'Select a parking zone first.', 'error');
             return;
         }
         if (!skipOverlayCheck && S.get.activeOverlay !== 'sheet-zone') {
             console.warn('[PARKING_START] Blocked: overlay is not sheet-zone', S.get.activeOverlay);
-            toast('Open a zone to start parking.');
+            toast(S.get.language === 'nl' ? 'Open een zone om te parkeren' : 'Open a zone to start parking.', 'error');
             return;
         }
 
@@ -513,7 +517,7 @@ Q8.Services = (function() {
         if (!zoneObj) {
             console.warn('[PARKING_START] Zone not found in zones list', S.get.selectedZone, 'zones count:', S.get.zones.length);
             S.update({ selectedZone: null, selectedZoneRates: null });
-            toast(S.get.language === 'nl' ? 'Zone niet meer beschikbaar. Selecteer de zone opnieuw.' : 'Zone no longer available. Please select the zone again.');
+            toast(S.get.language === 'nl' ? 'Zone niet meer beschikbaar. Selecteer de zone opnieuw.' : 'Zone no longer available. Please select the zone again.', 'error');
             return;
         }
         const ds = S.get.driverSettings || {};
@@ -521,7 +525,7 @@ Q8.Services = (function() {
         const dayOfWeek = nowCheck.getDay();
         const allowedDays = ds.allowedDays;
         if (Array.isArray(allowedDays) && allowedDays.length > 0 && !allowedDays.includes(dayOfWeek)) {
-            toast(S.get.language === 'nl' ? 'Parkeren is niet toegestaan op deze dag.' : 'Parking is not allowed on this day.');
+            toast(S.get.language === 'nl' ? 'Parkeren is niet toegestaan op deze dag.' : 'Parking is not allowed on this day.', 'error');
             return;
         }
         if (ds.allowedTimeStart || ds.allowedTimeEnd) {
@@ -533,7 +537,7 @@ Q8.Services = (function() {
             };
             const startM = parseTime(ds.allowedTimeStart), endM = parseTime(ds.allowedTimeEnd);
             if (startM != null && mins < startM) {
-                toast(S.get.language === 'nl' ? 'Parkeren nog niet toegestaan.' : 'Parking not yet allowed.');
+                toast(S.get.language === 'nl' ? 'Parkeren nog niet toegestaan.' : 'Parking not yet allowed.', 'error');
                 return;
             }
             if (endM != null && mins > endM) {
