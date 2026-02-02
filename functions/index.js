@@ -254,12 +254,36 @@ exports.autoStopExpiredSessions = functions
             
             const now = new Date();
             let stoppedCount = 0;
-            
+
             for (const sessionDoc of sessionsSnapshot.docs) {
                 const session = sessionDoc.data();
                 let shouldStop = false;
                 let stopReason = '';
-                
+
+                // Push: "Expiring soon" - send if session ends within X minutes (and not yet sent)
+                if (!session.expiringSoonPushSent && session.userId) {
+                    const endTime = getSessionEndTime(session);
+                    if (endTime && endTime > now) {
+                        const userDoc = await db.collection('users').doc(session.userId).get();
+                        const nSettings = userDoc.exists ? (userDoc.data().notificationSettings || {}) : {};
+                        const mins = nSettings.expiringSoonMinutes || 10;
+                        const wantsPush = nSettings.sessionExpiringSoon !== false;
+                        const msUntilEnd = endTime.getTime() - now.getTime();
+                        const msThreshold = mins * 60 * 1000;
+                        if (wantsPush && msUntilEnd <= msThreshold) {
+                            const sent = await sendPushToUser(
+                                session.userId,
+                                'Q8 Parking',
+                                `Parkeersessie verloopt over ${mins} minuten · ${session.zone || '?'} · ${session.plate || '?'}`,
+                                { type: 'sessionExpiringSoon', tag: 'parking-expiring' }
+                            );
+                            if (sent) {
+                                await sessionDoc.ref.update({ expiringSoonPushSent: true }).catch(() => {});
+                            }
+                        }
+                    }
+                }
+
                 // Check 1: Duration expired
                 const endTime = getSessionEndTime(session);
                 if (endTime && now >= endTime) {
