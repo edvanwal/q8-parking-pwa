@@ -30,6 +30,8 @@ Q8.Services = (function() {
 
     // --- AUTH SERVICES ---
 
+    let _historyUnsub = null;
+
     function initAuthListener() {
         if (!auth) return;
         auth.onAuthStateChanged(user => {
@@ -38,13 +40,54 @@ Q8.Services = (function() {
                 if (S.get.screen === 'login' || S.get.screen === 'register') {
                     setScreen('parking');
                 }
+                if (db) loadHistory(user.uid);
             } else {
                 if (U && U.debug) U.debug('AUTH', "No User / Logged Out");
+                if (_historyUnsub) { _historyUnsub(); _historyUnsub = null; }
+                S.update({ history: [] });
                 if (S.get.screen !== 'register') {
                     setScreen('login');
                 }
             }
         });
+    }
+
+    function getTenantId() {
+        const user = auth && auth.currentUser;
+        if (!user) return 'default';
+        return 'default';
+    }
+
+    function loadHistory(userId) {
+        if (!db || !userId) return;
+        if (_historyUnsub) _historyUnsub();
+        _historyUnsub = db.collection('transactions')
+            .where('userId', '==', userId)
+            .orderBy('endedAt', 'desc')
+            .limit(200)
+            .onSnapshot((snapshot) => {
+                const items = [];
+                snapshot.forEach((doc) => {
+                    const d = doc.data();
+                    const startDate = d.start && (d.start.toDate ? d.start.toDate() : new Date(d.start));
+                    const endDate = d.end && (d.end.toDate ? d.end.toDate() : new Date(d.end));
+                    const dd = (n) => String(n).padStart(2, '0');
+                    items.push({
+                        id: doc.id,
+                        zone: d.zone,
+                        zoneUid: d.zoneUid,
+                        plate: d.plate || '',
+                        street: d.street || '',
+                        date: startDate ? `${dd(startDate.getDate())}-${dd(startDate.getMonth() + 1)}-${startDate.getFullYear()}` : '',
+                        start: startDate ? `${dd(startDate.getHours())}:${dd(startDate.getMinutes())}` : '',
+                        end: endDate ? `${dd(endDate.getHours())}:${dd(endDate.getMinutes())}` : '',
+                        price: d.cost != null ? Number(d.cost).toFixed(2) : ''
+                    });
+                });
+                S.update({ history: items });
+            }, (err) => {
+                console.error('Transactions listener error:', err);
+            });
     }
 
     function loginUser(email, password) {
@@ -62,6 +105,11 @@ Q8.Services = (function() {
             .then(() => {
                 S.save();
             });
+    }
+
+    function sendPasswordResetEmail(email) {
+        if (!auth) return Promise.reject(new Error('Auth not available'));
+        return auth.sendPasswordResetEmail(email);
     }
 
     function logoutUser() {
