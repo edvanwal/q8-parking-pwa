@@ -14,6 +14,10 @@ Q8.Kenteken = (function() {
     const RDW_VOERTUIGEN_URL = 'https://opendata.rdw.nl/resource/m9d7-ebf2.json';
     const RDW_BRANDSTOF_URL = 'https://opendata.rdw.nl/resource/8ys7-d773.json';
 
+    // T3: cache voor lookupRDW (rate limits vermijden; TTL 5 min)
+    const RDW_CACHE_TTL_MS = 5 * 60 * 1000;
+    const _rdwCache = {};
+
     /**
      * Normaliseer invoer: hoofdletters, alleen letters/cijfers (geen streepjes/spaties).
      * @param {string} input
