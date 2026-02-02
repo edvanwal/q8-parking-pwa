@@ -1,0 +1,120 @@
+[debug] [2026-02-02T17:28:07.225Z] ----------------------------------------------------------------------
+[debug] [2026-02-02T17:28:07.228Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions
+[debug] [2026-02-02T17:28:07.228Z] CLI Version:   15.5.1
+[debug] [2026-02-02T17:28:07.228Z] Platform:      win32
+[debug] [2026-02-02T17:28:07.228Z] Node Version:  v24.12.0
+[debug] [2026-02-02T17:28:07.229Z] Time:          Mon Feb 02 2026 18:28:07 GMT+0100 (Midden-Europese standaardtijd)
+[debug] [2026-02-02T17:28:07.229Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-02-02T17:28:09.289Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-02T17:28:09.290Z] > authorizing via signed-in user (edwin.vanwalsum@gmail.com)
+[debug] [2026-02-02T17:28:09.290Z] [iam] checking project q8-parking-pwa for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2026-02-02T17:28:09.291Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:09.291Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:09.292Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa:testIamPermissions [none]
+[debug] [2026-02-02T17:28:09.292Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa:testIamPermissions  x-goog-user-project=q8-parking-pwa
+[debug] [2026-02-02T17:28:09.292Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-02-02T17:28:09.974Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa:testIamPermissions 200
+[debug] [2026-02-02T17:28:09.974Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-02-02T17:28:09.975Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:09.975Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:09.975Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/q8-parking-pwa/serviceAccounts/q8-parking-pwa@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-02-02T17:28:09.975Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/q8-parking-pwa/serviceAccounts/q8-parking-pwa@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-02-02T17:28:10.616Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/q8-parking-pwa/serviceAccounts/q8-parking-pwa@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2026-02-02T17:28:10.616Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/q8-parking-pwa/serviceAccounts/q8-parking-pwa@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'q8-parking-pwa'...
+[info] 
+[info] i  deploying functions 
+[info] +  functions: Finished running predeploy script. 
+[debug] [2026-02-02T17:28:10.619Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:10.619Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:10.619Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa [none]
+[debug] [2026-02-02T17:28:10.802Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa 200
+[debug] [2026-02-02T17:28:10.802Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa {"projectNumber":"410808537958","projectId":"q8-parking-pwa","lifecycleState":"ACTIVE","name":"Q8-parking-pwa","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-01-29T20:39:34.252869Z"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2026-02-02T17:28:10.804Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:10.804Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:10.804Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/q8-parking-pwa/adminSdkConfig [none]
+[debug] [2026-02-02T17:28:11.074Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/q8-parking-pwa/adminSdkConfig 200
+[debug] [2026-02-02T17:28:11.074Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/q8-parking-pwa/adminSdkConfig {"projectId":"q8-parking-pwa","storageBucket":"q8-parking-pwa.firebasestorage.app"}
+[debug] [2026-02-02T17:28:11.075Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:11.075Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:11.075Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/q8-parking-pwa/configs [none]
+[debug] [2026-02-02T17:28:11.283Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/q8-parking-pwa/configs 200
+[debug] [2026-02-02T17:28:11.283Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/q8-parking-pwa/configs {}
+[debug] [2026-02-02T17:28:11.284Z] Validating nodejs source
+[warn] !  functions: Runtime Node.js 20 will be deprecated on 2026-04-30 and will be decommissioned on 2026-10-30, after which you will not be able to deploy without upgrading. Consider upgrading now to avoid disruption. See https://cloud.google.com/functions/docs/runtime-support for full details on the lifecycle policy 
+[warn] !  functions: Couldn't find firebase-functions package in your source code. Have you run 'npm install'? 
+[debug] [2026-02-02T17:28:11.286Z] getFunctionsSDKVersion encountered error: Cannot find module 'firebase-functions'
+Require stack:
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\node\versioning.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\node\index.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\index.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\prepare.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\emulator\functionsEmulatorShared.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\frameworks\index.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\hosting\prepare.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\hosting\index.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\index.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\commands\deploy.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\commands\index.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\index.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\cli.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js {"code":"MODULE_NOT_FOUND","requireStack":["C:\\Users\\edwin\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\functions\\runtimes\\node\\versioning.js","C:\\Users\\edwin\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\functions\\runtimes\\node\\index.js","C:\\Users\\edwin\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\functions\\runtimes\\index.js","C:\\Users\\edwin\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\functions\\prepare.js","C:\\Users\\edwin\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\emulator\\functionsEmulatorShared.js","C:\\Users\\edwin\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\frameworks\\index.js","C:\\Users\\edwin\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\hosting\\prepare.js","C:\\Users\\edwin\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\hosting\\index.js","C:\\Users\\edwin\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\index.js","C:\\Users\\edwin\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\commands\\deploy.js","C:\\Users\\edwin\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\commands\\index.js","C:\\Users\\edwin\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\index.js","C:\\Users\\edwin\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\bin\\cli.js","C:\\Users\\edwin\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\bin\\firebase.js"]}
+[debug] [2026-02-02T17:28:11.287Z] checkFunctionsSDKVersion encountered error: Invalid Version:  {}
+[debug] [2026-02-02T17:28:11.288Z] > [functions] package.json contents: {
+  "name": "q8-parking-functions",
+  "description": "Firebase Cloud Functions for Q8 Parking PWA",
+  "version": "1.0.0",
+  "engines": {
+    "node": "20"
+  },
+  "main": "index.js",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "firebase-admin": "^11.11.0",
+    "firebase-functions": "^4.5.0"
+  },
+  "private": true
+}
+[debug] [2026-02-02T17:28:11.288Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[debug] [2026-02-02T17:28:11.288Z] Could not parse firebase-functions version '' into semver.
+[debug] [2026-02-02T17:28:11.289Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-02-02T17:28:11.305Z] Error: Cannot find module 'firebase-functions'
+Require stack:
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\node\index.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\index.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\prepare.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\emulator\functionsEmulatorShared.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\frameworks\index.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\hosting\prepare.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\hosting\index.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\index.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\commands\deploy.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\commands\index.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\index.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\cli.js
+- C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1421:15)
+    at require.resolve (node:internal/modules/helpers:163:19)
+    at Delegate.findFunctionsBinary (C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\node\index.js:101:33)
+    at Delegate.spawnFunctionsProcess (C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\node\index.js:131:30)
+    at Delegate.serveAdmin (C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\node\index.js:152:35)
+    at Delegate.discoverBuild (C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\node\index.js:192:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async loadCodebases (C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\prepare.js:331:33)
+    at async prepare (C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\prepare.js:69:24)
+    at async chain (C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\index.js:43:9)
+[error] 
+[error] Error: An unexpected error has occurred.
