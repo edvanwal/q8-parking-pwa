@@ -31,6 +31,79 @@ Q8.Services = (function() {
     // --- AUTH SERVICES ---
 
     let _historyUnsub = null;
+    const DEFAULT_TENANT = 'default';
+
+    function ensureAppUser(user) {
+        if (!db || !user) return Promise.resolve();
+        const email = (user.email || '').toLowerCase();
+        return db.collection('users').doc(user.uid).get().then(doc => {
+            if (doc.exists) {
+                const data = doc.data();
+                S.update({
+                    driverSettings: data.driverSettings || {},
+                    adminPlates: data.adminPlates || [],
+                    tenantId: data.tenantId || DEFAULT_TENANT
+                });
+                fetchDriverSettings(user.uid);
+                return data;
+            }
+            return db.collection('invites').where('email', '==', email).limit(1).get().then(invSnap => {
+                const invite = !invSnap.empty ? invSnap.docs[0].data() : null;
+                const tenantId = invite ? invite.tenantId : DEFAULT_TENANT;
+                const role = invite ? (invite.role || 'driver') : 'driver';
+                return db.collection('users').doc(user.uid).set({
+                    email: user.email,
+                    displayName: user.displayName || user.email.split('@')[0],
+                    tenantId,
+                    role,
+                    driverSettings: { canAddPlates: true, maxPlates: 0, platesLocked: false },
+                    userPlates: [],
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    S.update({ tenantId });
+                    fetchDriverSettings(user.uid);
+                    return { tenantId, role, driverSettings: {} };
+                });
+            });
+        });
+    }
+
+    function fetchDriverSettings(uid) {
+        if (!db || !uid) return;
+        db.collection('users').doc(uid).onSnapshot(doc => {
+            if (doc.exists) {
+                const data = doc.data();
+                const adminPlates = data.adminPlates || [];
+                const userPlates = data.userPlates || [];
+                S.update({
+                    driverSettings: data.driverSettings || {},
+                    adminPlates,
+                    tenantId: data.tenantId || DEFAULT_TENANT
+                });
+                if (userPlates.length > 0) {
+                    S.update({ plates: userPlates });
+                    if (S.savePlates) S.savePlates();
+                } else if (S.get.plates.length > 0) {
+                    syncUserPlatesToFirestore(S.get.plates);
+                }
+            }
+        }, () => {});
+    }
+
+    function syncUserPlatesToFirestore(plates) {
+        const uid = auth && auth.currentUser ? auth.currentUser.uid : null;
+        if (!db || !uid) return Promise.resolve();
+        const userPlates = (plates || S.get.plates || []).filter(p => !(S.get.adminPlates || []).some(a => a.id === p.id));
+        return db.collection('users').doc(uid).update({
+            userPlates,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(() => {});
+    }
+
+    function removeUserPlateFromFirestore(plateId) {
+        const plates = (S.get.plates || []).filter(p => p.id !== plateId);
+        return syncUserPlatesToFirestore(plates);
+    }
 
     function restoreSessionFromFirestore(uid) {
         if (!db || !uid || S.get.session) return Promise.resolve();
@@ -67,6 +140,7 @@ Q8.Services = (function() {
             if (user) {
                 if (U && U.debug) U.debug('AUTH', "User Logged In", user.email);
                 restoreSessionFromFirestore(user.uid);
+                ensureAppUser(user);
                 if (S.get.screen === 'login' || S.get.screen === 'register') {
                     setScreen('parking');
                 }
@@ -74,7 +148,7 @@ Q8.Services = (function() {
             } else {
                 if (U && U.debug) U.debug('AUTH', "No User / Logged Out");
                 if (_historyUnsub) { _historyUnsub(); _historyUnsub = null; }
-                S.update({ history: [] });
+                S.update({ history: [], driverSettings: {}, adminPlates: [] });
                 if (S.get.screen !== 'register') {
                     setScreen('login');
                 }
@@ -83,9 +157,7 @@ Q8.Services = (function() {
     }
 
     function getTenantId() {
-        const user = auth && auth.currentUser;
-        if (!user) return 'default';
-        return 'default';
+        return S.get.tenantId || DEFAULT_TENANT;
     }
 
     function haversineKm(lat1, lon1, lat2, lon2) {
