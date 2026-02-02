@@ -1495,15 +1495,16 @@ body {
     width: calc(100% - 32px);
   }
   
+  /* Zone sheet: full width on desktop (was max-width 480px) */
   .bottom-sheet {
-    max-width: 480px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100%);
+    left: 0;
+    right: 0;
+    transform: translateY(100%);
     border-radius: 24px 24px 0 0;
   }
   
   .overlay-backdrop.open .bottom-sheet {
-    transform: translateX(-50%) translateY(0);
+    transform: translateY(0);
   }
   
   .active-parking-overlay {
