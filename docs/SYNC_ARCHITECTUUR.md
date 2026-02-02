@@ -21,7 +21,7 @@ npm run deploy
 
 Het script `scripts/sync-to-public.js` kopieert deze bestanden van root naar public:
 
-- app.js, services.js, state.js, ui.js, utils.js
+- app.js, state.js, ui.js, utils.js
 - design-system.css
 - index.html
 - firebase-config.js, kenteken.js, manifest.webmanifest, sw.js
@@ -32,3 +32,5 @@ Het script `scripts/sync-to-public.js` kopieert deze bestanden van root naar pub
 2. Test lokaal (root of public)
 3. `npm run sync` voordat je deployt
 4. `firebase deploy` of `npm run deploy`
+
+**Let op:** `services.js` wordt niet gesynchroniseerd; de public-versie bevat portal/fleet-integratie (ensureAppUser, adminPlates, userPlates).

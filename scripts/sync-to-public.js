@@ -21,7 +21,7 @@ const FILES = [
   'manifest.webmanifest',
   'sw.js'
 ];
-// services.js excluded: public has portal/fleet integration (ensureAppUser, adminPlates, etc.)
+// services.js excluded: public has portal/fleet integration (ensureAppUser, adminPlates, userPlates)
 
 let ok = 0, err = 0;
 for (const f of FILES) {
