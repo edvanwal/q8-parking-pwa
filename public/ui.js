@@ -1190,10 +1190,18 @@ Q8.UI = (function() {
 
     function initGoogleMap() {
         const container = document.getElementById('map-container');
+        // #region agent log
+        var hasContainer = !!container; var rect = container ? container.getBoundingClientRect() : null;
+        fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:initGoogleMap',message:'entry',data:{hasContainer:hasContainer,hasMap:!!map,containerWidth:rect?rect.width:null,containerHeight:rect?rect.height:null},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(function(){});
+        // #endregion
         diagMaps('initGoogleMap', 'entry', { hasContainer: !!container, hasMap: !!map });
         if (!container || map) return;
 
         if (typeof google === 'undefined' || !google.maps) {
+            // #region agent log
+            var apiKey = (typeof firebaseConfig !== 'undefined') ? (firebaseConfig.googleMapsApiKey || '') : '';
+            fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:initGoogleMap',message:'loading script',data:{apiKeyLength:apiKey.length},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(function(){});
+            // #endregion
             diagMaps('initGoogleMap', 'loading-script');
             const apiKey = (typeof firebaseConfig !== 'undefined') ? firebaseConfig.googleMapsApiKey : '';
             const script = document.createElement('script');
@@ -1201,6 +1209,9 @@ Q8.UI = (function() {
             script.async = true;
             script.onerror = function() { diagMaps('initGoogleMap', 'script-load-error'); };
             window.initMapCallback = function() {
+                 // #region agent log
+                 fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:initMapCallback',message:'callback fired',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(function(){});
+                 // #endregion
                  diagMaps('initGoogleMap', 'callback-fired');
                  if(Q8.UI && Q8.UI.initGoogleMap) Q8.UI.initGoogleMap();
                  else initGoogleMap();
@@ -1209,6 +1220,9 @@ Q8.UI = (function() {
             return;
         }
 
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:initGoogleMap',message:'creating map',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(function(){});
+        // #endregion
         diagMaps('initGoogleMap', 'creating-map');
         map = new google.maps.Map(container, {
             center: UTRECHT_CENTER,

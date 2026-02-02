@@ -208,9 +208,14 @@ Q8.Services = (function() {
         S.update(updates);
 
         // Map: init when parking visible, resize when map exists
-        if (name === 'parking' && !S.get.installMode.active) {
-            if (Q8.UI && typeof Q8.UI.initGoogleMap === 'function') Q8.UI.initGoogleMap();
-            else if (typeof window.initGoogleMap === 'function') window.initGoogleMap();
+        if (name === 'parking') {
+            // #region agent log
+            try { fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'services.js:setScreen',message:'parking screen',data:{installModeActive:!!S.get.installMode?.active,willCallInitMap:!S.get.installMode?.active},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(function(){}); } catch(e) {}
+            // #endregion
+            if (!S.get.installMode.active) {
+                if (Q8.UI && typeof Q8.UI.initGoogleMap === 'function') Q8.UI.initGoogleMap();
+                else if (typeof window.initGoogleMap === 'function') window.initGoogleMap();
+            }
             requestAnimationFrame(() => {
                 if (Q8.UI && typeof Q8.UI.ensureMapResized === 'function') Q8.UI.ensureMapResized();
                 const inp = document.getElementById('inp-search');
