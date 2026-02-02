@@ -135,6 +135,41 @@ Q8.Services = (function() {
             .catch(() => {});
     }
 
+    function initFCMAndSaveToken(uid) {
+        if (!messaging || !db || !uid) return Promise.resolve();
+        const vapidKey = (typeof firebaseConfig !== 'undefined' && firebaseConfig.messagingVapidKey) ? firebaseConfig.messagingVapidKey : '';
+        if (!vapidKey) return Promise.resolve();
+        return Notification.requestPermission().then(perm => {
+            if (perm !== 'granted') return;
+            return navigator.serviceWorker.ready.then(reg => {
+                return messaging.getToken({ vapidKey, serviceWorkerRegistration: reg });
+            }).then(token => {
+                if (token) {
+                    return db.collection('users').doc(uid).update({
+                        fcmToken: token,
+                        fcmTokenUpdatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }).catch(() => {});
+                }
+            });
+        }).catch(err => { if (U && U.debug) U.debug('FCM', 'Token failed', err); });
+    }
+
+    function syncNotificationSettingsToFirestore(settings) {
+        if (!db || !auth || !auth.currentUser) return;
+        const uid = auth.currentUser.uid;
+        if (!uid || !settings) return;
+        db.collection('users').doc(uid).update({
+            notificationSettings: {
+                sessionStarted: !!settings.sessionStarted,
+                sessionExpiringSoon: !!settings.sessionExpiringSoon,
+                sessionEndedByUser: !!settings.sessionEndedByUser,
+                sessionEndedByMaxTime: !!settings.sessionEndedByMaxTime,
+                expiringSoonMinutes: typeof settings.expiringSoonMinutes === 'number' ? settings.expiringSoonMinutes : 10
+            },
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(() => {});
+    }
+
     function initAuthListener() {
         if (!auth) return;
         auth.onAuthStateChanged(user => {
@@ -142,6 +177,8 @@ Q8.Services = (function() {
                 if (U && U.debug) U.debug('AUTH', "User Logged In", user.email);
                 restoreSessionFromFirestore(user.uid);
                 ensureAppUser(user);
+                initFCMAndSaveToken(user.uid);
+                if (S.get.notificationSettings) syncNotificationSettingsToFirestore(S.get.notificationSettings);
                 if (S.get.screen === 'login' || S.get.screen === 'register') {
                     setScreen('parking');
                 }
