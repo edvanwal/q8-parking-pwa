@@ -390,15 +390,40 @@
     $('btn-save-plates-settings').addEventListener('click', () => {
       const uid = $('plates-driver-select').value;
       if (!uid) return toast('Selecteer eerst een bestuurder');
+      const allowedDays = [];
+      $all('.allowed-day:checked').forEach(cb => allowedDays.push(parseInt(cb.dataset.day, 10)));
       const settings = {
         canAddPlates: $('plates-can-add').checked,
         platesLocked: $('plates-locked').checked,
-        maxPlates: parseInt($('plates-max').value, 10) || 0
+        maxPlates: parseInt($('plates-max').value, 10) || 0,
+        allowedDays: allowedDays.length > 0 ? allowedDays : null,
+        allowedTimeStart: $('plates-time-start').value || null,
+        allowedTimeEnd: $('plates-time-end').value || null
       };
       updateDriverSettings(uid, settings).then(() => {
         toast('Kentekeninstellingen opgeslagen');
         loadUsers(u => { renderUsers(u); renderPlatesPanel(u.find(x => x.id === uid)); });
       }).catch(err => toast(err.message));
+    });
+
+    $('btn-bulk-add-plates').addEventListener('click', () => {
+      const uid = $('plates-driver-select').value;
+      if (!uid) return toast('Selecteer eerst een bestuurder');
+      const text = ($('plates-bulk-input') || {}).value || '';
+      const plates = text.split(/[\n,;]+/).map(p => p.trim().replace(/[\s\-]/g, '').toUpperCase()).filter(p => p.length >= 6);
+      if (plates.length === 0) return toast('Voer minimaal één kenteken in (één per regel of komma-gescheiden)');
+      let done = 0, failed = 0;
+      const next = () => {
+        if (plates.length === 0) {
+          toast(`${done} kenteken(s) toegevoegd` + (failed ? `, ${failed} overgeslagen` : ''));
+          $('plates-bulk-input').value = '';
+          loadUsers(users => { const user = users.find(u => u.id === uid); renderPlatesPanel(user); });
+          return;
+        }
+        const plate = plates.shift();
+        addPlateToUser(uid, plate).then(() => { done++; next(); }).catch(() => { failed++; next(); });
+      };
+      next();
     });
 
     $('btn-add-plate-driver').addEventListener('click', () => {
