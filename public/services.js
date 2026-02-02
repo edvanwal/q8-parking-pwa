@@ -472,10 +472,6 @@ Q8.Services = (function() {
     // Risk: Silent return if guard fails (user thinks they started but didn't).
     // Risk: zoneObj undefined if zones not loaded or uid/id mismatch.
     // Risk: plates empty - session would have no plate; UI may show wrong label.
-    function toast(msg) {
-        if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg);
-        else if (typeof window.showToast === 'function') window.showToast(msg);
-    }
 
     // Dagkaart detection: zone has day pass (from isDayPass or rates with "Dagkaart" in detail)
     function hasDayPass(zone) {
