@@ -26,9 +26,6 @@ Q8.UI = (function() {
 
         // 1. Screens
         const activeViewId = `view-${state.screen === 'parking' ? 'map' : state.screen}`;
-        // #region agent log
-        if (state.screen === 'parking') { fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:update',message:'showing parking view',data:{activeViewId:activeViewId},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H4'})}).catch(function(){}); }
-        // #endregion
         document.querySelectorAll('.screen').forEach(el => {
             el.style.display = (el.id === activeViewId) ? 'flex' : 'none';
             el.classList.toggle('hidden', el.id !== activeViewId);
@@ -80,9 +77,6 @@ Q8.UI = (function() {
             renderInstallGate();
         }
     } catch (err) {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:update',message:'exception',data:{message:String(err&&err.message),stack:(err&&err.stack)?String(err.stack).slice(0,200):''},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H4'})}).catch(function(){});
-        // #endregion
         throw err;
     }
     }
@@ -1251,10 +1245,6 @@ Q8.UI = (function() {
 
     function initGoogleMap() {
         const container = document.getElementById('map-container');
-        // #region agent log
-        var hasContainer = !!container; var rect = container ? container.getBoundingClientRect() : null;
-        fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:initGoogleMap',message:'entry',data:{hasContainer:hasContainer,hasMap:!!map,containerWidth:rect?rect.width:null,containerHeight:rect?rect.height:null},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(function(){});
-        // #endregion
         diagMaps('initGoogleMap', 'entry', { hasContainer: !!container, hasMap: !!map });
         if (!container || map) return;
 
