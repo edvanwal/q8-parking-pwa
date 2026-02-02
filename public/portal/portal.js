@@ -346,7 +346,7 @@
           ${p.text || p.id}
           <span class="remove-plate" data-uid="${user.id}" data-plate="${p.id}">&times;</span>
         </span>
-      `).join('') || '<span class="text-secondary">Geen kentekens toegevoegd</span>';
+      `).join('') || '<span class="text-secondary">No license plates added</span>';
     }
     select.value = user.id;
   }
@@ -494,7 +494,7 @@
       const next = () => {
         if (plates.length === 0) {
           if (addedPlates.length > 0) writeAuditLog('plates_bulk_added', { userId: uid, plates: addedPlates, count: addedPlates.length });
-          toast(`${done} kenteken(s) toegevoegd` + (failed ? `, ${failed} overgeslagen` : ''));
+          toast(`${done} license plate(s) added` + (failed ? `, ${failed} skipped` : ''));
           $('plates-bulk-input').value = '';
           loadUsers(users => { const user = users.find(u => u.id === uid); renderPlatesPanel(user); });
           return;
@@ -511,7 +511,7 @@
       if (!uid) return toast('Selecteer eerst een bestuurder');
       if (!plate) return toast('Voer een kenteken in');
       addPlateToUser(uid, plate).then(() => {
-        toast('Kenteken toegevoegd');
+        toast('License plate added');
         $('plates-add-input').value = '';
         loadUsers(users => {
           const user = users.find(u => u.id === uid);
