@@ -306,6 +306,31 @@
     border-top-color: #ce1818;
 }
 
+/* Facility markers (garages & P+R) – distinct from zone price pins */
+.q8-facility-marker {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    margin-left: -20px;
+    margin-top: -40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #0d9488;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-sizing: border-box;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    pointer-events: auto;
+}
+.q8-facility-marker:hover {
+    background-color: #0f766e;
+}
+
 /* Leaflet Custom Marker Reset */
 .leaflet-div-icon.custom-map-marker {
     background: transparent;
