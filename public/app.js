@@ -293,7 +293,7 @@ Q8.App = (function() {
                     const next = [...favs, { zoneUid: zoneUid || zoneId, zoneId: zoneId || zoneUid }];
                     S.update({ favorites: next });
                     if (S.saveFavorites) S.saveFavorites();
-                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Toegevoegd aan favorieten' : 'Added to favorites');
+                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Toegevoegd aan favorieten' : 'Added to favorites', 'success');
                     break;
                 }
 
@@ -357,11 +357,12 @@ Q8.App = (function() {
 
                 case 'export-history-csv':
                     if (Q8.Utils && Q8.Utils.exportHistoryToCSV) Q8.Utils.exportHistoryToCSV(S.get);
-                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'CSV gedownload' : 'CSV downloaded');
+                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'CSV gedownload' : 'CSV downloaded', 'success');
                     break;
 
                 case 'export-history-print':
                     if (Q8.Utils && Q8.Utils.exportHistoryToPrint) Q8.Utils.exportHistoryToPrint(S.get);
+                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Printdialoog geopend' : 'Print dialog opened', 'success');
                     break;
 
                 case 'retry-load-zones':
@@ -431,7 +432,7 @@ Q8.App = (function() {
                     const rConf = document.getElementById('reg-password-confirm')?.value;
 
                     if (!rEmail || !rPass) {
-                        if(UI.showToast) UI.showToast('Please fill in all fields');
+                        if(UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Vul alle velden in' : 'Please fill in all fields', 'error');
                         return;
                     }
                     if (rPass !== rConf) {
