@@ -541,7 +541,7 @@ Q8.Services = (function() {
                 return;
             }
             if (endM != null && mins > endM) {
-                toast(S.get.language === 'nl' ? 'Parkeren niet meer toegestaan vandaag.' : 'Parking no longer allowed today.');
+                toast(S.get.language === 'nl' ? 'Parkeren niet meer toegestaan vandaag.' : 'Parking no longer allowed today.', 'error');
                 return;
             }
         }
@@ -591,7 +591,7 @@ Q8.Services = (function() {
             });
         }
 
-        toast('Parking session started');
+        toast(S.get.language === 'nl' ? 'Parkeersessie gestart' : 'Parking session started', 'success');
         addNotification('sessionStarted', S.get.language === 'nl' ? 'Parkeersessie gestart' : 'Parking session started', `${displayId} · ${plateText}`);
         if (endDate && requestNotificationPermission) requestNotificationPermission();
     }
@@ -693,8 +693,8 @@ Q8.Services = (function() {
         }
 
         addNotification('sessionEndedByUser', S.get.language === 'nl' ? 'Parkeersessie beëindigd' : 'Parking session ended', `${session.zone} · ${session.plate || ''}`);
-        if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast('Parking session ended');
-        else if (typeof window.showToast === 'function') window.showToast('Parking session ended');
+        if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(S.get.language === 'nl' ? 'Parkeersessie beëindigd' : 'Parking session ended', 'success');
+        else if (typeof window.showToast === 'function') window.showToast(S.get.language === 'nl' ? 'Parkeersessie beëindigd' : 'Parking session ended', 'success');
     }
 
     // --- MODIFY ACTIVE SESSION END TIME ---
@@ -752,7 +752,7 @@ Q8.Services = (function() {
             else if (typeof window.showToast === 'function') window.showToast(msg);
         };
 
-        if (!rawVal) return toast('Please enter a license plate');
+        if (!rawVal) return toast(S.get.language === 'nl' ? 'Voer een kenteken in' : 'Please enter a license plate', 'error');
 
         const Kenteken = (typeof Q8 !== 'undefined' && Q8.Kenteken) ? Q8.Kenteken : null;
         let normalized = rawVal.replace(/[\s\-]/g, '').toUpperCase();
@@ -765,8 +765,8 @@ Q8.Services = (function() {
             formatError = v.errorMessage || '';
             normalized = v.normalized;
         } else {
-            if (normalized.length > 8) return toast('License plate too long');
-            if (!/^[A-Z0-9]+$/.test(normalized)) return toast('Letters and digits only');
+            if (normalized.length > 8) return toast(S.get.language === 'nl' ? 'Kenteken te lang' : 'License plate too long', 'error');
+            if (!/^[A-Z0-9]+$/.test(normalized)) return toast(S.get.language === 'nl' ? 'Alleen letters en cijfers' : 'Letters and digits only', 'error');
         }
 
         if (!formatValid) return toast(formatError || 'Invalid license plate format');
@@ -860,7 +860,7 @@ Q8.Services = (function() {
             if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg);
             else if (typeof window.showToast === 'function') window.showToast(msg);
         };
-        if (!rawVal) return toast('Please enter a license plate');
+        if (!rawVal) return toast(S.get.language === 'nl' ? 'Voer een kenteken in' : 'Please enter a license plate', 'error');
 
         const Kenteken = (typeof Q8 !== 'undefined' && Q8.Kenteken) ? Q8.Kenteken : null;
         let normalized = rawVal.replace(/[\s\-]/g, '').toUpperCase();
@@ -873,8 +873,8 @@ Q8.Services = (function() {
             formatError = v.errorMessage || '';
             normalized = v.normalized;
         } else {
-            if (normalized.length > 8) return toast('License plate too long');
-            if (!/^[A-Z0-9]+$/.test(normalized)) return toast('Letters and digits only');
+            if (normalized.length > 8) return toast(S.get.language === 'nl' ? 'Kenteken te lang' : 'License plate too long', 'error');
+            if (!/^[A-Z0-9]+$/.test(normalized)) return toast(S.get.language === 'nl' ? 'Alleen letters en cijfers' : 'Letters and digits only', 'error');
         }
 
         if (!formatValid) return toast(formatError || 'Invalid license plate format');
