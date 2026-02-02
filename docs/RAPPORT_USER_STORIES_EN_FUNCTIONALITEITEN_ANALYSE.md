@@ -437,7 +437,6 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 | 5 | **Push-notificatie bij bijna verlopen** | Voorkomt vergeten sessies (FCM + permissie flow aanwezig) |
 | 6 | **Gebruiksdagen beperken** | Fleet Manager Plan – allowedDays |
 | 7 | **Bulk kentekens voor poolauto's** | Fleet Manager Plan |
-| 9 | **Gebruiksdagen beperken** | Fleet Manager Plan – allowedDays |
 | 10 | **Bulk kentekens voor poolauto’s** | Fleet Manager Plan |
 
 ### 6.3 Prioriteit Laag
