@@ -436,14 +436,14 @@ Q8.App = (function() {
                         return;
                     }
                     if (rPass !== rConf) {
-                        if(UI.showToast) UI.showToast('Passwords do not match');
+                        if(UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Wachtwoorden komen niet overeen' : 'Passwords do not match', 'error');
                         return;
                     }
 
                     target.innerText = 'CREATING ACCOUNT...';
                     target.disabled = true;
                     Services.registerUser(rEmail, rPass).catch(err => {
-                         if(UI.showToast) UI.showToast(err.message);
+                         if(UI.showToast) UI.showToast(err.message, 'error');
                     }).finally(() => {
                          target.innerText = 'REGISTER';
                          target.disabled = false;
