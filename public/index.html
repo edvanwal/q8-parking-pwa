@@ -317,6 +317,12 @@
         </ol>
         <p class="text-secondary" style="margin:0; font-size:0.85rem;">Geen npx? Installeer eerst Node.js van nodejs.org.</p>
       </div>
+      <!-- Message when map fails to load (e.g. API key / localhost) - shown by ui.js -->
+      <div id="map-load-error" class="hidden" style="display:none; position:absolute; left:16px; right:16px; top:50%; transform:translateY(-50%); background:var(--surface); border:2px solid #c00; border-radius:16px; padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.1); z-index:50; max-width:400px; margin:0 auto;">
+        <p class="font-bold text-main" style="margin:0 0 12px; font-size:1.1rem;">Kaart kon niet laden</p>
+        <p id="map-load-error-text" class="text-secondary" style="margin:0 0 16px; font-size:0.95rem; line-height:1.5;">De Google Maps-kaart is niet beschikbaar. Controleer uw internet of probeer het later opnieuw.</p>
+        <p class="text-secondary" style="margin:0; font-size:0.85rem;">Draait u op localhost? Voeg in Google Cloud Console bij de Maps API-sleutel <strong>http://localhost:*</strong> toe als toegestane referrer.</p>
+      </div>
       <!-- Personal Greeting: hidden -->
       <div id="personal-greeting" class="hidden" style="display:none !important;"></div>
 
