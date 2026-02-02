@@ -411,12 +411,11 @@ Q8.App = (function() {
             if(UI.renderInstallGate) UI.renderInstallGate();
         } else {
             // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:init',message:'calling initGoogleMap and loadZones',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
+            fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:init',message:'init branch - map created when parking screen shown',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
             // #endregion
             if(Services.initAuthListener) Services.initAuthListener();
 
-            // Load map immediately - don't wait for zones
-            if(UI.initGoogleMap) UI.initGoogleMap();
+            // Map is created when user opens parking screen (setScreen('parking')) so container has real size
 
             if(Services.loadZones) {
                 Services.loadZones().then(() => {
