@@ -1250,16 +1250,20 @@ Q8.UI = (function() {
         if (!container || map) return;
 
         if (typeof google === 'undefined' || !google.maps) {
+            if (_mapScriptLoading) return;
+            _mapScriptLoading = true;
             diagMaps('initGoogleMap', 'loading-script');
             const apiKey = (typeof firebaseConfig !== 'undefined') ? firebaseConfig.googleMapsApiKey : '';
             const script = document.createElement('script');
             script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async&callback=initMapCallback`;
             script.async = true;
             script.onerror = function() {
+                _mapScriptLoading = false;
                 diagMaps('initGoogleMap', 'script-load-error');
                 showMapLoadError('Het laden van de Google Maps-script is mislukt. Controleer uw internetverbinding of of de API-sleutel localhost toestaat.');
             };
             window.initMapCallback = function() {
+                 _mapScriptLoading = false;
                  diagMaps('initGoogleMap', 'callback-fired');
                  if(Q8.UI && Q8.UI.initGoogleMap) Q8.UI.initGoogleMap();
                  else initGoogleMap();
