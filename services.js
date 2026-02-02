@@ -282,6 +282,8 @@ Q8.Services = (function() {
                         if (Q8.UI && typeof Q8.UI.centerMapOnZones === 'function') Q8.UI.centerMapOnZones();
                         else if (typeof window.centerMapOnZones === 'function') window.centerMapOnZones();
 
+                        if (S.get.userLocation) findAndSelectZoneAtLocation(S.get.userLocation.lat, S.get.userLocation.lng);
+
                         const debugEl = document.getElementById('debug-status');
                         if(debugEl) debugEl.innerText = `Zones: ${zones.length}`;
                     });
