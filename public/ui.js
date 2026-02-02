@@ -1025,6 +1025,36 @@ Q8.UI = (function() {
             return;
         }
 
+        if (isAddressMode) {
+            container.className = 'search-results-panel search-results-panel--pill';
+            container.style.display = 'block';
+            if (state.geocodeLoading) {
+                container.innerHTML = '<div class="text-secondary text-sm" style="padding:16px;">' + (state.language === 'nl' ? 'Zoeken op adres...' : 'Searching by address...') + '</div>';
+                return;
+            }
+            const geoMatches = state.geocodeMatches || [];
+            if (geoMatches.length === 0) {
+                container.innerHTML = '<div class="text-secondary text-sm" style="padding:16px;">' + (state.language === 'nl' ? 'Geen parkeerzones in de buurt gevonden.' : 'No parking zones found nearby.') + '</div>';
+                return;
+            }
+            const favUids = new Set((state.favorites || []).map(f => f.zoneUid || f.zoneId));
+            container.innerHTML = geoMatches.map(z => {
+                const street = z.street || '', houseNumber = z.houseNumber || '', city = z.city || '', zoneId = z.id || '';
+                const addr = street ? `${street}${houseNumber ? ' ' + houseNumber : ''}${city ? ', ' + city : ''}` : (city ? `${zoneId}, ${city}` : zoneId);
+                const isFav = favUids.has(z.uid) || favUids.has(z.id);
+                return `<div class="search-result-item" data-action="open-overlay" data-target="sheet-zone"
+                     data-zone-uid="${z.uid}" data-zone="${z.id || ''}" data-price="${z.price}"
+                     data-rates='${JSON.stringify(z.rates || [])}'>
+                    <span class="search-result-text">${addr}</span>
+                    <div class="flex items-center gap-sm" style="flex-shrink:0;">
+                      ${isFav ? '<span class="fav-star">♥</span>' : ''}
+                      <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
+                    </div>
+                </div>`;
+            }).join('');
+            return;
+        }
+
         const query = state.searchQuery.toLowerCase();
         const favorites = state.favorites || [];
         const favUids = new Set(favorites.map(f => f.zoneUid || f.zoneId));
