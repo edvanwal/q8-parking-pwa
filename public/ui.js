@@ -1006,6 +1006,7 @@ Q8.UI = (function() {
         container.style.display = 'block';
         const q = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const regex = q ? new RegExp(`(${q})`, 'gi') : null;
+        container.querySelectorAll('.ptr-enabled').forEach(el => { el.style.pointerEvents = 'auto'; });
         container.innerHTML = matches.map(z => {
             // Format: "zonenummer · straatnaam + huisnummer + plaats"
             const street = z.street || '';
