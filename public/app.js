@@ -307,7 +307,10 @@ Q8.App = (function() {
                 }
                 case 'remove-favorite': {
                     const zoneUid = target.getAttribute('data-zone-uid');
-                    const favs = (S.get.favorites || []).filter(f => f.zoneUid !== zoneUid);
+                    const zoneId = target.getAttribute('data-zone-id');
+                    const favs = (S.get.favorites || []).filter(f =>
+                        !(f.zoneUid === zoneUid || f.zoneId === zoneUid || f.zoneUid === zoneId || f.zoneId === zoneId)
+                    );
                     S.update({ favorites: favs });
                     if (S.saveFavorites) S.saveFavorites();
                     if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Verwijderd uit favorieten' : 'Removed from favorites', 'success');
