@@ -304,7 +304,8 @@ Q8.App = (function() {
                     if (exists) {
                         next = favs.filter(f => !(f.zoneUid === zoneUid || f.zoneId === zoneId));
                     } else {
-                        next = [...favs, { zoneUid, zoneId }];
+                        const maxOrder = favs.length ? Math.max(...favs.map(f => f.order ?? 0)) : -1;
+                        next = [...favs, { zoneUid, zoneId, order: maxOrder + 1 }];
                     }
                     S.update({ favorites: next });
                     if (S.saveFavorites) S.saveFavorites();
