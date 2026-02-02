@@ -140,33 +140,33 @@
 
         <div id="section-plates" class="portal-section hidden">
           <div class="portal-card">
-            <h2>Kentekenbeheer per bestuurder</h2>
-            <p class="text-secondary mb-lg">Selecteer een bestuurder om kentekens toe te voegen of restricties in te stellen.</p>
+            <h2>License plate management per driver</h2>
+            <p class="text-secondary mb-lg">Select a driver to add license plates or set restrictions.</p>
             <div class="form-group mb-lg">
-              <label>Bestuurder selecteren</label>
+              <label>Select driver</label>
               <select id="plates-driver-select" class="input-field">
-                <option value="">-- Selecteer bestuurder --</option>
+                <option value="">-- Select driver --</option>
               </select>
             </div>
             <div id="plates-driver-panel" class="hidden">
               <div class="form-group mb-md">
                 <label class="checkbox-label">
                   <input type="checkbox" id="plates-can-add">
-                  <span>Bestuurder mag zelf kentekens toevoegen</span>
+                  <span>Driver may add license plates</span>
                 </label>
               </div>
               <div class="form-group mb-md">
                 <label class="checkbox-label">
                   <input type="checkbox" id="plates-locked">
-                  <span>Kentekens vergrendeld (bestuurder kan niets wijzigen)</span>
+                  <span>Plates locked (driver cannot change anything)</span>
                 </label>
               </div>
               <div class="form-group mb-md">
-                <label>Max. aantal kentekens (0 = onbeperkt)</label>
+                <label>Max. number of plates (0 = unlimited)</label>
                 <input type="number" id="plates-max" class="input-field" min="0" value="0" style="max-width:100px;">
               </div>
               <div class="form-group mb-md">
-                <label>Gebruiksdagen (leeg = alle dagen)</label>
+                <label>Usage days (empty = all days)</label>
                 <div class="flex flex-wrap gap-sm" style="margin-top:8px;">
                   <label class="checkbox-label" style="margin-right:8px;"><input type="checkbox" class="allowed-day" data-day="0"> Zo</label>
                   <label class="checkbox-label" style="margin-right:8px;"><input type="checkbox" class="allowed-day" data-day="1"> Ma</label>
@@ -179,25 +179,25 @@
               </div>
               <div class="form-group mb-md flex gap-md">
                 <div>
-                  <label>Toegestane starttijd</label>
+                  <label>Allowed start time</label>
                   <input type="time" id="plates-time-start" class="input-field" style="max-width:100px;">
                 </div>
                 <div>
-                  <label>Toegestane eindtijd</label>
+                  <label>Allowed end time</label>
                   <input type="time" id="plates-time-end" class="input-field" style="max-width:100px;">
                 </div>
               </div>
-              <button class="btn btn-primary mb-lg" id="btn-save-plates-settings">Instellingen opslaan</button>
+              <button class="btn btn-primary mb-lg" id="btn-save-plates-settings">Save settings</button>
               <hr class="portal-hr">
-              <h3 class="mb-md">Kentekens toevoegen</h3>
+              <h3 class="mb-md">Add license plates</h3>
               <div class="flex gap-md mb-md">
                 <input type="text" id="plates-add-input" class="input-field" placeholder="1-ABC-123">
-                <button class="btn btn-secondary" id="btn-add-plate-driver">Toevoegen</button>
+                <button class="btn btn-secondary" id="btn-add-plate-driver">Add</button>
               </div>
               <div class="form-group mb-md">
-                <label>Bulk toevoegen (poolauto's – één kenteken per regel)</label>
+                <label>Bulk add (pool cars – one license plate per line)</label>
                 <textarea id="plates-bulk-input" class="input-field" rows="3" placeholder="1-ABC-123&#10;2-XYZ-456&#10;3-DEF-789" style="resize:vertical;"></textarea>
-                <button class="btn btn-outline btn-sm mt-sm" id="btn-bulk-add-plates">Bulk toevoegen aan deze bestuurder</button>
+                <button class="btn btn-outline btn-sm mt-sm" id="btn-bulk-add-plates">Bulk add to this driver</button>
               </div>
               <div id="plates-driver-list" class="plates-list"></div>
             </div>
