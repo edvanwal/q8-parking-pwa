@@ -11,7 +11,7 @@ Q8.State = (function() {
     const _state = {
         screen: 'login',      // 'login' | 'register' | 'parking' | 'history' | 'plates' | 'notifications' | 'car-specs' | 'car-specs'
         language: 'en',       // 'nl' | 'en'
-        darkMode: false,      // true = dark theme
+        darkMode: 'system',   // 'light' | 'dark' | 'system' (follow phone)
         rememberMe: false,
         passwordVisible: false,
         infoBanner: null,     // { type: 'info', text: string, dismissible: boolean }
@@ -140,15 +140,27 @@ Q8.State = (function() {
         // 4. Favorites
         loadFavorites();
 
-        // 5. Dark mode
+        // 5. Dark mode ('light'|'dark'|'system')
         try {
-            const d = localStorage.getItem('q8_dark_v1');
-            if (d !== null) _state.darkMode = d === 'true';
+            const d = localStorage.getItem('q8_dark_v2');
+            if (d === 'light' || d === 'dark' || d === 'system') _state.darkMode = d;
+            else {
+                const legacy = localStorage.getItem('q8_dark_v1');
+                if (legacy !== null) _state.darkMode = legacy === 'true' ? 'dark' : 'light';
+            }
         } catch (e) { /* ignore */ }
-        applyTheme(_state.darkMode);
+        initThemeListener();
+        applyThemeFromPref();
     }
 
-    function applyTheme(dark) {
+    function getEffectiveDark() {
+        if (_state.darkMode === 'system') {
+            return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+        return _state.darkMode === 'dark';
+    }
+    function applyThemeFromPref() {
+        const dark = getEffectiveDark();
         const html = document.documentElement;
         if (dark) {
             html.setAttribute('data-theme', 'dark');
@@ -156,6 +168,14 @@ Q8.State = (function() {
         } else {
             html.setAttribute('data-theme', 'light');
             html.style.colorScheme = 'light';
+        }
+    }
+    function initThemeListener() {
+        applyThemeFromPref();
+        if (window.matchMedia) {
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                if (_state.darkMode === 'system') applyThemeFromPref();
+            });
         }
     }
 
