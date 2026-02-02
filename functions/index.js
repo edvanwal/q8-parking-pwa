@@ -413,3 +413,51 @@ exports.triggerAutoStop = functions
             throw new functions.https.HttpsError('internal', error.message);
         }
     });
+
+// --- BILLING EXPORTS ---
+
+/**
+ * Export parking_sessions as CSV or JSON.
+ * Callable with: { format: 'csv'|'json', filters: { company_id?, user_id?, card_number?, billing_period? } }
+ */
+exports.exportParkingSessions = functions
+    .region('europe-west1')
+    .https
+    .onCall(async (data, context) => {
+        if (!context.auth) {
+            throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated');
+        }
+        const userDoc = await db.collection('users').doc(context.auth.uid).get();
+        if (!userDoc.exists || userDoc.data().role !== 'fleetmanager') {
+            throw new functions.https.HttpsError('permission-denied', 'Must be a fleet manager');
+        }
+        const tenantId = userDoc.data().tenantId || 'default';
+        const filters = data.filters || {};
+        if (!filters.company_id) filters.company_id = tenantId;
+        const format = (data.format || 'json').toLowerCase() === 'csv' ? 'csv' : 'json';
+        const content = await exportParkingSessions(db, filters, format);
+        return { content, format };
+    });
+
+/**
+ * Export monthly_subscriptions as CSV or JSON.
+ * Callable with: { format: 'csv'|'json', filters: { company_id?, billing_period? } }
+ */
+exports.exportMonthlySubscriptions = functions
+    .region('europe-west1')
+    .https
+    .onCall(async (data, context) => {
+        if (!context.auth) {
+            throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated');
+        }
+        const userDoc = await db.collection('users').doc(context.auth.uid).get();
+        if (!userDoc.exists || userDoc.data().role !== 'fleetmanager') {
+            throw new functions.https.HttpsError('permission-denied', 'Must be a fleet manager');
+        }
+        const tenantId = userDoc.data().tenantId || 'default';
+        const filters = data.filters || {};
+        if (!filters.company_id) filters.company_id = tenantId;
+        const format = (data.format || 'json').toLowerCase() === 'csv' ? 'csv' : 'json';
+        const content = await exportMonthlySubscriptions(db, filters, format);
+        return { content, format };
+    });
