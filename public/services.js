@@ -88,9 +88,11 @@ Q8.Services = (function() {
                 if (S.get.screen === 'login' || S.get.screen === 'register') {
                     setScreen('parking');
                 }
+                if (db) loadHistory(user.uid);
             } else {
                 if (U && U.debug) U.debug('AUTH', "No User / Logged Out");
-                S.update({ driverSettings: {} });
+                if (_historyUnsub) { _historyUnsub(); _historyUnsub = null; }
+                S.update({ history: [], driverSettings: {} });
                 if (S.get.screen !== 'register') {
                     setScreen('login');
                 }
