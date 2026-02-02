@@ -954,18 +954,18 @@ Q8.UI = (function() {
             }
             const favUids = new Set((state.favorites || []).map(f => f.zoneUid || f.zoneId));
             container.innerHTML = geoMatches.map(z => {
-                const street = z.street || '', houseNumber = z.houseNumber || '', city = z.city || '', zoneId = z.id || '';
-                const addr = street ? `${street}${houseNumber ? ' ' + houseNumber : ''}${city ? ', ' + city : ''}` : (city ? `${zoneId}, ${city}` : zoneId);
-                const line = zoneId ? `${zoneId} · ${addr}` : addr;
+                const street = z.street || '', houseNumber = z.houseNumber || '', city = z.city || '', zoneIdDisp = z.id || '';
+                const addr = street ? `${street}${houseNumber ? ' ' + houseNumber : ''}${city ? ', ' + city : ''}` : (city ? `${zoneIdDisp}, ${city}` : zoneIdDisp);
+                const line = zoneIdDisp ? `${zoneIdDisp} · ${addr}` : addr;
                 const isFav = favUids.has(z.uid) || favUids.has(z.id);
                 const uid = z.uid || z.id;
-                const zoneId = z.id || z.uid || '';
+                const zoneIdAttr = z.id || z.uid || '';
                 return `<div class="search-result-item" data-action="open-overlay" data-target="sheet-zone"
-                     data-zone-uid="${uid}" data-zone="${zoneId}" data-price="${z.price}"
+                     data-zone-uid="${uid}" data-zone="${zoneIdAttr}" data-price="${z.price}"
                      data-rates='${JSON.stringify(z.rates || [])}'>
                     <span class="search-result-text">${line}</span>
                     <div class="flex items-center gap-sm" style="flex-shrink:0;">
-                      ${isFav ? `<button type="button" class="icon-btn fav-star-btn ptr-enabled" data-action="remove-favorite" data-zone-uid="${uid}" data-zone-id="${zoneId}" title="${state.language === 'nl' ? 'Verwijder uit favorieten' : 'Remove from favorites'}" onclick="event.stopPropagation();" style="padding:4px; color:var(--danger); background:transparent; border:none;">♥</button>` : ''}
+                      ${isFav ? `<button type="button" class="icon-btn fav-star-btn ptr-enabled" data-action="remove-favorite" data-zone-uid="${uid}" data-zone-id="${zoneIdAttr}" title="${state.language === 'nl' ? 'Verwijder uit favorieten' : 'Remove from favorites'}" onclick="event.stopPropagation();" style="padding:4px; color:var(--danger); background:transparent; border:none;">♥</button>` : ''}
                       <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
                     </div>
                 </div>`;
