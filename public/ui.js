@@ -1306,6 +1306,7 @@ Q8.UI = (function() {
             return;
         }
 
+        if (_mapLoadCheckTimeout) { clearTimeout(_mapLoadCheckTimeout); _mapLoadCheckTimeout = null; }
         renderMapMarkers();
         google.maps.event.addListenerOnce(map, 'idle', function() {
             google.maps.event.trigger(map, 'resize');
