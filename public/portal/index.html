@@ -83,58 +83,58 @@
             </div>
           </div>
           <div class="portal-card">
-            <h2>Overzicht</h2>
-            <p class="text-secondary">Welkom in het Fleet Manager Portal. Gebruik het menu om gebruikers te beheren, actieve sessies te monitoren en kentekeninstellingen aan te passen.</p>
+            <h2>Overview</h2>
+            <p class="text-secondary">Welcome to the Fleet Manager Portal. Use the menu to manage users, monitor active sessions and configure license plate settings.</p>
           </div>
         </div>
 
         <div id="section-users" class="portal-section hidden">
           <div class="portal-card">
             <div class="card-header">
-              <h2>Bestuurders</h2>
-              <button class="btn btn-primary" id="btn-add-user">+ Bestuurder uitnodigen</button>
+              <h2>Drivers</h2>
+              <button class="btn btn-primary" id="btn-add-user">+ Invite driver</button>
             </div>
             <div id="users-list" class="table-container">
               <table class="portal-table">
                 <thead>
-                  <tr><th>E-mail</th><th>Naam</th><th>Rol</th><th>Kentekenbeheer</th><th></th></tr>
+                  <tr><th>Email</th><th>Name</th><th>Role</th><th>Plate management</th><th></th></tr>
                 </thead>
                 <tbody id="users-tbody"></tbody>
               </table>
-              <p id="users-empty" class="text-secondary text-center pad-lg hidden">Nog geen bestuurders. Voeg er een toe.</p>
+              <p id="users-empty" class="text-secondary text-center pad-lg hidden">No drivers yet. Add one.</p>
             </div>
           </div>
         </div>
 
         <div id="section-sessions" class="portal-section hidden">
           <div class="portal-card">
-            <h2>Actieve parkeersessies</h2>
+            <h2>Active parking sessions</h2>
             <div id="sessions-list" class="table-container">
               <table class="portal-table">
                 <thead>
-                  <tr><th>Bestuurder</th><th>Zone</th><th>Kenteken</th><th>Gestart</th><th></th></tr>
+                  <tr><th>Driver</th><th>Zone</th><th>License plate</th><th>Started</th><th></th></tr>
                 </thead>
                 <tbody id="sessions-tbody"></tbody>
               </table>
-              <p id="sessions-empty" class="text-secondary text-center pad-lg">Geen actieve sessies</p>
+              <p id="sessions-empty" class="text-secondary text-center pad-lg">No active sessions</p>
             </div>
           </div>
         </div>
 
         <div id="section-settings" class="portal-section hidden">
           <div class="portal-card">
-            <h2>Tenant instellingen</h2>
+            <h2>Tenant settings</h2>
             <div class="form-group">
-              <label>Auto-stop tijd (alle sessies stoppen)</label>
+              <label>Auto-stop time (all sessions stop)</label>
               <div class="flex gap-md align-center">
                 <input type="time" id="setting-auto-stop" class="input-field" style="max-width:120px;">
                 <label class="checkbox-label">
                   <input type="checkbox" id="setting-auto-stop-enabled">
-                  <span>Ingeschakeld</span>
+                  <span>Enabled</span>
                 </label>
               </div>
             </div>
-            <button class="btn btn-primary" id="btn-save-settings">Opslaan</button>
+            <button class="btn btn-primary" id="btn-save-settings">Save</button>
           </div>
         </div>
 
