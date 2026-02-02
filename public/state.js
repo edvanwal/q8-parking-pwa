@@ -35,6 +35,7 @@ Q8.State = (function() {
         nearbyFacilities: [], // Filtered by ref point + radius
         nearbyFacilitiesRadiusKm: 2,
         nearbyFacilitiesRef: 'user', // 'user' | 'zone' (zone = gekozen zone centrum)
+        facilityOccupancy: {}, // facilityId -> availableCapacity (from dynamicDataUrl)
         // State "live" in localStorage, fallback naar 1 default
         plates: [],
         selectedPlateId: null, // Track currently selected plate in list

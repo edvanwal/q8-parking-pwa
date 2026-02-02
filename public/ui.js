@@ -405,12 +405,14 @@ Q8.UI = (function() {
 
     function buildFacilitiesListHtml(state, nearby) {
         const nl = state.language === 'nl';
+        const occupancy = state.facilityOccupancy || {};
         return nearby.map(f => {
+            const availableCapacity = (f.availableCapacity != null ? f.availableCapacity : occupancy[f.id]);
             const dist = (f._distKm != null) ? (f._distKm < 1 ? (f._distKm * 1000).toFixed(0) + ' m' : f._distKm.toFixed(1).replace('.', ',') + ' km') : '';
             const tariff = f.tariffSummary ? '<span class="text-secondary text-sm">' + f.tariffSummary + '</span>' : '';
             const addr = [f.street, f.city].filter(Boolean).join(', ') || f.city || '';
             const meta = [];
-            if (f.availableCapacity != null && f.availableCapacity >= 0) meta.push((nl ? 'ca. ' : 'ca. ') + f.availableCapacity + (nl ? ' plekken vrij' : ' spaces available'));
+            if (availableCapacity != null && availableCapacity >= 0) meta.push((nl ? 'ca. ' : 'ca. ') + availableCapacity + (nl ? ' plekken vrij' : ' spaces available'));
             if (f.openingTimesSummary) meta.push(f.openingTimesSummary);
             if (f.capacity != null && f.capacity > 0) meta.push(f.capacity + (nl ? ' plekken' : ' spaces'));
             if (f.chargingPointCapacity != null && f.chargingPointCapacity > 0) meta.push(f.chargingPointCapacity + (nl ? ' laadplekken' : ' EV'));
