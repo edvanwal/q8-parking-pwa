@@ -1020,7 +1020,7 @@ Q8.UI = (function() {
         const q = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const regex = q ? new RegExp(`(${q})`, 'gi') : null;
         container.innerHTML = matches.map(z => {
-            // Format: "straatnaam + huisnummer + plaats" of fallback "zoneId, stad"
+            // Format: "zonenummer · straatnaam + huisnummer + plaats"
             const street = z.street || '';
             const houseNumber = z.houseNumber || '';
             const city = z.city || '';
@@ -1028,7 +1028,8 @@ Q8.UI = (function() {
             const addr = street
                 ? `${street}${houseNumber ? ' ' + houseNumber : ''}${city ? ', ' + city : ''}`
                 : (city ? `${zoneId}, ${city}` : zoneId);
-            const displayAddr = regex ? addr.replace(regex, '<strong class="search-highlight">$1</strong>') : addr;
+            const line = zoneId ? `${zoneId} · ${addr}` : addr;
+            const displayAddr = regex ? line.replace(regex, '<strong class="search-highlight">$1</strong>') : line;
             const isFav = favUids.has(z.uid) || favUids.has(z.id);
             return `
             <div class="search-result-item" data-action="open-overlay" data-target="sheet-zone"
