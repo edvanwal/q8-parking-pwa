@@ -272,7 +272,7 @@ Q8.App = (function() {
                     }
                     S.update({ favorites: next });
                     if (S.saveFavorites) S.saveFavorites();
-                    if (UI.showToast) UI.showToast(exists ? (S.get.language === 'nl' ? 'Verwijderd uit favorieten' : 'Removed from favorites') : (S.get.language === 'nl' ? 'Toegevoegd aan favorieten' : 'Added to favorites'));
+                    if (UI.showToast) UI.showToast(exists ? (S.get.language === 'nl' ? 'Verwijderd uit favorieten' : 'Removed from favorites') : (S.get.language === 'nl' ? 'Toegevoegd aan favorieten' : 'Added to favorites'), 'success');
                     break;
                 }
                 case 'remove-favorite': {
@@ -280,7 +280,7 @@ Q8.App = (function() {
                     const favs = (S.get.favorites || []).filter(f => f.zoneUid !== zoneUid);
                     S.update({ favorites: favs });
                     if (S.saveFavorites) S.saveFavorites();
-                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Verwijderd uit favorieten' : 'Removed from favorites');
+                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Verwijderd uit favorieten' : 'Removed from favorites', 'success');
                     break;
                 }
                 case 'add-favorite-from-history': {
@@ -332,14 +332,14 @@ Q8.App = (function() {
                     const email = document.getElementById('inp-email')?.value;
                     const password = document.getElementById('inp-password')?.value;
                     if (!email || !password) {
-                         if(UI.showToast) UI.showToast('Please enter email and password');
+                         if(UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Voer e-mail en wachtwoord in' : 'Please enter email and password', 'error');
                          return;
                     }
                     target.innerText = 'SIGNING IN...';
                     target.disabled = true;
                     Services.loginUser(email, password).catch(err => {
                          console.error(err);
-                         if(UI.showToast) UI.showToast(err.message);
+                         if(UI.showToast) UI.showToast(err.message, 'error');
                     }).finally(() => {
                          target.innerText = 'SIGN IN';
                          target.disabled = false;
