@@ -330,10 +330,41 @@ Q8.App = (function() {
                     const favs = S.get.favorites || [];
                     const exists = favs.some(f => f.zoneUid === zoneUid || f.zoneId === zoneId);
                     if (exists) break;
-                    const next = [...favs, { zoneUid: zoneUid || zoneId, zoneId: zoneId || zoneUid }];
+                    const maxOrder = favs.length ? Math.max(...favs.map(f => f.order ?? 0)) : -1;
+                    const next = [...favs, { zoneUid: zoneUid || zoneId, zoneId: zoneId || zoneUid, order: maxOrder + 1 }];
                     S.update({ favorites: next });
                     if (S.saveFavorites) S.saveFavorites();
                     if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Toegevoegd aan favorieten' : 'Added to favorites', 'success');
+                    break;
+                }
+                case 'edit-favorite-name': {
+                    const zoneUid = target.getAttribute('data-zone-uid');
+                    const zoneId = target.getAttribute('data-zone-id');
+                    if (!zoneUid && !zoneId) break;
+                    const favs = S.get.favorites || [];
+                    const fav = favs.find(f => (f.zoneUid === zoneUid || f.zoneId === zoneUid) || (f.zoneUid === zoneId || f.zoneId === zoneId));
+                    if (!fav) break;
+                    const current = (fav.name || '').trim();
+                    const promptMsg = S.get.language === 'nl' ? 'Naam voor deze favoriet (bijv. Werk, Thuis):' : 'Name for this favorite (e.g. Work, Home):';
+                    const newName = (prompt(promptMsg, current) || '').trim();
+                    if (newName === current) break;
+                    const next = favs.map(f => (f === fav) ? { ...f, name: newName || undefined } : f);
+                    S.update({ favorites: next });
+                    if (S.saveFavorites) S.saveFavorites();
+                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Naam bijgewerkt' : 'Name updated', 'success');
+                    break;
+                }
+                case 'reorder-favorites': {
+                    const fromIdx = parseInt(target.getAttribute('data-from-idx'), 10);
+                    const toIdx = parseInt(target.getAttribute('data-to-idx'), 10);
+                    if (isNaN(fromIdx) || isNaN(toIdx) || fromIdx === toIdx) break;
+                    const favs = [...(S.get.favorites || [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+                    if (fromIdx < 0 || fromIdx >= favs.length || toIdx < 0 || toIdx >= favs.length) break;
+                    const [moved] = favs.splice(fromIdx, 1);
+                    favs.splice(toIdx, 0, moved);
+                    const next = favs.map((f, i) => ({ ...f, order: i }));
+                    S.update({ favorites: next });
+                    if (S.saveFavorites) S.saveFavorites();
                     break;
                 }
 
