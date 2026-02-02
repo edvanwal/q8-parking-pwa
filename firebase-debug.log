@@ -118,3 +118,119 @@ Require stack:
     at async chain (C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\index.js:43:9)
 [error] 
 [error] Error: An unexpected error has occurred.
+[debug] [2026-02-02T17:28:36.367Z] ----------------------------------------------------------------------
+[debug] [2026-02-02T17:28:36.370Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\edwin\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions
+[debug] [2026-02-02T17:28:36.370Z] CLI Version:   15.5.1
+[debug] [2026-02-02T17:28:36.370Z] Platform:      win32
+[debug] [2026-02-02T17:28:36.371Z] Node Version:  v24.12.0
+[debug] [2026-02-02T17:28:36.371Z] Time:          Mon Feb 02 2026 18:28:36 GMT+0100 (Midden-Europese standaardtijd)
+[debug] [2026-02-02T17:28:36.371Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-02-02T17:28:38.372Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-02T17:28:38.373Z] > authorizing via signed-in user (edwin.vanwalsum@gmail.com)
+[debug] [2026-02-02T17:28:38.373Z] [iam] checking project q8-parking-pwa for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2026-02-02T17:28:38.374Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:38.374Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:38.374Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa:testIamPermissions [none]
+[debug] [2026-02-02T17:28:38.374Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa:testIamPermissions  x-goog-user-project=q8-parking-pwa
+[debug] [2026-02-02T17:28:38.375Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-02-02T17:28:39.041Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa:testIamPermissions 200
+[debug] [2026-02-02T17:28:39.041Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-02-02T17:28:39.041Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:39.041Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:39.042Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/q8-parking-pwa/serviceAccounts/q8-parking-pwa@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-02-02T17:28:39.042Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/q8-parking-pwa/serviceAccounts/q8-parking-pwa@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-02-02T17:28:39.686Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/q8-parking-pwa/serviceAccounts/q8-parking-pwa@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2026-02-02T17:28:39.686Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/q8-parking-pwa/serviceAccounts/q8-parking-pwa@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'q8-parking-pwa'...
+[info] 
+[info] i  deploying functions 
+[info] +  functions: Finished running predeploy script. 
+[debug] [2026-02-02T17:28:39.689Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:39.689Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:39.690Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa [none]
+[debug] [2026-02-02T17:28:39.856Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa 200
+[debug] [2026-02-02T17:28:39.856Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa {"projectNumber":"410808537958","projectId":"q8-parking-pwa","lifecycleState":"ACTIVE","name":"Q8-parking-pwa","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-01-29T20:39:34.252869Z"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2026-02-02T17:28:39.858Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:39.858Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:39.859Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/q8-parking-pwa/adminSdkConfig [none]
+[debug] [2026-02-02T17:28:40.158Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/q8-parking-pwa/adminSdkConfig 200
+[debug] [2026-02-02T17:28:40.158Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/q8-parking-pwa/adminSdkConfig {"projectId":"q8-parking-pwa","storageBucket":"q8-parking-pwa.firebasestorage.app"}
+[debug] [2026-02-02T17:28:40.158Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:40.158Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:40.158Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/q8-parking-pwa/configs [none]
+[debug] [2026-02-02T17:28:40.882Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/q8-parking-pwa/configs 200
+[debug] [2026-02-02T17:28:40.882Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/q8-parking-pwa/configs {}
+[debug] [2026-02-02T17:28:40.883Z] Validating nodejs source
+[warn] !  functions: Runtime Node.js 20 will be deprecated on 2026-04-30 and will be decommissioned on 2026-10-30, after which you will not be able to deploy without upgrading. Consider upgrading now to avoid disruption. See https://cloud.google.com/functions/docs/runtime-support for full details on the lifecycle policy 
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] !  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2026-02-02T17:28:41.865Z] > [functions] package.json contents: {
+  "name": "q8-parking-functions",
+  "description": "Firebase Cloud Functions for Q8 Parking PWA",
+  "version": "1.0.0",
+  "engines": {
+    "node": "20"
+  },
+  "main": "index.js",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "firebase-admin": "^11.11.0",
+    "firebase-functions": "^4.5.0"
+  },
+  "private": true
+}
+[debug] [2026-02-02T17:28:41.865Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2026-02-02T17:28:41.867Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-02-02T17:28:41.886Z] Found firebase-functions binary at 'C:\Users\edwin\OneDrive\OneNote\B2B parkeren backend\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8598
+
+[debug] [2026-02-02T17:28:42.622Z] Got response from /__/functions.yaml {"endpoints":{"onSessionCreated":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"region":["europe-west1"],"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.create","eventFilters":{"resource":"projects/q8-parking-pwa/databases/(default)/documents/sessions/{sessionId}"},"retry":false},"labels":{},"entryPoint":"onSessionCreated"},"onSessionUpdated":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"region":["europe-west1"],"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.update","eventFilters":{"resource":"projects/q8-parking-pwa/databases/(default)/documents/sessions/{sessionId}"},"retry":false},"labels":{},"entryPoint":"onSessionUpdated"},"autoStopExpiredSessions":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"region":["europe-west1"],"scheduleTrigger":{"schedule":"every 1 minutes","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetryDuration":null,"maxBackoffDuration":null,"minBackoffDuration":null},"timeZone":"Europe/Amsterdam"},"labels":{},"entryPoint":"autoStopExpiredSessions"},"triggerAutoStop":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"region":["europe-west1"],"callableTrigger":{},"entryPoint":"triggerAutoStop"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}]}
+[info] i  functions: preparing functions directory for uploading... 
+[info] i  functions: packaged C:\Users\edwin\OneDrive\OneNote\B2B parkeren backend\functions (42.02 KB) for uploading 
+[debug] [2026-02-02T17:28:46.692Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:46.692Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:46.692Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/q8-parking-pwa/locations/-/functions [none]
+[debug] [2026-02-02T17:28:47.239Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/q8-parking-pwa/locations/-/functions 200
+[debug] [2026-02-02T17:28:47.239Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/q8-parking-pwa/locations/-/functions {}
+[debug] [2026-02-02T17:28:47.239Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:47.240Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:47.240Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/q8-parking-pwa/locations/-/functions filter=environment%3D%22GEN_2%22
+[debug] [2026-02-02T17:28:48.225Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/q8-parking-pwa/locations/-/functions 200
+[debug] [2026-02-02T17:28:48.225Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/q8-parking-pwa/locations/-/functions {}
+[info] i  functions: ensuring required API cloudscheduler.googleapis.com is enabled... 
+[debug] [2026-02-02T17:28:48.227Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:48.227Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:48.227Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/410808537958/services/cloudscheduler.googleapis.com [none]
+[debug] [2026-02-02T17:28:48.227Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/410808537958/services/cloudscheduler.googleapis.com  x-goog-user-project=410808537958
+[debug] [2026-02-02T17:28:49.021Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/410808537958/services/cloudscheduler.googleapis.com 200
+[debug] [2026-02-02T17:28:49.021Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/410808537958/services/cloudscheduler.googleapis.com [omitted]
+[warn] !  functions: missing required API cloudscheduler.googleapis.com. Enabling now... 
+[debug] [2026-02-02T17:28:49.022Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:49.022Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:28:49.022Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/410808537958/services/cloudscheduler.googleapis.com:enable [none]
+[debug] [2026-02-02T17:28:49.022Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/410808537958/services/cloudscheduler.googleapis.com:enable  x-goog-user-project=410808537958
+[debug] [2026-02-02T17:28:50.153Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/410808537958/services/cloudscheduler.googleapis.com:enable 200
+[debug] [2026-02-02T17:28:50.153Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/410808537958/services/cloudscheduler.googleapis.com:enable [omitted]
+[debug] [2026-02-02T17:29:00.165Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:29:00.165Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:29:00.165Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa [none]
+[debug] [2026-02-02T17:29:00.847Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa 200
+[debug] [2026-02-02T17:29:00.847Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/q8-parking-pwa {"projectNumber":"410808537958","projectId":"q8-parking-pwa","lifecycleState":"ACTIVE","name":"Q8-parking-pwa","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-01-29T20:39:34.252869Z"}
+[debug] [2026-02-02T17:29:00.848Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:29:00.848Z] Checked if tokens are valid: true, expires at: 1770056789176
+[debug] [2026-02-02T17:29:00.848Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v1/projects/q8-parking-pwa/locations/europe-west1/functions:generateUploadUrl [none]
+[debug] [2026-02-02T17:29:00.848Z] >>> [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/q8-parking-pwa/locations/europe-west1/functions:generateUploadUrl {}
