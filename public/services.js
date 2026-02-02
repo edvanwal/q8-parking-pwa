@@ -401,7 +401,7 @@ Q8.Services = (function() {
     }
 
     function tryOpenOverlay(id, contextData = null) {
-        const allowedSwitches = ['menu-overlay', 'sheet-plate-selector', 'sheet-zone', 'modal-add-plate', 'modal-edit-plate', 'modal-forgot-password', 'modal-confirm-delete-plate'];
+        const allowedSwitches = ['menu-overlay', 'sheet-plate-selector', 'sheet-zone', 'modal-add-plate', 'modal-edit-plate', 'modal-forgot-password', 'modal-confirm-delete-plate', 'modal-confirm-daypass'];
 
         // Guard: Prevent overlap unless allowed
         if (S.get.activeOverlay && S.get.activeOverlay !== id && !allowedSwitches.includes(id)) {
@@ -475,6 +475,24 @@ Q8.Services = (function() {
     function toast(msg) {
         if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg);
         else if (typeof window.showToast === 'function') window.showToast(msg);
+    }
+
+    // Dagkaart detection: zone has day pass (from isDayPass or rates with "Dagkaart" in detail)
+    function hasDayPass(zone) {
+        if (!zone) return false;
+        if (zone.isDayPass === true) return true;
+        const rates = zone.rates || [];
+        return rates.some(r => /dagkaart|day.?pass/i.test(r.detail || ''));
+    }
+
+    function getDayPassCost(zone) {
+        if (!zone) return null;
+        const rates = zone.rates || [];
+        const dagkaartRate = rates.find(r => /dagkaart|day.?pass/i.test(r.detail || ''));
+        if (!dagkaartRate) return null;
+        const detail = (dagkaartRate.detail || '').replace(',', '.');
+        const match = detail.match(/[\d]+[.,]?\d*/);
+        return match ? match[0].replace(',', '.') : (dagkaartRate.price || null);
     }
 
     function handleStartParking() {
@@ -1040,6 +1058,8 @@ Q8.Services = (function() {
         setScreen,
         tryOpenOverlay,
         handleStartParking,
+        hasDayPass,
+        getDayPassCost,
         handleEndParking,
         modifyActiveSessionEnd,
         saveNewPlate,
