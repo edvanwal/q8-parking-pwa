@@ -894,10 +894,11 @@ Q8.UI = (function() {
         const query = (state.searchQuery || '').trim();
         const isAddressMode = (Q8.Services && Q8.Services.detectSearchMode && Q8.Services.detectSearchMode(query) === 'address');
         const minLen = isAddressMode ? 3 : 2;
-        const shouldShow = state.screen === 'parking' && state.searchQuery.length >= minLen && state.activeOverlay === null;
+        const zoneSelectedOrActive = !!state.selectedZone || !!state.session;
+        const shouldShow = state.screen === 'parking' && !zoneSelectedOrActive && state.searchQuery.length >= minLen && state.activeOverlay === null;
         const favQuick = document.getElementById('ui-favorites-quick');
         const favs = state.favorites || [];
-        const showFavQuick = state.screen === 'parking' && !state.session && state.activeOverlay === null && favs.length > 0 && state.searchQuery.length < 2;
+        const showFavQuick = state.screen === 'parking' && !zoneSelectedOrActive && state.activeOverlay === null && favs.length > 0 && state.searchQuery.length < 2;
         if (favQuick) {
             favQuick.style.display = showFavQuick ? 'block' : 'none';
             favQuick.className = showFavQuick ? 'search-results-panel search-results-panel--pill' : 'hidden';
