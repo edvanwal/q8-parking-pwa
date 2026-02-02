@@ -105,6 +105,15 @@ Q8.UI = (function() {
         if (idleSearch) idleSearch.style.display = isActive ? 'none' : 'block';
         if (activeParking) activeParking.style.display = isActive ? 'block' : 'none';
 
+        // Zones loading indicator
+        const zonesLoadingEl = document.getElementById('zones-loading-overlay');
+        if (zonesLoadingEl) {
+            const loading = state.zonesLoading === true;
+            zonesLoadingEl.classList.toggle('hidden', !loading);
+            const textEl = zonesLoadingEl.querySelector('.zones-loading-text');
+            if (textEl) textEl.textContent = state.language === 'nl' ? 'Parkeerzones laden...' : 'Loading parking zones...';
+        }
+
         // Markers: full render when zones/session change; only update icons when selection changes (avoids shrink bug)
         const zoneKey = `${state.zones.length}|${state.session ? '1' : '0'}`;
         const selKey = state.selectedZone || '';
