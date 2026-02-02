@@ -58,6 +58,10 @@ Q8.App = (function() {
                     break;
                 }
 
+                case 'dismiss-toast':
+                    if (UI && UI.dismissToast) UI.dismissToast();
+                    break;
+
                 case 'nav-to':
                     closeSideMenu(); // Close menu when navigating
                     if (Services && Services.setScreen) Services.setScreen(targetId);
