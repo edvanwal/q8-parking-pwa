@@ -1214,6 +1214,25 @@ Q8.UI = (function() {
         if (window.Q8_DIAG) console.log('[DIAG_MAPS]', tag, msg, data || '');
     }
 
+    function showMapLoadError(message) {
+        var el = document.getElementById('map-load-error');
+        var textEl = document.getElementById('map-load-error-text');
+        var container = document.getElementById('map-container');
+        var fileWarning = document.getElementById('map-file-warning');
+        if (fileWarning) { fileWarning.classList.add('hidden'); fileWarning.style.display = 'none'; }
+        if (container) container.style.display = 'none';
+        if (el) {
+            if (textEl && message) textEl.textContent = message;
+            el.classList.remove('hidden');
+            el.style.display = 'block';
+        }
+    }
+
+    function hideMapLoadError() {
+        var el = document.getElementById('map-load-error');
+        if (el) { el.classList.add('hidden'); el.style.display = 'none'; }
+    }
+
     function initGoogleMap() {
         const container = document.getElementById('map-container');
         // #region agent log
@@ -1232,7 +1251,10 @@ Q8.UI = (function() {
             const script = document.createElement('script');
             script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMapCallback`;
             script.async = true;
-            script.onerror = function() { diagMaps('initGoogleMap', 'script-load-error'); };
+            script.onerror = function() {
+                diagMaps('initGoogleMap', 'script-load-error');
+                showMapLoadError('Het laden van de Google Maps-script is mislukt. Controleer uw internetverbinding of of de API-sleutel localhost toestaat.');
+            };
             window.initMapCallback = function() {
                  // #region agent log
                  fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:initMapCallback',message:'callback fired',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(function(){});
