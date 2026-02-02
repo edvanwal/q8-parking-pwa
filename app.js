@@ -25,6 +25,12 @@ Q8.App = (function() {
 
     function handleClick(e) {
         try {
+            // Blur search input on click outside (prevents persistent blinking caret on desktop)
+            const inpSearch = document.getElementById('inp-search');
+            if (inpSearch && document.activeElement === inpSearch && !e.target.closest('#ui-idle-search') && !e.target.closest('.map-search-float')) {
+                inpSearch.blur();
+            }
+
             // 1. Handle Backdrop Clicks (exact target = dark overlay, not sheet content)
             if (e.target.classList.contains('overlay-backdrop')) {
                 if (e.target.id === 'menu-overlay-backdrop') {

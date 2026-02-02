@@ -339,6 +339,10 @@ Q8.Services = (function() {
             return;
         }
 
+        // Blur search input when opening overlay (prevents blinking caret on desktop)
+        const inpSearch = document.getElementById('inp-search');
+        if (inpSearch && document.activeElement === inpSearch) inpSearch.blur();
+
         // --- ZONE SELECTION (fragile) ---
         // Risk: sheet-zone opened without context (e.g. from plate selector) leaves selectedZone stale.
         // Risk: contextData.uid/zone missing when clicked from marker with wrong data-* attributes.
