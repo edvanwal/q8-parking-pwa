@@ -101,8 +101,9 @@ Q8.UI = (function() {
             greetingEl.style.display = 'none';
         }
 
-        // Visibility
-        if (idleSearch) idleSearch.style.display = isActive ? 'none' : 'block';
+        // Visibility: hide search bar and zone list when zone selected or parking active
+        const hideSearchUI = isActive || !!state.selectedZone;
+        if (idleSearch) idleSearch.style.display = hideSearchUI ? 'none' : 'block';
         if (activeParking) activeParking.style.display = isActive ? 'block' : 'none';
 
         // Zones loading / error indicator
