@@ -44,7 +44,7 @@ Q8.UI = (function() {
         if (state.screen === 'parking') {
             // Set fallback message timeout first (so it runs even if renderParkingView throws)
             var isFile = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
-            if (!isFile && typeof _mapLoadCheckTimeout !== 'undefined') {
+            if (!isFile) {
                 if (_mapLoadCheckTimeout) clearTimeout(_mapLoadCheckTimeout);
                 _mapLoadCheckTimeout = setTimeout(function() {
                     _mapLoadCheckTimeout = null;
