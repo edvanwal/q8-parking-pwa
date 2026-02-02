@@ -21,10 +21,14 @@ Q8.UI = (function() {
     // --- CORE RENDERER ---
 
     function update() {
+        try {
         const state = S.get; // Access raw state object
 
         // 1. Screens
         const activeViewId = `view-${state.screen === 'parking' ? 'map' : state.screen}`;
+        // #region agent log
+        if (state.screen === 'parking') { fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:update',message:'showing parking view',data:{activeViewId:activeViewId},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H4'})}).catch(function(){}); }
+        // #endregion
         document.querySelectorAll('.screen').forEach(el => {
             el.style.display = (el.id === activeViewId) ? 'flex' : 'none';
             el.classList.toggle('hidden', el.id !== activeViewId);
@@ -1240,6 +1244,9 @@ Q8.UI = (function() {
         google.maps.event.addListenerOnce(map, 'idle', function() {
             google.maps.event.trigger(map, 'resize');
         });
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:initGoogleMap',message:'done',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(function(){});
+        // #endregion
         diagMaps('initGoogleMap', 'done');
     }
 
