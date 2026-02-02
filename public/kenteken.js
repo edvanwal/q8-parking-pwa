@@ -127,12 +127,19 @@ Q8.Kenteken = (function() {
 
     /**
      * Lookup kenteken bij RDW Open Data (gratis, geen API-key).
+     * T3: resultaat wordt 5 min gecached om rate limits te vermijden.
      * @param {string} normalized Genormaliseerd kenteken (zonder streepjes)
      * @returns {Promise<{ found: boolean, data?: { merk?: string, handelsbenaming?: string, voertuigsoort?: string } }>}
      */
     function lookupRDW(normalized) {
         if (!normalized || normalized.length < 6) {
             return Promise.resolve({ found: false });
+        }
+        const key = String(normalized).toUpperCase();
+        const now = Date.now();
+        const cached = _rdwCache[key];
+        if (cached && (now - cached.ts) < RDW_CACHE_TTL_MS) {
+            return Promise.resolve(cached.result);
         }
         const kentekenParam = encodeURIComponent(normalized);
         const url = RDW_VOERTUIGEN_URL + '?kenteken=' + kentekenParam + '&$limit=1';
@@ -143,10 +150,12 @@ Q8.Kenteken = (function() {
             })
             .then(function(arr) {
                 if (!Array.isArray(arr) || arr.length === 0) {
-                    return { found: false };
+                    const result = { found: false };
+                    _rdwCache[key] = { result: result, ts: now };
+                    return result;
                 }
                 const row = arr[0];
-                return {
+                const result = {
                     found: true,
                     data: {
                         merk: row.merk || '',
@@ -154,6 +163,8 @@ Q8.Kenteken = (function() {
                         voertuigsoort: row.voertuigsoort || ''
                     }
                 };
+                _rdwCache[key] = { result: result, ts: now };
+                return result;
             })
             .catch(function(err) {
                 if (typeof Q8 !== 'undefined' && Q8.Utils && Q8.Utils.logger && Q8.Utils.logger.warn) {
