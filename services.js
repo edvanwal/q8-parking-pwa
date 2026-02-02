@@ -803,6 +803,7 @@ Q8.Services = (function() {
         loginUser,
         registerUser,
         logoutUser,
+        sendPasswordResetEmail,
         loadZones,
         setScreen,
         tryOpenOverlay,
