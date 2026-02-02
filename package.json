@@ -6,7 +6,10 @@
     "sync": "node scripts/sync-to-public.js",
     "deploy": "npm run sync && firebase deploy",
     "deploy:hosting": "firebase deploy --only hosting",
-    "deploy:firestore": "firebase deploy --only firestore"
+    "deploy:firestore": "firebase deploy --only firestore",
+    "deploy:functions": "firebase deploy --only functions",
+    "functions:install": "cd functions && npm install",
+    "functions:logs": "firebase functions:log"
   },
   "dependencies": {
     "firebase-tools": "^13.0.0"
