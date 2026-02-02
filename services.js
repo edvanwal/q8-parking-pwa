@@ -331,6 +331,9 @@ Q8.Services = (function() {
         const userId = auth && auth.currentUser ? auth.currentUser.uid : null;
         const tenantId = getTenantId();
 
+        S.update({ session, activeOverlay: null, selectedZone: null });
+        S.save();
+
         if (db && userId) {
             const sessionData = {
                 userId,
@@ -345,16 +348,11 @@ Q8.Services = (function() {
             };
             db.collection('sessions').add(sessionData).then((docRef) => {
                 session.sessionDocId = docRef.id;
-                S.update({ session, activeOverlay: null, selectedZone: null });
+                S.update({ session });
                 S.save();
             }).catch((err) => {
                 console.error('Firestore session create failed:', err);
-                S.update({ session, activeOverlay: null, selectedZone: null });
-                S.save();
             });
-        } else {
-            S.update({ session, activeOverlay: null, selectedZone: null });
-            S.save();
         }
 
         toast('Parking session started');
