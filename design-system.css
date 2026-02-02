@@ -937,6 +937,9 @@ body {
 .search-result-text .search-highlight { color: var(--primary); font-weight: 700; }
 .search-result-price { font-weight: 700; font-size: 0.9rem; color: var(--primary); flex-shrink: 0; }
 .fav-star { color: #ce1818; font-size: 0.9rem; margin-right: 4px; }
+.fav-card-draggable.fav-dragging { opacity: 0.6; }
+.fav-card-draggable.fav-drag-over { background: var(--bg-secondary); }
+.fav-drag-handle { user-select: none; -webkit-user-select: none; }
 .history-fav-btn { color: var(--primary); }
 .history-fav-btn svg { fill: transparent; }
 .history-fav-btn[data-action="remove-favorite"] svg { fill: currentColor; }
