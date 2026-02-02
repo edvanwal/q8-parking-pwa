@@ -85,7 +85,7 @@ function normalizeSessionForExport(doc) {
  * Normalize subscription doc for export.
  */
 function normalizeSubscriptionForExport(doc) {
-  const d = doc.data ? doc.data() : doc;
+  const d = typeof doc.data === 'function' ? doc.data() : doc.data || doc;
   const id = doc.id || d.subscription_id;
   const toIso = (v) => {
     if (!v) return null;
@@ -232,34 +232,38 @@ async function exportParkingSessions(db, filters, format) {
  */
 async function exportMonthlySubscriptions(db, filters, format) {
   const coll = db.collection('monthly_subscriptions');
-  let query = coll.orderBy('billing_period', 'asc').orderBy('user_id', 'asc');
+  let snapshot;
 
-  if (filters.company_id) {
-    query = coll.where('company_id', '==', filters.company_id)
+  if (filters.company_id && filters.billing_period) {
+    snapshot = await coll
+      .where('company_id', '==', filters.company_id)
+      .where('billing_period', '==', filters.billing_period)
+      .orderBy('user_id', 'asc')
+      .get();
+  } else if (filters.company_id) {
+    snapshot = await coll
+      .where('company_id', '==', filters.company_id)
       .orderBy('billing_period', 'asc')
-      .orderBy('user_id', 'asc');
-  }
-  if (filters.billing_period) {
-    query = (query.where ? query : coll)
-      .where('company_id', filters.company_id || '')
-      .where('billing_period', '==', filters.billing_period);
-    if (!filters.company_id) {
-      query = coll.where('billing_period', '==', filters.billing_period)
-        .orderBy('user_id', 'asc');
-    }
+      .orderBy('user_id', 'asc')
+      .limit(5000)
+      .get();
+  } else if (filters.billing_period) {
+    snapshot = await coll
+      .where('billing_period', '==', filters.billing_period)
+      .orderBy('user_id', 'asc')
+      .limit(5000)
+      .get();
+  } else {
+    snapshot = await coll
+      .orderBy('billing_period', 'asc')
+      .orderBy('user_id', 'asc')
+      .limit(5000)
+      .get();
   }
 
-  const snapshot = await (filters.company_id
-    ? coll.where('company_id', '==', filters.company_id)
-        .where('billing_period', filters.billing_period ? '==' : '>=', filters.billing_period || '')
-        .orderBy('billing_period', 'asc')
-        .orderBy('user_id', 'asc')
-        .get()
-    : filters.billing_period
-      ? coll.where('billing_period', '==', filters.billing_period).orderBy('user_id', 'asc').get()
-      : coll.orderBy('billing_period', 'asc').orderBy('user_id', 'asc').limit(5000).get());
-
-  const rows = snapshot.docs.map((doc) => normalizeSubscriptionForExport({ id: doc.id, ...doc }));
+  const rows = snapshot.docs.map((doc) =>
+    normalizeSubscriptionForExport({ id: doc.id, data: () => doc.data() })
+  );
   if (format === 'csv') return toCSV(rows, SUBSCRIPTION_COLUMNS);
   return JSON.stringify(rows, null, 2);
 }
