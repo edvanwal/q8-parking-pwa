@@ -976,7 +976,7 @@ Q8.UI = (function() {
                       <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
                     </div>
                 </div>`;
-            }).join('');
+            }).join('') + '<div class="rate-disclaimer text-secondary text-xs" style="padding:8px 16px 12px; line-height:1.3;">' + (state.language === 'nl' ? 'Tarieven zijn indicatief (RDW Open Data)' : 'Rates are indicative (RDW Open Data)') + '</div>';
             return;
         }
 
