@@ -299,9 +299,16 @@ Q8.App = (function() {
                     break;
 
                 case 'open-filters':
-                    // Check if filter sheet is active. If so, do nothing or toggle?
-                    // User click "Filters" button.
-                    S.update({ activeOverlay: 'sheet-filter' }); // Fixed singular ID
+                    S.update({ activeOverlay: 'sheet-filter' });
+                    break;
+
+                case 'export-history-csv':
+                    if (Q8.Utils && Q8.Utils.exportHistoryToCSV) Q8.Utils.exportHistoryToCSV(S.get);
+                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'CSV gedownload' : 'CSV downloaded');
+                    break;
+
+                case 'export-history-print':
+                    if (Q8.Utils && Q8.Utils.exportHistoryToPrint) Q8.Utils.exportHistoryToPrint(S.get);
                     break;
 
                 case 'toggle-filter-vehicle':
