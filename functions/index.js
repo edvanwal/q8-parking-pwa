@@ -31,24 +31,22 @@ function getNowInAmsterdam() {
 }
 
 /**
- * Calculate session end time based on start time and duration
+ * Get session end time - supports both session.end and startTime+duration
  */
 function getSessionEndTime(session) {
+    if (session.end) {
+        const e = session.end;
+        return e.toDate ? e.toDate() : (e._seconds ? new Date(e._seconds * 1000) : new Date(e));
+    }
     if (!session.startTime || !session.duration) return null;
-    
     let startMs;
     if (session.startTime.toDate) {
-        // Firestore Timestamp
         startMs = session.startTime.toDate().getTime();
     } else if (session.startTime._seconds) {
-        // Firestore Timestamp serialized
         startMs = session.startTime._seconds * 1000;
     } else {
-        // Already a Date or timestamp
         startMs = new Date(session.startTime).getTime();
     }
-    
-    // Duration is in minutes
     return new Date(startMs + session.duration * 60 * 1000);
 }
 
