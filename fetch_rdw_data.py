@@ -1,5 +1,5 @@
 import urllib.request, json, urllib.parse, os
-from datetime import datetime
+from datetime import datetime, timezone
 import firebase_admin
 from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
@@ -279,7 +279,7 @@ def run_update():
                     desc_text = calc_map.get((mgr_id, cc), cc) or ""
 
                     if 'kaart' in desc_text.lower(): continue
-                    if t_info[1] > 60: continue
+                    # D3: step > 60 (e.g. dagkaarten) now included; display handled below (e.g. step >= 480 -> "€ X / dag")
 
                     all_opts.append({
                         "day": s.get('daytimeframe', 'Daily'),
@@ -415,7 +415,8 @@ def run_update():
                 final_rates.append({
                     "time": t_str,
                     "price": label.replace('.', ','),
-                    "detail": detail
+                    "detail": detail,
+                    "rate_numeric": round(m["rate"], 2)
                 })
 
         best_price = 0.0
@@ -477,9 +478,13 @@ def run_update():
 
     print(f"Filtered out {skipped_count} zones. Uploading {len(filtered_zones)} valid zones...")
 
+    # D2: timestamp per run for debugging / datum- en versiecontrole
+    run_updated_at = datetime.now(timezone.utc).isoformat()
+
     for z in filtered_zones:
         doc_id = f"{z['mgr_id']}_{z['id']}" if z['id'] != z['name'] else z['id']
-        db.collection('zones').document(doc_id).set(z)
+        doc_data = {**z, "updated_at": run_updated_at}
+        db.collection('zones').document(doc_id).set(doc_data)
     print("Done.")
 
 if __name__ == "__main__":
