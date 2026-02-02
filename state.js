@@ -53,7 +53,7 @@ Q8.State = (function() {
             sessionEndedByMaxTime: true,
             expiringSoonMinutes: 10
         },
-        favorites: [],        // [{ zoneUid, zoneId }]
+        favorites: [],        // [{ zoneUid, zoneId, name?, order? }]
         driverSettings: {},   // Fleet manager settings (public only)
         adminPlates: [],      // Plates from fleet manager (public only)
         tenantId: 'default'
@@ -217,7 +217,15 @@ Q8.State = (function() {
     function loadFavorites() {
         try {
             const saved = localStorage.getItem('q8_favorites_v1');
-            if (saved) _state.favorites = JSON.parse(saved);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                _state.favorites = (Array.isArray(parsed) ? parsed : []).map((f, i) => ({
+                    zoneUid: f.zoneUid,
+                    zoneId: f.zoneId || f.zoneUid,
+                    name: typeof f.name === 'string' ? f.name.trim() || undefined : undefined,
+                    order: typeof f.order === 'number' ? f.order : i
+                }));
+            }
         } catch (e) { console.warn('[PERSIST] Favorites load failed', e); }
     }
 
