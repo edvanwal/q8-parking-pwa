@@ -338,7 +338,7 @@ Q8.App = (function() {
                     target.disabled = true;
                     Services.loginUser(email, password).catch(err => {
                          console.error(err);
-                         if(UI.showToast) UI.showToast(err.message);
+                         if(UI.showToast) UI.showToast(err.message, 'error');
                     }).finally(() => {
                          target.innerText = 'SIGN IN';
                          target.disabled = false;
@@ -361,6 +361,7 @@ Q8.App = (function() {
 
                 case 'export-history-print':
                     if (Q8.Utils && Q8.Utils.exportHistoryToPrint) Q8.Utils.exportHistoryToPrint(S.get);
+                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Printdialoog geopend' : 'Print dialog opened', 'success');
                     break;
 
                 case 'retry-load-zones':
@@ -430,18 +431,18 @@ Q8.App = (function() {
                     const rConf = document.getElementById('reg-password-confirm')?.value;
 
                     if (!rEmail || !rPass) {
-                        if(UI.showToast) UI.showToast('Please fill in all fields');
+                        if(UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Vul alle velden in' : 'Please fill in all fields', 'error');
                         return;
                     }
                     if (rPass !== rConf) {
-                        if(UI.showToast) UI.showToast('Passwords do not match');
+                        if(UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Wachtwoorden komen niet overeen' : 'Passwords do not match', 'error');
                         return;
                     }
 
                     target.innerText = 'CREATING ACCOUNT...';
                     target.disabled = true;
                     Services.registerUser(rEmail, rPass).catch(err => {
-                         if(UI.showToast) UI.showToast(err.message);
+                         if(UI.showToast) UI.showToast(err.message, 'error');
                     }).finally(() => {
                          target.innerText = 'REGISTER';
                          target.disabled = false;
