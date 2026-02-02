@@ -140,15 +140,27 @@ Q8.State = (function() {
         // 4. Favorites
         loadFavorites();
 
-        // 5. Dark mode
+        // 5. Dark mode ('light'|'dark'|'system')
         try {
-            const d = localStorage.getItem('q8_dark_v1');
-            if (d !== null) _state.darkMode = d === 'true';
+            const d = localStorage.getItem('q8_dark_v2');
+            if (d === 'light' || d === 'dark' || d === 'system') _state.darkMode = d;
+            else {
+                const legacy = localStorage.getItem('q8_dark_v1');
+                if (legacy !== null) _state.darkMode = legacy === 'true' ? 'dark' : 'light';
+            }
         } catch (e) { /* ignore */ }
-        applyTheme(_state.darkMode);
+        initThemeListener();
+        applyThemeFromPref();
     }
 
-    function applyTheme(dark) {
+    function getEffectiveDark() {
+        if (_state.darkMode === 'system') {
+            return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+        return _state.darkMode === 'dark';
+    }
+    function applyThemeFromPref() {
+        const dark = getEffectiveDark();
         const html = document.documentElement;
         if (dark) {
             html.setAttribute('data-theme', 'dark');
@@ -156,6 +168,14 @@ Q8.State = (function() {
         } else {
             html.setAttribute('data-theme', 'light');
             html.style.colorScheme = 'light';
+        }
+    }
+    function initThemeListener() {
+        applyThemeFromPref();
+        if (window.matchMedia) {
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                if (_state.darkMode === 'system') applyThemeFromPref();
+            });
         }
     }
 
@@ -202,9 +222,9 @@ Q8.State = (function() {
     }
 
     function setDarkMode(value) {
-        _state.darkMode = !!value;
-        applyTheme(_state.darkMode);
-        try { localStorage.setItem('q8_dark_v1', _state.darkMode ? 'true' : 'false'); } catch (e) {}
+        _state.darkMode = (value === 'light' || value === 'dark' || value === 'system') ? value : 'system';
+        applyThemeFromPref();
+        try { localStorage.setItem('q8_dark_v2', _state.darkMode); } catch (e) {}
     }
 
     return {
@@ -218,6 +238,6 @@ Q8.State = (function() {
         saveFavorites: saveFavorites,
         loadFavorites: loadFavorites,
         setDarkMode: setDarkMode,
-        applyTheme: applyTheme
+        applyThemeFromPref: applyThemeFromPref
     };
 })();
