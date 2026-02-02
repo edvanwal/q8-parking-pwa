@@ -966,23 +966,27 @@ Q8.UI = (function() {
             return;
         }
 
-        const query = state.searchQuery.toLowerCase();
+        const queryLower = (state.searchQuery || '').toLowerCase();
         const favorites = state.favorites || [];
         const favUids = new Set(favorites.map(f => f.zoneUid || f.zoneId));
+        const words = queryLower.split(/[\s,]+/).filter(w => w.length > 0);
         const matches = state.zones.filter(z => {
             const id = (z.id || '').toLowerCase();
             const name = (z.name || '').toLowerCase();
             const street = (z.street || '').toLowerCase();
             const city = (z.city || '').toLowerCase();
-            return id.includes(query) || name.includes(query) || street.includes(query) || city.includes(query);
+            const allFields = [id, name, street, city].join(' ');
+            if (words.length === 0) return false;
+            if (words.length === 1) return id.includes(queryLower) || name.includes(queryLower) || street.includes(queryLower) || city.includes(queryLower);
+            return words.every(w => allFields.includes(w));
         })
             .sort((a,b) => {
                 const aFav = favUids.has(a.uid) || favUids.has(a.id);
                 const bFav = favUids.has(b.uid) || favUids.has(b.id);
                 if (aFav && !bFav) return -1;
                 if (!aFav && bFav) return 1;
-                if (a.id === query) return -1;
-                if (b.id === query) return 1;
+                if (a.id === queryLower) return -1;
+                if (b.id === queryLower) return 1;
                 return 0;
             });
 
@@ -993,7 +997,7 @@ Q8.UI = (function() {
 
         container.className = 'search-results-panel search-results-panel--pill';
         container.style.display = 'block';
-        const q = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const q = queryLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const regex = q ? new RegExp(`(${q})`, 'gi') : null;
         container.innerHTML = matches.map(z => {
             // Format: "zonenummer · straatnaam + huisnummer + plaats"
