@@ -306,37 +306,10 @@ Q8.UI = (function() {
             renderRatesList(list, rates);
         }
 
-        // Rates disclaimer (indicative)
-        const disclaimerEl = document.getElementById('details-rates-disclaimer');
-        if (disclaimerEl) {
-            disclaimerEl.textContent = state.language === 'nl'
-                ? 'Tarieven zijn indicatief. Het definitieve bedrag kan afwijken.'
-                : 'Rates are indicative. The final amount may vary.';
-        }
-
         // Duration label (consistent with 15-min steps)
         const durationLabelEl = document.getElementById('details-duration-label');
         if (durationLabelEl) {
             durationLabelEl.textContent = state.language === 'nl' ? 'Duur' : 'Parking duration';
-        }
-
-        // Estimated cost (calculateCost + zone price)
-        const estimatedCostEl = document.getElementById('details-estimated-cost');
-        if (estimatedCostEl && typeof Q8 !== 'undefined' && Q8.Utils && typeof Q8.Utils.calculateCost === 'function') {
-            const hourlyRate = (zone && typeof zone.price === 'number') ? zone.price : state.selectedZoneRate;
-            if (state.duration > 0 && hourlyRate >= 0) {
-                const cost = Q8.Utils.calculateCost(state.duration, hourlyRate);
-                const formatted = cost.toFixed(2).replace('.', ',');
-                estimatedCostEl.textContent = state.language === 'nl'
-                    ? `Geschatte kosten: ca. € ${formatted}`
-                    : `Estimated cost: ca. € ${formatted}`;
-                estimatedCostEl.classList.remove('sheet-estimated-cost--muted');
-            } else {
-                estimatedCostEl.textContent = state.language === 'nl'
-                    ? 'Duur onbekend – geen indicatie'
-                    : 'Duration unknown – no estimate';
-                estimatedCostEl.classList.add('sheet-estimated-cost--muted');
-            }
         }
 
         // Favorite button state
