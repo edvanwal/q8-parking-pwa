@@ -236,13 +236,13 @@
 
   // --- Render ---
   const ACTION_LABELS = {
-    user_invited: 'Bestuurder uitgenodigd',
-    session_stopped: 'Sessie gestopt',
+    user_invited: 'Driver invited',
+    session_stopped: 'Session stopped',
     tenant_settings_saved: 'Settings saved',
-    driver_settings_updated: 'Kentekeninstellingen gewijzigd',
-    plate_added: 'Kenteken toegevoegd',
-    plate_removed: 'Kenteken verwijderd',
-    plates_bulk_added: 'Bulk kentekens toegevoegd'
+    driver_settings_updated: 'License plate settings changed',
+    plate_added: 'License plate added',
+    plate_removed: 'License plate removed',
+    plates_bulk_added: 'Bulk license plates added'
   };
 
   function renderAuditLog(items) {
@@ -281,14 +281,14 @@
     if (empty) empty.classList.add('hidden');
     tbody.innerHTML = users.map(u => {
       const ds = u.driverSettings || {};
-      const plateInfo = ds.platesLocked ? 'Vergrendeld' : (ds.canAddPlates ? 'Zelf toevoegen' : 'Alleen bekijken');
+      const plateInfo = ds.platesLocked ? 'Locked' : (ds.canAddPlates ? 'Can add' : 'View only');
       return `
         <tr>
           <td>${u.email || '-'}</td>
           <td>${u.displayName || '-'}</td>
           <td><span class="badge badge-neutral">${u.role || 'driver'}</span></td>
           <td>${plateInfo}</td>
-          <td><button class="btn btn-sm btn-secondary edit-driver-plates" data-uid="${u.id}">Kentekens</button></td>
+          <td><button class="btn btn-sm btn-secondary edit-driver-plates" data-uid="${u.id}">Plates</button></td>
         </tr>
       `;
     }).join('');
@@ -313,7 +313,7 @@
           <td>${s.zone || '-'}</td>
           <td>${s.plate || '-'}</td>
           <td>${startStr}</td>
-          <td><button class="btn btn-sm btn-danger stop-session" data-id="${s.id}">Stoppen</button></td>
+          <td><button class="btn btn-sm btn-danger stop-session" data-id="${s.id}">Stop</button></td>
         </tr>
       `;
     }).join('');
@@ -355,7 +355,7 @@
     const select = $('plates-driver-select');
     if (!select) return;
     const drivers = users.filter(u => u.role === 'driver');
-    select.innerHTML = '<option value="">-- Selecteer bestuurder --</option>' +
+    select.innerHTML = '<option value="">-- Select driver --</option>' +
       drivers.map(u => `<option value="${u.id}">${u.displayName || u.email} (${u.email})</option>`).join('');
   }
 
@@ -422,7 +422,7 @@
       inviteUser(email, name || undefined).then(() => {
         toast('Uitnodiging opgeslagen. Bestuurder verschijnt na registratie in de app.');
         $('modal-add-user').classList.add('hidden');
-      }).catch(err => toast(err.message || 'Fout bij opslaan'));
+      }).catch(err => toast(err.message || 'Save failed'));
     });
 
     document.addEventListener('click', e => {
@@ -461,7 +461,7 @@
       saveTenantSettings({
         autoStopEnabled: $('setting-auto-stop-enabled').checked,
         autoStopTime: $('setting-auto-stop').value
-      }).then(() => toast('Instellingen opgeslagen')).catch(err => toast(err.message));
+      }).then(() => toast('Settings saved')).catch(err => toast(err.message));
     });
 
     $('btn-save-plates-settings').addEventListener('click', () => {
