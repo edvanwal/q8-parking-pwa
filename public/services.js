@@ -1175,16 +1175,20 @@ Q8.Services = (function() {
     function checkInstallMode() {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('forceInstall')) {
-            S.update({ installMode: { ...S.get.installMode, active: true } });
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isAndroid = /Android/.test(navigator.userAgent);
+            S.update({ installMode: { ...S.get.installMode, active: true, platform: isIOS ? 'ios' : (isAndroid ? 'android' : 'generic') } });
             return;
         }
 
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
         const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isAndroid = /Android/.test(navigator.userAgent);
 
-        if (isTouch && isIOS && !isStandalone) {
-            S.update({ installMode: { ...S.get.installMode, active: true, platform: 'ios' } });
+        if (isTouch && !isStandalone) {
+            const platform = isIOS ? 'ios' : (isAndroid ? 'android' : 'generic');
+            S.update({ installMode: { ...S.get.installMode, active: true, platform } });
         } else {
             S.update({ installMode: { ...S.get.installMode, active: false } });
         }
