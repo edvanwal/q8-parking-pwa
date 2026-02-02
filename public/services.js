@@ -133,6 +133,44 @@ Q8.Services = (function() {
         });
     }
 
+    let _historyUnsub = null;
+
+    function getTenantId() {
+        return S.get.tenantId || 'default';
+    }
+
+    function loadHistory(userId) {
+        if (!db || !userId) return;
+        if (_historyUnsub) _historyUnsub();
+        _historyUnsub = db.collection('transactions')
+            .where('userId', '==', userId)
+            .orderBy('endedAt', 'desc')
+            .limit(200)
+            .onSnapshot((snapshot) => {
+                const items = [];
+                snapshot.forEach((doc) => {
+                    const d = doc.data();
+                    const startDate = d.start && (d.start.toDate ? d.start.toDate() : new Date(d.start));
+                    const endDate = d.end && (d.end.toDate ? d.end.toDate() : new Date(d.end));
+                    const dd = (n) => String(n).padStart(2, '0');
+                    items.push({
+                        id: doc.id,
+                        zone: d.zone,
+                        zoneUid: d.zoneUid,
+                        plate: d.plate || '',
+                        street: d.street || '',
+                        date: startDate ? `${dd(startDate.getDate())}-${dd(startDate.getMonth() + 1)}-${startDate.getFullYear()}` : '',
+                        start: startDate ? `${dd(startDate.getHours())}:${dd(startDate.getMinutes())}` : '',
+                        end: endDate ? `${dd(endDate.getHours())}:${dd(endDate.getMinutes())}` : '',
+                        price: d.cost != null ? Number(d.cost).toFixed(2) : ''
+                    });
+                });
+                S.update({ history: items });
+            }, (err) => {
+                console.error('Transactions listener error:', err);
+            });
+    }
+
     // --- DATA SERVICES ---
 
     // DIAG: Set window.Q8_DIAG = true to log Firestore/Maps loading steps
@@ -157,7 +195,8 @@ Q8.Services = (function() {
         return new Promise((resolve, reject) => {
             if (U && U.debug) U.debug('DATA', "Setting up Firestore zones listener...");
             diag('loadZones', 'start', { db: !!db });
-            if (!db) { diag('loadZones', 'no-db-fallback'); return resolve([]); }
+            S.update({ zonesLoading: true });
+            if (!db) { S.update({ zonesLoading: false }); diag('loadZones', 'no-db-fallback'); return resolve([]); }
 
             db.collection('zones').limit(2000).onSnapshot((snapshot) => {
                 const raw = [];
@@ -175,7 +214,7 @@ Q8.Services = (function() {
                 diag('onSnapshot', 'received', { raw: raw.length, streetOnly: zones.length });
                 if (zones.length > 0) {
                     requestAnimationFrame(() => {
-                        S.update({ zones: zones });
+                        S.update({ zones: zones, zonesLoading: false });
                         if (U && U.debug) U.debug('DATA', `Live sync: ${zones.length} zones loaded.`);
                         diag('onSnapshot', 'zones-updated');
 
@@ -188,9 +227,12 @@ Q8.Services = (function() {
                         const debugEl = document.getElementById('debug-status');
                         if(debugEl) debugEl.innerText = `Zones: ${zones.length}`;
                     });
+                } else {
+                    S.update({ zonesLoading: false });
                 }
                 resolve(zones);
             }, (error) => {
+                S.update({ zonesLoading: false });
                 diag('onSnapshot', 'error', error && error.message);
                 console.error("Firestore zones sync error:", error);
                 reject(error);
