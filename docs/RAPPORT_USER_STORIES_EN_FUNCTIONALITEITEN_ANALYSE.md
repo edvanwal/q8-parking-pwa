@@ -92,6 +92,8 @@ Alle client-side logica zit onder `Q8`:
 | Zones laden van Firestore | ✅ | `services.js` → `loadZones()` |
 | Kaart met markers | ✅ | `ui.js` → `initGoogleMap()`, `renderMapMarkers()` |
 | Zone-filter (alleen straatparkeren) | ✅ | `isStreetParkingZone()` – garage/P+R uitgesloten |
+| Tarief-disclaimer (RDW indicatief) | ✅ | Zoekresultaten, favorieten |
+| Zone-lijst verbergen bij selectie/sessie | ✅ | `zoneSelectedOrActive` – zoek/fav-list hidden |
 | Zoeken op zone-ID of naam | ✅ | `inp-search` → `renderSearchResults()` |
 | Zoeken op adres (geocoding) | ✅ | `geocodeAndSearch()`, Google Geocoding API |
 | Intelligente zoekmodus | ✅ | `detectSearchMode()` – zone vs. adres automatisch |
@@ -156,10 +158,11 @@ Alle client-side logica zit onder `Q8`:
 | Functie | Status | Implementatie |
 |---------|--------|---------------|
 | Nederlands / Engels | ✅ | `state.language` |
-| Install Gate (iOS) | ✅ | `installMode`, `renderInstallGate()` |
+| Dark mode (Light / System / Dark) | ✅ | `state.darkMode`, `applyThemeFromPref()` |
+| Install Gate (iOS + Android) | ✅ | `installMode`, `renderInstallGate()`, platform-specifieke instructies |
 | PWA manifest, icons | ✅ | `manifest.webmanifest` |
 | Offline-detectie | ✅ | `online`/`offline` events |
-| Service Worker | Uitgeschakeld | Code aanwezig, momenteel `unregister()` |
+| Service Worker | ✅ | `sw.js` geregistreerd voor offline + FCM |
 
 ### 3.8 Fleet Manager Portal
 
@@ -202,8 +205,9 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 - *Given* ik heb een zone geselecteerd (via kaart of zoeken)  
 - *When* ik duur instel (tot stoppen of vaste tijd) en een kenteken kies  
 - *And* ik druk op "START PARKING"  
-- *Then* start mijn parkeersessie  
-- *And* ik zie een bevestiging en de actieve sessie-kaart
+- *Then* verschijnt een bevestigingsmodal met zone en kenteken (bewerkbaar)  
+- *And* na bevestiging start mijn parkeersessie  
+- *And* ik zie de actieve sessie-kaart
 
 ---
 
@@ -256,7 +260,9 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 - *Given* ik heb een zone-sheet open  
 - *When* ik op het favoriet-icoon klik  
 - *Then* wordt de zone toegevoegd aan of verwijderd van favorieten  
-- *And* ik kan favorieten direct starten vanaf het Favorieten-scherm
+- *And* ik kan favorieten direct starten vanaf het Favorieten-scherm  
+- *And* ik kan favorieten een custom naam geven (bijv. Werk, Thuis, Supermarkt)  
+- *And* ik kan de volgorde wijzigen via slepen
 
 ---
 
