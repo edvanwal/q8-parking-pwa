@@ -94,7 +94,8 @@ Q8.State = (function() {
             savedPlates = localStorage.getItem('q8_plates_v1');
         } catch (e) {
             console.warn('[PERSIST] localStorage access failed (private mode?)', e);
-            return;
+            savedSession = null;
+            savedPlates = null;
         }
 
         // 1. Session
