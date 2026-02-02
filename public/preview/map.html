@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Kaart Preview - Q8 Parking</title>
+  <title>Map Preview - Q8 Parking</title>
 
   <!-- Firebase (alleen App + Firestore, geen login) -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -214,7 +214,7 @@
     })
     .catch(function(err) {
       var msg = err && err.message ? err.message : String(err);
-      setStatus('Fout: ' + msg + ' — Controleer de API-sleutel in Google Cloud Console.');
+      setStatus('Error: ' + msg + ' — Check the API key in Google Cloud Console.');
       console.error(err);
     });
 })();
