@@ -531,6 +531,7 @@ Q8.UI = (function() {
         const intro = document.getElementById('fav-intro-text');
         if (!list) return;
         if (intro) intro.innerText = state.language === 'nl' ? 'Je favoriete parkeerzones. Tik om te starten.' : 'Your favorite parking zones. Tap to start.';
+        const rateDisclaimer = state.language === 'nl' ? 'Tarieven zijn indicatief (RDW Open Data)' : 'Rates are indicative (RDW Open Data)';
 
         const favorites = state.favorites || [];
         if (favorites.length === 0) {
@@ -971,7 +972,7 @@ Q8.UI = (function() {
                       <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
                     </div>
                 </div>`;
-            }).join('');
+            }).join('') + '<div class="rate-disclaimer text-secondary text-xs" style="padding:8px 16px 12px; line-height:1.3;">' + (state.language === 'nl' ? 'Tarieven zijn indicatief (RDW Open Data)' : 'Rates are indicative (RDW Open Data)') + '</div>';
             return;
         }
 
@@ -1036,6 +1037,7 @@ Q8.UI = (function() {
             </div>
         `;
         }).join('');
+        container.innerHTML += '<div class="rate-disclaimer text-secondary text-xs" style="padding:8px 16px 12px; line-height:1.3;">' + (state.language === 'nl' ? 'Tarieven zijn indicatief (RDW Open Data)' : 'Rates are indicative (RDW Open Data)') + '</div>';
         container.querySelectorAll('.ptr-enabled').forEach(el => { el.style.pointerEvents = 'auto'; });
     }
 
