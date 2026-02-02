@@ -141,15 +141,8 @@ Q8.UI = (function() {
             }
         }
 
-        // If not file://: after 2.5s show error with public URL link if map still not created
-        if (!isFileProtocol) {
-            if (_mapLoadCheckTimeout) clearTimeout(_mapLoadCheckTimeout);
-            _mapLoadCheckTimeout = setTimeout(function() {
-                _mapLoadCheckTimeout = null;
-                if (map) return;
-                showMapLoadError('De kaart laadt niet op localhost. Op de publieke website werkt de kaart vaak wel.', true);
-            }, 2500);
-        }
+        // Init map when on parking view and map not yet created (e.g. after refresh or race)
+        if (!isFileProtocol && !map) initGoogleMap();
 
         // Markers: full render when zones/session change; only update icons when selection changes (avoids shrink bug)
         const zoneKey = `${state.zones.length}|${state.session ? '1' : '0'}`;
