@@ -111,7 +111,7 @@ Q8.UI = (function() {
         if (zonesLoadingEl) {
             const loading = state.zonesLoading === true;
             const hasError = !loading && state.zonesLoadError;
-            zonesLoadingEl.classList.toggle('hidden', loading || hasError);
+            zonesLoadingEl.classList.toggle('hidden', !loading || hasError);
             const textEl = zonesLoadingEl.querySelector('.zones-loading-text');
             if (textEl) textEl.textContent = state.language === 'nl' ? 'Parkeerzones laden...' : 'Loading parking zones...';
         }
