@@ -238,6 +238,6 @@ Q8.State = (function() {
         saveFavorites: saveFavorites,
         loadFavorites: loadFavorites,
         setDarkMode: setDarkMode,
-        applyTheme: applyTheme
+        applyThemeFromPref: applyThemeFromPref
     };
 })();
