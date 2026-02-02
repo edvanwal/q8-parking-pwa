@@ -322,6 +322,12 @@
       <div id="ui-search-results" class="hidden"></div>
       <div id="ui-favorites-quick" class="hidden" style="display:none;"></div>
 
+      <!-- Garages & P+R floating button (visible without zone) -->
+      <button type="button" id="btn-facilities-float" class="facilities-float-btn icon-btn" data-action="open-overlay" data-target="sheet-facilities" aria-label="Garages and P+R nearby">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        <span class="facilities-float-label">Garages & P+R</span>
+      </button>
+
       <!-- Active Parking Overlay (inside map-area for positioning) -->
       <div id="ui-active-parking" class="active-parking-overlay hidden" style="display:none;">
         <div class="active-parking-card">
@@ -533,8 +539,19 @@
 
       <div class="sheet-section">
         <label class="input-label sheet-section-label" id="details-rates-label" title="">Rates</label>
+        <p class="sheet-rates-disclaimer text-secondary text-xs mb-sm" id="zone-rates-disclaimer" role="note">Rates are indicative; source: RDW Open Data.</p>
         <div id="details-rates-list" class="sheet-rates-list">
             <!-- Dynamic rates injected here -->
+        </div>
+        <div id="sheet-section-all-rates" class="sheet-section mt-sm" style="display:none;">
+           <button type="button" class="btn btn-outline btn-sm" id="btn-toggle-all-rates" data-action="toggle-all-rates" aria-expanded="false">View all days</button>
+           <div id="details-all-rates-list" class="sheet-rates-list mt-sm" style="display:none;"></div>
+        </div>
+      </div>
+      <div class="sheet-section" id="sheet-section-estimated-cost" style="display:none;">
+        <div class="flex justify-between items-center">
+           <span class="input-label">Estimated cost</span>
+           <span id="details-estimated-cost" class="font-semibold">—</span>
         </div>
       </div>
 
@@ -549,6 +566,19 @@
 
       <div class="sheet-section" id="sheet-section-facilities" style="display:none;">
          <label class="input-label sheet-section-label">Garages & P+R in de buurt</label>
+         <div class="facilities-controls flex gap-sm flex-wrap items-center mb-sm" style="margin-bottom:8px;">
+            <span class="text-secondary text-sm">Straal:</span>
+            <div class="flex gap-xs" role="group" aria-label="Search radius in km">
+               <button type="button" class="btn btn-secondary btn-sm facilities-radius-btn" data-action="set-facilities-radius" data-km="1">1 km</button>
+               <button type="button" class="btn btn-secondary btn-sm facilities-radius-btn" data-action="set-facilities-radius" data-km="2">2 km</button>
+               <button type="button" class="btn btn-secondary btn-sm facilities-radius-btn" data-action="set-facilities-radius" data-km="5">5 km</button>
+            </div>
+            <span class="text-secondary text-sm ml-sm">Ref:</span>
+            <div class="flex gap-xs" role="group" aria-label="Reference point for nearby facilities">
+               <button type="button" class="btn btn-outline btn-sm facilities-ref-btn" data-action="set-facilities-ref" data-ref="user">Mijn locatie</button>
+               <button type="button" class="btn btn-outline btn-sm facilities-ref-btn" data-action="set-facilities-ref" data-ref="zone">Zone</button>
+            </div>
+         </div>
          <div id="details-nearby-facilities-list"></div>
       </div>
 
