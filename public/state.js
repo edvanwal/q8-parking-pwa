@@ -20,6 +20,8 @@ Q8.State = (function() {
         selectedZoneRate: 2.0, // Default uurtarief
         searchMode: 'zone',   // 'zone' | 'address'
         searchQuery: '',      // Current input in search bar
+        geocodeMatches: [],
+        geocodeLoading: false,
         duration: 0,          // 0 = "Until stopped" (No fixed end time)
         zones: [],            // Populated continuously via Firestore
         zonesLoading: true,   // True while zones are being loaded
