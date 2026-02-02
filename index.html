@@ -316,9 +316,9 @@
 
       <!-- Search bar: zwevend boven kaart, zoekicoon rechts -->
       <div id="ui-idle-search" class="map-search-float">
-        <div class="search-mode-toggle">
-          <button type="button" class="search-mode-btn active" data-action="set-search-mode" data-mode="zone" aria-pressed="true">Zone</button>
-          <button type="button" class="search-mode-btn" data-action="set-search-mode" data-mode="address" aria-pressed="false">Adres</button>
+        <div class="search-mode-toggle" style="display:flex;gap:4px;margin-bottom:8px;">
+          <button type="button" class="search-mode-btn" data-action="set-search-mode" data-mode="zone">Zone</button>
+          <button type="button" class="search-mode-btn" data-action="set-search-mode" data-mode="address">Adres</button>
         </div>
         <input type="text" id="inp-search" class="map-search-input" placeholder="Zone or street name" autocomplete="off" aria-label="Search for parking zone or street name" role="searchbox">
         <span class="map-search-icon-right">

@@ -62,6 +62,19 @@ Q8.App = (function() {
                     closeSideMenu(); // Close menu when navigating
                     if (Services && Services.setScreen) Services.setScreen(targetId);
                     break;
+                case 'set-search-mode': {
+                    const mode = target.getAttribute('data-mode') || 'zone';
+                    if (S.get.searchMode === mode) break;
+                    S.update({ searchMode: mode, searchQuery: '', geocodeMatches: [], geocodeLoading: false });
+                    const inp = document.getElementById('inp-search');
+                    if (inp) {
+                        inp.value = '';
+                        inp.placeholder = mode === 'address' ? (S.get.language === 'nl' ? 'Straat en plaats' : 'Street and city') : (S.get.language === 'nl' ? 'Zone of straatnaam' : 'Zone or street name');
+                        inp.focus();
+                    }
+                    document.querySelectorAll('.search-mode-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-mode') === mode));
+                    break;
+                }
                 case 'toggle-search-mode': {
                     const newMode = S.get.searchMode === 'zone' ? 'address' : 'zone';
                     S.update({ searchMode: newMode, searchQuery: '', geocodeMatches: [], geocodeLoading: false });
