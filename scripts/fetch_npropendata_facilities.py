@@ -67,10 +67,8 @@ def _opening_times_summary(info):
     if not times:
         return None
     ot = times[0]
-    if ot.get("openAllYear") and ot.get("exitPossibleAllDay"):
-        entry_times = ot.get("entryTimes") or []
-        if not entry_times:
-            return "24/7"
+    entry_times = ot.get("entryTimes") or []
+    if ot.get("openAllYear") and ot.get("exitPossibleAllDay") and entry_times:
         all_day = True
         for et in entry_times:
             fr = et.get("enterFrom") or {}
@@ -80,8 +78,10 @@ def _opening_times_summary(info):
                 break
         if all_day and len(entry_times) >= 7:
             return "24/7"
+    if not entry_times:
+        return None
     # Eerste entry: format tijd en dagen
-    et = entry_times[0] if entry_times else None
+    et = entry_times[0]
     if not et:
         return None
     fr = et.get("enterFrom") or {}
