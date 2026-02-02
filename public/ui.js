@@ -349,9 +349,20 @@ Q8.UI = (function() {
                     const dist = (f._distKm != null) ? (f._distKm < 1 ? (f._distKm * 1000).toFixed(0) + ' m' : f._distKm.toFixed(1).replace('.', ',') + ' km') : '';
                     const tariff = f.tariffSummary ? '<span class="text-secondary text-sm">' + f.tariffSummary + '</span>' : '';
                     const addr = [f.street, f.city].filter(Boolean).join(', ') || f.city || '';
+                    const meta = [];
+                    if (f.openingTimesSummary) meta.push(f.openingTimesSummary);
+                    if (f.capacity != null && f.capacity > 0) meta.push(f.capacity + (nl ? ' plekken' : ' spaces'));
+                    if (f.chargingPointCapacity != null && f.chargingPointCapacity > 0) meta.push(f.chargingPointCapacity + (nl ? ' laadplekken' : ' EV'));
+                    if (f.disabledAccess) meta.push(nl ? 'Toegankelijk' : 'Accessible');
+                    const paymentLabels = { Maestro: 'Pinnen', MasterCard: 'Pinnen', Visa: 'Pinnen', VPay: 'Pinnen', Banknotes: 'Contant', Coins: 'Contant' };
+                    const methods = (f.paymentMethods || []).filter(Boolean);
+                    const payHint = [...new Set(methods.map(m => paymentLabels[m] || m))].slice(0, 2).join(', ');
+                    if (payHint) meta.push(payHint);
+                    const metaLine = meta.length ? '<div class="text-secondary text-xs mt-0.5">' + meta.join(' · ') + '</div>' : '';
                     return '<a href="https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(f.lat + ',' + f.lng) + '" target="_blank" rel="noopener" class="facility-row" style="display:block; padding:10px 0; border-bottom:1px solid var(--border-color); text-decoration:none; color:inherit;">' +
                         '<div class="font-semibold">' + (f.name || (f.type === 'p_r' ? 'P+R' : 'Garage')) + '</div>' +
                         (addr ? '<div class="text-secondary text-sm">' + addr + '</div>' : '') +
+                        metaLine +
                         '<div class="flex justify-between items-center gap-2 mt-1">' + tariff + '<span class="text-secondary text-sm">' + dist + '</span></div></a>';
                 }).join('');
             }
