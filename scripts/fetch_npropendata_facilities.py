@@ -14,6 +14,7 @@ import os
 import sys
 import time
 import urllib.request
+import urllib.error
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 
@@ -55,10 +56,26 @@ def _facility_type_from_name(name):
     return "garage"
 
 
-def fetch_json(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "B2B-Parkeren-Facilities/1.0"})
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+def fetch_json(url, retries=3):
+    """GET URL and return JSON; retry on 5xx or network error."""
+    last_err = None
+    for attempt in range(retries):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "B2B-Parkeren-Facilities/1.0"})
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            last_err = e
+            if e.code and 500 <= e.code < 600 and attempt < retries - 1:
+                time.sleep(1.0 * (attempt + 1))
+                continue
+            raise
+        except (OSError, TimeoutError) as e:
+            last_err = e
+            if attempt < retries - 1:
+                time.sleep(0.5 * (attempt + 1))
+                continue
+            raise last_err
 
 
 def _opening_times_summary(info):
@@ -186,7 +203,7 @@ def parse_static_data(static_json, list_item):
 
 
 def fetch_one_facility(list_item, dry_run=False):
-    """Haal static data op en retourneer dict voor Firestore (of None bij fout)."""
+    """Haal static data op en retourneer dict voor Firestore (of None bij fout). Retries bij netwerkfout."""
     name = list_item.get("name", "")
     if not _is_garage_or_pr(name):
         return None
@@ -203,7 +220,7 @@ def fetch_one_facility(list_item, dry_run=False):
     except Exception as e:
         if not dry_run:
             print(f"  Skip {name[:50]}: {e}", file=sys.stderr)
-        return None
+        return None  # skip deze facility, ga door met de rest
 
 
 def main():
