@@ -1198,8 +1198,10 @@ Q8.UI = (function() {
         }
 
         diagMaps('initGoogleMap', 'creating-map');
+        const state = S.get;
+        const initialCenter = (state.userLocation && state.userLocation.lat != null) ? { lat: state.userLocation.lat, lng: state.userLocation.lng } : UTRECHT_CENTER;
         map = new google.maps.Map(container, {
-            center: UTRECHT_CENTER,
+            center: initialCenter,
             zoom: 16,
             disableDefaultUI: true,
             zoomControl: false,
@@ -1298,6 +1300,12 @@ Q8.UI = (function() {
     function centerMapOnZones() {
         const state = S.get;
         if (!map) return;
+
+        if (state.userLocation && state.userLocation.lat != null && state.userLocation.lng != null) {
+            map.setCenter({ lat: state.userLocation.lat, lng: state.userLocation.lng });
+            map.setZoom(16);
+            return;
+        }
 
         const sel = state.zones.find(z => (z.uid && z.uid === state.selectedZone) || (z.id && String(z.id) === String(state.selectedZone)));
         if (sel && sel.lat && sel.lng) {
