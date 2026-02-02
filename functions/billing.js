@@ -33,7 +33,7 @@ function buildParkingSessionsQuery(coll, filters = {}) {
  * Normalize a parking session doc for export (Firestore Timestamp -> ISO string, numbers).
  */
 function normalizeSessionForExport(doc) {
-  const d = doc.data ? doc.data() : doc;
+  const d = typeof doc.data === 'function' ? doc.data() : doc;
   const id = doc.id || d.session_id;
   const toIso = (v) => {
     if (!v) return null;
@@ -85,7 +85,7 @@ function normalizeSessionForExport(doc) {
  * Normalize subscription doc for export.
  */
 function normalizeSubscriptionForExport(doc) {
-  const d = typeof doc.data === 'function' ? doc.data() : doc.data || doc;
+  const d = typeof doc.data === 'function' ? doc.data() : (doc.data || doc);
   const id = doc.id || d.subscription_id;
   const toIso = (v) => {
     if (!v) return null;
@@ -219,7 +219,9 @@ async function exportParkingSessions(db, filters, format) {
     snapshot = await coll.orderBy('start_datetime', 'asc').limit(5000).get();
   }
 
-  const rows = snapshot.docs.map((doc) => normalizeSessionForExport({ id: doc.id, ...doc }));
+  const rows = snapshot.docs.map((doc) =>
+    normalizeSessionForExport({ id: doc.id, ...doc.data() })
+  );
   if (format === 'csv') return toCSV(rows, PARKING_SESSION_COLUMNS);
   return JSON.stringify(rows, null, 2);
 }
