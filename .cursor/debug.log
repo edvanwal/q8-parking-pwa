@@ -1,2 +1,14 @@
 {"location":"app.js:init","message":"init entry","data":{"installModeActive":false,"screen":"login"},"timestamp":1770029916707,"sessionId":"debug-session","hypothesisId":"H1"}
 {"location":"app.js:init","message":"init branch - map created when parking screen shown","data":{},"timestamp":1770029916708,"sessionId":"debug-session","hypothesisId":"H5"}
+{"location":"ui.js:update","message":"showing parking view","data":{"activeViewId":"view-map"},"timestamp":1770029919835,"sessionId":"debug-session","hypothesisId":"H4"}
+{"location":"ui.js:initGoogleMap","message":"entry","data":{"hasContainer":true,"hasMap":false,"containerWidth":500.0000305175781,"containerHeight":934.0104370117188},"timestamp":1770029919840,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"ui.js:initGoogleMap","message":"loading script","data":{"apiKeyLength":39},"timestamp":1770029919841,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"services.js:setScreen","message":"parking screen","data":{"installModeActive":false,"willCallInitMap":true},"timestamp":1770029919841,"sessionId":"debug-session","hypothesisId":"H5"}
+{"location":"ui.js:initGoogleMap","message":"entry","data":{"hasContainer":true,"hasMap":false,"containerWidth":500.0000305175781,"containerHeight":934.0104370117188},"timestamp":1770029919842,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"ui.js:initGoogleMap","message":"loading script","data":{"apiKeyLength":39},"timestamp":1770029919842,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"ui.js:initMapCallback","message":"callback fired","data":{},"timestamp":1770029919925,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"ui.js:initGoogleMap","message":"creating map","data":{},"timestamp":1770029919925,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"ui.js:initGoogleMap","message":"entry","data":{"hasContainer":true,"hasMap":false,"containerWidth":500.0000305175781,"containerHeight":934.0104370117188},"timestamp":1770029919925,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"ui.js:initGoogleMap","message":"done","data":{},"timestamp":1770029919933,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"ui.js:update","message":"showing parking view","data":{"activeViewId":"view-map"},"timestamp":1770029920926,"sessionId":"debug-session","hypothesisId":"H4"}
+{"location":"ui.js:update","message":"showing parking view","data":{"activeViewId":"view-map"},"timestamp":1770029920960,"sessionId":"debug-session","hypothesisId":"H4"}
