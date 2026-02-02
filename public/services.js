@@ -129,7 +129,7 @@ Q8.Services = (function() {
                 activeOverlay: null,
                 session: null
             });
-            localStorage.removeItem('q8_parking_session');
+            try { localStorage.removeItem('q8_parking_session'); } catch (e) { /* ignore */ }
         });
     }
 
