@@ -449,15 +449,17 @@
       const plates = text.split(/[\n,;]+/).map(p => p.trim().replace(/[\s\-]/g, '').toUpperCase()).filter(p => p.length >= 6);
       if (plates.length === 0) return toast('Voer minimaal één kenteken in (één per regel of komma-gescheiden)');
       let done = 0, failed = 0;
+      const addedPlates = [];
       const next = () => {
         if (plates.length === 0) {
+          if (addedPlates.length > 0) writeAuditLog('plates_bulk_added', { userId: uid, plates: addedPlates, count: addedPlates.length });
           toast(`${done} kenteken(s) toegevoegd` + (failed ? `, ${failed} overgeslagen` : ''));
           $('plates-bulk-input').value = '';
           loadUsers(users => { const user = users.find(u => u.id === uid); renderPlatesPanel(user); });
           return;
         }
         const plate = plates.shift();
-        addPlateToUser(uid, plate).then(() => { done++; next(); }).catch(() => { failed++; next(); });
+        addPlateToUser(uid, plate).then(() => { done++; addedPlates.push(plate); next(); }).catch(() => { failed++; next(); });
       };
       next();
     });

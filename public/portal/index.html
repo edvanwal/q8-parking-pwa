@@ -55,6 +55,10 @@
             <span class="nav-icon">🚗</span>
             <span>Kentekenbeheer</span>
           </a>
+          <a href="#" class="nav-item" data-section="auditlog">
+            <span class="nav-icon">📋</span>
+            <span>Auditlog</span>
+          </a>
         </nav>
         <div class="sidebar-footer">
           <span id="portal-user-email" class="text-secondary text-sm"></span>
@@ -197,6 +201,23 @@
               </div>
               <div id="plates-driver-list" class="plates-list"></div>
             </div>
+          </div>
+        </div>
+
+        <div id="section-auditlog" class="portal-section hidden">
+          <div class="portal-card">
+            <h2>Auditlog</h2>
+            <p class="text-secondary mb-lg">Overzicht van acties door fleetmanagers. Compliance en traceerbaarheid.</p>
+            <div class="table-container">
+              <table class="portal-table">
+                <thead>
+                  <tr><th>Datum/tijd</th><th>Actie</th><th>Door</th><th>Details</th></tr>
+                </thead>
+                <tbody id="auditlog-tbody"></tbody>
+              </table>
+              <p id="auditlog-empty" class="text-secondary text-center pad-lg hidden">Geen auditlog-gegevens</p>
+            </div>
+            <button class="btn btn-outline btn-sm mt-md" id="btn-refresh-auditlog">Vernieuwen</button>
           </div>
         </div>
       </main>
