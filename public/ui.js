@@ -119,6 +119,15 @@ Q8.UI = (function() {
         if (idleSearch) idleSearch.style.display = isActive ? 'none' : 'block';
         if (activeParking) activeParking.style.display = isActive ? 'block' : 'none';
 
+        // Zones loading indicator
+        const zonesLoadingEl = document.getElementById('zones-loading-overlay');
+        if (zonesLoadingEl) {
+            const loading = state.zonesLoading === true;
+            zonesLoadingEl.classList.toggle('hidden', !loading);
+            const textEl = zonesLoadingEl.querySelector('.zones-loading-text');
+            if (textEl) textEl.textContent = state.language === 'nl' ? 'Parkeerzones laden...' : 'Loading parking zones...';
+        }
+
         // Show message when opened as file (map does not work from file://)
         var mapFileWarning = document.getElementById('map-file-warning');
         var mapContainerEl = document.getElementById('map-container');
