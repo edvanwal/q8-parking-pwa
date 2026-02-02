@@ -42,6 +42,16 @@ Q8.UI = (function() {
 
         // 3. Parking View (Map Interaction & UI Overlays)
         if (state.screen === 'parking') {
+            // Set fallback message timeout first (so it runs even if renderParkingView throws)
+            var isFile = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
+            if (!isFile && typeof _mapLoadCheckTimeout !== 'undefined') {
+                if (_mapLoadCheckTimeout) clearTimeout(_mapLoadCheckTimeout);
+                _mapLoadCheckTimeout = setTimeout(function() {
+                    _mapLoadCheckTimeout = null;
+                    if (map) return;
+                    showMapLoadError('De kaart laadt niet. Op de publieke website werkt de kaart vaak wel.', true);
+                }, 2500);
+            }
             renderParkingView();
         }
 
