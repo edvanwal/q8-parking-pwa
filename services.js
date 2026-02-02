@@ -359,6 +359,31 @@ Q8.Services = (function() {
             toast('Parking could not be started. Please select the zone again.');
             return;
         }
+        const ds = S.get.driverSettings || {};
+        const nowCheck = new Date();
+        const dayOfWeek = nowCheck.getDay();
+        const allowedDays = ds.allowedDays;
+        if (Array.isArray(allowedDays) && allowedDays.length > 0 && !allowedDays.includes(dayOfWeek)) {
+            toast(S.get.language === 'nl' ? 'Parkeren is niet toegestaan op deze dag.' : 'Parking is not allowed on this day.');
+            return;
+        }
+        if (ds.allowedTimeStart || ds.allowedTimeEnd) {
+            const mins = nowCheck.getHours() * 60 + nowCheck.getMinutes();
+            const parseTime = (t) => {
+                if (!t) return null;
+                const m = String(t).match(/^(\d{1,2}):(\d{2})/);
+                return m ? parseInt(m[1], 10) * 60 + parseInt(m[2], 10) : null;
+            };
+            const startM = parseTime(ds.allowedTimeStart), endM = parseTime(ds.allowedTimeEnd);
+            if (startM != null && mins < startM) {
+                toast(S.get.language === 'nl' ? 'Parkeren nog niet toegestaan.' : 'Parking not yet allowed.');
+                return;
+            }
+            if (endM != null && mins > endM) {
+                toast(S.get.language === 'nl' ? 'Parkeren niet meer toegestaan vandaag.' : 'Parking no longer allowed today.');
+                return;
+            }
+        }
         const displayId = zoneObj.id;
 
         const selPlate = S.get.plates.find(p => p.id === S.get.selectedPlateId) ||
