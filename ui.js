@@ -919,6 +919,7 @@ Q8.UI = (function() {
                     const zone = state.zones.find(z => z.uid === f.zoneUid || z.id === f.zoneUid || z.id === f.zoneId);
                     return zone ? { ...zone, zoneUid: zone.uid || zone.id } : null;
                 }).filter(Boolean);
+                const rateDisclaimer = '<div class="rate-disclaimer text-secondary text-xs" style="padding:8px 16px 12px; line-height:1.3;">' + (state.language === 'nl' ? 'Tarieven zijn indicatief (RDW Open Data)' : 'Rates are indicative (RDW Open Data)') + '</div>';
                 favQuick.innerHTML = `
                   <div class="text-secondary text-xs font-bold mb-sm" style="padding:12px 16px 0; letter-spacing:0.05em;">${state.language === 'nl' ? 'JE FAVORIETEN' : 'YOUR FAVORITES'}</div>
                   ${favZones.length === 0 ? '<div class="text-secondary text-sm" style="padding:12px 16px;">' + (state.language === 'nl' ? 'Geen favorieten in deze sessie' : 'No favorites loaded') + '</div>' : favZones.map(z => {
@@ -936,7 +937,7 @@ Q8.UI = (function() {
                         <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
                       </div>
                     </div>`;
-                  }).join('')}
+                  }).join('') + rateDisclaimer}
                 `;
             }
         }
