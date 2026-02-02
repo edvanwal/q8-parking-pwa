@@ -725,9 +725,13 @@
      </div>
   </div>
 
-  <!-- Toast -->
+  <!-- Toast (header area, with progress & close) -->
   <div class="toast-container" role="status" aria-live="polite" aria-atomic="true">
-    <div id="toast" class="toast">Success</div>
+    <div id="toast" class="toast">
+      <span id="toast-message" class="toast-message"></span>
+      <button type="button" class="toast-close" data-action="dismiss-toast" aria-label="Close notification">&times;</button>
+      <div class="toast-progress" id="toast-progress"></div>
+    </div>
   </div>
 
   </main>
