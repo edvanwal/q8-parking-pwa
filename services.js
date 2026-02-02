@@ -945,7 +945,23 @@ Q8.Services = (function() {
             else newDur -= 60;
         }
 
-        S.update({ duration: Math.min(newDur, maxDur) });
+        const capped = Math.min(newDur, maxDur);
+        const hitLimit = delta > 0 && newDur > maxDur;
+        S.update({ duration: capped });
+
+        if (hitLimit) {
+            const toast = (msg) => {
+                if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg, 'error');
+                else if (typeof window.showToast === 'function') window.showToast(msg, 'error');
+            };
+            if (maxDur >= 1440) {
+                toast('Max parking duration reached');
+            } else {
+                const hours = Math.floor(maxDur / 60);
+                const hoursStr = hours === 1 ? '1 hour' : `${hours} hours`;
+                toast(`Maximum parking duration for this zone is ${hoursStr}`);
+            }
+        }
     }
 
     // --- LICENSE PLATE SET DEFAULT (fragile) ---
