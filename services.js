@@ -319,21 +319,44 @@ Q8.Services = (function() {
         const plateText = selPlate ? selPlate.text : '';
 
         const now = new Date();
+        const endDate = S.get.duration === 0 ? null : new Date(now.getTime() + S.get.duration * 60000);
         const session = {
             zone: displayId,
             zoneUid: S.get.selectedZone,
             plate: plateText,
             start: now,
-            end: S.get.duration === 0 ? null : new Date(now.getTime() + S.get.duration * 60000)
+            end: endDate
         };
 
-        S.update({
-            session: session,
-            activeOverlay: null,
-            selectedZone: null
-        });
+        const userId = auth && auth.currentUser ? auth.currentUser.uid : null;
+        const tenantId = getTenantId();
 
-        S.save();
+        if (db && userId) {
+            const sessionData = {
+                userId,
+                tenantId,
+                zone: displayId,
+                zoneUid: S.get.selectedZone,
+                plate: plateText,
+                start: firebase.firestore.Timestamp.fromDate(now),
+                end: endDate ? firebase.firestore.Timestamp.fromDate(endDate) : null,
+                status: 'active',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            db.collection('sessions').add(sessionData).then((docRef) => {
+                session.sessionDocId = docRef.id;
+                S.update({ session, activeOverlay: null, selectedZone: null });
+                S.save();
+            }).catch((err) => {
+                console.error('Firestore session create failed:', err);
+                S.update({ session, activeOverlay: null, selectedZone: null });
+                S.save();
+            });
+        } else {
+            S.update({ session, activeOverlay: null, selectedZone: null });
+            S.save();
+        }
+
         toast('Parking session started');
         addNotification('sessionStarted', S.get.language === 'nl' ? 'Parkeersessie gestart' : 'Parking session started', `${displayId} · ${plateText}`);
     }
