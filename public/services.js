@@ -71,12 +71,35 @@ Q8.Services = (function() {
         db.collection('users').doc(uid).onSnapshot(doc => {
             if (doc.exists) {
                 const data = doc.data();
+                const adminPlates = data.adminPlates || [];
+                const userPlates = data.userPlates || [];
                 S.update({
                     driverSettings: data.driverSettings || {},
-                    adminPlates: data.adminPlates || []
+                    adminPlates
                 });
+                if (userPlates.length > 0 && S.get.plates.length === 0) {
+                    S.update({ plates: userPlates });
+                    if (S.savePlates) S.savePlates();
+                }
             }
         }, () => {});
+    }
+
+    function syncUserPlatesToFirestore(plates) {
+        const uid = auth && auth.currentUser ? auth.currentUser.uid : null;
+        if (!db || !uid) return Promise.resolve();
+        const userPlates = (plates || S.get.plates || []).filter(p => !(S.get.adminPlates || []).some(a => a.id === p.id));
+        return db.collection('users').doc(uid).update({
+            userPlates,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(() => {});
+    }
+
+    function removeUserPlateFromFirestore(plateId) {
+        const uid = auth && auth.currentUser ? auth.currentUser.uid : null;
+        if (!db || !uid) return Promise.resolve();
+        const plates = (S.get.plates || []).filter(p => p.id !== plateId);
+        return syncUserPlatesToFirestore(plates);
     }
 
     function restoreSessionFromFirestore(uid) {
@@ -761,6 +784,7 @@ Q8.Services = (function() {
         });
 
         S.savePlates();
+        syncUserPlatesToFirestore(newPlates);
 
         if (Kenteken && Kenteken.lookupRDW) {
             Kenteken.lookupRDW(normalized).then(function(result) {
@@ -826,6 +850,7 @@ Q8.Services = (function() {
         });
 
         S.savePlates();
+        removeUserPlateFromFirestore(id);
         const toast = (msg) => {
             if(Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg);
             else if(typeof window.showToast === 'function') window.showToast(msg);
