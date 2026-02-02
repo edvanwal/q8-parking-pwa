@@ -575,6 +575,23 @@ Q8.Services = (function() {
         }
     }
 
+    /** Sync notification preferences to Firestore users/{uid} (root build parity with public). */
+    function syncNotificationSettingsToFirestore(settings) {
+        if (!db || !auth || !auth.currentUser) return;
+        const uid = auth.currentUser.uid;
+        if (!uid || !settings) return;
+        db.collection('users').doc(uid).update({
+            notificationSettings: {
+                sessionStarted: !!settings.sessionStarted,
+                sessionExpiringSoon: !!settings.sessionExpiringSoon,
+                sessionEndedByUser: !!settings.sessionEndedByUser,
+                sessionEndedByMaxTime: !!settings.sessionEndedByMaxTime,
+                expiringSoonMinutes: typeof settings.expiringSoonMinutes === 'number' ? settings.expiringSoonMinutes : 10
+            },
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(() => {});
+    }
+
     function handleAutoEndSession(reason) {
         const session = S.get.session;
         if (!session) return;
@@ -1062,6 +1079,7 @@ Q8.Services = (function() {
         checkInstallMode,
         addNotification,
         handleAutoEndSession,
-        requestNotificationPermission
+        requestNotificationPermission,
+        syncNotificationSettingsToFirestore
     };
 })();
