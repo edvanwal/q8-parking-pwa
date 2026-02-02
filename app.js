@@ -304,7 +304,8 @@ Q8.App = (function() {
                     if (exists) {
                         next = favs.filter(f => !(f.zoneUid === zoneUid || f.zoneId === zoneId));
                     } else {
-                        next = [...favs, { zoneUid, zoneId }];
+                        const maxOrder = favs.length ? Math.max(...favs.map(f => f.order ?? 0)) : -1;
+                        next = [...favs, { zoneUid, zoneId, order: maxOrder + 1 }];
                     }
                     S.update({ favorites: next });
                     if (S.saveFavorites) S.saveFavorites();
@@ -329,7 +330,8 @@ Q8.App = (function() {
                     const favs = S.get.favorites || [];
                     const exists = favs.some(f => f.zoneUid === zoneUid || f.zoneId === zoneId);
                     if (exists) break;
-                    const next = [...favs, { zoneUid: zoneUid || zoneId, zoneId: zoneId || zoneUid }];
+                    const maxOrder = favs.length ? Math.max(...favs.map(f => f.order ?? 0)) : -1;
+                    const next = [...favs, { zoneUid: zoneUid || zoneId, zoneId: zoneId || zoneUid, order: maxOrder + 1 }];
                     S.update({ favorites: next });
                     if (S.saveFavorites) S.saveFavorites();
                     if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Toegevoegd aan favorieten' : 'Added to favorites', 'success');
