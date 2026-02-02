@@ -298,6 +298,13 @@
           <p class="zones-loading-text">Loading parking zones...</p>
         </div>
       </div>
+      <!-- Zones load error (network failure) -->
+      <div id="zones-load-error" class="zones-loading-overlay hidden" style="background:rgba(220,38,38,0.05);" aria-live="assertive">
+        <div class="zones-loading-content">
+          <p class="zones-error-text" style="color:var(--danger);font-weight:600;margin-bottom:16px;"></p>
+          <button type="button" class="btn btn-primary" data-action="retry-load-zones">Retry</button>
+        </div>
+      </div>
       <!-- Map Surface -->
       <div id="map-container" class="map-surface">
         <!-- Markers injected by JS -->
