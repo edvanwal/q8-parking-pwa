@@ -1028,7 +1028,7 @@ Q8.UI = (function() {
                  data-rates='${JSON.stringify(z.rates || [])}'>
                 <span class="search-result-text">${displayAddr}</span>
                 <div class="flex items-center gap-sm" style="flex-shrink:0;">
-                  ${isFav ? `<button type="button" class="icon-btn fav-star-btn ptr-enabled" data-action="remove-favorite" data-zone-uid="${uid}" data-zone-id="${zoneId}" title="${state.language === 'nl' ? 'Verwijder uit favorieten' : 'Remove from favorites'}" onclick="event.stopPropagation();" style="padding:4px; color:var(--danger); background:transparent; border:none;">♥</button>` : ''}
+                  ${isFav ? `<button type="button" class="icon-btn fav-star-btn ptr-enabled" data-action="remove-favorite" data-zone-uid="${uid}" data-zone-id="${zoneIdAttr}" title="${state.language === 'nl' ? 'Verwijder uit favorieten' : 'Remove from favorites'}" onclick="event.stopPropagation();" style="padding:4px; color:var(--danger); background:transparent; border:none;">♥</button>` : ''}
                   <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
                 </div>
             </div>
