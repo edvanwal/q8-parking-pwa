@@ -945,8 +945,9 @@ Q8.UI = (function() {
                     const city = z.city || '';
                     const zoneId = z.id || '';
                     const addr = street ? `${street}${houseNumber ? ' ' + houseNumber : ''}${city ? ', ' + city : ''}` : (city ? `${zoneId}, ${city}` : zoneId);
+                    const line = zoneId ? `${zoneId} · ${addr}` : addr;
                     return `<div class="search-result-item" data-action="open-overlay" data-target="sheet-zone" data-zone-uid="${z.uid}" data-zone="${zoneId}" data-price="${z.price}" data-rates='${JSON.stringify(z.rates || [])}'>
-                      <span class="search-result-text">♥ ${addr}</span>
+                      <span class="search-result-text">♥ ${line}</span>
                       <span class="search-result-price">€ ${(z.price || 0).toFixed(2).replace('.', ',')}</span>
                     </div>`;
                   }).join('')}
