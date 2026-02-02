@@ -1215,6 +1215,7 @@ Q8.UI = (function() {
 
     let map;
     var _mapLoadCheckTimeout = null;
+    var _mapScriptLoading = false;
     const UTRECHT_CENTER = { lat: 52.0907, lng: 5.1214 };
 
     // DIAG: Set window.Q8_DIAG = true to log Maps loading steps
