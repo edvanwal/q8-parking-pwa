@@ -340,7 +340,7 @@ Q8.Services = (function() {
                 reject(new Error(msg));
             }, TIMEOUT_MS);
 
-            const unsub = db.collection('zones').limit(2000).onSnapshot((snapshot) => {
+            db.collection('zones').limit(2000).onSnapshot((snapshot) => {
                 const raw = [];
                 snapshot.forEach((doc) => {
                     const data = doc.data();
