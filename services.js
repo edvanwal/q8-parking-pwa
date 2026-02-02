@@ -221,7 +221,7 @@ Q8.Services = (function() {
     }
 
     function tryOpenOverlay(id, contextData = null) {
-        const allowedSwitches = ['menu-overlay', 'sheet-plate-selector', 'sheet-zone', 'modal-add-plate', 'modal-edit-plate'];
+        const allowedSwitches = ['menu-overlay', 'sheet-plate-selector', 'sheet-zone', 'modal-add-plate', 'modal-edit-plate', 'modal-forgot-password', 'modal-confirm-delete-plate'];
 
         // Guard: Prevent overlap unless allowed
         if (S.get.activeOverlay && S.get.activeOverlay !== id && !allowedSwitches.includes(id)) {
@@ -275,6 +275,15 @@ Q8.Services = (function() {
                 if (inp) { inp.value = ''; inp.focus(); }
                 const inpDesc = document.getElementById('inp-plate-desc');
                 if (inpDesc) inpDesc.value = '';
+            }, 100);
+        }
+        if (id === 'modal-forgot-password') {
+            setTimeout(() => {
+                const inpEmail = document.getElementById('inp-email');
+                const inpForgot = document.getElementById('inp-forgot-email');
+                if (inpForgot && inpEmail) inpForgot.value = inpEmail.value || '';
+                const resultEl = document.getElementById('forgot-password-result');
+                if (resultEl) { resultEl.style.display = 'none'; resultEl.textContent = ''; }
             }, 100);
         }
     }
