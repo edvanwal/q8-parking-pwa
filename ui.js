@@ -962,9 +962,9 @@ Q8.UI = (function() {
             favQuick.className = showFavQuick ? 'search-results-panel search-results-panel--pill' : 'hidden';
             if (showFavQuick) {
                 const favUids = new Set(favs.map(f => f.zoneUid || f.zoneId));
-                const favZones = favs.map(f => {
+                const favZones = favs.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0)).map(f => {
                     const zone = state.zones.find(z => z.uid === f.zoneUid || z.id === f.zoneUid || z.id === f.zoneId);
-                    return zone ? { ...zone, zoneUid: zone.uid || zone.id } : null;
+                    return zone ? { ...zone, zoneUid: zone.uid || zone.id, favName: f.name } : null;
                 }).filter(Boolean);
                 const rateDisclaimer = '<div class="rate-disclaimer text-secondary text-xs" style="padding:8px 16px 12px; line-height:1.3;">' + (state.language === 'nl' ? 'Tarieven zijn indicatief (RDW Open Data)' : 'Rates are indicative (RDW Open Data)') + '</div>';
                 favQuick.innerHTML = `
@@ -975,7 +975,8 @@ Q8.UI = (function() {
                     const city = z.city || '';
                     const zoneId = z.id || '';
                     const addr = street ? `${street}${houseNumber ? ' ' + houseNumber : ''}${city ? ', ' + city : ''}` : (city ? `${zoneId}, ${city}` : zoneId);
-                    const line = zoneId ? `${zoneId} · ${addr}` : addr;
+                    const title = (z.favName && z.favName.trim()) ? z.favName.trim() : zoneId;
+                    const line = `${title} · ${addr}`;
                     const uid = z.uid || z.id;
                     return `<div class="search-result-item" data-action="open-overlay" data-target="sheet-zone" data-zone-uid="${uid}" data-zone="${zoneId}" data-price="${z.price}" data-rates='${JSON.stringify(z.rates || [])}'>
                       <span class="search-result-text">${line}</span>
