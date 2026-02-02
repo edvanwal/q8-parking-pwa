@@ -647,6 +647,7 @@ Q8.Services = (function() {
                     selectedZoneRates: rates,
                     duration: 0   // Default: Until stopped
                 });
+                updateNearbyFacilities();
             } else if (!S.get.selectedZone) {
                 console.warn('[ZONE_SELECT] tryOpenOverlay(sheet-zone) called with no context and no selectedZone');
             }
