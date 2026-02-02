@@ -162,11 +162,14 @@ Q8.UI = (function() {
         // Zone Sheet
         if (state.selectedZone) renderZoneSheet();
 
-        // Search input sync (app herkent zelf zone vs adres)
+        // Search input sync
         const inpSearch = document.getElementById('inp-search');
         if (inpSearch && document.activeElement !== inpSearch) {
             inpSearch.value = state.searchQuery;
         }
+        document.querySelectorAll('.search-mode-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-mode') === state.searchMode);
+        });
 
         renderSearchResults();
 
