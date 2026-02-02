@@ -291,6 +291,14 @@ Q8.App = (function() {
                     const btnDark = document.getElementById('btn-dark-mode');
                     if (btnDark) btnDark.setAttribute('aria-pressed', nextDark ? 'true' : 'false');
                     break;
+
+                case 'toggle-dark':
+                    const nextDark = !S.get.darkMode;
+                    if (S.setDarkMode) S.setDarkMode(nextDark);
+                    else S.update({ darkMode: nextDark });
+                    const btnDark = document.getElementById('btn-dark-mode');
+                    if (btnDark) btnDark.setAttribute('aria-pressed', nextDark ? 'true' : 'false');
+                    break;
                 case 'set-gate-lang':
                      S.update({ installMode: { ...S.get.installMode, language: target.getAttribute('data-lang') } });
                      UI.renderInstallGate();
