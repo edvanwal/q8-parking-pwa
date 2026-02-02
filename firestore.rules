@@ -6,28 +6,20 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function getUserData() {
+    function userDoc() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
 
     function userRole() {
-      return getUserData().role;
+      return userDoc() != null ? userDoc().role : null;
     }
 
     function userTenantId() {
-      return getUserData().tenantId;
+      return userDoc() != null && userDoc().tenantId != null ? userDoc().tenantId : 'default';
     }
 
     function isFleetManager() {
       return isAuthenticated() && userRole() == 'fleetmanager';
-    }
-
-    function isDriver() {
-      return isAuthenticated() && userRole() == 'driver';
-    }
-
-    function sameTenant(tenantId) {
-      return isAuthenticated() && userTenantId() == tenantId;
     }
 
     // Users: alleen eigen doc lezen/schrijven, fleetmanager kan binnen tenant
@@ -40,7 +32,7 @@ service cloud.firestore {
 
     // Invites: fleetmanager kan maken binnen eigen tenant
     match /invites/{inviteId} {
-      allow read: if isAuthenticated() && sameTenant(resource.data.tenantId);
+      allow read: if isAuthenticated() && resource.data.tenantId == userTenantId();
       allow create: if isFleetManager() && request.resource.data.tenantId == userTenantId();
       allow update, delete: if isFleetManager() && resource.data.tenantId == userTenantId();
     }
@@ -51,7 +43,7 @@ service cloud.firestore {
         resource.data.userId == request.auth.uid ||
         (isFleetManager() && resource.data.tenantId == userTenantId())
       );
-      allow create: if isDriver() && request.resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isAuthenticated() && (
         resource.data.userId == request.auth.uid ||
         (isFleetManager() && resource.data.tenantId == userTenantId())
@@ -64,7 +56,7 @@ service cloud.firestore {
         resource.data.userId == request.auth.uid ||
         (isFleetManager() && resource.data.tenantId == userTenantId())
       );
-      allow create: if isDriver() && request.resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if false;
     }
 
