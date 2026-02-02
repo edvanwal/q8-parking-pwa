@@ -1355,6 +1355,8 @@ Q8.UI = (function() {
         if (zoneLabel) zoneLabel.textContent = nl ? 'Zone' : 'Zone';
         const plateLabel = document.querySelector('#modal-confirm-start [data-action="open-plate-selector-from-confirm"] .text-secondary');
         if (plateLabel) plateLabel.textContent = nl ? 'Kenteken' : 'License plate';
+        const plateRow = document.querySelector('#modal-confirm-start [data-action="open-plate-selector-from-confirm"]');
+        if (plateRow) plateRow.setAttribute('title', nl ? 'Wijzig kenteken' : 'Change license plate');
         if (cancelBtn) cancelBtn.textContent = nl ? 'ANNULEREN' : 'CANCEL';
         if (okBtn) okBtn.textContent = nl ? 'JA, STARTEN' : 'YES, START';
         if (options && options.daypassNote && daypassNote) {
