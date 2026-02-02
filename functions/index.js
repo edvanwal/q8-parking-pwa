@@ -171,7 +171,22 @@ async function endSession(sessionDoc, reason) {
     }
     
     await batch.commit();
-    
+
+    // Push: Parkeersessie gestopt omdat de eindtijd bereikt is
+    const uid = session.userId;
+    if (uid) {
+        const userDoc = await db.collection('users').doc(uid).get();
+        const nSettings = userDoc.exists ? (userDoc.data().notificationSettings || {}) : {};
+        if (nSettings.sessionEndedByMaxTime !== false) {
+            const zone = session.zone || '?';
+            const plate = session.plate || '?';
+            await sendPushToUser(uid, 'Q8 Parking', `Parkeersessie gestopt omdat de eindtijd bereikt is · ${zone} · ${plate}`, {
+                type: 'sessionEndedByMaxTime',
+                tag: 'session-ended-auto'
+            });
+        }
+    }
+
     console.log(`Session ${sessionId} auto-stopped. Reason: ${reason}`);
     return true;
 }
