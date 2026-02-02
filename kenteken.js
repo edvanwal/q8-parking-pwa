@@ -54,28 +54,28 @@ Q8.Kenteken = (function() {
     }
 
     /**
-     * Nederlands kenteken: toegestane letters (geen klinkers, geen C/Q).
+     * Nederlands kenteken: toegestane letters (geen klinkers, geen C/Q). V,W voor o.a. bedrijfsauto's/aanhangwagens.
      */
-    const DUTCH_LETTERS = 'BDFGHJKLMNPRSTXZ';
+    const DUTCH_LETTERS = 'BDFGHJKLMNPRSTVWXZ';
 
     /** Sidecode-patterns (zonder streepjes): 6–8 tekens. */
     const SIDECODE_PATTERNS = [
-        /^[BDFGHJKLMNPRSTXZ]{2}\d{2}\d{2}$/,           // 1: XX-99-99
-        /^\d{2}[BDFGHJKLMNPRSTXZ]{2}\d{2}$/,           // 2: 99-XX-99
-        /^\d{2}\d{2}[BDFGHJKLMNPRSTXZ]{2}$/,           // 3: 99-99-XX
-        /^[BDFGHJKLMNPRSTXZ]\d{2}[BDFGHJKLMNPRSTXZ]{3}$/, // 4: X-99-XXX
-        /^[BDFGHJKLMNPRSTXZ]{3}\d{2}[BDFGHJKLMNPRSTXZ]$/, // 5: XXX-99-X
-        /^[BDFGHJKLMNPRSTXZ]\d{3}\d{2}$/,              // 6: X-XXX-99
-        /^[BDFGHJKLMNPRSTXZ]{2}\d{3}[BDFGHJKLMNPRSTXZ]$/, // 7: XX-999-X
-        /^[BDFGHJKLMNPRSTXZ]\d{3}[BDFGHJKLMNPRSTXZ]{2}$/, // 8: X-999-XX
-        /^\d{3}[BDFGHJKLMNPRSTXZ][BDFGHJKLMNPRSTXZ]{2}$/, // 9: 999-X-XX
-        /^[BDFGHJKLMNPRSTXZ]{2}[BDFGHJKLMNPRSTXZ]\d{3}$/, // 10: XX-X-999
-        /^\d{3}[BDFGHJKLMNPRSTXZ]{2}[BDFGHJKLMNPRSTXZ]$/, // 11: 999-XX-X
-        /^\d{2}[BDFGHJKLMNPRSTXZ]{2}\d{3}$/,           // 2 (7): 99-XX-999
-        /^[BDFGHJKLMNPRSTXZ]{2}\d{3}\d{2}$/,           // 7 (7): XX-999-99
-        /^\d{3}[BDFGHJKLMNPRSTXZ]{2}\d{2}$/,           // 11 (7): 999-XX-99
-        /^\d{2}\d{3}[BDFGHJKLMNPRSTXZ]{2}$/,           // 3 (7): 99-999-XX
-        /^[BDFGHJKLMNPRSTXZ]\d{2}[BDFGHJKLMNPRSTXZ]{2}\d{2}$/ // 4 (7): X-99-XX-99 (lenient 7)
+        /^[BDFGHJKLMNPRSTVWXZ]{2}\d{2}\d{2}$/,           // 1: XX-99-99
+        /^\d{2}[BDFGHJKLMNPRSTVWXZ]{2}\d{2}$/,           // 2: 99-XX-99
+        /^\d{2}\d{2}[BDFGHJKLMNPRSTVWXZ]{2}$/,           // 3: 99-99-XX
+        /^[BDFGHJKLMNPRSTVWXZ]\d{2}[BDFGHJKLMNPRSTVWXZ]{3}$/, // 4: X-99-XXX
+        /^[BDFGHJKLMNPRSTVWXZ]{3}\d{2}[BDFGHJKLMNPRSTVWXZ]$/, // 5: XXX-99-X
+        /^[BDFGHJKLMNPRSTVWXZ]\d{3}\d{2}$/,              // 6: X-XXX-99
+        /^[BDFGHJKLMNPRSTVWXZ]{2}\d{3}[BDFGHJKLMNPRSTVWXZ]$/, // 7: XX-999-X
+        /^[BDFGHJKLMNPRSTVWXZ]\d{3}[BDFGHJKLMNPRSTVWXZ]{2}$/, // 8: X-999-XX (bijv. G-346-VN)
+        /^\d{3}[BDFGHJKLMNPRSTVWXZ][BDFGHJKLMNPRSTVWXZ]{2}$/, // 9: 999-X-XX
+        /^[BDFGHJKLMNPRSTVWXZ]{2}[BDFGHJKLMNPRSTVWXZ]\d{3}$/, // 10: XX-X-999
+        /^\d{3}[BDFGHJKLMNPRSTVWXZ]{2}[BDFGHJKLMNPRSTVWXZ]$/, // 11: 999-XX-X
+        /^\d{2}[BDFGHJKLMNPRSTVWXZ]{2}\d{3}$/,           // 2 (7): 99-XX-999
+        /^[BDFGHJKLMNPRSTVWXZ]{2}\d{3}\d{2}$/,           // 7 (7): XX-999-99
+        /^\d{3}[BDFGHJKLMNPRSTVWXZ]{2}\d{2}$/,           // 11 (7): 999-XX-99
+        /^\d{2}\d{3}[BDFGHJKLMNPRSTVWXZ]{2}$/,           // 3 (7): 99-999-XX
+        /^[BDFGHJKLMNPRSTVWXZ]\d{2}[BDFGHJKLMNPRSTVWXZ]{2}\d{2}$/ // 4 (7): X-99-XX-99 (lenient 7)
     ];
 
     /**
