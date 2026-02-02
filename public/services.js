@@ -413,8 +413,8 @@ Q8.Services = (function() {
         // Risk: contextData.uid/zone missing when clicked from marker with wrong data-* attributes.
         if (id === 'sheet-zone') {
             if (S.get.session !== null) {
-                if(Q8.UI && Q8.UI.showToast) Q8.UI.showToast("You have an active session.");
-                else if(typeof window.showToast === 'function') window.showToast("You have an active session.");
+                if(Q8.UI && Q8.UI.showToast) Q8.UI.showToast(S.get.language === 'nl' ? 'Je hebt al een actieve sessie' : "You have an active session.", 'error');
+                else if(typeof window.showToast === 'function') window.showToast(S.get.language === 'nl' ? 'Je hebt al een actieve sessie' : "You have an active session.", 'error');
                 return;
             }
 
@@ -1026,8 +1026,8 @@ Q8.Services = (function() {
         });
 
         S.savePlates();
-        if(Q8.UI && Q8.UI.showToast) Q8.UI.showToast('Default plate updated');
-        else if(typeof window.showToast === 'function') window.showToast('Default plate updated');
+        if(Q8.UI && Q8.UI.showToast) Q8.UI.showToast(S.get.language === 'nl' ? 'Standaard kenteken bijgewerkt' : 'Default plate updated', 'success');
+        else if(typeof window.showToast === 'function') window.showToast(S.get.language === 'nl' ? 'Standaard kenteken bijgewerkt' : 'Default plate updated', 'success');
     }
 
     function checkInstallMode() {
