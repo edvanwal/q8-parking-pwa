@@ -83,16 +83,26 @@ Q8.App = (function() {
                     Services.tryOpenOverlay('sheet-zone', { uid: S.get.selectedZone });
                     break;
 
-                case 'open-overlay':
-                    // Risk: JSON.parse on data-rates throws if malformed. data-zone-uid/zone missing = empty context.
+                case 'open-overlay': {
                     const context = {
                         uid: target.getAttribute('data-zone-uid'),
                         zone: target.getAttribute('data-zone'),
                         price: parseFloat(target.getAttribute('data-price')),
-                        rates: JSON.parse(target.getAttribute('data-rates') || 'null')
+                        rates: (() => { try { return JSON.parse(target.getAttribute('data-rates') || 'null'); } catch (_) { return null; } })()
                     };
+                    if (targetId === 'modal-confirm-delete-plate') {
+                        const plateId = target.getAttribute('data-id');
+                        const modal = document.getElementById('modal-confirm-delete-plate');
+                        if (modal) modal.setAttribute('data-delete-plate-id', plateId || '');
+                        const descEl = document.getElementById('confirm-delete-plate-desc');
+                        const plate = plateId ? (S.get.plates.find(p => p.id == plateId || p.text == plateId)) : null;
+                        if (descEl) descEl.textContent = plate
+                            ? (S.get.language === 'nl' ? `Weet u zeker dat u kenteken ${plate.text} wilt verwijderen? Dit kan niet ongedaan worden gemaakt.` : `Are you sure you want to remove license plate ${plate.text}? This cannot be undone.`)
+                            : (S.get.language === 'nl' ? 'Weet u zeker dat u dit kenteken wilt verwijderen?' : 'Are you sure you want to remove this license plate? This cannot be undone.');
+                    }
                     Services.tryOpenOverlay(targetId, context);
                     break;
+                }
 
                 case 'close-overlay':
                     S.update({ activeOverlay: null });
@@ -141,9 +151,45 @@ Q8.App = (function() {
                     break;
                 }
 
-                case 'delete-plate':
-                    Services.deletePlate(target.getAttribute('data-id'));
+                case 'delete-plate': {
+                    const plateId = target.getAttribute('data-id');
+                    const modal = document.getElementById('modal-confirm-delete-plate');
+                    if (modal) modal.setAttribute('data-delete-plate-id', plateId || '');
+                    const plate = plateId ? (S.get.plates.find(p => p.id == plateId || p.text == plateId)) : null;
+                    const descEl = document.getElementById('confirm-delete-plate-desc');
+                    if (descEl) descEl.textContent = plate
+                        ? (S.get.language === 'nl' ? `Weet u zeker dat u kenteken ${plate.text} wilt verwijderen? Dit kan niet ongedaan worden gemaakt.` : `Are you sure you want to remove license plate ${plate.text}? This cannot be undone.`)
+                        : (S.get.language === 'nl' ? 'Weet u zeker dat u dit kenteken wilt verwijderen?' : 'Are you sure you want to remove this license plate? This cannot be undone.');
+                    Services.tryOpenOverlay('modal-confirm-delete-plate');
                     break;
+                }
+
+                case 'confirm-delete-plate': {
+                    const modal = document.getElementById('modal-confirm-delete-plate');
+                    const plateId = modal ? modal.getAttribute('data-delete-plate-id') : null;
+                    S.update({ activeOverlay: null });
+                    if (plateId) Services.deletePlate(plateId);
+                    break;
+                }
+
+                case 'submit-forgot-password': {
+                    const inp = document.getElementById('inp-forgot-email');
+                    const email = inp ? inp.value.trim() : '';
+                    const resultEl = document.getElementById('forgot-password-result');
+                    if (!email) {
+                        if (resultEl) { resultEl.style.display = 'block'; resultEl.textContent = S.get.language === 'nl' ? 'Voer een e-mailadres in.' : 'Please enter your email address.'; resultEl.style.color = 'var(--danger)'; }
+                        return;
+                    }
+                    if (Services.sendPasswordResetEmail) {
+                        Services.sendPasswordResetEmail(email).then(() => {
+                            if (resultEl) { resultEl.style.display = 'block'; resultEl.textContent = S.get.language === 'nl' ? 'Resetlink verzonden! Check je e-mail.' : 'Reset link sent! Check your email.'; resultEl.style.color = 'var(--success, #10b981)'; }
+                            S.update({ activeOverlay: null });
+                        }).catch((err) => {
+                            if (resultEl) { resultEl.style.display = 'block'; resultEl.textContent = err.message || (S.get.language === 'nl' ? 'Fout bij verzenden.' : 'Failed to send.'); resultEl.style.color = 'var(--danger)'; }
+                        });
+                    }
+                    break;
+                }
 
                 case 'select-plate':
                     const sId = target.getAttribute('data-id');
