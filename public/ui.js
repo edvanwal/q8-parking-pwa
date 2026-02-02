@@ -1019,11 +1019,11 @@ Q8.UI = (function() {
             const displayAddr = regex ? line.replace(regex, '<strong class="search-highlight">$1</strong>') : line;
             const isFav = favUids.has(z.uid) || favUids.has(z.id);
             const uid = z.uid || z.id;
-            const zoneId = z.id || z.uid || '';
+            const zoneIdAttr = z.id || z.uid || '';
             return `
             <div class="search-result-item" data-action="open-overlay" data-target="sheet-zone"
                  data-zone-uid="${uid}"
-                 data-zone="${zoneId}"
+                 data-zone="${zoneIdAttr}"
                  data-price="${z.price}"
                  data-rates='${JSON.stringify(z.rates || [])}'>
                 <span class="search-result-text">${displayAddr}</span>
