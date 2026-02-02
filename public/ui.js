@@ -178,10 +178,6 @@ Q8.UI = (function() {
         if (inpSearch && document.activeElement !== inpSearch) {
             inpSearch.value = state.searchQuery;
         }
-        document.querySelectorAll('.search-mode-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.getAttribute('data-mode') === state.searchMode);
-        });
-
         renderSearchResults();
 
         // Side menu: sync language and dark mode
@@ -895,7 +891,8 @@ Q8.UI = (function() {
         const container = document.getElementById('ui-search-results');
         if (!container) return;
 
-        const isAddressMode = state.searchMode === 'address';
+        const query = (state.searchQuery || '').trim();
+        const isAddressMode = (Q8.Services && Q8.Services.detectSearchMode && Q8.Services.detectSearchMode(query) === 'address');
         const minLen = isAddressMode ? 3 : 2;
         const shouldShow = state.screen === 'parking' && state.searchQuery.length >= minLen && state.activeOverlay === null;
         const favQuick = document.getElementById('ui-favorites-quick');
@@ -966,12 +963,16 @@ Q8.UI = (function() {
         const query = state.searchQuery.toLowerCase();
         const favorites = state.favorites || [];
         const favUids = new Set(favorites.map(f => f.zoneUid || f.zoneId));
+        const words = query.split(/[\s,]+/).filter(w => w.length > 0);
         const matches = state.zones.filter(z => {
             const id = (z.id || '').toLowerCase();
             const name = (z.name || '').toLowerCase();
             const street = (z.street || '').toLowerCase();
             const city = (z.city || '').toLowerCase();
-            return id.includes(query) || name.includes(query) || street.includes(query) || city.includes(query);
+            const allFields = [id, name, street, city].join(' ');
+            if (words.length === 0) return false;
+            if (words.length === 1) return id.includes(query) || name.includes(query) || street.includes(query) || city.includes(query);
+            return words.every(w => allFields.includes(w));
         })
             .sort((a,b) => {
                 const aFav = favUids.has(a.uid) || favUids.has(a.id);
