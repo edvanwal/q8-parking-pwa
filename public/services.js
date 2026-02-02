@@ -769,8 +769,8 @@ Q8.Services = (function() {
             if (!/^[A-Z0-9]+$/.test(normalized)) return toast(S.get.language === 'nl' ? 'Alleen letters en cijfers' : 'Letters and digits only', 'error');
         }
 
-        if (!formatValid) return toast(formatError || 'Invalid license plate format');
-        if (S.get.plates.some(p => p.text === normalized || p.id === normalized)) return toast('License plate already exists');
+        if (!formatValid) return toast(formatError || (S.get.language === 'nl' ? 'Ongeldig kentekenformaat' : 'Invalid license plate format'), 'error');
+        if (S.get.plates.some(p => p.text === normalized || p.id === normalized)) return toast(S.get.language === 'nl' ? 'Kenteken bestaat al' : 'License plate already exists', 'error');
 
         const isFirst = S.get.plates.length === 0;
         const displayText = Kenteken && Kenteken.formatDisplay ? Kenteken.formatDisplay(normalized) : normalized;
@@ -792,14 +792,14 @@ Q8.Services = (function() {
             Kenteken.lookupRDW(normalized).then(function(result) {
                 if (result.found && result.data) {
                     const brand = (result.data.merk || '') + (result.data.handelsbenaming ? ' ' + result.data.handelsbenaming : '');
-                    toast(S.get.language === 'nl' ? 'Kenteken toegevoegd (gecontroleerd: ' + (brand.trim() || 'RDW') + ')' : 'License plate added (verified: ' + (brand.trim() || 'RDW') + ')');
+                    toast(S.get.language === 'nl' ? 'Kenteken toegevoegd (gecontroleerd: ' + (brand.trim() || 'RDW') + ')' : 'License plate added (verified: ' + (brand.trim() || 'RDW') + ')', 'success');
                 } else if (result.error) {
-                    toast(S.get.language === 'nl' ? 'Kenteken toegevoegd (controle RDW tijdelijk niet beschikbaar)' : 'License plate added (RDW check temporarily unavailable)');
+                    toast(S.get.language === 'nl' ? 'Kenteken toegevoegd (controle RDW tijdelijk niet beschikbaar)' : 'License plate added (RDW check temporarily unavailable)', 'success');
                 } else {
-                    toast(S.get.language === 'nl' ? 'Kenteken toegevoegd (niet in RDW gevonden)' : 'License plate added (not found in RDW)');
+                    toast(S.get.language === 'nl' ? 'Kenteken toegevoegd (niet in RDW gevonden)' : 'License plate added (not found in RDW)', 'success');
                 }
             }).catch(function() {
-                toast(S.get.language === 'nl' ? 'Kenteken toegevoegd' : 'License plate added');
+                toast(S.get.language === 'nl' ? 'Kenteken toegevoegd' : 'License plate added', 'success');
             });
         } else {
             toast(S.get.language === 'nl' ? 'Kenteken toegevoegd' : 'License plate added');
@@ -841,7 +841,7 @@ Q8.Services = (function() {
             if(Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg);
             else if(typeof window.showToast === 'function') window.showToast(msg);
         };
-        toast('License plate deleted');
+        toast(S.get.language === 'nl' ? 'Kenteken verwijderd' : 'License plate deleted', 'success');
     }
 
     function updatePlate(id, newText, newDescription) {
@@ -877,8 +877,8 @@ Q8.Services = (function() {
             if (!/^[A-Z0-9]+$/.test(normalized)) return toast(S.get.language === 'nl' ? 'Alleen letters en cijfers' : 'Letters and digits only', 'error');
         }
 
-        if (!formatValid) return toast(formatError || 'Invalid license plate format');
-        if (S.get.plates.some(p => (p.id != id && p.text != id) && (p.text === normalized || p.id === normalized))) return toast('License plate already exists');
+        if (!formatValid) return toast(formatError || (S.get.language === 'nl' ? 'Ongeldig kentekenformaat' : 'Invalid license plate format'), 'error');
+        if (S.get.plates.some(p => (p.id != id && p.text != id) && (p.text === normalized || p.id === normalized))) return toast(S.get.language === 'nl' ? 'Kenteken bestaat al' : 'License plate already exists', 'error');
 
         const displayText = Kenteken && Kenteken.formatDisplay ? Kenteken.formatDisplay(normalized) : normalized;
         const newPlates = [...S.get.plates];
@@ -903,7 +903,7 @@ Q8.Services = (function() {
         });
 
         S.savePlates();
-        toast(S.get.language === 'nl' ? 'Kenteken bijgewerkt' : 'License plate updated');
+        toast(S.get.language === 'nl' ? 'Kenteken bijgewerkt' : 'License plate updated', 'success');
     }
 
     /**
