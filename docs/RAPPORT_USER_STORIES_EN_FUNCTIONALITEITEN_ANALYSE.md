@@ -486,17 +486,22 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 ### 8.1 Sterke punten
 
 1. **Duidelijke scheiding**: app.js (events), services.js (logica), state.js (state), ui.js (render) – goed te volgen.
-2. **Documentatie**: ARCHITECTURE.md, PRODUCT_ANALYSIS.md en FLEET_MANAGER_ADMIN_PORTAL_PLAN.md geven goed inzicht.
-3. **Kernflow werkt**: zoeken, zone kiezen, starten, stoppen, kentekens – de basis is solide.
-4. **RDW-integratie**: Kentekenvalidatie en lookup zonder API-key is waardevol.
-5. **Fleet Portal**: Eerste versie met gebruikersbeheer, sessies stoppen en kentekenbeheer is functioneel.
+2. **Documentatie**: ARCHITECTURE.md, PRODUCT_ANALYSIS.md, FLEET_MANAGER_ADMIN_PORTAL_PLAN.md, PWA_INSTALL_INSTRUCTIES.md geven goed inzicht.
+3. **Kernflow werkt**: zoeken (incl. geocoding), zone kiezen, bevestigingsmodal, starten, stoppen, kentekens – de basis is solide.
+4. **RDW-integratie**: Kentekenvalidatie, automatische lookup en Description-vulling zonder API-key.
+5. **Fleet Portal**: Gebruikersbeheer, sessies stoppen en kentekenbeheer is functioneel.
+6. **Historie & Firestore**: Sessies naar `sessions` + `transactions`, historie geladen uit Firestore.
+7. **Favorieten uitgebreid**: Custom namen, volgorde wijzigen (slepen), verwijderen.
+8. **Dark mode**: Light / System / Dark, volgt telefooninstellingen.
+9. **PWA**: Service Worker actief, install gate met platform-specifieke instructies.
+10. **Billing export**: Cloud Functions voor `parking_sessions` en `monthly_subscriptions` (CSV/JSON).
 
 ### 8.2 Verbeterpunten
 
-1. **Parkeerhistorie**: Cruciaal voor gebruik en declaratie; prioriteit 1.
-2. **Sessie-persistentie**: Naar Firestore voor cross-device en rapportage.
-3. **Foutafhandeling**: Meer expliciete feedback bij mislukte acties en netwerkfouten.
-4. **State.js**: Ontbrekende `saveFavorites`/`loadFavorites` in root oplossen.
+1. **Wachtwoord vergeten**: Nog niet geïmplementeerd.
+2. **Bevestiging kenteken verwijderen**: Voorkomt per ongeluk verwijderen.
+3. **Global active parking indicator**: Lopende sessie door hele app + PWA-badge.
+4. **Auto-stop Cloud Function**: Cron/Function voor automatisch stoppen op ingestelde tijd.
 5. **Testen**: Uitbreiden van tests voor kritieke flows.
 
 ---
@@ -505,24 +510,21 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ### 9.1 Korte termijn (1–2 sprints)
 
-1. **Root state.js repareren**: Implementeer `saveFavorites` en `loadFavorites` in de root `state.js` (of sync met `public/state.js`).
-2. **Historie opbouwen**: Bij `handleEndParking` sessie naar Firestore `transactions` schrijven en `state.history` vullen.
-3. **Bevestiging bij verwijderen**: Confirm-dialoog voor kenteken en mogelijk voor sessie stoppen.
-4. **Laad- en foutfeedback**: Loading state bij zones, duidelijke foutmelding bij Firestore/Maps-fouten.
+1. **Bevestiging bij verwijderen**: Confirm-dialoog voor kenteken verwijderen.
+2. **Global active parking indicator**: Compacte balk onder header op andere schermen, PWA Badging API.
+3. **Wachtwoord vergeten**: Implementeer flow via Firebase Auth.
 
 ### 9.2 Middellange termijn (3–6 maanden)
 
-5. **Wachtwoord vergeten**: Implementeer flow via Firebase Auth.
-6. **Auto-stop Cloud Function**: Cron/Function die sessies stopt op ingestelde tijd.
-7. **Rapportage-export**: PDF/CSV-export van parkeerhistorie.
-8. **Push-notificaties**: Waarschuwing bij bijna verlopen sessie.
+4. **Auto-stop Cloud Function**: Cron/Function die sessies stopt op ingestelde tijd.
+5. **Rapportage-export**: PDF/CSV-export van parkeerhistorie (billing export bestaat).
+6. **Push-notificaties**: Waarschuwing bij bijna verlopen sessie (FCM aanwezig).
 
 ### 9.3 Lange termijn
 
-9. **Multi-tenancy verfijnen**: Security Rules, tenant-isolatie en rollen uitbreiden.
-10. **Offline-first**: Service Worker en cache-strategie voor kritieke data.
-11. **Adres-zoeken**: Geocoding voor zoeken op straatnaam.
-12. **Auditlog**: Voor fleetmanagers en compliance.
+7. **Multi-tenancy verfijnen**: Security Rules, tenant-isolatie en rollen uitbreiden.
+8. **Offline-first**: Cache-strategie voor kritieke data (Service Worker actief).
+9. **Auditlog**: Voor fleetmanagers en compliance.
 
 ---
 
