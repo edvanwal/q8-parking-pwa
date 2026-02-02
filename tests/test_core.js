@@ -109,6 +109,39 @@ if (runTest("Pricing: Estimated cost formatting for zone sheet", () => {
     assertEquals(Utils.calculateCost(0, 2.0), 0.0);
 })) passed++;
 
+// T2: Missing price – fallback hourly rate for cost
+total++;
+if (runTest("Pricing: missing zone.price uses fallback for cost", () => {
+    const durationMins = 60;
+    const zone = null;
+    const fallbackRate = 2.0;
+    const hourlyRate = (zone && zone.price != null) ? parseFloat(zone.price) : fallbackRate;
+    assertNear(hourlyRate, 2.0);
+    assertNear(Utils.calculateCost(durationMins, hourlyRate), 2.0);
+    const zoneNoPrice = { price: null, rates: [] };
+    const rate2 = (zoneNoPrice.price != null) ? parseFloat(zoneNoPrice.price) : fallbackRate;
+    assertNear(rate2, 2.0);
+})) passed++;
+
+// T2: Missing rates – cost from zone.price only
+total++;
+if (runTest("Pricing: missing rates – cost from zone.price", () => {
+    const zone = { price: 2.5, rates: [] };
+    const hourlyRate = (zone && zone.price != null) ? parseFloat(zone.price) : 2.0;
+    assertNear(hourlyRate, 2.5);
+    assertNear(Utils.calculateCost(120, hourlyRate), 5.0);
+})) passed++;
+
+// T2: rate_numeric – max consistent with zone.price for current-slot logic
+total++;
+if (runTest("Pricing: rate_numeric max consistent with zone.price", () => {
+    const zone = { price: 3.0, rates: [{ rate_numeric: 2.5 }, { rate_numeric: 3.0 }, { rate_numeric: 1.5 }] };
+    const maxRate = Math.max(...zone.rates.map(r => r.rate_numeric != null ? r.rate_numeric : 0));
+    assertNear(maxRate, 3.0);
+    assertNear(zone.price, maxRate);
+    assertNear(Utils.calculateCost(60, zone.price), 3.0);
+})) passed++;
+
 // TEST 2: State Initialization
 total++;
 if (runTest("State: Initialization Defaults", () => {
