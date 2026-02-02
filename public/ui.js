@@ -1399,6 +1399,29 @@ Q8.UI = (function() {
                 });
                 this.container.appendChild(el);
             });
+            // Facility markers (garages & P+R)
+            (state.nearbyFacilities || []).forEach(f => {
+                if (!f.lat || !f.lng) return;
+                const coordKey = 'f:' + f.lat.toFixed(6) + ',' + f.lng.toFixed(6);
+                if (seenCoords.has(coordKey)) return;
+                seenCoords.add(coordKey);
+                const pt = proj.fromLatLngToDivPixel(new google.maps.LatLng(f.lat, f.lng));
+                if (!pt) return;
+                const label = (f.type === 'p_r') ? 'P+R' : 'G';
+                const el = document.createElement('div');
+                el.className = 'q8-facility-marker';
+                el.textContent = label;
+                el.title = (f.name || label) + (f.city ? ', ' + f.city : '');
+                el.style.left = pt.x + 'px';
+                el.style.top = pt.y + 'px';
+                el.style.pointerEvents = 'auto';
+                el.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const url = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(f.lat + ',' + f.lng);
+                    window.open(url, '_blank');
+                });
+                this.container.appendChild(el);
+            });
         };
         PriceMarkersOverlay.prototype.onRemove = function() {
             if (this.container && this.container.parentNode) {
