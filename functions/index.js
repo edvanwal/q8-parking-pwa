@@ -176,9 +176,59 @@ async function endSession(sessionDoc, reason) {
     return true;
 }
 
+// --- PUSH NOTIFICATION TRIGGERS ---
+
+/**
+ * Push: Parkeersessie gestart (when session is created)
+ */
+exports.onSessionCreated = functions
+    .region('europe-west1')
+    .firestore
+    .document('sessions/{sessionId}')
+    .onCreate(async (snap, context) => {
+        const data = snap.data();
+        const uid = data.userId;
+        if (!uid) return null;
+        const settings = (await db.collection('users').doc(uid).get()).data()?.notificationSettings || {};
+        if (settings.sessionStarted === false) return null;
+        const zone = data.zone || '?';
+        const plate = data.plate || '?';
+        await sendPushToUser(uid, 'Q8 Parking', `Parkeersessie gestart · ${zone} · ${plate}`, {
+            type: 'sessionStarted',
+            tag: 'session-started'
+        });
+        return null;
+    });
+
+/**
+ * Push: Parkeersessie gestopt door gebruiker (when user ends session)
+ */
+exports.onSessionUpdated = functions
+    .region('europe-west1')
+    .firestore
+    .document('sessions/{sessionId}')
+    .onUpdate(async (change, context) => {
+        const before = change.before.data();
+        const after = change.after.data();
+        if (before.status === 'active' && after.status === 'ended' && after.endedBy === 'user') {
+            const uid = after.userId;
+            if (!uid) return null;
+            const settings = (await db.collection('users').doc(uid).get()).data()?.notificationSettings || {};
+            if (settings.sessionEndedByUser === false) return null;
+            const zone = after.zone || '?';
+            const plate = after.plate || '?';
+            await sendPushToUser(uid, 'Q8 Parking', `Parkeersessie gestopt · ${zone} · ${plate}`, {
+                type: 'sessionEndedByUser',
+                tag: 'session-ended'
+            });
+        }
+        return null;
+    });
+
 /**
  * Main scheduled function - runs every minute
- * Checks all active sessions and auto-stops those that have expired
+ * 1. Sends "expiring soon" push to sessions ending within X minutes
+ * 2. Auto-stops sessions that have expired
  */
 exports.autoStopExpiredSessions = functions
     .region('europe-west1')
