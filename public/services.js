@@ -207,6 +207,20 @@ Q8.Services = (function() {
         return R * c;
     }
 
+    /**
+     * Detect search mode from query: 'zone' (local filter) or 'address' (geocode).
+     * - Contains comma → address (street, city format)
+     * - Only digits, 2–6 chars → zone
+     * - Else → zone (zone filter handles street names, multi-word)
+     */
+    function detectSearchMode(query) {
+        const q = (query || '').trim();
+        if (q.length < 2) return 'zone';
+        if (q.includes(',')) return 'address';
+        if (/^\d[\d\s]*\d?$/.test(q) && q.replace(/\s/g, '').length <= 6) return 'zone';
+        return 'zone';
+    }
+
     function geocodeAndSearch(query) {
         const q = (query || '').trim();
         if (q.length < 3) {
