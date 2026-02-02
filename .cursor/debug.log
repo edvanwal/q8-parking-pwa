@@ -26,3 +26,19 @@
 {"location":"ui.js:initGoogleMap","message":"done","data":{},"timestamp":1770030074128,"sessionId":"debug-session","hypothesisId":"H2"}
 {"location":"ui.js:update","message":"showing parking view","data":{"activeViewId":"view-map"},"timestamp":1770030074516,"sessionId":"debug-session","hypothesisId":"H4"}
 {"location":"ui.js:update","message":"showing parking view","data":{"activeViewId":"view-map"},"timestamp":1770030074575,"sessionId":"debug-session","hypothesisId":"H4"}
+{"location":"app.js:init","message":"init entry","data":{"installModeActive":false,"screen":"login"},"timestamp":1770030087018,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"app.js:init","message":"init branch - map created when parking screen shown","data":{},"timestamp":1770030087020,"sessionId":"debug-session","hypothesisId":"H5"}
+{"location":"ui.js:update","message":"showing parking view","data":{"activeViewId":"view-map"},"timestamp":1770030090627,"sessionId":"debug-session","hypothesisId":"H4"}
+{"location":"ui.js:initGoogleMap","message":"entry","data":{"hasContainer":true,"hasMap":false,"containerWidth":500.0000305175781,"containerHeight":934.0104370117188},"timestamp":1770030090630,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"ui.js:initGoogleMap","message":"loading script","data":{"apiKeyLength":39},"timestamp":1770030090630,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"services.js:setScreen","message":"parking screen","data":{"installModeActive":false,"willCallInitMap":true},"timestamp":1770030090631,"sessionId":"debug-session","hypothesisId":"H5"}
+{"location":"ui.js:initGoogleMap","message":"entry","data":{"hasContainer":true,"hasMap":false,"containerWidth":500.0000305175781,"containerHeight":934.0104370117188},"timestamp":1770030090631,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"ui.js:initGoogleMap","message":"loading script","data":{"apiKeyLength":39},"timestamp":1770030090631,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"ui.js:initMapCallback","message":"callback fired","data":{},"timestamp":1770030091023,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"ui.js:initGoogleMap","message":"creating map","data":{},"timestamp":1770030091023,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"ui.js:initGoogleMap","message":"entry","data":{"hasContainer":true,"hasMap":false,"containerWidth":500.0000305175781,"containerHeight":934.0104370117188},"timestamp":1770030091023,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"ui.js:initGoogleMap","message":"done","data":{},"timestamp":1770030091030,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"ui.js:update","message":"showing parking view","data":{"activeViewId":"view-map"},"timestamp":1770030091093,"sessionId":"debug-session","hypothesisId":"H4"}
+{"location":"ui.js:update","message":"showing parking view","data":{"activeViewId":"view-map"},"timestamp":1770030091572,"sessionId":"debug-session","hypothesisId":"H4"}
+{"location":"ui.js:update","message":"showing parking view","data":{"activeViewId":"view-map"},"timestamp":1770030093746,"sessionId":"debug-session","hypothesisId":"H4"}
+{"location":"ui.js:update","message":"showing parking view","data":{"activeViewId":"view-map"},"timestamp":1770030093754,"sessionId":"debug-session","hypothesisId":"H4"}
