@@ -997,8 +997,13 @@ Q8.Services = (function() {
             if (result.found && result.data) {
                 const brand = ((result.data.merk || '') + (result.data.handelsbenaming ? ' ' + result.data.handelsbenaming : '')).trim();
                 const soort = result.data.voertuigsoort || '';
-                resultEl.textContent = (S.get.language === 'nl' ? 'Gevonden: ' : 'Found: ') + (brand || soort || 'RDW');
+                const vehicleLabel = (brand || soort || 'RDW').trim();
+                resultEl.textContent = (S.get.language === 'nl' ? 'Gevonden: ' : 'Found: ') + vehicleLabel;
                 resultEl.classList.add('plate-rdw-ok');
+                const inpDesc = document.getElementById('inp-plate-desc');
+                if (inpDesc && vehicleLabel && !inpDesc.value.trim()) {
+                    inpDesc.value = vehicleLabel;
+                }
             } else {
                 resultEl.textContent = S.get.language === 'nl' ? 'Niet gevonden in RDW-register.' : 'Not found in RDW register.';
                 resultEl.classList.add('plate-rdw-warn');
