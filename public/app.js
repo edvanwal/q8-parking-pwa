@@ -513,6 +513,7 @@ Q8.App = (function() {
                 UI.renderSearchResults();
                 const mode = Services.detectSearchMode ? Services.detectSearchMode(q) : 'zone';
                 if (mode === 'address' && Services.geocodeAndSearch && q.trim().length >= 3) {
+                    S.update({ geocodeLoading: true });
                     if (geocodeTimeout) clearTimeout(geocodeTimeout);
                     geocodeTimeout = setTimeout(() => {
                         geocodeTimeout = null;
