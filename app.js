@@ -139,7 +139,31 @@ Q8.App = (function() {
                     break;
                 }
 
-                case 'start-session': Services.handleStartParking(); break;
+                case 'start-session': {
+                    const zoneObj = S.get.zones && (S.get.zones.find(z => z.uid === S.get.selectedZone) || S.get.zones.find(z => z.id === S.get.selectedZone));
+                    if (zoneObj && Services.hasDayPass && Services.hasDayPass(zoneObj)) {
+                        const cost = Services.getDayPassCost && Services.getDayPassCost(zoneObj);
+                        const costStr = cost != null ? ` €${String(cost).replace('.', ',')}` : '';
+                        const titleEl = document.getElementById('confirm-daypass-title');
+                        const descEl = document.getElementById('confirm-daypass-desc');
+                        if (titleEl) titleEl.textContent = S.get.language === 'nl' ? 'Zone met dagkaart' : 'Zone with day pass';
+                        if (descEl) descEl.textContent = S.get.language === 'nl'
+                            ? `Dit is een zone met een dagkaart${costStr}. Weet u zeker dat u de transactie wilt starten?`
+                            : `This zone has a day pass${costStr}. Are you sure you want to start the transaction?`;
+                        const cancelBtn = document.getElementById('confirm-daypass-cancel');
+                        const okBtn = document.getElementById('confirm-daypass-ok');
+                        if (cancelBtn) cancelBtn.textContent = S.get.language === 'nl' ? 'ANNULEREN' : 'CANCEL';
+                        if (okBtn) okBtn.textContent = S.get.language === 'nl' ? 'JA, STARTEN' : 'YES, START';
+                        Services.tryOpenOverlay('modal-confirm-daypass');
+                    } else {
+                        Services.handleStartParking();
+                    }
+                    break;
+                }
+                case 'confirm-start-daypass':
+                    S.update({ activeOverlay: null });
+                    Services.handleStartParking({ fromDayPassConfirm: true });
+                    break;
                 case 'confirm-end': Services.handleEndParking(); break;
                 case 'save-plate': Services.saveNewPlate(); break;
                 case 'check-plate': if (Services.checkPlateRDW) Services.checkPlateRDW(); break;
