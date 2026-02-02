@@ -1300,6 +1300,12 @@ Q8.UI = (function() {
         const state = S.get;
         if (!map) return;
 
+        if (state.userLocation && state.userLocation.lat != null && state.userLocation.lng != null) {
+            map.setCenter({ lat: state.userLocation.lat, lng: state.userLocation.lng });
+            map.setZoom(16);
+            return;
+        }
+
         const sel = state.zones.find(z => (z.uid && z.uid === state.selectedZone) || (z.id && String(z.id) === String(state.selectedZone)));
         if (sel && sel.lat && sel.lng) {
             map.setCenter({ lat: sel.lat, lng: sel.lng });

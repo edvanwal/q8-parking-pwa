@@ -422,6 +422,8 @@ Q8.Services = (function() {
                         if (Q8.UI && typeof Q8.UI.centerMapOnZones === 'function') Q8.UI.centerMapOnZones();
                         else if (typeof window.centerMapOnZones === 'function') window.centerMapOnZones();
 
+                        if (S.get.userLocation) findAndSelectZoneAtLocation(S.get.userLocation.lat, S.get.userLocation.lng);
+
                         const debugEl = document.getElementById('debug-status');
                         if(debugEl) debugEl.innerText = `Zones: ${zones.length}`;
                     });
@@ -458,10 +460,11 @@ Q8.Services = (function() {
 
         S.update(updates);
 
-        // Map: init when parking visible, resize when map exists
+        // Map: init when parking visible, resize when map exists, request location
         if (name === 'parking' && !S.get.installMode.active) {
             if (Q8.UI && typeof Q8.UI.initGoogleMap === 'function') Q8.UI.initGoogleMap();
             else if (typeof window.initGoogleMap === 'function') window.initGoogleMap();
+            requestUserLocation();
             requestAnimationFrame(() => {
                 if (Q8.UI && typeof Q8.UI.ensureMapResized === 'function') Q8.UI.ensureMapResized();
                 const inp = document.getElementById('inp-search');
