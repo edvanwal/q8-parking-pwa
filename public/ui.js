@@ -1251,9 +1251,6 @@ Q8.UI = (function() {
         if (typeof google === 'undefined' || !google.maps) {
             diagMaps('initGoogleMap', 'loading-script');
             const apiKey = (typeof firebaseConfig !== 'undefined') ? firebaseConfig.googleMapsApiKey : '';
-            // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:initGoogleMap',message:'loading script',data:{apiKeyLength:(apiKey||'').length},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(function(){});
-            // #endregion
             const script = document.createElement('script');
             script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async&callback=initMapCallback`;
             script.async = true;
@@ -1262,9 +1259,6 @@ Q8.UI = (function() {
                 showMapLoadError('Het laden van de Google Maps-script is mislukt. Controleer uw internetverbinding of of de API-sleutel localhost toestaat.');
             };
             window.initMapCallback = function() {
-                 // #region agent log
-                 fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:initMapCallback',message:'callback fired',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(function(){});
-                 // #endregion
                  diagMaps('initGoogleMap', 'callback-fired');
                  if(Q8.UI && Q8.UI.initGoogleMap) Q8.UI.initGoogleMap();
                  else initGoogleMap();
@@ -1273,9 +1267,6 @@ Q8.UI = (function() {
             return;
         }
 
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:initGoogleMap',message:'creating map',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(function(){});
-        // #endregion
         diagMaps('initGoogleMap', 'creating-map');
         hideMapLoadError();
         try {
@@ -1307,9 +1298,6 @@ Q8.UI = (function() {
                 google.maps.event.trigger(map, 'resize');
             }
         }, 400);
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:initGoogleMap',message:'done',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(function(){});
-        // #endregion
         diagMaps('initGoogleMap', 'done');
     }
 

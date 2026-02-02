@@ -397,17 +397,11 @@ Q8.App = (function() {
     }
 
     function init() {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:init',message:'init entry',data:{installModeActive:!!S.get.installMode?.active,screen:S.get.screen},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
-        // #endregion
         if(S.load) S.load();
         if(Services.checkInstallMode) Services.checkInstallMode();
         if(UI.update) UI.update();
 
         if (S.get.installMode.active) {
-            // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:init',message:'install gate branch - map init SKIPPED',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
-            // #endregion
             if(UI.renderInstallGate) UI.renderInstallGate();
         } else {
             // #region agent log
