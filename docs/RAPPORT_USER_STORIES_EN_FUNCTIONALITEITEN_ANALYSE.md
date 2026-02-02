@@ -1,8 +1,8 @@
 # Uitgebreid Rapport: User Stories, Functionaliteiten & Code-analyse
 ## Q8 Parking B2B PWA
 
-**Versie:** 1.0  
-**Datum:** 2 februari 2025  
+**Versie:** 1.1  
+**Datum:** 2 februari 2026  
 **Doel:** Complete overzicht voor programmeurs die nog niet aan deze website hebben gewerkt
 
 ---
