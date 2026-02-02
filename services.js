@@ -32,11 +32,41 @@ Q8.Services = (function() {
 
     let _historyUnsub = null;
 
+    function restoreSessionFromFirestore(uid) {
+        if (!db || !uid || S.get.session) return Promise.resolve();
+        return db.collection('sessions')
+            .where('userId', '==', uid)
+            .where('status', '==', 'active')
+            .limit(1)
+            .get()
+            .then(snap => {
+                if (snap.empty) return;
+                const doc = snap.docs[0];
+                const d = doc.data();
+                const toDate = (v) => v && (v.toDate ? v.toDate() : new Date(v));
+                const session = {
+                    zone: d.zone,
+                    zoneUid: d.zoneUid || d.zone,
+                    plate: d.plate || '',
+                    start: toDate(d.start),
+                    end: d.end ? toDate(d.end) : null,
+                    sessionDocId: doc.id
+                };
+                if (session.start && !isNaN(session.start.getTime())) {
+                    S.update({ session });
+                    if (S.save) S.save();
+                    if (U && U.debug) U.debug('AUTH', 'Session restored from Firestore after localStorage cleared');
+                }
+            })
+            .catch(() => {});
+    }
+
     function initAuthListener() {
         if (!auth) return;
         auth.onAuthStateChanged(user => {
             if (user) {
                 if (U && U.debug) U.debug('AUTH', "User Logged In", user.email);
+                restoreSessionFromFirestore(user.uid);
                 if (S.get.screen === 'login' || S.get.screen === 'register') {
                     setScreen('parking');
                 }
