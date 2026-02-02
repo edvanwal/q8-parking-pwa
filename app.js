@@ -523,8 +523,9 @@ Q8.App = (function() {
             });
         }
 
-        // Live kenteken format validation (add-plate modal)
+        // Live kenteken: format on blur, validate, auto RDW check
         const inpPlate = document.getElementById('inp-plate');
+        let rdwCheckTimeout = null;
         if (inpPlate && typeof Q8 !== 'undefined' && Q8.Kenteken) {
             function updatePlateFormatFeedback() {
                 const errEl = document.getElementById('plate-format-error');
@@ -535,8 +536,34 @@ Q8.App = (function() {
                 if (v.valid) { errEl.textContent = ''; errEl.style.display = 'none'; }
                 else { errEl.textContent = v.errorMessage || ''; errEl.style.display = 'block'; }
             }
-            inpPlate.addEventListener('input', updatePlateFormatFeedback);
-            inpPlate.addEventListener('blur', updatePlateFormatFeedback);
+            function formatPlateForDisplay() {
+                const raw = inpPlate.value.trim();
+                if (!raw || !Q8.Kenteken.formatDisplay) return;
+                const v = Q8.Kenteken.validate(raw);
+                if (v.valid && v.display) {
+                    const formatted = Q8.Kenteken.formatDisplay(v.normalized);
+                    if (formatted && formatted !== inpPlate.value) inpPlate.value = formatted;
+                }
+            }
+            function scheduleAutoRdWCheck() {
+                const raw = inpPlate.value.trim();
+                if (!raw) return;
+                const v = Q8.Kenteken.validate(raw);
+                if (!v.valid || v.normalized.length < 6) return;
+                if (rdwCheckTimeout) clearTimeout(rdwCheckTimeout);
+                rdwCheckTimeout = setTimeout(() => {
+                    rdwCheckTimeout = null;
+                    if (Services.checkPlateRDW) Services.checkPlateRDW();
+                }, 600);
+            }
+            inpPlate.addEventListener('input', () => {
+                updatePlateFormatFeedback();
+                scheduleAutoRdWCheck();
+            });
+            inpPlate.addEventListener('blur', () => {
+                updatePlateFormatFeedback();
+                formatPlateForDisplay();
+            });
         }
 
         document.addEventListener('keydown', (e) => {
