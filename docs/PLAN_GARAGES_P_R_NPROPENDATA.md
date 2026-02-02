@@ -2,7 +2,7 @@
 
 **Doel:** Naast straatparkeren garages en P+R “in de buurt” tonen (kaart + lijst). Data uit **npropendata.rdw.nl** (SPDP); integratie in de bestaande app zonder de huidige straatparkeer-pipeline te breken.
 
-**Status:** Plan – nog niet geïmplementeerd.
+**Status:** Fase 2a geïmplementeerd (script); Fase 2b (app) nog te doen.
 
 ---
 
