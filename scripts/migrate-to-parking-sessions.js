@@ -1,30 +1,18 @@
 /**
  * Migration: Populate parking_sessions from existing transactions.
  *
- * Run from project root:
- *   node -e "process.chdir('functions'); require('../scripts/migrate-to-parking-sessions.js')"
- * Or copy to functions/ and: cd functions && node migrate-to-parking-sessions.js
- *
- * Requires: GOOGLE_APPLICATION_CREDENTIALS env pointing to service account JSON.
+ * Run: cd functions && node ../scripts/migrate-to-parking-sessions.js
+ * Requires: GOOGLE_APPLICATION_CREDENTIALS or default credentials.
  *
  * Creates parking_sessions documents with the full billing schema.
  * Uses transactions + users + tenants to enrich data.
  * For missing card_number, uses placeholder "MIGRATED-{userId}".
  */
 
-const path = require('path');
 const admin = require('firebase-admin');
 
-const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS ||
-  path.join(__dirname, '..', 'q8-parking-pwa-firebase-adminsdk-fbsvc-9e50406bcb.json');
-
 if (!admin.apps.length) {
-  try {
-    const sa = require(serviceAccountPath);
-    admin.initializeApp({ credential: admin.credential.cert(sa) });
-  } catch (e) {
-    admin.initializeApp();
-  }
+  admin.initializeApp();
 }
 const db = admin.firestore();
 
