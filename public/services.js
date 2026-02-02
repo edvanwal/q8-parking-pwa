@@ -326,10 +326,21 @@ Q8.Services = (function() {
         return new Promise((resolve, reject) => {
             if (U && U.debug) U.debug('DATA', "Setting up Firestore zones listener...");
             diag('loadZones', 'start', { db: !!db });
-            S.update({ zonesLoading: true });
+            S.update({ zonesLoading: true, zonesLoadError: null });
             if (!db) { S.update({ zonesLoading: false }); diag('loadZones', 'no-db-fallback'); return resolve([]); }
 
-            db.collection('zones').limit(2000).onSnapshot((snapshot) => {
+            const TIMEOUT_MS = 15000;
+            let resolved = false;
+            const timeoutId = setTimeout(() => {
+                if (resolved) return;
+                resolved = true;
+                const msg = S.get.language === 'nl' ? 'Zones laden duurt te lang. Controleer uw internet.' : 'Loading zones is taking too long. Check your connection.';
+                S.update({ zonesLoading: false, zonesLoadError: msg });
+                diag('loadZones', 'timeout');
+                reject(new Error(msg));
+            }, TIMEOUT_MS);
+
+            const unsub = db.collection('zones').limit(2000).onSnapshot((snapshot) => {
                 const raw = [];
                 snapshot.forEach((doc) => {
                     const data = doc.data();
@@ -343,6 +354,9 @@ Q8.Services = (function() {
                 });
                 const zones = raw.filter(isStreetParkingZone);
                 diag('onSnapshot', 'received', { raw: raw.length, streetOnly: zones.length });
+                if (resolved) return;
+                resolved = true;
+                clearTimeout(timeoutId);
                 if (zones.length > 0) {
                     requestAnimationFrame(() => {
                         S.update({ zones: zones, zonesLoading: false, zonesLoadError: null });
@@ -363,6 +377,9 @@ Q8.Services = (function() {
                 }
                 resolve(zones);
             }, (error) => {
+                if (resolved) return;
+                resolved = true;
+                clearTimeout(timeoutId);
                 const msg = error && error.message ? error.message : 'Network error';
                 S.update({ zonesLoading: false, zonesLoadError: msg });
                 diag('onSnapshot', 'error', error && error.message);
