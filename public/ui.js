@@ -471,7 +471,8 @@ Q8.UI = (function() {
         const isOpen = list.style.display === 'block';
         list.style.display = isOpen ? 'none' : 'block';
         btn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
-        btn.textContent = (Q8.State.get.language === 'nl' ? (isOpen ? 'Bekijk alle dagen' : 'Sluiten') : (isOpen ? 'View all days' : 'Close'));
+        const nl = Q8.State.get.language === 'nl';
+        btn.textContent = (list.style.display === 'block') ? (nl ? 'Sluiten' : 'Close') : (nl ? 'Bekijk alle dagen' : 'View all days');
         if (!isOpen && list.innerHTML === '') {
             const rates = Q8.State.get.selectedZoneRates || [];
             const zone = (Q8.State.get.zones || []).find(z => z.uid === Q8.State.get.selectedZone) || (Q8.State.get.zones || []).find(z => z.id === Q8.State.get.selectedZone);
@@ -1677,7 +1678,8 @@ Q8.UI = (function() {
         renderMapMarkers,
         centerMapOnZones,
         ensureMapResized,
-        populateConfirmStartModal
+        populateConfirmStartModal,
+        toggleAllRates
     };
 })();
 

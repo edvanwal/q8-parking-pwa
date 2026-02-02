@@ -218,6 +218,22 @@ Dit kan in een latere iteratie.
 
 Aanbevolen: 1× per week draaien (cron/scheduled task) om `facilities` te verversen.
 
+## 9. Cron / gepland draaien
+
+Om de collectie `facilities` periodiek te verversen (bijv. 1× per week):
+
+- **Linux/macOS (cron):**  
+  `0 3 * * 0 cd /pad/naar/projectroot && python3 scripts/fetch_npropendata_facilities.py`  
+  (elke zondag om 03:00)
+
+- **Windows (Taakplanner):**  
+  Maak een taak die wekelijks draait; actie: `python` met argumenten `scripts/fetch_npropendata_facilities.py`, startmap = projectroot.
+
+- **CI (GitHub Actions e.d.):**  
+  Voeg een scheduled workflow toe die wekelijks het script uitvoert (met service-account secret voor Firebase).
+
+Het script gebruikt retries bij netwerkfouten en slaat mislukte facilities over, zodat een run niet stopt bij één fout.
+
 ## 8. Wat kan er nog beter?
 
 ### Garages & P+R (plan)
