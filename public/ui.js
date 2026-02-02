@@ -1560,6 +1560,8 @@ Q8.UI = (function() {
                 const el = document.createElement('div');
                 el.className = 'q8-facility-marker';
                 el.textContent = label;
+                el.setAttribute('role', 'button');
+                el.setAttribute('aria-label', (f.type === 'p_r' ? 'P+R: ' : 'Garage: ') + (f.name || label) + (f.city ? ', ' + f.city : ''));
                 el.title = (f.name || label) + (f.city ? ', ' + f.city : '');
                 el.style.left = pt.x + 'px';
                 el.style.top = pt.y + 'px';
