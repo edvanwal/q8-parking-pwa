@@ -460,11 +460,12 @@ Q8.Services = (function() {
 
         S.update(updates);
 
-        // Map: init when parking visible, resize when map exists, request location
+        // Map: init when parking visible, resize when map exists, request location & push permission
         if (name === 'parking' && !S.get.installMode.active) {
             if (Q8.UI && typeof Q8.UI.initGoogleMap === 'function') Q8.UI.initGoogleMap();
             else if (typeof window.initGoogleMap === 'function') window.initGoogleMap();
             requestUserLocation();
+            requestPushNotificationPermission();
             requestAnimationFrame(() => {
                 if (Q8.UI && typeof Q8.UI.ensureMapResized === 'function') Q8.UI.ensureMapResized();
                 const inp = document.getElementById('inp-search');
