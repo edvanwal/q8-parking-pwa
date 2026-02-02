@@ -454,8 +454,7 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 | Risico | Locatie | Omschrijving |
 |--------|---------|--------------|
-| **saveFavorites/loadFavorites ontbreekt in root state.js** | `state.js` (root) | Functies worden geëxporteerd maar niet geïmplementeerd; `public/state.js` heeft ze wel. Root is bron, kan runtime-fout geven. |
-| **localStorage-quota / privémodus** | `state.js`, `services.js` | `localStorage.setItem` kan falen; geen try-catch overal. |
+| **localStorage-quota / privémodus** | `state.js`, `services.js` | `localStorage.setItem` kan falen; try-catch aanwezig in saveFavorites, savePlates etc. |
 | **JSON.parse op data-rates** | `app.js` regel ~91 | `JSON.parse(data-rates \|\| 'null')` kan falen bij malformed data. |
 | **Zone niet in zones-array** | `services.js` handleStartParking | Als `selectedZone` niet in `zones` voorkomt, toast; maar edge case bij race conditions. |
 | **Timer na 00:00** | `ui.js` | Geen automatische `handleAutoEndSession` wanneer count-down 0 bereikt. |
