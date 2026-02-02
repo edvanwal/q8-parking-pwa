@@ -1,4 +1,4 @@
-# Uitgebreid Rapport: User Stories, Functionaliteiten & Code-analyse
+﻿# Uitgebreid Rapport: User Stories, Functionaliteiten & Code-analyse
 ## Q8 Parking B2B PWA
 
 **Versie:** 1.1  
@@ -15,7 +15,7 @@ Het rapport volgt de **INVEST-principes** en het standaard User Story-formaat: *
 
 ---
 
-## 2. Technische Architectuur – Overzicht voor Nieuwe Ontwikkelaars
+## 2. Technische Architectuur â€“ Overzicht voor Nieuwe Ontwikkelaars
 
 ### 2.1 Tech Stack
 
@@ -27,163 +27,163 @@ Het rapport volgt de **INVEST-principes** en het standaard User Story-formaat: *
 | **Kaarten** | Google Maps JavaScript API |
 | **Data Pipeline** | Python-scripts (RDW Open Data, AI-enrichment) |
 
-### 2.2 Bestandsstructuur – Waar wat zit
+### 2.2 Bestandsstructuur â€“ Waar wat zit
 
 ```
-/public                    → Gebouwde/bronbestanden voor productie
-  index.html               → Hoofd-SPA, alle views
-  app.js                   → Entry point, event routing
-  services.js              → Business logic (Auth, Parking, Plates, Zones)
-  state.js                 → Global state management
-  ui.js                    → DOM-rendering (kaart, overlays, lijsten)
-  utils.js                 → Hulpfunties (calculateCost, debug)
-  kenteken.js              → Kentekenvalidatie + RDW lookup
-  design-system.css        → Styling
-  portal/                  → Fleet Manager Admin Portal
+/public                    â†’ Gebouwde/bronbestanden voor productie
+  index.html               â†’ Hoofd-SPA, alle views
+  app.js                   â†’ Entry point, event routing
+  services.js              â†’ Business logic (Auth, Parking, Plates, Zones)
+  state.js                 â†’ Global state management
+  ui.js                    â†’ DOM-rendering (kaart, overlays, lijsten)
+  utils.js                 â†’ Hulpfunties (calculateCost, debug)
+  kenteken.js              â†’ Kentekenvalidatie + RDW lookup
+  design-system.css        â†’ Styling
+  portal/                  â†’ Fleet Manager Admin Portal
     index.html, portal.js, portal.css
 
-/scripts                    → Python data-pipeline (RDW fetch, Firestore upload)
-/docs                       → Documentatie
-/data                       → Zone-data (JSON)
+/scripts                    â†’ Python data-pipeline (RDW fetch, Firestore upload)
+/docs                       â†’ Documentatie
+/data                       â†’ Zone-data (JSON)
 ```
 
 ### 2.3 Dataflow (Vereenvoudigd)
 
 ```
-Firestore (zones)  →  loadZones()  →  state.zones  →  UI (kaart, zoeken)
-                                                            ↓
-User klikt zone  →  tryOpenOverlay('sheet-zone')  →  state.selectedZone
-                                                            ↓
-User START PARKING  →  handleStartParking()  →  state.session  →  localStorage
-                                                            ↓
-User END PARKING  →  handleEndParking()  →  session = null
+Firestore (zones)  â†’  loadZones()  â†’  state.zones  â†’  UI (kaart, zoeken)
+                                                            â†“
+User klikt zone  â†’  tryOpenOverlay('sheet-zone')  â†’  state.selectedZone
+                                                            â†“
+User START PARKING  â†’  handleStartParking()  â†’  state.session  â†’  localStorage
+                                                            â†“
+User END PARKING  â†’  handleEndParking()  â†’  session = null
 ```
 
 ### 2.4 Namespace-structuur
 
 Alle client-side logica zit onder `Q8`:
 
-- `Q8.App` – init, event listeners
-- `Q8.Services` – Firebase, auth, parking, plates
-- `Q8.State` – shared state, persistence
-- `Q8.UI` – rendering
-- `Q8.Utils` – helpers
-- `Q8.Kenteken` – kentekenvalidatie & RDW
+- `Q8.App` â€“ init, event listeners
+- `Q8.Services` â€“ Firebase, auth, parking, plates
+- `Q8.State` â€“ shared state, persistence
+- `Q8.UI` â€“ rendering
+- `Q8.Utils` â€“ helpers
+- `Q8.Kenteken` â€“ kentekenvalidatie & RDW
 
 ---
 
-## 3. Basisfunctionaliteiten – Uitgebreid Overzicht
+## 3. Basisfunctionaliteiten â€“ Uitgebreid Overzicht
 
 ### 3.1 Authenticatie
 
 | Functie | Status | Implementatie |
 |---------|--------|---------------|
-| Inloggen (e-mail/wachtwoord) | ✅ | `services.js` → `loginUser()` |
-| Registreren | ✅ | `services.js` → `registerUser()` |
-| Uitloggen | ✅ | `services.js` → `logoutUser()` |
-| Wachtwoord verbergen/tonen | ✅ | `data-action="toggle-password"` |
-| Remember me (30 dagen) | UI aanwezig | Niet geïmplementeerd in backend |
-| Wachtwoord vergeten | Link aanwezig | Niet geïmplementeerd |
+| Inloggen (e-mail/wachtwoord) | âœ… | `services.js` â†’ `loginUser()` |
+| Registreren | âœ… | `services.js` â†’ `registerUser()` |
+| Uitloggen | âœ… | `services.js` â†’ `logoutUser()` |
+| Wachtwoord verbergen/tonen | âœ… | `data-action="toggle-password"` |
+| Remember me (30 dagen) | UI aanwezig | Niet geÃ¯mplementeerd in backend |
+| Wachtwoord vergeten | Link aanwezig | Niet geÃ¯mplementeerd |
 
 ### 3.2 Parkeerzones & Kaart
 
 | Functie | Status | Implementatie |
 |---------|--------|---------------|
-| Zones laden van Firestore | ✅ | `services.js` → `loadZones()` |
-| Kaart met markers | ✅ | `ui.js` → `initGoogleMap()`, `renderMapMarkers()` |
-| Zone-filter (alleen straatparkeren) | ✅ | `isStreetParkingZone()` – garage/P+R uitgesloten |
-| Tarief-disclaimer (RDW indicatief) | ✅ | Zoekresultaten, favorieten |
-| Zone-lijst verbergen bij selectie/sessie | ✅ | `zoneSelectedOrActive` – zoek/fav-list hidden |
-| Zoeken op zone-ID of naam | ✅ | `inp-search` → `renderSearchResults()` |
-| Zoeken op adres (geocoding) | ✅ | `geocodeAndSearch()`, Google Geocoding API |
-| Intelligente zoekmodus | ✅ | `detectSearchMode()` – zone vs. adres automatisch |
-| Zone-sheet (tarieven, duur, kenteken) | ✅ | `renderZoneSheet()` |
-| Favoriete zones | ✅ | `state.favorites`, `saveFavorites`/`loadFavorites` |
-| Favorieten: custom naam geven | ✅ | `edit-favorite-name`, `f.name` in state |
-| Favorieten: volgorde wijzigen (slepen) | ✅ | HTML5 drag-and-drop in `renderFavorites()` |
-| Favorieten: verwijderen | ✅ | `remove-favorite` via hart-icoon |
-| Locatie: kaart centreren + zone voorselectie | ✅ | Geolocation API, Haversine-afstand |
+| Zones laden van Firestore | âœ… | `services.js` â†’ `loadZones()` |
+| Kaart met markers | âœ… | `ui.js` â†’ `initGoogleMap()`, `renderMapMarkers()` |
+| Zone-filter (alleen straatparkeren) | âœ… | `isStreetParkingZone()` â€“ garage/P+R uitgesloten |
+| Tarief-disclaimer (RDW indicatief) | âœ… | Zoekresultaten, favorieten |
+| Zone-lijst verbergen bij selectie/sessie | âœ… | `zoneSelectedOrActive` â€“ zoek/fav-list hidden |
+| Zoeken op zone-ID of naam | âœ… | `inp-search` â†’ `renderSearchResults()` |
+| Zoeken op adres (geocoding) | âœ… | `geocodeAndSearch()`, Google Geocoding API |
+| Intelligente zoekmodus | âœ… | `detectSearchMode()` â€“ zone vs. adres automatisch |
+| Zone-sheet (tarieven, duur, kenteken) | âœ… | `renderZoneSheet()` |
+| Favoriete zones | âœ… | `state.favorites`, `saveFavorites`/`loadFavorites` |
+| Favorieten: custom naam geven | âœ… | `edit-favorite-name`, `f.name` in state |
+| Favorieten: volgorde wijzigen (slepen) | âœ… | HTML5 drag-and-drop in `renderFavorites()` |
+| Favorieten: verwijderen | âœ… | `remove-favorite` via hart-icoon |
+| Locatie: kaart centreren + zone voorselectie | âœ… | Geolocation API, Haversine-afstand |
 
 ### 3.3 Parkeersessies
 
 | Functie | Status | Implementatie |
 |---------|--------|---------------|
-| Sessie starten | ✅ | `handleStartParking()` |
-| Bevestigingsmodal voor start | ✅ | `modal-confirm-start`, zone + kenteken verifiëren (bewerkbaar) |
-| Sessie beëindigen | ✅ | `handleEndParking()` |
-| Sessie naar Firestore | ✅ | `sessions` + `transactions` collecties |
-| Duur instellen (tot stoppen / vaste tijd) | ✅ | `modifyDuration()`, `modifyActiveSessionEnd()` |
-| Actieve sessie-kaart met timer | ✅ | `renderParkingView()` |
-| Timer count-down / count-up | ✅ | `startTimerTicker()`, `updateActiveTimerDisplay()` |
-| Sessie persistent na refresh | ✅ | `localStorage` `q8_parking_session` |
-| Kenteken vastleggen in sessie | ✅ | `session.plate` wordt opgeslagen |
+| Sessie starten | âœ… | `handleStartParking()` |
+| Bevestigingsmodal voor start | âœ… | `modal-confirm-start`, zone + kenteken verifiÃ«ren (bewerkbaar) |
+| Sessie beÃ«indigen | âœ… | `handleEndParking()` |
+| Sessie naar Firestore | âœ… | `sessions` + `transactions` collecties |
+| Duur instellen (tot stoppen / vaste tijd) | âœ… | `modifyDuration()`, `modifyActiveSessionEnd()` |
+| Actieve sessie-kaart met timer | âœ… | `renderParkingView()` |
+| Timer count-down / count-up | âœ… | `startTimerTicker()`, `updateActiveTimerDisplay()` |
+| Sessie persistent na refresh | âœ… | `localStorage` `q8_parking_session` |
+| Kenteken vastleggen in sessie | âœ… | `session.plate` wordt opgeslagen |
 
 ### 3.4 Kentekens
 
 | Functie | Status | Implementatie |
 |---------|--------|---------------|
-| Kenteken toevoegen | ✅ | `saveNewPlate()` |
-| Kenteken verwijderen | ✅ | `deletePlate()` |
-| Kenteken bewerken | ✅ | `updatePlate()` |
-| Default kenteken instellen | ✅ | `setDefaultPlate()` |
-| Kenteken kiezen voor sessie | ✅ | `sheet-plate-selector` |
-| Nederlands kentekenformaat | ✅ | `kenteken.js` sidecodes 1–11 (incl. V, W) |
-| RDW-controle (gratis Open Data) | ✅ | `checkPlateRDW()`, `Kenteken.lookupRDW()` |
-| RDW automatisch + normalisatie | ✅ | Auto-trigger bij invoer, format voor RDW |
-| RDW resultaat in Description | ✅ | Merk/type vult Description-veld |
-| Auto-specs (RDW) tonen | ✅ | View "Car specs" |
+| Kenteken toevoegen | âœ… | `saveNewPlate()` |
+| Kenteken verwijderen | âœ… | `deletePlate()` |
+| Kenteken bewerken | âœ… | `updatePlate()` |
+| Default kenteken instellen | âœ… | `setDefaultPlate()` |
+| Kenteken kiezen voor sessie | âœ… | `sheet-plate-selector` |
+| Nederlands kentekenformaat | âœ… | `kenteken.js` sidecodes 1â€“11 (incl. V, W) |
+| RDW-controle (gratis Open Data) | âœ… | `checkPlateRDW()`, `Kenteken.lookupRDW()` |
+| RDW automatisch + normalisatie | âœ… | Auto-trigger bij invoer, format voor RDW |
+| RDW resultaat in Description | âœ… | Merk/type vult Description-veld |
+| Auto-specs (RDW) tonen | âœ… | View "Car specs" |
 
 ### 3.5 Parkeerhistorie
 
 | Functie | Status | Implementatie |
 |---------|--------|---------------|
-| Historie-scherm | ✅ | View `history` |
-| Filter op voertuig | ✅ | Filter werkt op `state.history` |
-| Filter op datum | ✅ | Filter werkt met date range |
-| Historie data | ✅ | `loadHistory()` uit Firestore `transactions` |
+| Historie-scherm | âœ… | View `history` |
+| Filter op voertuig | âœ… | Filter werkt op `state.history` |
+| Filter op datum | âœ… | Filter werkt met date range |
+| Historie data | âœ… | `loadHistory()` uit Firestore `transactions` |
 
 ### 3.6 Notificaties
 
 | Functie | Status | Implementatie |
 |---------|--------|---------------|
-| Notificatie-instellingen | ✅ | `notificationSettings` in state |
-| Notificatiehistorie | ✅ | `state.notifications` |
-| Sessie gestart/gestopt melding | ✅ | `addNotification()` |
-| Toast in header (3 sec, dismiss) | ✅ | `showToast()`, `dismissToast()` |
-| Max parkeerduur meldingen | ✅ | 24u-globaal en zone-specifiek (toast) |
-| Waarschuwing bij bijna verlopen | ✅ | `expiringSoonMinutes` – instelbaar |
+| Notificatie-instellingen | âœ… | `notificationSettings` in state |
+| Notificatiehistorie | âœ… | `state.notifications` |
+| Sessie gestart/gestopt melding | âœ… | `addNotification()` |
+| Toast in header (3 sec, dismiss) | âœ… | `showToast()`, `dismissToast()` |
+| Max parkeerduur meldingen | âœ… | 24u-globaal en zone-specifiek (toast) |
+| Waarschuwing bij bijna verlopen | âœ… | `expiringSoonMinutes` â€“ instelbaar |
 
 ### 3.7 Taal & PWA
 
 | Functie | Status | Implementatie |
 |---------|--------|---------------|
-| Nederlands / Engels | ✅ | `state.language` |
-| Dark mode (Light / System / Dark) | ✅ | `state.darkMode`, `applyThemeFromPref()` |
-| Install Gate (iOS + Android) | ✅ | `installMode`, `renderInstallGate()`, platform-specifieke instructies |
-| PWA manifest, icons | ✅ | `manifest.webmanifest` |
-| Offline-detectie | ✅ | `online`/`offline` events |
-| Service Worker | ✅ | `sw.js` geregistreerd voor offline + FCM |
+| Nederlands / Engels | âœ… | `state.language` |
+| Dark mode (Light / System / Dark) | âœ… | `state.darkMode`, `applyThemeFromPref()` |
+| Install Gate (iOS + Android) | âœ… | `installMode`, `renderInstallGate()`, platform-specifieke instructies |
+| PWA manifest, icons | âœ… | `manifest.webmanifest` |
+| Offline-detectie | âœ… | `online`/`offline` events |
+| Service Worker | âœ… | `sw.js` geregistreerd voor offline + FCM |
 
 ### 3.8 Fleet Manager Portal
 
 | Functie | Status | Implementatie |
 |---------|--------|---------------|
-| Inloggen als fleetmanager | ✅ | `portal.js` |
-| Dashboard (stats) | ✅ | `section-dashboard` |
-| Bestuurders beheren | ✅ | `section-users`, `inviteUser()` |
-| Actieve sessies stoppen | ✅ | `stopSession()` |
-| Tenant-instellingen (auto-stop) | ✅ | `tenants` collectie |
-| Kentekenbeheer per bestuurder | ✅ | `adminPlates`, `driverSettings` |
+| Inloggen als fleetmanager | âœ… | `portal.js` |
+| Dashboard (stats) | âœ… | `section-dashboard` |
+| Bestuurders beheren | âœ… | `section-users`, `inviteUser()` |
+| Actieve sessies stoppen | âœ… | `stopSession()` |
+| Tenant-instellingen (auto-stop) | âœ… | `tenants` collectie |
+| Kentekenbeheer per bestuurder | âœ… | `adminPlates`, `driverSettings` |
 
 ---
 
-## 4. User Stories – Compleet Overzicht
+## 4. User Stories â€“ Compleet Overzicht
 
 Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ### 4.1 Chauffeur / Bestuurder
 
-#### US-D01 – Zone zoeken
+#### US-D01 â€“ Zone zoeken
 **As a** chauffeur  
 **I want** te zoeken op zone-ID of straatnaam  
 **So that** ik snel de juiste parkeerzone vind.
@@ -196,7 +196,7 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ---
 
-#### US-D02 – Zone selecteren en sessie starten
+#### US-D02 â€“ Zone selecteren en sessie starten
 **As a** chauffeur  
 **I want** een zone te kiezen, duur in te stellen en parkeren te starten  
 **So that** ik legaal kan parkeren.
@@ -211,7 +211,7 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ---
 
-#### US-D03 – Parkeersessie beëindigen
+#### US-D03 â€“ Parkeersessie beÃ«indigen
 **As a** chauffeur  
 **I want** mijn parkeersessie te stoppen  
 **So that** ik niet onnodig betaal.
@@ -219,15 +219,15 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 **Acceptatiecriteria:**
 - *Given* ik heb een actieve parkeersessie  
 - *When* ik op "END PARKING" druk en bevestig  
-- *Then* wordt de sessie beëindigd  
+- *Then* wordt de sessie beÃ«indigd  
 - *And* de actieve sessie-kaart verdwijnt
 
 ---
 
-#### US-D04 – Kentekens beheren
+#### US-D04 â€“ Kentekens beheren
 **As a** chauffeur  
 **I want** meerdere kentekens toe te voegen en een standaard in te stellen  
-**So that** ik snel kan wisselen tussen auto’s.
+**So that** ik snel kan wisselen tussen autoâ€™s.
 
 **Acceptatiecriteria:**
 - *Given* ik ben op het kentekenscherm  
@@ -238,7 +238,7 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ---
 
-#### US-D05 – RDW-controle kenteken
+#### US-D05 â€“ RDW-controle kenteken
 **As a** chauffeur  
 **I want** mijn kenteken te controleren bij het RDW  
 **So that** ik zeker weet dat het klopt.
@@ -251,7 +251,7 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ---
 
-#### US-D06 – Favoriete zones
+#### US-D06 â€“ Favoriete zones
 **As a** chauffeur  
 **I want** veelgebruikte zones als favoriet op te slaan  
 **So that** ik ze snel kan starten.
@@ -266,7 +266,7 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ---
 
-#### US-D07 – Parkeerhistorie bekijken
+#### US-D07 â€“ Parkeerhistorie bekijken
 **As a** chauffeur  
 **I want** mijn parkeerhistorie te zien  
 **So that** ik kosten kan controleren en declareren.
@@ -279,7 +279,7 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ---
 
-#### US-D08 – Notificaties instellen
+#### US-D08 â€“ Notificaties instellen
 **As a** chauffeur  
 **I want** notificaties in of uit te zetten  
 **So that** ik meldingen krijg wanneer ik dat wil.
@@ -292,7 +292,7 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ---
 
-#### US-D09 – Taal wijzigen
+#### US-D09 â€“ Taal wijzigen
 **As a** chauffeur  
 **I want** de app in het Nederlands of Engels te gebruiken  
 **So that** ik de interface begrijp.
@@ -304,14 +304,14 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ---
 
-#### US-D10 – Sessie verlengen tijdens parkeren
+#### US-D10 â€“ Sessie verlengen tijdens parkeren
 **As a** chauffeur  
 **I want** de eindtijd van mijn actieve sessie aan te passen  
 **So that** ik langer kan parkeren zonder opnieuw te starten.
 
 **Acceptatiecriteria:**
 - *Given* ik heb een sessie met vaste eindtijd  
-- *When* ik op + of − klik bij de eindtijd  
+- *When* ik op + of âˆ’ klik bij de eindtijd  
 - *Then* wordt de eindtijd met 30 minuten aangepast  
 - *And* de maximale duur van de zone wordt niet overschreden
 
@@ -319,7 +319,7 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ### 4.2 Fleet Manager
 
-#### US-F01 – Bestuurders uitnodigen
+#### US-F01 â€“ Bestuurders uitnodigen
 **As a** fleetmanager  
 **I want** bestuurders uit te nodigen via e-mail  
 **So that** ze toegang krijgen tot de parkeerapp.
@@ -332,7 +332,7 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ---
 
-#### US-F02 – Actieve sessies stoppen
+#### US-F02 â€“ Actieve sessies stoppen
 **As a** fleetmanager  
 **I want** actieve parkeersessies handmatig te stoppen  
 **So that** ik controle heb bij vergeten sessies.
@@ -340,12 +340,12 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 **Acceptatiecriteria:**
 - *Given* er zijn actieve sessies  
 - *When* ik op "Stoppen" klik bij een sessie  
-- *Then* wordt de sessie beëindigd  
+- *Then* wordt de sessie beÃ«indigd  
 - *And* de bestuurder ziet de wijziging (real-time sync)
 
 ---
 
-#### US-F03 – Kentekenbeheer per bestuurder
+#### US-F03 â€“ Kentekenbeheer per bestuurder
 **As a** fleetmanager  
 **I want** kentekens toe te voegen en restricties in te stellen  
 **So that** bestuurders alleen toegestane kentekens gebruiken.
@@ -358,7 +358,7 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ---
 
-#### US-F04 – Auto-stop tijd instellen
+#### US-F04 â€“ Auto-stop tijd instellen
 **As a** fleetmanager  
 **I want** een tijd in te stellen waarop alle sessies automatisch stoppen  
 **So that** er geen nachtelijke sessies blijven lopen.
@@ -367,13 +367,13 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 - *Given* ik ben op de instellingen-pagina  
 - *When* ik auto-stop aanzet en een tijd instel  
 - *Then* worden alle actieve sessies op dat moment gestopt  
-- **Huidige status:** Cloud Function / cron nog niet geïmplementeerd
+- **Huidige status:** Cloud Function / cron nog niet geÃ¯mplementeerd
 
 ---
 
 ### 4.3 Systeem / Backend
 
-#### US-S01 – Zones real-time synchroniseren
+#### US-S01 â€“ Zones real-time synchroniseren
 **As a** systeem  
 **I want** zones uit Firestore te synchroniseren  
 **So that** de kaart altijd actuele data toont.
@@ -386,7 +386,7 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ---
 
-#### US-S02 – Sessie persistent maken
+#### US-S02 â€“ Sessie persistent maken
 **As a** systeem  
 **I want** de actieve sessie in localStorage op te slaan  
 **So that** de sessie behouden blijft bij refresh.
@@ -401,11 +401,11 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ## 5. Ontbrekende / Incomplete User Stories
 
-### 5.1 Niet geïmplementeerd
+### 5.1 Niet geÃ¯mplementeerd
 
 | User Story | Beschrijving | Impact |
 |------------|--------------|--------|
-| **Wachtwoord vergeten** | Link aanwezig, flow niet geïmplementeerd | Gebruikers kunnen account niet herstellen |
+| **Wachtwoord vergeten** | Link aanwezig, flow niet geÃ¯mplementeerd | Gebruikers kunnen account niet herstellen |
 | **Remember me** | Checkbox aanwezig, geen echte 30-dagen-sessie | Weinig impact |
 | **Auto-stop Cloud Function** | Auto-stop tijd opgeslagen, geen cron/function | Sessies stoppen niet automatisch |
 
@@ -435,9 +435,9 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 |---|-------------------|-----------|
 | 4 | **Export parkeerhistorie (CSV/PDF)** | Declaratie en boekhouding (billing export in `functions/billing.js`) |
 | 5 | **Push-notificatie bij bijna verlopen** | Voorkomt vergeten sessies (FCM + permissie flow aanwezig) |
-| 6 | **Gebruiksdagen beperken** | Fleet Manager Plan – allowedDays |
+| 6 | **Gebruiksdagen beperken** | Fleet Manager Plan â€“ allowedDays |
 | 7 | **Bulk kentekens voor poolauto's** | Fleet Manager Plan |
-| 10 | **Bulk kentekens voor poolauto’s** | Fleet Manager Plan |
+| 10 | **Bulk kentekens voor poolautoâ€™s** | Fleet Manager Plan |
 
 ### 6.3 Prioriteit Laag
 
@@ -447,22 +447,22 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ---
 
-## 7. Potentiële Problemen & Open Einden
+## 7. PotentiÃ«le Problemen & Open Einden
 
-### 7.1 Technische risico’s
+### 7.1 Technische risicoâ€™s
 
 | Risico | Locatie | Omschrijving |
 |--------|---------|--------------|
-| **localStorage-quota / privémodus** | `state.js`, `services.js` | `localStorage.setItem` kan falen; try-catch aanwezig in saveFavorites, savePlates etc. |
+| **localStorage-quota / privÃ©modus** | `state.js`, `services.js` | `localStorage.setItem` kan falen; try-catch aanwezig in saveFavorites, savePlates etc. |
 | **JSON.parse op data-rates** | `app.js` regel ~91 | `JSON.parse(data-rates \|\| 'null')` kan falen bij malformed data. |
 | **Zone niet in zones-array** | `services.js` handleStartParking | Als `selectedZone` niet in `zones` voorkomt, toast; maar edge case bij race conditions. |
 | **Timer na 00:00** | `ui.js` | Geen automatische `handleAutoEndSession` wanneer count-down 0 bereikt. |
 
-### 7.2 UX / gebruikersrisico’s
+### 7.2 UX / gebruikersrisicoâ€™s
 
 | Risico | Scenario | Gevolg |
 |--------|----------|--------|
-| **localStorage gewist** | Privémodus, opschonen browser | Sessie en kentekens verdwenen (historie blijft in Firestore) |
+| **localStorage gewist** | PrivÃ©modus, opschonen browser | Sessie en kentekens verdwenen (historie blijft in Firestore) |
 | **Netwerk uit tijdens laden** | Slechte verbinding | Kaart timeout 15 sec, loading overlay |
 | **Sessie langer dan zone-max** | Toast bij bereiken limiet | Chauffeur wordt gewaarschuwd |
 | **Geen bevestiging bij verwijderen** | Kenteken per ongeluk verwijderd | Direct weg |
@@ -474,7 +474,7 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 | **Geen package manager** | Dependencies via CDN; geen npm/yarn voor versiebeheer |
 | **Dubbele bestanden** | Root en `public/` hebben vergelijkbare bestanden; mogelijk sync-problemen |
 | **Firestore Security Rules** | Moeten multi-tenant en rol-gebaseerde toegang afdwingen |
-| **Portal ↔ App sync** | Sessies en kentekens: Firestore vs localStorage; verdere integratie nodig |
+| **Portal â†” App sync** | Sessies en kentekens: Firestore vs localStorage; verdere integratie nodig |
 
 ---
 
@@ -482,9 +482,9 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ### 8.1 Sterke punten
 
-1. **Duidelijke scheiding**: app.js (events), services.js (logica), state.js (state), ui.js (render) – goed te volgen.
+1. **Duidelijke scheiding**: app.js (events), services.js (logica), state.js (state), ui.js (render) â€“ goed te volgen.
 2. **Documentatie**: ARCHITECTURE.md, PRODUCT_ANALYSIS.md, FLEET_MANAGER_ADMIN_PORTAL_PLAN.md, PWA_INSTALL_INSTRUCTIES.md geven goed inzicht.
-3. **Kernflow werkt**: zoeken (incl. geocoding), zone kiezen, bevestigingsmodal, starten, stoppen, kentekens – de basis is solide.
+3. **Kernflow werkt**: zoeken (incl. geocoding), zone kiezen, bevestigingsmodal, starten, stoppen, kentekens â€“ de basis is solide.
 4. **RDW-integratie**: Kentekenvalidatie, automatische lookup en Description-vulling zonder API-key.
 5. **Fleet Portal**: Gebruikersbeheer, sessies stoppen en kentekenbeheer is functioneel.
 6. **Historie & Firestore**: Sessies naar `sessions` + `transactions`, historie geladen uit Firestore.
@@ -495,7 +495,7 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ### 8.2 Verbeterpunten
 
-1. **Wachtwoord vergeten**: Nog niet geïmplementeerd.
+1. **Wachtwoord vergeten**: Nog niet geÃ¯mplementeerd.
 2. **Bevestiging kenteken verwijderen**: Voorkomt per ongeluk verwijderen.
 3. **Global active parking indicator**: Lopende sessie door hele app + PWA-badge.
 4. **Auto-stop Cloud Function**: Cron/Function voor automatisch stoppen op ingestelde tijd.
@@ -505,13 +505,13 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ## 9. Aanbevelingen
 
-### 9.1 Korte termijn (1–2 sprints)
+### 9.1 Korte termijn (1â€“2 sprints)
 
 1. **Bevestiging bij verwijderen**: Confirm-dialoog voor kenteken verwijderen.
 2. **Global active parking indicator**: Compacte balk onder header op andere schermen, PWA Badging API.
 3. **Wachtwoord vergeten**: Implementeer flow via Firebase Auth.
 
-### 9.2 Middellange termijn (3–6 maanden)
+### 9.2 Middellange termijn (3â€“6 maanden)
 
 4. **Auto-stop Cloud Function**: Cron/Function die sessies stopt op ingestelde tijd.
 5. **Rapportage-export**: PDF/CSV-export van parkeerhistorie (billing export bestaat).
@@ -529,18 +529,18 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 ### 10.1 Referenties
 
-- [INVEST Principle – User Stories](https://blog.logrocket.com/product-management/writing-meaningful-user-stories-invest-principle/)
-- [User Story Format – Scrum.org](https://scrum.org/resources/blog/user-story-format)
-- [Given-When-Then – Acceptance Criteria](https://asana.com/resources/user-stories)
-- [Documentation Best Practices – Atlassian](https://www.atlassian.com/blog/it-teams/software-documentation-best-practices)
+- [INVEST Principle â€“ User Stories](https://blog.logrocket.com/product-management/writing-meaningful-user-stories-invest-principle/)
+- [User Story Format â€“ Scrum.org](https://scrum.org/resources/blog/user-story-format)
+- [Given-When-Then â€“ Acceptance Criteria](https://asana.com/resources/user-stories)
+- [Documentation Best Practices â€“ Atlassian](https://www.atlassian.com/blog/it-teams/software-documentation-best-practices)
 
 ### 10.2 Interne documentatie
 
-- `ARCHITECTURE.md` – Technische architectuur
-- `PRODUCT_ANALYSIS.md` – Productanalyse en flow
-- `FLEET_MANAGER_ADMIN_PORTAL_PLAN.md` – Fleet-portal plan
-- `AGENT_CONTEXT.md` – Technisch overzicht
-- `screens_overview.md` – Schermoverzicht
+- `ARCHITECTURE.md` â€“ Technische architectuur
+- `PRODUCT_ANALYSIS.md` â€“ Productanalyse en flow
+- `FLEET_MANAGER_ADMIN_PORTAL_PLAN.md` â€“ Fleet-portal plan
+- `AGENT_CONTEXT.md` â€“ Technisch overzicht
+- `screens_overview.md` â€“ Schermoverzicht
 
 ---
 
