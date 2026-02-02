@@ -677,22 +677,22 @@
   <!-- === OVERLAY: CONFIRM START PARKING (Modal) - zone + plate verificatie === -->
   <div id="modal-confirm-start" class="overlay-backdrop justify-center items-center" data-action="close-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirm-start-title">
      <div class="card modal-card" role="document">
-        <h2 id="confirm-start-title" class="font-bold text-lg mb-sm">Bevestig parkeersessie</h2>
-        <p id="confirm-start-desc" class="text-secondary mb-md" style="font-size:0.9rem; line-height:1.5;">Controleer zonenummer en kenteken alvorens te starten.</p>
+        <h2 id="confirm-start-title" class="font-bold text-lg mb-sm">Confirm parking session</h2>
+        <p id="confirm-start-desc" class="text-secondary mb-md" style="font-size:0.9rem; line-height:1.5;">Please verify zone number and license plate before starting.</p>
         <div class="flex flex-col gap-md mb-lg" style="font-size:1rem;">
            <div class="flex justify-between items-center" style="padding:12px 16px; background:var(--bg-secondary); border-radius:12px;">
               <span class="text-secondary" style="font-weight:500;">Zone</span>
               <span id="confirm-start-zone" class="font-bold">—</span>
            </div>
-           <div class="flex justify-between items-center" style="padding:12px 16px; background:var(--bg-secondary); border-radius:12px; cursor:pointer;" data-action="open-plate-selector-from-confirm" title="Wijzig kenteken">
-              <span class="text-secondary" style="font-weight:500;">Kenteken</span>
+           <div class="flex justify-between items-center" style="padding:12px 16px; background:var(--bg-secondary); border-radius:12px; cursor:pointer;" data-action="open-plate-selector-from-confirm" title="Change license plate">
+              <span class="text-secondary" style="font-weight:500;">License plate</span>
               <span id="confirm-start-plate" class="font-bold sheet-zone-plate-badge" style="padding:6px 12px;">—</span>
            </div>
         </div>
         <p id="confirm-start-daypass-note" class="text-secondary mb-md" style="font-size:0.85rem; display:none;"></p>
         <div class="flex gap-md">
-           <button class="btn btn-secondary" data-action="close-overlay">ANNULEREN</button>
-           <button class="btn btn-primary" data-action="confirm-start-session">JA, STARTEN</button>
+           <button class="btn btn-secondary" data-action="close-overlay">CANCEL</button>
+           <button class="btn btn-primary" data-action="confirm-start-session">YES, START</button>
         </div>
      </div>
   </div>
