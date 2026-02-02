@@ -245,9 +245,9 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 **Acceptatiecriteria:**
 - *Given* ik voer een kenteken in bij het toevoegen  
-- *When* ik op "Check at RDW" klik  
-- *Then* zie ik of het kenteken in het RDW-register staat  
-- *And* eventueel merk/type van het voertuig
+- *When* het kenteken wordt ingevuld (of ik op "Check at RDW" klik)  
+- *Then* wordt automatisch gecontroleerd of het in het RDW-register staat  
+- *And* merk/type vult het Description-veld
 
 ---
 
@@ -274,9 +274,8 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 **Acceptatiecriteria:**
 - *Given* ik ben op het geschiedenis-scherm  
 - *When* er parkeersessies zijn afgerond  
-- *Then* zie ik een lijst met datum, zone, kenteken en kosten  
-- *And* ik kan filteren op voertuig en datum  
-- **Huidige status:** Historie wordt niet gevuld; sessies gaan niet naar Firestore
+- *Then* zie ik een lijst met datum, zone, kenteken en kosten (uit Firestore `transactions`)  
+- *And* ik kan filteren op voertuig en datum
 
 ---
 
@@ -406,12 +405,9 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 | User Story | Beschrijving | Impact |
 |------------|--------------|--------|
-| **Parkeerhistorie vullen** | Sessies worden bij eindigen niet naar Firestore/historie geschreven | Chauffeurs zien geen historie |
 | **Wachtwoord vergeten** | Link aanwezig, flow niet geïmplementeerd | Gebruikers kunnen account niet herstellen |
 | **Remember me** | Checkbox aanwezig, geen echte 30-dagen-sessie | Weinig impact |
 | **Auto-stop Cloud Function** | Auto-stop tijd opgeslagen, geen cron/function | Sessies stoppen niet automatisch |
-| **Adres-zoeken met geocoding** | Alleen zone-ID/naam, geen straatadres-zoeken | Beperkte zoekervaring |
-| **Offline modus** | Service Worker uitgeschakeld | Geen offline cache |
 
 ### 5.2 Gebruikersfeedback ontbreekt
 
