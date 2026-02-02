@@ -625,6 +625,7 @@ Q8.App = (function() {
 
             if(Services.loadZones) {
                 Services.loadZones().then(() => {
+                     if(Services.loadFacilities) Services.loadFacilities();
                      if(UI.update) UI.update();
                 }).catch(err => {
                      console.error("Zones critical fail:", err);

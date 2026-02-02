@@ -216,6 +216,7 @@ Q8.Services = (function() {
                 (pos) => {
                     const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
                     S.update({ userLocation: loc });
+                    updateNearbyFacilities();
                     if (Q8.UI && Q8.UI.centerMapOnZones) Q8.UI.centerMapOnZones();
                     findAndSelectZoneAtLocation(loc.lat, loc.lng);
                     resolve(loc);
@@ -396,7 +397,6 @@ Q8.Services = (function() {
             return;
         }
         const nearby = getNearbyFacilities(facilities, userLocation.lat, userLocation.lng, nearbyFacilitiesRadiusKm);
-        nearby.forEach(f => { delete f._distKm; });
         S.update({ nearbyFacilities: nearby });
     }
 
@@ -1260,6 +1260,8 @@ Q8.Services = (function() {
         logoutUser,
         sendPasswordResetEmail,
         loadZones,
+        loadFacilities,
+        updateNearbyFacilities,
         geocodeAndSearch,
         detectSearchMode,
         setScreen,
