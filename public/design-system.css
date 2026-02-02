@@ -72,6 +72,10 @@
   --z-map-ui: 400; --z-header: 800; --z-banner: 810; --z-overlay: 900; --z-modal: 1000; --z-toast: 1100;
 }
 
+/* Prevent text cursor (I-beam) on non-input elements - desktop UX */
+#app, .screen, .card, .bottom-sheet, .overlay-backdrop { cursor: default; }
+#app input, #app textarea, #app [contenteditable="true"] { cursor: text; }
+
 /* Map layout (bijlage 2: header + search + map area) */
 .map-top-bar { flex-shrink: 0; }
 .map-area {
