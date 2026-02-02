@@ -7,7 +7,7 @@
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const { exportParkingSessions, exportMonthlySubscriptions } = require('./billing');
+const { exportParkingSessions, exportMonthlySubscriptions, createParkingSessionDoc } = require('./billing');
 
 admin.initializeApp();
 const db = admin.firestore();
