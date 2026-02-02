@@ -1265,7 +1265,7 @@ Q8.UI = (function() {
             fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:initGoogleMap',message:'loading script',data:{apiKeyLength:(apiKey||'').length},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(function(){});
             // #endregion
             const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMapCallback`;
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async&callback=initMapCallback`;
             script.async = true;
             script.onerror = function() {
                 diagMaps('initGoogleMap', 'script-load-error');
