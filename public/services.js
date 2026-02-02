@@ -77,7 +77,7 @@ Q8.Services = (function() {
                     driverSettings: data.driverSettings || {},
                     adminPlates
                 });
-                if (userPlates.length > 0 && S.get.plates.length === 0) {
+                if (userPlates.length > 0) {
                     S.update({ plates: userPlates });
                     if (S.savePlates) S.savePlates();
                 }
@@ -927,6 +927,7 @@ Q8.Services = (function() {
         });
 
         S.savePlates();
+        syncUserPlatesToFirestore(newPlates);
         toast(S.get.language === 'nl' ? 'Kenteken bijgewerkt' : 'License plate updated');
     }
 
@@ -1057,6 +1058,7 @@ Q8.Services = (function() {
         });
 
         S.savePlates();
+        syncUserPlatesToFirestore(newPlates);
         if(Q8.UI && Q8.UI.showToast) Q8.UI.showToast('Default plate updated');
         else if(typeof window.showToast === 'function') window.showToast('Default plate updated');
     }
