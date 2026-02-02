@@ -641,8 +641,8 @@ Q8.App = (function() {
         } else {
             if(Services.initAuthListener) Services.initAuthListener();
 
-            // Load map immediately - don't wait for zones
-            if(UI.initGoogleMap) UI.initGoogleMap();
+            // Don't init map here - wait until user is on parking screen
+            // Map will be initialized in services.js setScreen('parking')
 
             if(Services.loadZones) {
                 Services.loadZones().then(() => {
