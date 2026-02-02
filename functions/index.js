@@ -10,6 +10,36 @@ const admin = require('firebase-admin');
 
 admin.initializeApp();
 const db = admin.firestore();
+const messaging = admin.messaging();
+
+/**
+ * Send push notification to user
+ */
+async function sendPushToUser(uid, title, body, data = {}) {
+    if (!uid) return false;
+    try {
+        const userDoc = await db.collection('users').doc(uid).get();
+        if (!userDoc.exists) return false;
+        const token = userDoc.data().fcmToken;
+        if (!token) return false;
+        await messaging.send({
+            token,
+            notification: { title, body, imageUrl: '/icons/favicon-32x32.png' },
+            webpush: {
+                fcmOptions: { link: '/' },
+                notification: { icon: '/icons/favicon-32x32.png', tag: data.tag || 'q8-parking' }
+            },
+            data: { ...data, title: title || '', body: body || '' }
+        });
+        return true;
+    } catch (err) {
+        if (err.code === 'messaging/invalid-registration-token' || err.code === 'messaging/registration-token-not-registered') {
+            await db.collection('users').doc(uid).update({ fcmToken: admin.firestore.FieldValue.delete() }).catch(() => {});
+        }
+        console.warn('Push send failed:', uid, err.message);
+        return false;
+    }
+}
 
 /**
  * Parse time string "HH:MM" to minutes since midnight
