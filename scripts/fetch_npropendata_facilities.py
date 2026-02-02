@@ -61,12 +61,47 @@ def fetch_json(url):
         return json.loads(resp.read().decode("utf-8"))
 
 
+def _opening_times_summary(info):
+    """Bouw korte samenvatting uit openingTimes[] (bijv. '24/7' of 'Ma-Vr 07:00-23:00')."""
+    times = info.get("openingTimes") or []
+    if not times:
+        return None
+    ot = times[0]
+    if ot.get("openAllYear") and ot.get("exitPossibleAllDay"):
+        entry_times = ot.get("entryTimes") or []
+        if not entry_times:
+            return "24/7"
+        all_day = True
+        for et in entry_times:
+            fr = et.get("enterFrom") or {}
+            to = et.get("enterUntil") or {}
+            if (fr.get("h"), fr.get("m")) != (0, 0) or (to.get("h"), to.get("m")) != (23, 59):
+                all_day = False
+                break
+        if all_day and len(entry_times) >= 7:
+            return "24/7"
+    # Eerste entry: format tijd en dagen
+    et = entry_times[0] if entry_times else None
+    if not et:
+        return None
+    fr = et.get("enterFrom") or {}
+    to = et.get("enterUntil") or {}
+    h1, m1 = fr.get("h", 0), fr.get("m", 0)
+    h2, m2 = to.get("h", 23), to.get("m", 59)
+    time_str = f"{h1:02d}:{m1:02d}-{h2:02d}:{m2:02d}"
+    days = et.get("dayNames") or []
+    day_map = {"Mon": "Ma", "Tue": "Di", "Wed": "Wo", "Thu": "Do", "Fri": "Vr", "Sat": "Za", "Sun": "Zo"}
+    day_str = "-".join(day_map.get(d, d) for d in days[:2]) if len(days) <= 2 else (day_map.get(days[0], days[0]) + "-" + day_map.get(days[-1], days[-1]) if days else "")
+    return f"{day_str} {time_str}" if day_str else time_str
+
+
 def parse_static_data(static_json, list_item):
-    """Haal uit static JSON de velden voor Firestore (zie plan sectie 3.2)."""
+    """Haal uit static JSON de velden voor Firestore (zie plan sectie 3.2 + 3.3)."""
+    info = static_json.get("parkingFacilityInformation") or {}
     out = {
         "id": list_item.get("identifier"),
-        "name": None,
-        "description": None,
+        "name": info.get("name") or list_item.get("name"),
+        "description": info.get("description"),
         "lat": None,
         "lng": None,
         "type": _facility_type_from_name(list_item.get("name", "")),
@@ -74,13 +109,33 @@ def parse_static_data(static_json, list_item):
         "street": None,
         "tariffSummary": None,
         "dynamicDataUrl": list_item.get("dynamicDataUrl") or None,
+        "capacity": None,
+        "chargingPointCapacity": None,
+        "disabledAccess": None,
+        "minimumHeightInMeters": None,
+        "operatorUrl": None,
+        "openingTimesSummary": None,
+        "paymentMethods": None,
         "updated_at": datetime.now(timezone.utc).isoformat(),
     }
-    info = static_json.get("parkingFacilityInformation") or {}
-    out["name"] = info.get("name") or list_item.get("name")
-    out["description"] = info.get("description")
 
-    # Locatie: eerste accessPoint, eerste accessPointLocation (onder parkingFacilityInformation)
+    # Specifications (eerste item)
+    specs = info.get("specifications") or []
+    if specs:
+        s = specs[0]
+        if s.get("capacity") is not None:
+            out["capacity"] = int(s["capacity"])
+        if s.get("chargingPointCapacity") is not None:
+            out["chargingPointCapacity"] = int(s["chargingPointCapacity"])
+        if s.get("disabledAccess") is not None:
+            out["disabledAccess"] = bool(s["disabledAccess"])
+        if s.get("minimumHeightInMeters") is not None:
+            try:
+                out["minimumHeightInMeters"] = float(s["minimumHeightInMeters"])
+            except (TypeError, ValueError):
+                pass
+
+    # Locatie: eerste accessPoint, eerste accessPointLocation
     access_points = info.get("accessPoints") or []
     if access_points:
         ap = access_points[0]
@@ -98,11 +153,13 @@ def parse_static_data(static_json, list_item):
         hn = addr.get("houseNumber") or ""
         out["street"] = f"{sn} {hn}".strip() or None
 
+    op = info.get("operator") or {}
     if not out["city"]:
-        op = info.get("operator") or {}
         out["city"] = op.get("name")
+    if op.get("url"):
+        out["operatorUrl"] = op["url"] if op["url"].startswith("http") else "https://" + op["url"]
 
-    # Tariefsamenvatting: eerste tariff, eerste intervalRate (onder parkingFacilityInformation)
+    # Tariefsamenvatting: eerste tariff, eerste intervalRate
     tariffs = info.get("tariffs") or []
     if tariffs:
         t = tariffs[0]
@@ -116,6 +173,14 @@ def parse_static_data(static_json, list_item):
                     out["tariffSummary"] = f"€ {charge:.2f} / dag"
                 else:
                     out["tariffSummary"] = f"€ {charge:.2f} / {int(period)} min"
+
+    # Openingstijden-samenvatting
+    out["openingTimesSummary"] = _opening_times_summary(info)
+
+    # Betaalmethoden: lijst van method-namen
+    methods = info.get("paymentMethods") or []
+    if methods:
+        out["paymentMethods"] = [m.get("method") for m in methods if m.get("method")]
 
     return out
 
