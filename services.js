@@ -367,7 +367,25 @@ Q8.Services = (function() {
         else if (typeof window.showToast === 'function') window.showToast(msg);
     }
 
-    function handleStartParking() {
+    function hasDayPass(zone) {
+        if (!zone) return false;
+        if (zone.isDayPass === true) return true;
+        const rates = zone.rates || [];
+        return rates.some(r => /dagkaart|day.?pass/i.test(r.detail || ''));
+    }
+
+    function getDayPassCost(zone) {
+        if (!zone) return null;
+        const rates = zone.rates || [];
+        const dagkaartRate = rates.find(r => /dagkaart|day.?pass/i.test(r.detail || ''));
+        if (!dagkaartRate) return null;
+        const detail = (dagkaartRate.detail || '').replace(',', '.');
+        const match = detail.match(/[\d]+[.,]?\d*/);
+        return match ? match[0].replace(',', '.') : (dagkaartRate.price || null);
+    }
+
+    function handleStartParking(options) {
+        const skipOverlayCheck = options && options.fromDayPassConfirm === true;
         if (S.get.session) {
             console.warn('[PARKING_START] Blocked: session already active');
             toast('You already have an active parking session.');
@@ -378,7 +396,7 @@ Q8.Services = (function() {
             toast('Select a parking zone first.');
             return;
         }
-        if (S.get.activeOverlay !== 'sheet-zone') {
+        if (!skipOverlayCheck && S.get.activeOverlay !== 'sheet-zone') {
             console.warn('[PARKING_START] Blocked: overlay is not sheet-zone', S.get.activeOverlay);
             toast('Open a zone to start parking.');
             return;
@@ -928,6 +946,8 @@ Q8.Services = (function() {
         setScreen,
         tryOpenOverlay,
         handleStartParking,
+        hasDayPass,
+        getDayPassCost,
         handleEndParking,
         modifyActiveSessionEnd,
         saveNewPlate,
