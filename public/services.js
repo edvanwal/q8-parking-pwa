@@ -271,7 +271,7 @@ Q8.Services = (function() {
     }
 
     function tryOpenOverlay(id, contextData = null) {
-        const allowedSwitches = ['menu-overlay', 'sheet-plate-selector', 'sheet-zone', 'modal-add-plate', 'modal-edit-plate'];
+        const allowedSwitches = ['menu-overlay', 'sheet-plate-selector', 'sheet-zone', 'modal-add-plate', 'modal-edit-plate', 'modal-forgot-password', 'modal-confirm-delete-plate'];
 
         // Guard: Prevent overlap unless allowed
         if (S.get.activeOverlay && S.get.activeOverlay !== id && !allowedSwitches.includes(id)) {
@@ -495,13 +495,21 @@ Q8.Services = (function() {
     // --- PARKING END (fragile) ---
     // Risk: Silent return if no session (e.g. already ended, or state desync).
     function handleEndParking() {
-        if (!S.get.session) {
+        const session = S.get.session;
+        if (!session) {
             console.warn('[PARKING_END] Blocked: no active session');
             return;
         }
 
-        const session = S.get.session;
         const sessionId = session.sessionId;
+        const now = new Date();
+        const startDate = session.start instanceof Date ? session.start : new Date(session.start);
+        const endDate = session.end ? (session.end instanceof Date ? session.end : new Date(session.end)) : now;
+
+        const zone = S.get.zones.find(z => z.uid === session.zoneUid || z.id === session.zoneUid) || S.get.zones.find(z => z.id === session.zone);
+        const hourlyRate = (zone && zone.price != null) ? parseFloat(zone.price) : (S.get.selectedZoneRate || 2.0);
+        const durationMins = Math.round((endDate.getTime() - startDate.getTime()) / 60000);
+        const cost = U && U.calculateCost ? U.calculateCost(durationMins, hourlyRate) : (durationMins / 60) * hourlyRate;
 
         if (db && sessionId) {
             db.collection('sessions').doc(sessionId).update({
@@ -512,14 +520,28 @@ Q8.Services = (function() {
         }
         if (_sessionListenerUnsub) { _sessionListenerUnsub(); _sessionListenerUnsub = null; }
 
-        S.update({
-            session: null,
-            activeOverlay: null
-        });
-
+        S.update({ session: null, activeOverlay: null });
         S.save();
-        if(Q8.UI && Q8.UI.showToast) Q8.UI.showToast('Parking session ended');
-        else if(typeof window.showToast === 'function') window.showToast('Parking session ended');
+
+        if (db && auth && auth.currentUser) {
+            const transactionData = {
+                userId: auth.currentUser.uid,
+                tenantId: getTenantId(),
+                zone: session.zone,
+                zoneUid: session.zoneUid,
+                plate: session.plate || '',
+                street: (zone && zone.street) ? zone.street : '',
+                start: firebase.firestore.Timestamp.fromDate(startDate),
+                end: firebase.firestore.Timestamp.fromDate(endDate),
+                cost: Math.round(cost * 100) / 100,
+                endedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            db.collection('transactions').add(transactionData).catch((err) => console.error('Transaction add failed:', err));
+        }
+
+        addNotification('sessionEndedByUser', S.get.language === 'nl' ? 'Parkeersessie beëindigd' : 'Parking session ended', `${session.zone} · ${session.plate || ''}`);
+        if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast('Parking session ended');
+        else if (typeof window.showToast === 'function') window.showToast('Parking session ended');
     }
 
     // --- MODIFY ACTIVE SESSION END TIME ---
