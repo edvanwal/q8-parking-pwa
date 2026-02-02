@@ -93,16 +93,23 @@ Alle client-side logica zit onder `Q8`:
 | Kaart met markers | ✅ | `ui.js` → `initGoogleMap()`, `renderMapMarkers()` |
 | Zone-filter (alleen straatparkeren) | ✅ | `isStreetParkingZone()` – garage/P+R uitgesloten |
 | Zoeken op zone-ID of naam | ✅ | `inp-search` → `renderSearchResults()` |
-| Zoeken op adres | Beperkt | Zoekt op zone-naam, geen geocoding |
+| Zoeken op adres (geocoding) | ✅ | `geocodeAndSearch()`, Google Geocoding API |
+| Intelligente zoekmodus | ✅ | `detectSearchMode()` – zone vs. adres automatisch |
 | Zone-sheet (tarieven, duur, kenteken) | ✅ | `renderZoneSheet()` |
 | Favoriete zones | ✅ | `state.favorites`, `saveFavorites`/`loadFavorites` |
+| Favorieten: custom naam geven | ✅ | `edit-favorite-name`, `f.name` in state |
+| Favorieten: volgorde wijzigen (slepen) | ✅ | HTML5 drag-and-drop in `renderFavorites()` |
+| Favorieten: verwijderen | ✅ | `remove-favorite` via hart-icoon |
+| Locatie: kaart centreren + zone voorselectie | ✅ | Geolocation API, Haversine-afstand |
 
 ### 3.3 Parkeersessies
 
 | Functie | Status | Implementatie |
 |---------|--------|---------------|
 | Sessie starten | ✅ | `handleStartParking()` |
+| Bevestigingsmodal voor start | ✅ | `modal-confirm-start`, zone + kenteken verifiëren (bewerkbaar) |
 | Sessie beëindigen | ✅ | `handleEndParking()` |
+| Sessie naar Firestore | ✅ | `sessions` + `transactions` collecties |
 | Duur instellen (tot stoppen / vaste tijd) | ✅ | `modifyDuration()`, `modifyActiveSessionEnd()` |
 | Actieve sessie-kaart met timer | ✅ | `renderParkingView()` |
 | Timer count-down / count-up | ✅ | `startTimerTicker()`, `updateActiveTimerDisplay()` |
@@ -118,18 +125,20 @@ Alle client-side logica zit onder `Q8`:
 | Kenteken bewerken | ✅ | `updatePlate()` |
 | Default kenteken instellen | ✅ | `setDefaultPlate()` |
 | Kenteken kiezen voor sessie | ✅ | `sheet-plate-selector` |
-| Nederlands kentekenformaat | ✅ | `kenteken.js` sidecodes 1–11 |
+| Nederlands kentekenformaat | ✅ | `kenteken.js` sidecodes 1–11 (incl. V, W) |
 | RDW-controle (gratis Open Data) | ✅ | `checkPlateRDW()`, `Kenteken.lookupRDW()` |
-| Auto-specs (RDW) tonen | ✅ | View "Cars specs" |
+| RDW automatisch + normalisatie | ✅ | Auto-trigger bij invoer, format voor RDW |
+| RDW resultaat in Description | ✅ | Merk/type vult Description-veld |
+| Auto-specs (RDW) tonen | ✅ | View "Car specs" |
 
 ### 3.5 Parkeerhistorie
 
 | Functie | Status | Implementatie |
 |---------|--------|---------------|
 | Historie-scherm | ✅ | View `history` |
-| Filter op voertuig | UI aanwezig | Werkt, maar data is leeg |
-| Filter op datum | UI aanwezig | Werkt, maar data is leeg |
-| Historie data | ❌ | `state.history` blijft leeg; sessies gaan niet naar Firestore |
+| Filter op voertuig | ✅ | Filter werkt op `state.history` |
+| Filter op datum | ✅ | Filter werkt met date range |
+| Historie data | ✅ | `loadHistory()` uit Firestore `transactions` |
 
 ### 3.6 Notificaties
 
@@ -138,7 +147,9 @@ Alle client-side logica zit onder `Q8`:
 | Notificatie-instellingen | ✅ | `notificationSettings` in state |
 | Notificatiehistorie | ✅ | `state.notifications` |
 | Sessie gestart/gestopt melding | ✅ | `addNotification()` |
-| Waarschuwing bij bijna verlopen | Gepland | `expiringSoonMinutes` – logica niet volledig |
+| Toast in header (3 sec, dismiss) | ✅ | `showToast()`, `dismissToast()` |
+| Max parkeerduur meldingen | ✅ | 24u-globaal en zone-specifiek (toast) |
+| Waarschuwing bij bijna verlopen | ✅ | `expiringSoonMinutes` – instelbaar |
 
 ### 3.7 Taal & PWA
 
