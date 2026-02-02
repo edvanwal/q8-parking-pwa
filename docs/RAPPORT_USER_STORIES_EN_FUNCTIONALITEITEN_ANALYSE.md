@@ -539,6 +539,7 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 - `ARCHITECTURE.md` â€“ Technische architectuur
 - `PRODUCT_ANALYSIS.md` â€“ Productanalyse en flow
 - `FLEET_MANAGER_ADMIN_PORTAL_PLAN.md` â€“ Fleet-portal plan
+- `PWA_INSTALL_INSTRUCTIES.md` – PWA-installatie (iOS/Android)
 - `AGENT_CONTEXT.md` â€“ Technisch overzicht
 - `screens_overview.md` â€“ Schermoverzicht
 
