@@ -1337,6 +1337,36 @@ Q8.UI = (function() {
         map.setZoom(16);
     }
 
+    function populateConfirmStartModal(zoneId, plateText, options) {
+        const state = S.get;
+        const nl = state.language === 'nl';
+        const titleEl = document.getElementById('confirm-start-title');
+        const zoneEl = document.getElementById('confirm-start-zone');
+        const plateEl = document.getElementById('confirm-start-plate');
+        const daypassNote = document.getElementById('confirm-start-daypass-note');
+        const cancelBtn = document.querySelector('#modal-confirm-start [data-action="close-overlay"]');
+        const okBtn = document.querySelector('#modal-confirm-start [data-action="confirm-start-session"]');
+        if (titleEl) titleEl.textContent = nl ? 'Bevestig parkeersessie' : 'Confirm parking session';
+        if (document.querySelector('#modal-confirm-start p.text-secondary')) {
+            document.querySelector('#modal-confirm-start p.text-secondary').textContent =
+                nl ? 'Controleer zonenummer en kenteken alvorens te starten.' : 'Please verify zone number and license plate before starting.';
+        }
+        if (zoneEl) zoneEl.textContent = zoneId || '—';
+        if (plateEl) plateEl.textContent = plateText || '—';
+        const zoneLabel = document.querySelector('#modal-confirm-start .flex.justify-between .text-secondary');
+        if (zoneLabel) zoneLabel.textContent = nl ? 'Zone' : 'Zone';
+        const plateLabel = document.querySelector('#modal-confirm-start [data-action="open-plate-selector-from-confirm"] .text-secondary');
+        if (plateLabel) plateLabel.textContent = nl ? 'Kenteken' : 'License plate';
+        if (cancelBtn) cancelBtn.textContent = nl ? 'ANNULEREN' : 'CANCEL';
+        if (okBtn) okBtn.textContent = nl ? 'JA, STARTEN' : 'YES, START';
+        if (options && options.daypassNote && daypassNote) {
+            daypassNote.textContent = options.daypassNote;
+            daypassNote.style.display = 'block';
+        } else if (daypassNote) {
+            daypassNote.style.display = 'none';
+        }
+    }
+
     return {
         update: update,
         renderParkingView,
@@ -1355,7 +1385,8 @@ Q8.UI = (function() {
         initGoogleMap,
         renderMapMarkers,
         centerMapOnZones,
-        ensureMapResized
+        ensureMapResized,
+        populateConfirmStartModal
     };
 })();
 
