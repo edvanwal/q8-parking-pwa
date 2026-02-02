@@ -1824,37 +1824,24 @@ html[data-theme="dark"] .zones-loading-overlay {
 html[data-theme="dark"] .skeleton {
   background: linear-gradient(90deg, #374151 25%, #4B5563 50%, #374151 75%);
 }
-/* Dark mode toggle button */
-.dark-mode-toggle {
-  width: 48px;
-  height: 28px;
-  border-radius: 14px;
+/* Dark mode options (Light | System | Dark) */
+.dark-mode-options { flex-wrap: wrap; }
+.dark-mode-opt {
+  padding: 6px 12px;
+  border-radius: 8px;
   border: 2px solid var(--border);
   background: var(--bg-secondary);
+  color: var(--text-main);
+  font-size: 0.8rem;
+  font-weight: 600;
   cursor: pointer;
-  position: relative;
-  transition: 0.2s;
-  padding: 0;
-}
-.dark-mode-toggle .dark-mode-thumb {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--primary);
   transition: 0.2s;
 }
-.dark-mode-toggle[aria-pressed="true"] .dark-mode-thumb {
-  left: 24px;
-}
-.dark-mode-toggle[aria-pressed="true"] {
+.dark-mode-opt:hover { background: var(--bg-app); }
+.dark-mode-opt[aria-pressed="true"] {
   background: var(--primary);
   border-color: var(--primary);
-}
-.dark-mode-toggle[aria-pressed="true"] .dark-mode-thumb {
-  background: white;
+  color: white;
 }
 
 /* --- High Contrast Mode --- */
