@@ -704,10 +704,25 @@ Q8.Services = (function() {
         }
     }
 
+    /** Request push notification permission; on granted, registers FCM token. */
+    function requestPushNotificationPermission() {
+        if (typeof Notification === 'undefined') return;
+        if (Notification.permission !== 'default') return;
+        Notification.requestPermission().then((perm) => {
+            if (perm === 'granted' && auth && auth.currentUser) {
+                initFCMAndSaveToken(auth.currentUser.uid);
+            }
+        });
+    }
+
     function requestNotificationPermission() {
         if (typeof Notification === 'undefined') return;
         if (Notification.permission === 'default') {
-            Notification.requestPermission().then(() => {});
+            Notification.requestPermission().then((perm) => {
+                if (perm === 'granted' && auth && auth.currentUser) {
+                    initFCMAndSaveToken(auth.currentUser.uid);
+                }
+            });
         }
     }
 
