@@ -173,10 +173,12 @@ Q8.UI = (function() {
 
         renderSearchResults();
 
-        // Side menu: sync language button active state (EN = blue, white text)
+        // Side menu: sync language and dark mode
         document.querySelectorAll('.side-menu .menu-lang-btn').forEach(btn => {
             btn.classList.toggle('active', btn.getAttribute('data-lang') === state.language);
         });
+        const btnDark = document.getElementById('btn-dark-mode');
+        if (btnDark) btnDark.setAttribute('aria-pressed', state.darkMode ? 'true' : 'false');
     }
 
     function renderZoneSheet() {
