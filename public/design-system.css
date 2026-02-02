@@ -866,6 +866,18 @@ body {
     pointer-events: auto;
     margin: 0 -12px -12px -12px; /* Stretch to edges approx if needed, or just behave as bottom sheet */
 }
+/* Prevent kenteken and "Until stopped" from wrapping (root cause: width problem) */
+.active-parking-card #active-plate-label,
+.active-parking-card #lbl-end {
+  white-space: nowrap;
+}
+.active-parking-card #active-plate-label {
+  flex-shrink: 0;
+}
+/* End row: keep "End: Until stopped" on one line */
+.active-parking-card .flex.justify-between .flex.gap-sm > span:first-child {
+  white-space: nowrap;
+}
 .ui-empty-state {
   position: absolute; bottom: 32px; left: 24px; right: 24px; z-index: 20;
   background: var(--surface); border-radius: var(--radius-card);
