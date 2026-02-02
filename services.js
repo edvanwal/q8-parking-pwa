@@ -383,6 +383,19 @@ Q8.Services = (function() {
         if (S.saveNotifications) S.saveNotifications();
         if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(message);
         else if (typeof window.showToast === 'function') window.showToast(message);
+
+        if (type === 'sessionExpiringSoon' && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+            try {
+                new Notification('Q8 Parking', { body: message, icon: '/icons/favicon-32x32.png', tag: 'parking-expiring' });
+            } catch (e) { /* ignore */ }
+        }
+    }
+
+    function requestNotificationPermission() {
+        if (typeof Notification === 'undefined') return;
+        if (Notification.permission === 'default') {
+            Notification.requestPermission().then(() => {});
+        }
     }
 
     function handleAutoEndSession(reason) {
