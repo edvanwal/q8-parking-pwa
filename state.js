@@ -222,9 +222,9 @@ Q8.State = (function() {
     }
 
     function setDarkMode(value) {
-        _state.darkMode = !!value;
-        applyTheme(_state.darkMode);
-        try { localStorage.setItem('q8_dark_v1', _state.darkMode ? 'true' : 'false'); } catch (e) {}
+        _state.darkMode = (value === 'light' || value === 'dark' || value === 'system') ? value : 'system';
+        applyThemeFromPref();
+        try { localStorage.setItem('q8_dark_v2', _state.darkMode); } catch (e) {}
     }
 
     return {
