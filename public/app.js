@@ -151,6 +151,10 @@ Q8.App = (function() {
                         if (descEl) descEl.textContent = S.get.language === 'nl'
                             ? `Dit is een zone met een dagkaart${costStr}. Weet u zeker dat u de transactie wilt starten?`
                             : `This zone has a day pass${costStr}. Are you sure you want to start the transaction?`;
+                        const cancelBtn = document.getElementById('confirm-daypass-cancel');
+                        const okBtn = document.getElementById('confirm-daypass-ok');
+                        if (cancelBtn) cancelBtn.textContent = S.get.language === 'nl' ? 'ANNULEREN' : 'CANCEL';
+                        if (okBtn) okBtn.textContent = S.get.language === 'nl' ? 'JA, STARTEN' : 'YES, START';
                         Services.tryOpenOverlay('modal-confirm-daypass');
                     } else {
                         Services.handleStartParking();
