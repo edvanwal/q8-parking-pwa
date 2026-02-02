@@ -414,7 +414,11 @@ Q8.Services = (function() {
         S.update({ nearbyFacilities: nearby });
     }
 
-    function loadFacilities() {
+    const FACILITIES_RETRY_COUNT = 2;
+    const FACILITIES_RETRY_DELAY_MS = 800;
+
+    function loadFacilities(retryCount) {
+        const attempt = typeof retryCount === 'number' ? retryCount : 0;
         if (!db) {
             S.update({ facilities: [], facilitiesLoading: false, facilitiesLoadError: null });
             return Promise.resolve([]);
@@ -439,6 +443,11 @@ Q8.Services = (function() {
             })
             .catch(err => {
                 const msg = (err && err.message) ? err.message : (S.get.language === 'nl' ? 'Garages & P+R konden niet worden geladen.' : 'Could not load garages & P+R.');
+                if (attempt < FACILITIES_RETRY_COUNT) {
+                    return new Promise((resolve) => {
+                        setTimeout(() => resolve(loadFacilities(attempt + 1)), FACILITIES_RETRY_DELAY_MS);
+                    });
+                }
                 S.update({ facilities: [], facilitiesLoading: false, facilitiesLoadError: msg });
                 console.warn('Facilities load failed:', err);
                 return [];

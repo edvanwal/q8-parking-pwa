@@ -587,6 +587,35 @@
   </div>
 
 
+  <!-- === OVERLAY: GARAGES & P+R (standalone, no zone required) === -->
+  <div id="sheet-facilities" class="overlay-backdrop" data-action="close-overlay" role="dialog" aria-modal="true" aria-labelledby="sheet-facilities-title">
+    <div class="bottom-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <h2 id="sheet-facilities-title" class="font-bold text-lg">Garages & P+R in de buurt</h2>
+        <button type="button" class="icon-btn sheet-zone-close" data-action="close-overlay" aria-label="Close">×</button>
+      </div>
+      <div class="sheet-section">
+        <div class="facilities-controls flex gap-sm flex-wrap items-center mb-sm">
+          <span class="text-secondary text-sm">Straal:</span>
+          <div class="flex gap-xs" role="group" aria-label="Search radius in km">
+            <button type="button" class="btn btn-secondary btn-sm facilities-radius-btn-sheet" data-action="set-facilities-radius" data-km="1">1 km</button>
+            <button type="button" class="btn btn-secondary btn-sm facilities-radius-btn-sheet" data-action="set-facilities-radius" data-km="2">2 km</button>
+            <button type="button" class="btn btn-secondary btn-sm facilities-radius-btn-sheet" data-action="set-facilities-radius" data-km="5">5 km</button>
+          </div>
+          <span class="text-secondary text-sm ml-sm">Ref:</span>
+          <div class="flex gap-xs" role="group" aria-label="Reference point">
+            <button type="button" class="btn btn-outline btn-sm facilities-ref-btn-sheet" data-action="set-facilities-ref" data-ref="user">Mijn locatie</button>
+            <button type="button" class="btn btn-outline btn-sm facilities-ref-btn-sheet" data-action="set-facilities-ref" data-ref="zone">Zone</button>
+          </div>
+        </div>
+        <div id="facilities-load-error-sheet" class="hidden" style="margin-bottom:12px;"></div>
+        <button type="button" id="facilities-retry-btn" class="btn btn-secondary btn-sm hidden mb-sm" data-action="retry-load-facilities">Retry</button>
+        <div id="sheet-facilities-list" class="facilities-list"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- === OVERLAY: FILTERS (Sheet) === -->
   <div id="sheet-filter" class="overlay-backdrop" data-action="close-overlay">
     <div class="bottom-sheet">
