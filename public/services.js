@@ -335,6 +335,15 @@ Q8.Services = (function() {
                 if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
             }, 100);
         }
+        if (id === 'modal-forgot-password') {
+            setTimeout(() => {
+                const inpEmail = document.getElementById('inp-email');
+                const inpForgot = document.getElementById('inp-forgot-email');
+                if (inpForgot && inpEmail) inpForgot.value = inpEmail.value || '';
+                const resultEl = document.getElementById('forgot-password-result');
+                if (resultEl) { resultEl.style.display = 'none'; resultEl.textContent = ''; }
+            }, 100);
+        }
     }
 
     // --- PARKING START (fragile) ---
@@ -950,6 +959,7 @@ Q8.Services = (function() {
         loginUser,
         registerUser,
         logoutUser,
+        sendPasswordResetEmail,
         loadZones,
         setScreen,
         tryOpenOverlay,
