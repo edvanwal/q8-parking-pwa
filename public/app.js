@@ -298,10 +298,31 @@ Q8.App = (function() {
                     break;
 
                 case 'open-filters':
-                    // Check if filter sheet is active. If so, do nothing or toggle?
-                    // User click "Filters" button.
-                    S.update({ activeOverlay: 'sheet-filter' }); // Fixed singular ID
+                    S.update({ activeOverlay: 'sheet-filter' });
                     break;
+
+                case 'export-history-csv':
+                    if (Q8.Utils && Q8.Utils.exportHistoryToCSV) Q8.Utils.exportHistoryToCSV(S.get);
+                    if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'CSV gedownload' : 'CSV downloaded');
+                    break;
+
+                case 'export-history-print':
+                    if (Q8.Utils && Q8.Utils.exportHistoryToPrint) Q8.Utils.exportHistoryToPrint(S.get);
+                    break;
+
+                case 'set-search-mode': {
+                    const mode = target.getAttribute('data-mode') || 'zone';
+                    if (S.get.searchMode === mode) break;
+                    S.update({ searchMode: mode, searchQuery: '', geocodeMatches: [], geocodeLoading: false });
+                    const inp = document.getElementById('inp-search');
+                    if (inp) {
+                        inp.value = '';
+                        inp.placeholder = mode === 'address' ? (S.get.language === 'nl' ? 'Straat en plaats' : 'Street and city') : (S.get.language === 'nl' ? 'Zone of straatnaam' : 'Zone or street name');
+                        inp.focus();
+                    }
+                    document.querySelectorAll('.search-mode-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-mode') === mode));
+                    break;
+                }
 
                 case 'toggle-filter-vehicle':
                     const vPlate = target.getAttribute('data-plate');
@@ -410,11 +431,22 @@ Q8.App = (function() {
         });
 
         // Event Listener for Search Input
+        let geocodeTimeout = null;
         const searchInput = document.getElementById('inp-search');
         if(searchInput) {
             searchInput.addEventListener('input', (e) => {
-                S.update({ searchQuery: e.target.value });
+                const q = e.target.value;
+                S.update({ searchQuery: q });
                 UI.renderSearchResults();
+                if (S.get.searchMode === 'address' && Services.geocodeAndSearch) {
+                    if (geocodeTimeout) clearTimeout(geocodeTimeout);
+                    geocodeTimeout = setTimeout(() => {
+                        geocodeTimeout = null;
+                        Services.geocodeAndSearch(q);
+                    }, 600);
+                } else {
+                    S.update({ geocodeMatches: [], geocodeLoading: false });
+                }
             });
         }
 

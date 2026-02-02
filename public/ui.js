@@ -989,7 +989,9 @@ Q8.UI = (function() {
         const container = document.getElementById('ui-search-results');
         if (!container) return;
 
-        const shouldShow = state.screen === 'parking' && state.searchMode === 'zone' && state.searchQuery.length >= 2 && state.activeOverlay === null;
+        const isAddressMode = state.searchMode === 'address';
+        const minLen = isAddressMode ? 3 : 2;
+        const shouldShow = state.screen === 'parking' && state.searchQuery.length >= minLen && state.activeOverlay === null;
         const favQuick = document.getElementById('ui-favorites-quick');
         const favs = state.favorites || [];
         const showFavQuick = state.screen === 'parking' && !state.session && state.activeOverlay === null && favs.length > 0 && state.searchQuery.length < 2;
