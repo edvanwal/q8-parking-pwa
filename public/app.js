@@ -448,6 +448,7 @@ Q8.App = (function() {
         if(UI.update) UI.update();
 
         if (S.get.installMode.active) {
+            S.update({ zonesLoading: false });
             if(UI.renderInstallGate) UI.renderInstallGate();
         } else {
             if(Services.initAuthListener) Services.initAuthListener();
