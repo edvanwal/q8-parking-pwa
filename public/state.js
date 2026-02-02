@@ -29,6 +29,10 @@ Q8.State = (function() {
         zones: [],            // Populated continuously via Firestore
         zonesLoading: true,   // True while zones are being loaded
         zonesLoadError: null, // Error message when zones fail to load (network etc.)
+        facilities: [],       // Garages & P+R from Firestore (npropendata)
+        facilitiesLoading: false,
+        nearbyFacilities: [], // Filtered by userLocation + radius (2 km)
+        nearbyFacilitiesRadiusKm: 2,
         // State "live" in localStorage, fallback naar 1 default
         plates: [],
         selectedPlateId: null, // Track currently selected plate in list

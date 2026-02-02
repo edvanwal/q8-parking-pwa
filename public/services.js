@@ -375,6 +375,61 @@ Q8.Services = (function() {
         return true;
     }
 
+    const NEARBY_FACILITIES_RADIUS_KM = 2;
+
+    /** Filter facilities within radius of (lat, lng); return sorted by distance with _distKm. */
+    function getNearbyFacilities(facilities, lat, lng, radiusKm) {
+        if (!facilities || facilities.length === 0 || lat == null || lng == null) return [];
+        const km = typeof radiusKm === 'number' ? radiusKm : NEARBY_FACILITIES_RADIUS_KM;
+        return facilities
+            .filter(f => f.lat != null && f.lng != null)
+            .map(f => ({ ...f, _distKm: haversineKm(lat, lng, parseFloat(f.lat), parseFloat(f.lng)) }))
+            .filter(f => f._distKm <= km)
+            .sort((a, b) => a._distKm - b._distKm);
+    }
+
+    /** Update state.nearbyFacilities from state.facilities + state.userLocation. */
+    function updateNearbyFacilities() {
+        const { facilities, userLocation, nearbyFacilitiesRadiusKm } = S.get;
+        if (!userLocation || userLocation.lat == null || userLocation.lng == null) {
+            S.update({ nearbyFacilities: [] });
+            return;
+        }
+        const nearby = getNearbyFacilities(facilities, userLocation.lat, userLocation.lng, nearbyFacilitiesRadiusKm);
+        nearby.forEach(f => { delete f._distKm; });
+        S.update({ nearbyFacilities: nearby });
+    }
+
+    function loadFacilities() {
+        if (!db) {
+            S.update({ facilities: [], facilitiesLoading: false });
+            return Promise.resolve([]);
+        }
+        S.update({ facilitiesLoading: true });
+        return db.collection('facilities').limit(2000).get()
+            .then(snapshot => {
+                const facilities = [];
+                snapshot.forEach(doc => {
+                    const d = doc.data();
+                    facilities.push({
+                        ...d,
+                        id: d.id || doc.id,
+                        lat: d.lat != null ? parseFloat(d.lat) : null,
+                        lng: d.lng != null ? parseFloat(d.lng) : null
+                    });
+                });
+                S.update({ facilities, facilitiesLoading: false });
+                updateNearbyFacilities();
+                if (Q8.UI && typeof Q8.UI.renderMapMarkers === 'function') Q8.UI.renderMapMarkers();
+                return facilities;
+            })
+            .catch(err => {
+                S.update({ facilities: [], facilitiesLoading: false });
+                console.warn('Facilities load failed:', err);
+                return [];
+            });
+    }
+
     function loadZones() {
         return new Promise((resolve, reject) => {
             if (U && U.debug) U.debug('DATA', "Setting up Firestore zones listener...");
