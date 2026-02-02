@@ -227,6 +227,7 @@ Q8.App = (function() {
                         const next = { ...S.get.notificationSettings, [key]: !curr };
                         S.update({ notificationSettings: next });
                         if (S.saveNotifications) S.saveNotifications();
+                        if (Services.syncNotificationSettingsToFirestore) Services.syncNotificationSettingsToFirestore(next);
                     }
                     break;
                 }
