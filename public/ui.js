@@ -1040,17 +1040,33 @@ Q8.UI = (function() {
         `;
     }
 
-    function showToast(msg, type) {
+    const TOAST_DURATION_MS = 3000;
+    function dismissToast() {
         const t = document.getElementById('toast');
         if (!t) return;
-        t.innerText = msg;
+        t.classList.remove('show');
+        if (t._toastTimeout) clearTimeout(t._toastTimeout);
+        if (t._toastProgressInterval) clearInterval(t._toastProgressInterval);
+        t._toastTimeout = null;
+    }
+    function showToast(msg, type) {
+        const t = document.getElementById('toast');
+        const msgEl = document.getElementById('toast-message');
+        const progEl = document.getElementById('toast-progress');
+        if (!t || !msgEl) return;
+        if (t._toastTimeout) clearTimeout(t._toastTimeout);
+        if (t._toastProgressInterval) clearInterval(t._toastProgressInterval);
+        msgEl.textContent = msg;
         t.classList.remove('toast--success', 'toast--error');
         if (type === 'success') t.classList.add('toast--success');
         else if (type === 'error') t.classList.add('toast--error');
+        progEl.style.transform = 'scaleX(1)';
+        progEl.style.transition = 'none';
+        t.offsetHeight; // force reflow
+        progEl.style.transition = `transform ${TOAST_DURATION_MS}ms linear`;
         t.classList.add('show');
-        const duration = typeof msg === 'string' && msg.length > 60 ? 4000 : 3000;
-        clearTimeout(t._toastTimeout);
-        t._toastTimeout = setTimeout(() => t.classList.remove('show'), duration);
+        t._toastTimeout = setTimeout(dismissToast, TOAST_DURATION_MS);
+        setTimeout(() => { progEl.style.transform = 'scaleX(0)'; }, 50);
     }
 
     function renderInstallGate() {
