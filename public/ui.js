@@ -1347,10 +1347,8 @@ Q8.UI = (function() {
         const cancelBtn = document.querySelector('#modal-confirm-start [data-action="close-overlay"]');
         const okBtn = document.querySelector('#modal-confirm-start [data-action="confirm-start-session"]');
         if (titleEl) titleEl.textContent = nl ? 'Bevestig parkeersessie' : 'Confirm parking session';
-        if (document.querySelector('#modal-confirm-start p.text-secondary')) {
-            document.querySelector('#modal-confirm-start p.text-secondary').textContent =
-                nl ? 'Controleer zonenummer en kenteken alvorens te starten.' : 'Please verify zone number and license plate before starting.';
-        }
+        const descEl = document.getElementById('confirm-start-desc');
+        if (descEl) descEl.textContent = nl ? 'Controleer zonenummer en kenteken alvorens te starten.' : 'Please verify zone number and license plate before starting.';
         if (zoneEl) zoneEl.textContent = zoneId || '—';
         if (plateEl) plateEl.textContent = plateText || '—';
         const zoneLabel = document.querySelector('#modal-confirm-start .flex.justify-between .text-secondary');
