@@ -135,6 +135,45 @@ Q8.Services = (function() {
 
     let _historyUnsub = null;
 
+    function haversineKm(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    function geocodeAndSearch(query) {
+        const q = (query || '').trim();
+        if (q.length < 3) {
+            S.update({ geocodeMatches: [], geocodeLoading: false });
+            return Promise.resolve([]);
+        }
+        S.update({ geocodeLoading: true });
+        const key = (typeof firebaseConfig !== 'undefined' && firebaseConfig.googleMapsApiKey) ? firebaseConfig.googleMapsApiKey : '';
+        const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(q + ', Netherlands')}&key=${key}`;
+        return fetch(url).then(r => r.json()).then(data => {
+            const matches = [];
+            if (data.status === 'OK' && data.results && data.results[0]) {
+                const loc = data.results[0].geometry.location;
+                const lat = loc.lat, lng = loc.lng;
+                const zones = (S.get.zones || []).map(z => ({
+                    ...z,
+                    _dist: haversineKm(lat, lng, parseFloat(z.lat) || 0, parseFloat(z.lng) || 0)
+                })).filter(z => z._dist < 2).sort((a, b) => a._dist - b._dist).slice(0, 15);
+                zones.forEach(z => { delete z._dist; });
+                matches.push(...zones);
+            }
+            S.update({ geocodeMatches: matches, geocodeLoading: false });
+            return matches;
+        }).catch(err => {
+            console.warn('Geocode error:', err);
+            S.update({ geocodeMatches: [], geocodeLoading: false });
+            return [];
+        });
+    }
+
     function getTenantId() {
         return S.get.tenantId || 'default';
     }
