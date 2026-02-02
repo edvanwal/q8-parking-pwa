@@ -11,7 +11,7 @@ Q8.State = (function() {
     const _state = {
         screen: 'login',      // 'login' | 'register' | 'parking' | 'history' | 'plates' | 'notifications' | 'car-specs' | 'car-specs'
         language: 'en',       // 'nl' | 'en'
-        darkMode: false,      // true = dark theme
+        darkMode: 'system',   // 'light' | 'dark' | 'system' (follow phone)
         rememberMe: false,
         passwordVisible: false,
         infoBanner: null,     // { type: 'info', text: string, dismissible: boolean }
