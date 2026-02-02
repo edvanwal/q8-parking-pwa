@@ -85,6 +85,35 @@ Voorgestelde velden (minimaal voor “in de buurt” + kaart):
 
 Geen volledige static JSON in Firestore bewaren (te groot); alleen wat de app nodig heeft.
 
+### 3.3 Wat zit er nog meer in de dataset? (van waarde)
+
+De **static data** per facility bevat meer dan we nu in Firestore zetten. Overzicht:
+
+| Bron (onder `parkingFacilityInformation`) | Wat het is | Waarde voor de app |
+|-------------------------------------------|------------|--------------------|
+| **specifications[]** | Specificaties per periode | **capacity** = totaal aantal plekken; **chargingPointCapacity** = laadplekken; **disabledAccess** = rolstoeltoegankelijk; **minimumHeightInMeters** = max hoogte; **usage** = "Garage parkeren" e.d. |
+| **operator** | Beheerder (vaak gemeente) | **name**, **url** (website), **administrativeAddresses** (email, telefoon) – nuttig voor “Meer info” / contact. |
+| **openingTimes[]** | Openingstijden | **openAllYear**, **entryTimes** (enterFrom/enterUntil, dayNames) – “Open 24/7” vs “Ma–Vr 07:00–23:00” in de lijst of detail. |
+| **tariffs[]** (volledig) | Alle tariefregels | Nu gebruiken we alleen eerste intervalRate voor `tariffSummary`. Volledige **tariffDescription** + **intervalRates** per dag/tijd voor gedetailleerde tarieven in een facility-detailscherm. |
+| **paymentMethods[]** | Betaalmethoden | **method** (Banknotes, Coins, Maestro, MasterCard, Visa, VPay), **atPaystation**, **atExit** – “Pinnen bij uitrit” / “Contant bij automaat” in de UI. |
+| **accessPoints[]** (meerdere) | Meerdere ingangen/locaties | Nu alleen eerste punt; sommige garages hebben **meerdere** accessPoints met elk eigen lat/lng en adres – bv. “Ingang A” / “Ingang B” of aparte coördinaten. |
+| **contactPersons[]** | Contactpersonen | Naam, email, telefoon – voor zakelijk/beheer. |
+| **specialDays[]** | Uitzonderingen | Feestdagen / bijzondere dagen met andere regels. |
+| **parkingRestrictions[]** | Beperkingen | Bv. voertuigtype, max verblijf – voor toegankelijkheid / filters. |
+
+**Facility-lijst (v2/):**
+
+| Veld | Waarde |
+|------|--------|
+| **dynamicDataUrl** | Al opgeslagen; gebruikt voor **dynamische bezetting** (“ca. X plekken vrij”) – Fase 2d. |
+| **limitedAccess** | Of de facility beperkt toegankelijk is (bv. vergunninghouders). |
+| **staticDataLastUpdated** | Unix timestamp – handig voor cache/refresh. |
+
+**Dynamische data (dynamicDataUrl):**  
+SPDP-formaat met o.a. **beschikbare capaciteit** (vrije plekken), soms per laag/sectie. Alleen beschikbaar bij facilities met `dynamicDataUrl`; nuttig voor “X plekken vrij” in de lijst of op de kaart.
+
+**Aanbeveling:** Voor een volgende iteratie kun je in het script (en evt. Firestore) o.a. toevoegen: **capacity**, **chargingPointCapacity**, **disabledAccess**, **openingTimes** (samenvatting string), **operator.url**, en **paymentMethods** (array of samenvatting). Dynamische bezetting via **dynamicDataUrl** in Fase 2d.
+
 ---
 
 ## 4. Integratie: hoe bouwen we het in?
