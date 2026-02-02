@@ -566,7 +566,7 @@ Q8.UI = (function() {
                   </button>
                </div>
             </div>`;
-        }).join('');
+        }).join('') + `<div class="rate-disclaimer text-secondary text-xs" style="padding:12px 20px 0; line-height:1.3;">${rateDisclaimer}</div>`;
         list.querySelectorAll('.ptr-enabled').forEach(el => { el.style.pointerEvents = 'auto'; });
     }
 
