@@ -101,8 +101,9 @@ Q8.UI = (function() {
             greetingEl.style.display = 'none';
         }
 
-        // Visibility
-        if (idleSearch) idleSearch.style.display = isActive ? 'none' : 'block';
+        // Visibility: hide search bar and zone list when zone selected or parking active
+        const hideSearchUI = isActive || !!state.selectedZone;
+        if (idleSearch) idleSearch.style.display = hideSearchUI ? 'none' : 'block';
         if (activeParking) activeParking.style.display = isActive ? 'block' : 'none';
 
         // Zones loading / error indicator
@@ -900,7 +901,7 @@ Q8.UI = (function() {
         const shouldShow = state.screen === 'parking' && state.searchQuery.length >= minLen && state.activeOverlay === null;
         const favQuick = document.getElementById('ui-favorites-quick');
         const favs = state.favorites || [];
-        const showFavQuick = state.screen === 'parking' && !state.session && state.activeOverlay === null && favs.length > 0 && state.searchQuery.length < 2;
+        const showFavQuick = state.screen === 'parking' && !zoneSelectedOrActive && state.activeOverlay === null && favs.length > 0 && state.searchQuery.length < 2;
         if (favQuick) {
             favQuick.style.display = showFavQuick ? 'block' : 'none';
             favQuick.className = showFavQuick ? 'search-results-panel search-results-panel--pill' : 'hidden';
