@@ -444,6 +444,17 @@ Q8.Services = (function() {
 
         S.update({ activeOverlay: id });
 
+        if (id === 'modal-confirm-start' && Q8.UI && Q8.UI.populateConfirmStartModal) {
+            const zoneObj = S.get.zones && (S.get.zones.find(z => z.uid === S.get.selectedZone) || S.get.zones.find(z => z.id === S.get.selectedZone));
+            const zoneId = zoneObj ? zoneObj.id : S.get.selectedZone || '—';
+            const adminPlates = (S.get.adminPlates || []).map(p => ({ id: p.id, text: p.text || p.id, default: false }));
+            const allPlates = [...adminPlates, ...(S.get.plates || [])];
+            const selPlate = allPlates.find(p => p.id === S.get.selectedPlateId) || allPlates.find(p => p.default) || allPlates[0];
+            const plateText = selPlate ? (selPlate.text || selPlate.id) : '';
+            const opts = contextData && contextData.daypassNote ? { daypassNote: contextData.daypassNote } : {};
+            Q8.UI.populateConfirmStartModal(zoneId, plateText, opts);
+        }
+
         if (id === 'sheet-zone' && contextData && (contextData.uid || contextData.zone)) {
             if (Q8.UI && Q8.UI.centerMapOnZones) setTimeout(() => Q8.UI.centerMapOnZones(), 50);
         }
