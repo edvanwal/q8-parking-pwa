@@ -1271,17 +1271,24 @@ Q8.UI = (function() {
         fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:initGoogleMap',message:'creating map',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(function(){});
         // #endregion
         diagMaps('initGoogleMap', 'creating-map');
-        map = new google.maps.Map(container, {
-            center: UTRECHT_CENTER,
-            zoom: 16,
-            disableDefaultUI: true,
-            zoomControl: false,
-            mapTypeControl: false,
-            streetViewControl: false,
-            fullscreenControl: false,
-            clickableIcons: false,
-            gestureHandling: 'greedy'
-        });
+        hideMapLoadError();
+        try {
+            map = new google.maps.Map(container, {
+                center: UTRECHT_CENTER,
+                zoom: 16,
+                disableDefaultUI: true,
+                zoomControl: false,
+                mapTypeControl: false,
+                streetViewControl: false,
+                fullscreenControl: false,
+                clickableIcons: false,
+                gestureHandling: 'greedy'
+            });
+        } catch (err) {
+            showMapLoadError('De kaart kon niet worden aangemaakt. Bij localhost: voeg in Google Cloud Console bij de Maps API-sleutel http://localhost:* toe als referrer.');
+            if (window.Q8_DIAG) console.error('[DIAG_MAPS] Map create error', err);
+            return;
+        }
 
         renderMapMarkers();
         google.maps.event.addListenerOnce(map, 'idle', function() {
