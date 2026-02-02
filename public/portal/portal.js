@@ -262,6 +262,12 @@
     $('plates-can-add').checked = ds.canAddPlates !== false;
     $('plates-locked').checked = !!ds.platesLocked;
     $('plates-max').value = ds.maxPlates || 0;
+    $all('.allowed-day').forEach(cb => {
+      const day = parseInt(cb.dataset.day, 10);
+      cb.checked = Array.isArray(ds.allowedDays) ? ds.allowedDays.includes(day) : false;
+    });
+    $('plates-time-start').value = ds.allowedTimeStart || '';
+    $('plates-time-end').value = ds.allowedTimeEnd || '';
     const adminPlates = user.adminPlates || [];
     const listEl = $('plates-driver-list');
     if (listEl) {
