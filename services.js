@@ -97,6 +97,43 @@ Q8.Services = (function() {
         return R * c;
     }
 
+    const ZONE_PRESELECT_RADIUS_KM = 0.1; // 100m
+    function requestUserLocation() {
+        if (!navigator.geolocation) return Promise.resolve();
+        return new Promise((resolve) => {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                    S.update({ userLocation: loc });
+                    if (Q8.UI && Q8.UI.centerMapOnZones) Q8.UI.centerMapOnZones();
+                    findAndSelectZoneAtLocation(loc.lat, loc.lng);
+                    resolve(loc);
+                },
+                () => { resolve(null); },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+            );
+        });
+    }
+
+    function findAndSelectZoneAtLocation(lat, lng) {
+        const zones = S.get.zones || [];
+        if (zones.length === 0 || S.get.selectedZone || S.get.session) return;
+        const withDist = zones
+            .filter(z => z.lat != null && z.lng != null)
+            .map(z => ({ ...z, _dist: haversineKm(lat, lng, parseFloat(z.lat), parseFloat(z.lng)) }))
+            .sort((a, b) => a._dist - b._dist);
+        const nearest = withDist[0];
+        if (nearest && nearest._dist < ZONE_PRESELECT_RADIUS_KM) {
+            const uid = nearest.uid || nearest.id;
+            S.update({
+                selectedZone: uid,
+                selectedZoneRate: nearest.price != null ? parseFloat(nearest.price) : 2.0,
+                selectedZoneRates: nearest.rates || []
+            });
+            if (Q8.UI && Q8.UI.renderMapMarkers) Q8.UI.renderMapMarkers();
+        }
+    }
+
     function geocodeAndSearch(query) {
         const q = (query || '').trim();
         if (q.length < 3) {
@@ -282,6 +319,7 @@ Q8.Services = (function() {
         if (name === 'parking' && !S.get.installMode.active) {
             if (Q8.UI && typeof Q8.UI.initGoogleMap === 'function') Q8.UI.initGoogleMap();
             else if (typeof window.initGoogleMap === 'function') window.initGoogleMap();
+            requestUserLocation();
             requestAnimationFrame(() => {
                 if (Q8.UI && typeof Q8.UI.ensureMapResized === 'function') Q8.UI.ensureMapResized();
                 const inp = document.getElementById('inp-search');
