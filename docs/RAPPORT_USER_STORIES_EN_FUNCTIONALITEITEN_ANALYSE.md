@@ -413,9 +413,8 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 | Scenario | Huidig gedrag | Gewenst |
 |----------|---------------|---------|
-| Geen zones geladen | Kaart blijft leeg, geen melding | Duidelijke foutmelding + retry |
+| Geen zones geladen | Timeout 15 sec, loading overlay | Duidelijke foutmelding + retry (timeout aanwezig) |
 | Zoeken zonder resultaat | Lege lijst, geen bericht | "Geen zones gevonden" |
-| Start parkeren zonder zone | Stille blokkade (nu: toast) | Al geïmplementeerd in services.js |
 | Kenteken verwijderen | Geen bevestiging | "Weet u het zeker?"-dialoog |
 
 ---
@@ -426,10 +425,9 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 | # | Nieuwe User Story | Rationale |
 |---|-------------------|-----------|
-| 1 | **Sessies naar Firestore + historie** | Basis voor declaratie, rapportage en fleet-overzicht |
-| 2 | **Wachtwoord vergeten** | Standaard verwachting bij login |
-| 3 | **Bevestiging bij kenteken verwijderen** | Voorkomt per ongeluk verwijderen |
-| 4 | **Laadindicator bij zones** | Duidelijke feedback tijdens laden |
+| 1 | **Wachtwoord vergeten** | Standaard verwachting bij login |
+| 2 | **Bevestiging bij kenteken verwijderen** | Voorkomt per ongeluk verwijderen |
+| 3 | **Global active parking indicator** | Lopende sessie zichtbaar door hele app + badge op PWA-icoon |
 
 ### 6.2 Prioriteit Middel
 
@@ -446,9 +444,7 @@ Formaat: **As a [user type], I want [action], so that [benefit].**
 
 | # | Nieuwe User Story | Rationale |
 |---|-------------------|-----------|
-| 11 | **Service Worker voor offline** | Betere PWA-ervaring |
-| 12 | **Dark mode** | Toegankelijkheid/voorkeur |
-| 13 | **Auditlog voor fleetmanagers** | Compliance en traceerbaarheid |
+| 8 | **Auditlog voor fleetmanagers** | Compliance en traceerbaarheid |
 
 ---
 
