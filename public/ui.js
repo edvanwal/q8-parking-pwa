@@ -1294,6 +1294,12 @@ Q8.UI = (function() {
         google.maps.event.addListenerOnce(map, 'idle', function() {
             google.maps.event.trigger(map, 'resize');
         });
+        // Delayed resize so container has final size after layout
+        setTimeout(function() {
+            if (map && typeof google !== 'undefined' && google.maps) {
+                google.maps.event.trigger(map, 'resize');
+            }
+        }, 400);
         // #region agent log
         fetch('http://127.0.0.1:7242/ingest/ac40c542-85e8-43af-b6dd-846b098f62de',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ui.js:initGoogleMap',message:'done',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(function(){});
         // #endregion
