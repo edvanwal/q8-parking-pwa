@@ -11,7 +11,6 @@ const PUBLIC = path.join(ROOT, 'public');
 
 const FILES = [
   'app.js',
-  'services.js',
   'state.js',
   'ui.js',
   'utils.js',
@@ -22,6 +21,7 @@ const FILES = [
   'manifest.webmanifest',
   'sw.js'
 ];
+// services.js excluded: public has portal/fleet integration (ensureAppUser, adminPlates, etc.)
 
 let ok = 0, err = 0;
 for (const f of FILES) {
