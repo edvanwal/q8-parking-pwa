@@ -185,8 +185,9 @@ Q8.UI = (function() {
         document.querySelectorAll('.side-menu .menu-lang-btn').forEach(btn => {
             btn.classList.toggle('active', btn.getAttribute('data-lang') === state.language);
         });
-        const btnDark = document.getElementById('btn-dark-mode');
-        if (btnDark) btnDark.setAttribute('aria-pressed', state.darkMode ? 'true' : 'false');
+        document.querySelectorAll('.dark-mode-opt').forEach(btn => {
+            btn.setAttribute('aria-pressed', btn.getAttribute('data-pref') === (state.darkMode || 'system') ? 'true' : 'false');
+        });
     }
 
     function renderZoneSheet() {

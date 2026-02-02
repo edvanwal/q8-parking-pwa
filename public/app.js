@@ -343,13 +343,14 @@ Q8.App = (function() {
                     closeSideMenu();
                     break;
 
-                case 'toggle-dark':
-                    const nextDark = !S.get.darkMode;
-                    if (S.setDarkMode) S.setDarkMode(nextDark);
-                    else S.update({ darkMode: nextDark });
-                    const btnDark = document.getElementById('btn-dark-mode');
-                    if (btnDark) btnDark.setAttribute('aria-pressed', nextDark ? 'true' : 'false');
+                case 'set-dark-pref': {
+                    const pref = target.getAttribute('data-pref');
+                    if (pref && S.setDarkMode) S.setDarkMode(pref);
+                    document.querySelectorAll('.dark-mode-opt').forEach(btn => {
+                        btn.setAttribute('aria-pressed', btn.getAttribute('data-pref') === (S.get.darkMode || 'system') ? 'true' : 'false');
+                    });
                     break;
+                }
 
                 case 'set-gate-lang':
                      S.update({ installMode: { ...S.get.installMode, language: target.getAttribute('data-lang') } });
