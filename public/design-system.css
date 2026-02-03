@@ -648,6 +648,12 @@ body {
   line-height: 1; /* Stability Patch */
 }
 .btn:active { transform: scale(0.97); }
+/* 3.4 Disabled: duidelijk visueel onderscheid (grijs, lagere opacity) */
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
 .btn-primary { background: var(--btn-primary-bg); color: white; }
 .btn-secondary { background: var(--surface); border: 1px solid var(--border); color: var(--text-main); }
 .btn-danger { background: var(--danger); color: white; }
