@@ -36,6 +36,10 @@ Q8.State = (function() {
         nearbyFacilitiesRadiusKm: 2,
         nearbyFacilitiesRef: 'user', // 'user' | 'zone' (zone = gekozen zone centrum)
         facilityOccupancy: {}, // facilityId -> availableCapacity (from dynamicDataUrl)
+        chargingPoints: [],    // B1: laadpunten (Overpass/OSM) voor huidige kaartbounds
+        chargingPointsLoading: false,
+        showChargingPoints: false, // toggle "Toon laadpunten" (default uit)
+        chargingPointsError: null,
         // State "live" in localStorage, fallback naar 1 default
         plates: [],
         selectedPlateId: null, // Track currently selected plate in list
