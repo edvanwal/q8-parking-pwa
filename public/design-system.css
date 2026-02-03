@@ -331,6 +331,28 @@
     background-color: #0f766e;
 }
 
+/* B1: Laadpunten markers op kaart */
+.q8-charging-marker {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    margin-left: -14px;
+    margin-top: -14px;
+    border-radius: 50%;
+    background: #059669;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    pointer-events: auto;
+}
+.q8-charging-marker:hover {
+    background: #047857;
+}
+
 /* Garages & P+R floating button (map screen) */
 .facilities-float-btn {
     position: absolute;
@@ -356,6 +378,12 @@
 }
 @media (max-width: 400px) {
     .facilities-float-label { display: none; }
+}
+#btn-charging-points-float {
+    bottom: 76px;
+}
+#btn-charging-points-float[aria-pressed="true"] {
+    background: #059669;
 }
 
 /* Leaflet Custom Marker Reset */
