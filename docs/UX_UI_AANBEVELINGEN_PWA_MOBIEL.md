@@ -62,7 +62,7 @@
 | 2 | Lijst + Filters, Export CSV, Print | Functioneel compleet. |
 
 **Knelpunten:**  
-- Filters zitten in een sheet; op mobiel is “filter op datum/voertuig” niet in één oogopslag zichtbaar.  
+- **Opgelost:** Op het history-scherm staan nu quick filter-pills (Alles, Laatste 7 dagen, Laatste 30 dagen, Deze maand) direct onder de header; filter op datum/voertuig is in één oogopslag zichtbaar via samenvatting + "Meer filters". Eerder: “filter op datum/voertuig” niet in één oogopslag zichtbaar.  
 - Geen duidelijke “laatste 7 dagen” of “deze maand” quick filters.
 
 ---
