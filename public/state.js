@@ -26,6 +26,7 @@ Q8.State = (function() {
         geocodeMatches: [],   // Zones near geocoded address (address search)
         geocodeLoading: false,
         duration: 0,          // 0 = "Until stopped" (No fixed end time)
+        defaultDurationMinutes: 0, // 0 = Until stopped; else prefill zone sheet (e.g. 120 = 2h)
         zones: [],            // Populated continuously via Firestore
         zonesLoading: true,   // True while zones are being loaded
         zonesLoadError: null, // Error message when zones fail to load (network etc.)
@@ -154,6 +155,15 @@ Q8.State = (function() {
 
         // 4. Favorites
         loadFavorites();
+
+        // 4b. Default duration (minutes; 0 = Until stopped)
+        try {
+            const dd = localStorage.getItem('q8_default_duration');
+            if (dd !== null) {
+                const n = parseInt(dd, 10);
+                if (!isNaN(n) && n >= 0) _state.defaultDurationMinutes = Math.min(1440, n);
+            }
+        } catch (e) { /* ignore */ }
 
         // 5. Dark mode ('light'|'dark'|'system')
         try {

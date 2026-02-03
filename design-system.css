@@ -411,7 +411,6 @@
 
 @media (max-width: 768px) {
   .favorites-strip { top: auto; position: relative; margin: 0 12px 8px; border-radius: 12px; border: 1px solid var(--border); }
-  .last-used-chip-wrap { top: auto; position: relative; margin: 0 16px 8px; }
 }
 
 /* Q8 Price Markers (OverlayView - fixed size, no shrink bug) */
