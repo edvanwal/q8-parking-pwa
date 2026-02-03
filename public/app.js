@@ -461,6 +461,28 @@ Q8.App = (function() {
                     if (lbl) lbl.textContent = S.get.language === 'nl' ? (show ? 'Laadpunten aan' : 'Laadpunten') : (show ? 'Charging on' : 'Charging points');
                     break;
                 }
+                case 'set-charging-filter': {
+                    const powerStr = target.getAttribute('data-power');
+                    const minPower = powerStr ? parseInt(powerStr, 10) : null;
+                    if (Services && Services.setChargingFilters) {
+                        Services.setChargingFilters({ minPowerKw: isNaN(minPower) ? null : minPower });
+                    }
+                    break;
+                }
+                case 'toggle-charging-connector': {
+                    const key = target.getAttribute('data-connector');
+                    const current = (S.get.chargingFilters && S.get.chargingFilters.connectors) || [];
+                    let next;
+                    if (current.includes(key)) {
+                        next = current.filter(c => c !== key);
+                    } else {
+                        next = [...current, key];
+                    }
+                    if (Services && Services.setChargingFilters) {
+                        Services.setChargingFilters({ connectors: next });
+                    }
+                    break;
+                }
                 case 'toggle-all-rates':
                     if (UI && UI.toggleAllRates) UI.toggleAllRates();
                     break;

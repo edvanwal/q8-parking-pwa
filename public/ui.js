@@ -1598,10 +1598,19 @@ Q8.UI = (function() {
                 });
                 this.container.appendChild(el);
             });
-            // B1: Laadpunten (alleen tonen als toggle aan)
+            // B1/B2: Laadpunten (alleen tonen als toggle aan, met filters)
             if (state.showChargingPoints && (state.chargingPoints || []).length > 0) {
+                const filters = state.chargingFilters || { minPowerKw: null, connectors: [] };
+                const minPower = filters.minPowerKw;
+                const filterConns = Array.isArray(filters.connectors) ? filters.connectors : [];
+
                 (state.chargingPoints || []).forEach(cp => {
                     if (!cp.lat || !cp.lng) return;
+                    // Vermogen-filter
+                    if (minPower != null && cp.powerKw != null && cp.powerKw < minPower) return;
+                    // Connector-filter (tenzij leeg = geen filter)
+                    const cpConns = Array.isArray(cp.connectors) ? cp.connectors : [];
+                    if (filterConns.length > 0 && !cpConns.some(c => filterConns.includes(c))) return;
                     const coordKey = 'cp:' + cp.lat.toFixed(5) + ',' + cp.lng.toFixed(5);
                     if (seenCoords.has(coordKey)) return;
                     seenCoords.add(coordKey);
@@ -1610,7 +1619,13 @@ Q8.UI = (function() {
                     const el = document.createElement('div');
                     el.className = 'q8-charging-marker';
                     el.innerHTML = '&#9881;';
-                    el.title = (cp.operator ? cp.operator + ' – ' : '') + (state.language === 'nl' ? 'Laadpunt' : 'Charging point');
+                    const connLabel = cpConns && cpConns.length ? ' · ' + cpConns.join(', ') : '';
+                    const powerLabel = (typeof cp.powerKw === 'number' && !isNaN(cp.powerKw))
+                        ? ' · ' + cp.powerKw + ' kW'
+                        : '';
+                    el.title = (cp.operator ? cp.operator + ' – ' : '') +
+                        (state.language === 'nl' ? 'Laadpunt' : 'Charging point') +
+                        connLabel + powerLabel;
                     el.style.left = pt.x + 'px';
                     el.style.top = pt.y + 'px';
                     el.style.pointerEvents = 'auto';
