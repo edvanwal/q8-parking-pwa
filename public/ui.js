@@ -372,9 +372,11 @@ Q8.UI = (function() {
             }
         }
 
-        // Rates disclaimer (F1)
+        // Rates disclaimer (F1 / C1): vaste disclaimer + bron
         const disclaimerEl = document.getElementById('zone-rates-disclaimer');
-        if (disclaimerEl) disclaimerEl.textContent = state.language === 'nl' ? 'Tarieven zijn indicatief; bron: RDW Open Data.' : 'Rates are indicative; source: RDW Open Data.';
+        if (disclaimerEl) disclaimerEl.textContent = state.language === 'nl'
+            ? 'Tarieven zijn indicatief; definitief bedrag kan afwijken. Bron: RDW Open Data.'
+            : 'Rates are indicative; final amount may differ. Source: RDW Open Data.';
 
         // Estimated cost (F2)
         const estSection = document.getElementById('sheet-section-estimated-cost');
