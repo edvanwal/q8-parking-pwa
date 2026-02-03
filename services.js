@@ -881,7 +881,8 @@ Q8.Services = (function() {
             else if (typeof window.showToast === 'function') window.showToast(msg);
         };
 
-        if (!rawVal) return toast('Please enter a license plate');
+        const nl = S.get.language === 'nl';
+        if (!rawVal) return toast(nl ? 'Voer een kenteken in' : 'Please enter a license plate');
 
         const Kenteken = (typeof Q8 !== 'undefined' && Q8.Kenteken) ? Q8.Kenteken : null;
         let normalized = rawVal.replace(/[\s\-]/g, '').toUpperCase();
@@ -894,12 +895,12 @@ Q8.Services = (function() {
             formatError = v.errorMessage || '';
             normalized = v.normalized;
         } else {
-            if (normalized.length > 8) return toast('License plate too long');
-            if (!/^[A-Z0-9]+$/.test(normalized)) return toast('Letters and digits only');
+            if (normalized.length > 8) return toast(nl ? 'Kenteken te lang' : 'License plate too long');
+            if (!/^[A-Z0-9]+$/.test(normalized)) return toast(nl ? 'Alleen letters en cijfers' : 'Letters and digits only');
         }
 
-        if (!formatValid) return toast(formatError || 'Invalid license plate format');
-        if (S.get.plates.some(p => p.text === normalized || p.id === normalized)) return toast('License plate already exists');
+        if (!formatValid) return toast(formatError || (nl ? 'Ongeldig kentekenformaat' : 'Invalid license plate format'));
+        if (S.get.plates.some(p => p.text === normalized || p.id === normalized)) return toast(nl ? 'Kenteken bestaat al' : 'License plate already exists');
 
         const isFirst = S.get.plates.length === 0;
         const displayText = Kenteken && Kenteken.formatDisplay ? Kenteken.formatDisplay(normalized) : normalized;
@@ -970,7 +971,7 @@ Q8.Services = (function() {
             if(Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg);
             else if(typeof window.showToast === 'function') window.showToast(msg);
         };
-        toast('License plate deleted');
+        toast(S.get.language === 'nl' ? 'Kenteken verwijderd' : 'License plate deleted');
     }
 
     function updatePlate(id, newText, newDescription) {
@@ -985,11 +986,12 @@ Q8.Services = (function() {
         }
         const rawVal = (newText || '').trim();
 
+        const nl = S.get.language === 'nl';
         const toast = (msg) => {
             if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg);
             else if (typeof window.showToast === 'function') window.showToast(msg);
         };
-        if (!rawVal) return toast('Please enter a license plate');
+        if (!rawVal) return toast(nl ? 'Voer een kenteken in' : 'Please enter a license plate');
 
         const Kenteken = (typeof Q8 !== 'undefined' && Q8.Kenteken) ? Q8.Kenteken : null;
         let normalized = rawVal.replace(/[\s\-]/g, '').toUpperCase();
@@ -1002,12 +1004,12 @@ Q8.Services = (function() {
             formatError = v.errorMessage || '';
             normalized = v.normalized;
         } else {
-            if (normalized.length > 8) return toast('License plate too long');
-            if (!/^[A-Z0-9]+$/.test(normalized)) return toast('Letters and digits only');
+            if (normalized.length > 8) return toast(nl ? 'Kenteken te lang' : 'License plate too long');
+            if (!/^[A-Z0-9]+$/.test(normalized)) return toast(nl ? 'Alleen letters en cijfers' : 'Letters and digits only');
         }
 
-        if (!formatValid) return toast(formatError || 'Invalid license plate format');
-        if (S.get.plates.some(p => (p.id != id && p.text != id) && (p.text === normalized || p.id === normalized))) return toast('License plate already exists');
+        if (!formatValid) return toast(formatError || (nl ? 'Ongeldig kentekenformaat' : 'Invalid license plate format'));
+        if (S.get.plates.some(p => (p.id != id && p.text != id) && (p.text === normalized || p.id === normalized))) return toast(nl ? 'Kenteken bestaat al' : 'License plate already exists');
 
         const displayText = Kenteken && Kenteken.formatDisplay ? Kenteken.formatDisplay(normalized) : normalized;
         const newPlates = [...S.get.plates];
@@ -1134,16 +1136,17 @@ Q8.Services = (function() {
         S.update({ duration: capped });
 
         if (hitLimit) {
+            const nl = S.get.language === 'nl';
             const toast = (msg) => {
                 if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg, 'error');
                 else if (typeof window.showToast === 'function') window.showToast(msg, 'error');
             };
             if (maxDur >= 1440) {
-                toast('Max parking duration reached');
+                toast(nl ? 'Maximale parkeerduur bereikt' : 'Max parking duration reached');
             } else {
                 const hours = Math.floor(maxDur / 60);
-                const hoursStr = hours === 1 ? '1 hour' : `${hours} hours`;
-                toast(`Maximum parking duration for this zone is ${hoursStr}`);
+                const hoursStr = nl ? (hours === 1 ? '1 uur' : `${hours} uur`) : (hours === 1 ? '1 hour' : `${hours} hours`);
+                toast(nl ? `Maximale parkeerduur voor deze zone is ${hoursStr}` : `Maximum parking duration for this zone is ${hoursStr}`);
             }
         }
     }
@@ -1171,8 +1174,9 @@ Q8.Services = (function() {
         });
 
         S.savePlates();
-        if(Q8.UI && Q8.UI.showToast) Q8.UI.showToast('Default plate updated');
-        else if(typeof window.showToast === 'function') window.showToast('Default plate updated');
+        const defaultMsg = S.get.language === 'nl' ? 'Standaard kenteken bijgewerkt' : 'Default plate updated';
+        if(Q8.UI && Q8.UI.showToast) Q8.UI.showToast(defaultMsg);
+        else if(typeof window.showToast === 'function') window.showToast(defaultMsg);
     }
 
     function checkInstallMode() {
