@@ -216,7 +216,7 @@ De B2B parkeer-PWA gebruikt momenteel **vier externe databronnen** (RDW parkeerd
 
 | Nr | Aanbeveling | Prioriteit | Inspiratie |
 |----|-------------|------------|------------|
-| B1 | **Laadpuntenlaag op de kaart:** Integreer Open Charge Map (gratis API-key) of OSM Overpass als eerste stap; toon laadpunten naast zones en facilities. | Hoog | RAPPORT_KENTEKEN_LAADPAAL |
+| B1 | **Laadpuntenlaag op de kaart:** Integreer Open Charge Map (gratis API-key) of OSM Overpass als eerste stap; toon laadpunten naast zones en facilities. | Hoog | RAPPORT_KENTEKEN_LAADPAAL | ✓ Overpass API geïntegreerd; toggle “Laadpunten” op kaart. |
 | B2 | **Filter connector/vermogen:** In laag: filter op Type 2, CCS, CHAdeMO en vermogen (AC 11/22 kW, DC snelladen). | Medium | Zelfde rapport |
 | B3 | **“Laadpunten in de buurt” / EV-toggle:** Optionele voorkeur “Toon laadpunten” of “Alleen zones/facilities met laadplekken” (gebruik `chargingPointCapacity` van facilities; laadpaal-API voor losse laadpunten). | Medium | Zelfde rapport |
 | B4 | **Kenteken → EV:** RDW brandstof (8ys7-d773) al in gebruik; optioneel in UI: “Deze auto is elektrisch” (uit kenteken) en laadpaallaag standaard tonen voor EV. | Laag | Zelfde rapport |
