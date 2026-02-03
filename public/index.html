@@ -319,6 +319,8 @@
           <span id="no-plates-hint-cta">Kenteken toevoegen</span>
         </button>
       </div>
+      <!-- Favorieten strip + laatst gebruikte zone -->
+      <div id="favorites-strip" class="favorites-strip hidden" role="region" aria-label="Favorieten"></div>
       <!-- Map Surface -->
       <div id="map-container" class="map-surface">
         <!-- Markers injected by JS -->
@@ -607,6 +609,15 @@
               <button class="sheet-duration-btn" data-action="mod-duration" data-delta="-15">−</button>
               <div class="sheet-duration-value" id="val-duration">2h 00m</div>
               <button class="sheet-duration-btn" data-action="mod-duration" data-delta="15">+</button>
+           </div>
+        </div>
+        <div class="sheet-section sheet-section-default-duration">
+           <label id="default-duration-label" class="input-label sheet-section-label text-secondary">Standaard duur</label>
+           <div class="default-duration-pills">
+              <button type="button" class="duration-default-pill" data-action="set-default-duration" data-minutes="0">Until stopped</button>
+              <button type="button" class="duration-default-pill" data-action="set-default-duration" data-minutes="60">1u</button>
+              <button type="button" class="duration-default-pill" data-action="set-default-duration" data-minutes="120">2u</button>
+              <button type="button" class="duration-default-pill" data-action="set-default-duration" data-minutes="180">3u</button>
            </div>
         </div>
 

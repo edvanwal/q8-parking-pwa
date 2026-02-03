@@ -166,6 +166,16 @@ Q8.App = (function() {
                     Services.modifyDuration(delta);
                     break;
 
+                case 'set-default-duration': {
+                    const minutes = parseInt(target.getAttribute('data-minutes'), 10);
+                    if (!isNaN(minutes) && minutes >= 0) {
+                        const capped = Math.min(1440, minutes);
+                        S.update({ defaultDurationMinutes: capped });
+                        if (S.saveDefaultDuration) S.saveDefaultDuration();
+                    }
+                    break;
+                }
+
                 case 'mod-active-end': {
                     const endDelta = parseInt(target.getAttribute('data-delta'), 10);
                     if (!isNaN(endDelta) && Services.modifyActiveSessionEnd) Services.modifyActiveSessionEnd(endDelta);
