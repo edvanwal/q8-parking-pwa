@@ -515,6 +515,57 @@ Q8.Services = (function() {
             });
     }
 
+    // --- B1: Laadpunten (Overpass API, geen API-key) ---
+    const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
+    const CHARGING_POINTS_MAX = 500;
+
+    function loadChargingPoints(bounds) {
+        if (!bounds || typeof bounds.south !== 'number' || typeof bounds.north !== 'number' || typeof bounds.west !== 'number' || typeof bounds.east !== 'number') {
+            return Promise.resolve([]);
+        }
+        const { south, west, north, east } = bounds;
+        S.update({ chargingPointsLoading: true, chargingPointsError: null });
+        const query = '[out:json][timeout:15];node["amenity"="charging_station"](' + south + ',' + west + ',' + north + ',' + east + ');out body;';
+        return fetch(OVERPASS_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'data=' + encodeURIComponent(query)
+        }).then(function(r) {
+            if (!r.ok) throw new Error('Overpass ' + r.status);
+            return r.json();
+        }).then(function(data) {
+            const elements = data.elements || [];
+            const points = [];
+            elements.forEach(function(el) {
+                if (el.type === 'node' && el.lat != null && el.lon != null) {
+                    points.push({
+                        id: el.id,
+                        lat: el.lat,
+                        lng: el.lon,
+                        operator: (el.tags && el.tags.operator) || null,
+                        capacity: (el.tags && el.tags.capacity) || null,
+                        socket: (el.tags && (el.tags.socket || el.tags['socket:type2'])) || null
+                    });
+                }
+            });
+            const limited = points.slice(0, CHARGING_POINTS_MAX);
+            S.update({ chargingPoints: limited, chargingPointsLoading: false, chargingPointsError: null });
+            if (Q8.UI && typeof Q8.UI.renderMapMarkers === 'function') Q8.UI.renderMapMarkers();
+            return limited;
+        }).catch(function(err) {
+            const msg = S.get.language === 'nl' ? 'Laadpunten konden niet worden geladen.' : 'Could not load charging points.';
+            S.update({ chargingPoints: [], chargingPointsLoading: false, chargingPointsError: msg });
+            if (Q8.UI && typeof Q8.UI.renderMapMarkers === 'function') Q8.UI.renderMapMarkers();
+            console.warn('Charging points load failed:', err);
+            return [];
+        });
+    }
+
+    function setShowChargingPoints(show) {
+        S.update({ showChargingPoints: !!show });
+        if (Q8.UI && typeof Q8.UI.renderMapMarkers === 'function') Q8.UI.renderMapMarkers();
+    }
+
     function loadZones() {
         return new Promise((resolve, reject) => {
             if (U && U.debug) U.debug('DATA', "Setting up Firestore zones listener...");
