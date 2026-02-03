@@ -96,7 +96,7 @@
 ### 2.4 Zone-sheet & CTA (medium) — **Deels geïmplementeerd**
 
 - **START PARKING altijd bereikbaar:**  
-  - Zone-sheet: “Sticky” footer met alleen de knop “START PARKING” ; alleen tarieven/duur scrollen, de knop blijft zichtbaar.  
+  - **Opgelost:** Zone-sheet heeft een sticky footer; “Sticky” footer met alleen de knop “START PARKING” ; alleen tarieven/duur scrollen, de knop blijft zichtbaar.  
 - **Duur:** Huidige “2h 00m” met −/+ is duidelijk; optie “Alleen starten, later stoppen” (geen vaste eindtijd) kan power users helpen – alleen als dit in de business logic past.
 
 ### 2.5 Kaart (medium)
