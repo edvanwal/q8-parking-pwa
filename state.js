@@ -27,6 +27,7 @@ Q8.State = (function() {
         geocodeMatches: [],   // Zones near geocoded address (address search)
         geocodeLoading: false,
         duration: 0,          // 0 = "Until stopped" (No fixed end time)
+        defaultDurationMinutes: 0, // 0 = Until stopped; else prefill zone sheet (e.g. 120 = 2h)
         zones: [],            // Populated continuously via Firestore
         zonesLoading: true,   // True while zones are being loaded
         zonesLoadError: null, // Error message when zones fail to load (network etc.)
@@ -156,6 +157,15 @@ Q8.State = (function() {
         // 4. Favorites
         loadFavorites();
 
+        // 4b. Default duration (minutes; 0 = Until stopped)
+        try {
+            const dd = localStorage.getItem('q8_default_duration');
+            if (dd !== null) {
+                const n = parseInt(dd, 10);
+                if (!isNaN(n) && n >= 0) _state.defaultDurationMinutes = Math.min(1440, n);
+            }
+        } catch (e) { /* ignore */ }
+
         // 5. Dark mode ('light'|'dark'|'system')
         try {
             const d = localStorage.getItem('q8_dark_v2');
@@ -266,6 +276,10 @@ Q8.State = (function() {
         try { localStorage.setItem('q8_dark_v2', _state.darkMode); } catch (e) {}
     }
 
+    function saveDefaultDuration() {
+        try { localStorage.setItem('q8_default_duration', String(_state.defaultDurationMinutes)); } catch (e) {}
+    }
+
     return {
         get: _state,
         update: update,
@@ -279,6 +293,7 @@ Q8.State = (function() {
         saveFavorites: saveFavorites,
         loadFavorites: loadFavorites,
         setDarkMode: setDarkMode,
-        applyThemeFromPref: applyThemeFromPref
+        applyThemeFromPref: applyThemeFromPref,
+        saveDefaultDuration: saveDefaultDuration
     };
 })();
