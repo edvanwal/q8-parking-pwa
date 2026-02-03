@@ -320,8 +320,10 @@
           <span id="no-plates-hint-cta">Kenteken toevoegen</span>
         </button>
       </div>
-      <!-- Favorieten strip + laatst gebruikte zone -->
-      <div id="favorites-strip" class="favorites-strip hidden" role="region" aria-label="Favorieten"></div>
+      <!-- Favorieten strip + laatst gebruikte zone: compact horizontale balk direct onder zoekbalk -->
+      <div id="favorites-strip" class="favorites-strip hidden" role="region" aria-label="Favorieten">
+        <!-- Injected: label + [Laatst: X] + favoriet-pills -->
+      </div>
       <!-- Map Surface -->
       <div id="map-container" class="map-surface">
         <!-- Markers injected by JS -->
@@ -338,43 +340,6 @@
           <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
         </svg>
       </button>
-
-      <!-- Garages & P+R floating button (visible without zone) -->
-      <button type="button" id="btn-facilities-float" class="facilities-float-btn icon-btn" data-action="open-overlay" data-target="sheet-facilities" aria-label="Garages and P+R nearby">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-        <span class="facilities-float-label">Garages & P+R</span>
-      </button>
-      <!-- B1: Laadpunten layer toggle -->
-      <button type="button" id="btn-charging-points-float" class="facilities-float-btn icon-btn" data-action="toggle-charging-points" aria-label="Show charging points" aria-pressed="false" title="Laadpunten op kaart">
-        <span aria-hidden="true">&#9881;</span>
-        <span class="facilities-float-label" id="btn-charging-points-label">Laadpunten</span>
-      </button>
-      <!-- B2: Laadpunten filters (connector / vermogen) -->
-      <div id="charging-filters" class="charging-filters hidden">
-        <span class="charging-filters-label text-secondary text-xs">Filter laadpunten:</span>
-        <div class="charging-filters-row">
-          <button type="button" class="btn btn-secondary btn-xs" data-action="set-charging-filter" data-power="">
-            Alle
-          </button>
-          <button type="button" class="btn btn-secondary btn-xs" data-action="set-charging-filter" data-power="11">
-            ≥11 kW
-          </button>
-          <button type="button" class="btn btn-secondary btn-xs" data-action="set-charging-filter" data-power="50">
-            ≥50 kW
-          </button>
-        </div>
-        <div class="charging-filters-row">
-          <button type="button" class="btn btn-outline btn-xs" data-action="toggle-charging-connector" data-connector="type2">
-            Type 2
-          </button>
-          <button type="button" class="btn btn-outline btn-xs" data-action="toggle-charging-connector" data-connector="ccs">
-            DC (CCS)
-          </button>
-          <button type="button" class="btn btn-outline btn-xs" data-action="toggle-charging-connector" data-connector="chademo">
-            CHAdeMO
-          </button>
-        </div>
-      </div>
 
       <!-- Active Parking Overlay (inside map-area for positioning) -->
       <div id="ui-active-parking" class="active-parking-overlay hidden" style="display:none;">
@@ -507,9 +472,16 @@
          <svg class="no-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M5 7C5 6.44772 5.44772 6 6 6H18C18.5523 6 19 6.44772 19 7C19 7.55228 18.5523 8 18 8H6C5.44772 8 5 7.55228 5 7ZM5 12C5 11.4477 5.44772 11 6 11H18C18.5523 11 19 11.4477 19 12C19 12.5523 18.5523 13 18 13H6C5.44772 13 5 12.5523 5 12ZM5 17C5 16.4477 5.44772 16 6 16H18C18.5523 16 19 16.4477 19 17C19 17.5523 18.5523 18 18 18H6C5.44772 18 5 17.5523 5 17Z" fill="currentColor"/></svg>
       </button>
     </header>
-    <div id="history-quick-filters" class="history-quick-filters padding-container"></div>
-    <div id="history-filter-summary" class="history-filter-summary padding-container hidden"></div>
-    <div class="content padding-container history-list-wrap" id="list-history"></div>
+    <!-- Quick filters: in één oogopslag zichtbaar op mobiel -->
+    <div id="history-quick-filters" class="history-quick-filters padding-container">
+       <!-- Injected: All, Last 7 days, Last 30 days, This month -->
+    </div>
+    <div id="history-filter-summary" class="history-filter-summary padding-container hidden">
+       <!-- Injected: active filter summary + link to full filters -->
+    </div>
+    <div class="content padding-container history-list-wrap" id="list-history">
+       <!-- Injected -->
+    </div>
     <div class="history-footer" style="padding:16px; background:var(--surface); border-top:1px solid var(--border); display:flex; gap:12px; flex-wrap:wrap;">
        <button class="btn btn-secondary" data-action="open-overlay" data-target="sheet-filter">Filters</button>
        <button class="btn btn-outline" data-action="export-history-csv">Export CSV</button>
@@ -588,19 +560,8 @@
 
         <div class="sheet-section">
           <label class="input-label sheet-section-label" id="details-rates-label" title="">Rates</label>
-          <p class="sheet-rates-disclaimer text-secondary text-xs mb-sm" id="zone-rates-disclaimer" role="note">Rates are indicative; final amount may differ. Source: RDW Open Data.</p>
           <div id="details-rates-list" class="sheet-rates-list">
               <!-- Dynamic rates injected here -->
-          </div>
-          <div id="sheet-section-all-rates" class="sheet-section mt-sm" style="display:none;">
-             <button type="button" class="btn btn-outline btn-sm" id="btn-toggle-all-rates" data-action="toggle-all-rates" aria-expanded="false">View all days</button>
-             <div id="details-all-rates-list" class="sheet-rates-list mt-sm" style="display:none;"></div>
-          </div>
-        </div>
-        <div class="sheet-section" id="sheet-section-estimated-cost" style="display:none;">
-          <div class="flex justify-between items-center">
-             <span class="input-label">Estimated cost</span>
-             <span id="details-estimated-cost" class="font-semibold">—</span>
           </div>
         </div>
 
@@ -621,24 +582,6 @@
               <button type="button" class="duration-default-pill" data-action="set-default-duration" data-minutes="180">3u</button>
            </div>
         </div>
-
-        <div class="sheet-section" id="sheet-section-facilities" style="display:none;">
-           <label class="input-label sheet-section-label">Garages & P+R in de buurt</label>
-           <div class="facilities-controls flex gap-sm flex-wrap items-center mb-sm" style="margin-bottom:8px;">
-              <span class="text-secondary text-sm">Straal:</span>
-              <div class="flex gap-xs" role="group" aria-label="Search radius in km">
-                 <button type="button" class="btn btn-secondary btn-sm facilities-radius-btn" data-action="set-facilities-radius" data-km="1">1 km</button>
-                 <button type="button" class="btn btn-secondary btn-sm facilities-radius-btn" data-action="set-facilities-radius" data-km="2">2 km</button>
-                 <button type="button" class="btn btn-secondary btn-sm facilities-radius-btn" data-action="set-facilities-radius" data-km="5">5 km</button>
-              </div>
-              <span class="text-secondary text-sm ml-sm">Ref:</span>
-              <div class="flex gap-xs" role="group" aria-label="Reference point for nearby facilities">
-                 <button type="button" class="btn btn-outline btn-sm facilities-ref-btn" data-action="set-facilities-ref" data-ref="user">Mijn locatie</button>
-                 <button type="button" class="btn btn-outline btn-sm facilities-ref-btn" data-action="set-facilities-ref" data-ref="zone">Zone</button>
-              </div>
-           </div>
-           <div id="details-nearby-facilities-list"></div>
-        </div>
       </div>
 
       <div class="sheet-zone-footer">
@@ -648,35 +591,6 @@
     </div>
   </div>
 
-
-  <!-- === OVERLAY: GARAGES & P+R (standalone, no zone required) === -->
-  <div id="sheet-facilities" class="overlay-backdrop" data-action="close-overlay" role="dialog" aria-modal="true" aria-labelledby="sheet-facilities-title">
-    <div class="bottom-sheet">
-      <div class="sheet-handle"></div>
-      <div class="sheet-header">
-        <h2 id="sheet-facilities-title" class="font-bold text-lg">Garages & P+R in de buurt</h2>
-        <button type="button" class="icon-btn sheet-zone-close" data-action="close-overlay" aria-label="Close">×</button>
-      </div>
-      <div class="sheet-section">
-        <div class="facilities-controls flex gap-sm flex-wrap items-center mb-sm">
-          <span class="text-secondary text-sm">Straal:</span>
-          <div class="flex gap-xs" role="group" aria-label="Search radius in km">
-            <button type="button" class="btn btn-secondary btn-sm facilities-radius-btn-sheet" data-action="set-facilities-radius" data-km="1">1 km</button>
-            <button type="button" class="btn btn-secondary btn-sm facilities-radius-btn-sheet" data-action="set-facilities-radius" data-km="2">2 km</button>
-            <button type="button" class="btn btn-secondary btn-sm facilities-radius-btn-sheet" data-action="set-facilities-radius" data-km="5">5 km</button>
-          </div>
-          <span class="text-secondary text-sm ml-sm">Ref:</span>
-          <div class="flex gap-xs" role="group" aria-label="Reference point">
-            <button type="button" class="btn btn-outline btn-sm facilities-ref-btn-sheet" data-action="set-facilities-ref" data-ref="user">Mijn locatie</button>
-            <button type="button" class="btn btn-outline btn-sm facilities-ref-btn-sheet" data-action="set-facilities-ref" data-ref="zone">Zone</button>
-          </div>
-        </div>
-        <div id="facilities-load-error-sheet" class="hidden" style="margin-bottom:12px;"></div>
-        <button type="button" id="facilities-retry-btn" class="btn btn-secondary btn-sm hidden mb-sm" data-action="retry-load-facilities">Retry</button>
-        <div id="sheet-facilities-list" class="facilities-list"></div>
-      </div>
-    </div>
-  </div>
 
   <!-- === OVERLAY: FILTERS (Sheet) === -->
   <div id="sheet-filter" class="overlay-backdrop" data-action="close-overlay">

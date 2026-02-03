@@ -160,7 +160,7 @@ Q8.UI = (function() {
             }
         }
 
-        // Favorieten-strip + laatst gebruikte zone
+        // Favorieten-strip + laatst gebruikte zone: compact horizontaal direct onder zoekbalk
         const favStrip = document.getElementById('favorites-strip');
         if (favStrip && !hideSearchUI) {
             const nl = state.language === 'nl';
@@ -219,7 +219,7 @@ Q8.UI = (function() {
             zonesErrorEl.classList.toggle('hidden', !hasError);
             const msgEl = zonesErrorEl.querySelector('.zones-error-text');
             const nl = state.language === 'nl';
-            if (msgEl) msgEl.textContent = state.zonesLoadError || (nl ? 'Tarieven tijdelijk niet beschikbaar. Controleer uw internet of probeer het later opnieuw.' : 'Rates temporarily unavailable. Check your connection or try again later.');
+            if (msgEl) msgEl.textContent = nl ? 'Kan parkeerzones niet laden. Controleer uw internetverbinding.' : 'Could not load parking zones. Check your internet connection.';
             const retryBtn = zonesErrorEl.querySelector('[data-action="retry-load-zones"]');
             if (retryBtn) retryBtn.textContent = nl ? 'Opnieuw proberen' : 'Retry';
         }
@@ -272,70 +272,15 @@ Q8.UI = (function() {
         // Zone Sheet
         if (state.selectedZone) renderZoneSheet();
 
-        // Standalone Garages & P+R sheet
-        if (state.activeOverlay === 'sheet-facilities') renderFacilitiesSheet();
-
-        // Facilities radius/ref buttons (zone sheet and standalone) – sync active state
-        const radiusKm = state.nearbyFacilitiesRadiusKm || 2;
-        document.querySelectorAll('.facilities-radius-btn, .facilities-radius-btn-sheet').forEach(btn => {
-            const k = parseInt(btn.getAttribute('data-km'), 10);
-            btn.classList.toggle('btn-primary', k === radiusKm);
-            btn.classList.toggle('btn-secondary', k !== radiusKm);
-        });
-        const ref = state.nearbyFacilitiesRef || 'user';
-        document.querySelectorAll('.facilities-ref-btn, .facilities-ref-btn-sheet').forEach(btn => {
-            const r = btn.getAttribute('data-ref');
-            btn.classList.toggle('btn-primary', r === ref);
-            btn.classList.toggle('btn-outline', r !== ref);
-        });
-
-        // B1/B2: Laadpunten toggle + filters
-        const chargingBtn = document.getElementById('btn-charging-points-float');
-        const chargingLbl = document.getElementById('btn-charging-points-label');
-        if (chargingBtn) {
-            chargingBtn.setAttribute('aria-pressed', state.showChargingPoints ? 'true' : 'false');
-            chargingBtn.setAttribute('aria-label', state.language === 'nl' ? (state.showChargingPoints ? 'Laadpunten verbergen' : 'Laadpunten tonen') : (state.showChargingPoints ? 'Hide charging points' : 'Show charging points'));
-            chargingBtn.disabled = !!state.chargingPointsLoading;
-        }
-        if (chargingLbl) {
-            const loading = state.chargingPointsLoading;
-            chargingLbl.textContent = loading
-                ? (state.language === 'nl' ? 'Laden…' : 'Loading…')
-                : (state.language === 'nl' ? (state.showChargingPoints ? 'Laadpunten aan' : 'Laadpunten') : (state.showChargingPoints ? 'Charging on' : 'Charging points'));
-        }
-
-        const chargingFiltersEl = document.getElementById('charging-filters');
-        if (chargingFiltersEl) {
-            chargingFiltersEl.classList.toggle('hidden', !state.showChargingPoints);
-            const nl = state.language === 'nl';
-            const labelEl = chargingFiltersEl.querySelector('.charging-filters-label');
-            if (labelEl) {
-                labelEl.textContent = nl ? 'Filter laadpunten:' : 'Filter charging:';
-            }
-            const filters = state.chargingFilters || { minPowerKw: null, connectors: [] };
-            const minPower = filters.minPowerKw;
-            const conns = filters.connectors || [];
-
-            chargingFiltersEl.querySelectorAll('[data-action="set-charging-filter"]').forEach(btn => {
-                const v = btn.getAttribute('data-power');
-                const val = v === null ? null : parseInt(v, 10);
-                const isActive = (minPower == null && (v === null || v === '')) || (minPower != null && val === minPower);
-                btn.classList.toggle('btn-primary', isActive);
-                btn.classList.toggle('btn-secondary', !isActive);
-            });
-            chargingFiltersEl.querySelectorAll('[data-action="toggle-charging-connector"]').forEach(btn => {
-                const key = btn.getAttribute('data-connector');
-                const active = conns.includes(key);
-                btn.classList.toggle('btn-primary', active);
-                btn.classList.toggle('btn-outline', !active);
-            });
-        }
-
         // Search input sync
         const inpSearch = document.getElementById('inp-search');
         if (inpSearch && document.activeElement !== inpSearch) {
             inpSearch.value = state.searchQuery;
         }
+        document.querySelectorAll('.search-mode-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-mode') === state.searchMode);
+        });
+
         renderSearchResults();
 
         // Side menu: sync language and dark mode
@@ -345,30 +290,6 @@ Q8.UI = (function() {
         document.querySelectorAll('.dark-mode-opt').forEach(btn => {
             btn.setAttribute('aria-pressed', btn.getAttribute('data-pref') === (state.darkMode || 'system') ? 'true' : 'false');
         });
-    }
-
-    /** C2: Bepaal uurtarief voor het huidige moment uit rates met rate_numeric en time (bijv. "Maandag 09:00 - 18:00"). */
-    function getCurrentSlotRate(rates, now) {
-        if (!rates || rates.length === 0) return null;
-        const dayNames = ['Zondag', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag'];
-        const todayName = dayNames[now.getDay()];
-        const nowMins = now.getHours() * 60 + now.getMinutes();
-        for (let i = 0; i < rates.length; i++) {
-            const r = rates[i];
-            const timeStr = (r.time || '').trim();
-            const match = timeStr.match(/(Dagelijks|Zondag|Maandag|Dinsdag|Woensdag|Donderdag|Vrijdag|Zaterdag)\s*(\d{1,2}):(\d{2})\s*[-–]\s*(\d{1,2}):(\d{2})/i);
-            if (!match) continue;
-            const dayLabel = match[1];
-            const startMins = parseInt(match[2], 10) * 60 + parseInt(match[3], 10);
-            let endMins = parseInt(match[4], 10) * 60 + parseInt(match[5], 10);
-            if (endMins <= startMins) endMins += 24 * 60;
-            const dayMatches = /Dagelijks/i.test(dayLabel) || dayLabel.toLowerCase() === todayName.toLowerCase();
-            const timeInRange = nowMins >= startMins && nowMins < endMins;
-            if (dayMatches && timeInRange && r.rate_numeric != null) {
-                return parseFloat(r.rate_numeric);
-            }
-        }
-        return null;
     }
 
     function renderZoneSheet() {
@@ -527,150 +448,9 @@ Q8.UI = (function() {
         const isFav = zoneUid && (state.favorites || []).some(f => f.zoneUid === zoneUid || (f.zoneId === zoneId && !f.zoneUid));
         if (favOutline) favOutline.style.display = isFav ? 'none' : 'block';
         if (favFilled) favFilled.style.display = isFav ? 'block' : 'none';
-
-        // Garages & P+R in de buurt
-        const sectionFacilities = document.getElementById('sheet-section-facilities');
-        const listFacilities = document.getElementById('details-nearby-facilities-list');
-        const radiusKm = state.nearbyFacilitiesRadiusKm || 2;
-        if (sectionFacilities && listFacilities) {
-            const nl = state.language === 'nl';
-            const nearby = state.nearbyFacilities || [];
-            const hasLocation = state.userLocation && state.userLocation.lat != null;
-            const hasZoneRef = state.nearbyFacilitiesRef === 'zone' && state.selectedZone && state.zones && state.zones.length;
-            if (state.facilitiesLoadError) {
-                sectionFacilities.style.display = 'block';
-                listFacilities.innerHTML = '<div class="text-secondary text-sm" style="padding:8px 0; color:var(--danger);">' + state.facilitiesLoadError + '</div>' +
-                    '<button type="button" class="btn btn-secondary btn-sm mt-sm" data-action="retry-load-facilities">' + (nl ? 'Opnieuw proberen' : 'Retry') + '</button>';
-            } else if (!hasLocation && !hasZoneRef) {
-                sectionFacilities.style.display = 'block';
-                listFacilities.innerHTML = '<div class="text-secondary text-sm" style="padding:8px 0;">' + (nl ? 'Sta locatie toe of kies een zone om garages en P+R in de buurt te zien.' : 'Allow location or select a zone to see garages and P+R nearby.') + '</div>';
-            } else if (nearby.length === 0) {
-                sectionFacilities.style.display = 'block';
-                listFacilities.innerHTML = '<div class="text-secondary text-sm" style="padding:8px 0;">' + (nl ? 'Geen garages of P+R binnen ' + radiusKm + ' km.' : 'No garages or P+R within ' + radiusKm + ' km.') + '</div>';
-            } else {
-                sectionFacilities.style.display = 'block';
-                const labelFacilities = sectionFacilities.querySelector('.sheet-section-label');
-                if (labelFacilities) labelFacilities.textContent = nl ? 'Garages & P+R in de buurt' : 'Garages & P+R nearby';
-                listFacilities.innerHTML = buildFacilitiesListHtml(state, nearby);
-            }
-        }
-
-        // Rates disclaimer (F1 / C1): vaste disclaimer + bron
-        const disclaimerEl = document.getElementById('zone-rates-disclaimer');
-        if (disclaimerEl) disclaimerEl.textContent = state.language === 'nl'
-            ? 'Tarieven zijn indicatief; definitief bedrag kan afwijken. Bron: RDW Open Data.'
-            : 'Rates are indicative; final amount may differ. Source: RDW Open Data.';
-
-        // Estimated cost (F2 / C2): toon altijd wanneer we een bedrag kunnen berekenen; gebruik bij rate_numeric per tijdslot het tarief voor het huidige moment
-        const estSection = document.getElementById('sheet-section-estimated-cost');
-        const estEl = document.getElementById('details-estimated-cost');
-        if (estSection && estEl) {
-            const dur = state.duration || 0;
-            const rates = state.selectedZoneRates || (zone && zone.rates) || [];
-            const currentSlotRate = getCurrentSlotRate(rates, new Date());
-            const fallbackRate = (zone && zone.price != null) ? parseFloat(zone.price) : (state.selectedZoneRate || 2);
-            const rate = (currentSlotRate != null && currentSlotRate >= 0) ? currentSlotRate : fallbackRate;
-            let cost = null;
-            if (dur > 0 && rate > 0) {
-                const hours = dur / 60;
-                cost = Math.round(hours * rate * 100) / 100;
-            }
-            estSection.style.display = (cost != null && cost > 0) ? 'block' : 'none';
-            estEl.textContent = cost != null ? '€ ' + cost.toFixed(2).replace('.', ',') : '—';
-        }
-
-        // All-rates section visibility and button text (E3)
-        const allRatesSection = document.getElementById('sheet-section-all-rates');
-        const allRatesList = document.getElementById('details-all-rates-list');
-        const rates = state.selectedZoneRates || (zone && zone.rates) || [];
-        if (allRatesSection) allRatesSection.style.display = rates.length > 0 ? 'block' : 'none';
-        const btnToggleAll = document.getElementById('btn-toggle-all-rates');
-        if (btnToggleAll) {
-            btnToggleAll.textContent = state.language === 'nl' ? 'Bekijk alle dagen' : 'View all days';
-            btnToggleAll.setAttribute('aria-expanded', (allRatesList && allRatesList.style.display === 'block') ? 'true' : 'false');
-        }
     }
 
-    function buildFacilitiesListHtml(state, nearby) {
-        const nl = state.language === 'nl';
-        const occupancy = state.facilityOccupancy || {};
-        return nearby.map(f => {
-            const availableCapacity = (f.availableCapacity != null ? f.availableCapacity : occupancy[f.id]);
-            const dist = (f._distKm != null) ? (f._distKm < 1 ? (f._distKm * 1000).toFixed(0) + ' m' : f._distKm.toFixed(1).replace('.', ',') + ' km') : '';
-            const tariff = f.tariffSummary ? '<span class="text-secondary text-sm">' + f.tariffSummary + '</span>' : '';
-            const addr = [f.street, f.city].filter(Boolean).join(', ') || f.city || '';
-            const meta = [];
-            if (availableCapacity != null && availableCapacity >= 0) meta.push((nl ? 'ca. ' : 'ca. ') + availableCapacity + (nl ? ' plekken vrij' : ' spaces available'));
-            if (f.openingTimesSummary) meta.push(f.openingTimesSummary);
-            if (f.capacity != null && f.capacity > 0) meta.push(f.capacity + (nl ? ' plekken' : ' spaces'));
-            if (f.chargingPointCapacity != null && f.chargingPointCapacity > 0) meta.push(f.chargingPointCapacity + (nl ? ' laadplekken' : ' EV'));
-            if (f.disabledAccess) meta.push(nl ? 'Toegankelijk' : 'Accessible');
-            const paymentLabels = { Maestro: 'Pinnen', MasterCard: 'Pinnen', Visa: 'Pinnen', VPay: 'Pinnen', Banknotes: 'Contant', Coins: 'Contant' };
-            const methods = (f.paymentMethods || []).filter(Boolean);
-            const payHint = [...new Set(methods.map(m => paymentLabels[m] || m))].slice(0, 2).join(', ');
-            if (payHint) meta.push(payHint);
-            const metaLine = meta.length ? '<div class="text-secondary text-xs mt-0.5">' + meta.join(' · ') + '</div>' : '';
-            const moreInfo = (f.operatorUrl) ? ' <a href="' + f.operatorUrl + '" target="_blank" rel="noopener" class="facility-more-info text-secondary text-xs" style="margin-left:6px;">' + (nl ? 'Meer info' : 'More info') + '</a>' : '';
-            return '<div class="facility-row" role="listitem" style="padding:10px 0; border-bottom:1px solid var(--border-color);" aria-label="' + (f.name || (f.type === 'p_r' ? 'P+R' : 'Garage')) + ', ' + (addr || f.city || '') + ', ' + dist + '">' +
-                '<a href="https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(f.lat + ',' + f.lng) + '" target="_blank" rel="noopener" style="text-decoration:none; color:inherit;">' +
-                '<div class="font-semibold">' + (f.name || (f.type === 'p_r' ? 'P+R' : 'Garage')) + '</div>' +
-                (addr ? '<div class="text-secondary text-sm">' + addr + '</div>' : '') +
-                metaLine +
-                '<div class="flex justify-between items-center gap-2 mt-1">' + tariff + '<span class="text-secondary text-sm">' + dist + '</span></div></a>' + moreInfo + '</div>';
-        }).join('');
-    }
-
-    function renderFacilitiesSheet() {
-        const state = S.get;
-        const nl = state.language === 'nl';
-        const titleEl = document.getElementById('sheet-facilities-title');
-        if (titleEl) titleEl.textContent = nl ? 'Garages & P+R in de buurt' : 'Garages & P+R nearby';
-        const errEl = document.getElementById('facilities-load-error-sheet');
-        const retryBtn = document.getElementById('facilities-retry-btn');
-        if (errEl) {
-            errEl.classList.toggle('hidden', !state.facilitiesLoadError);
-            errEl.textContent = state.facilitiesLoadError || '';
-            errEl.style.color = 'var(--danger)';
-        }
-        if (retryBtn) {
-            retryBtn.classList.toggle('hidden', !state.facilitiesLoadError);
-            retryBtn.textContent = nl ? 'Opnieuw proberen' : 'Retry';
-        }
-        const listEl = document.getElementById('sheet-facilities-list');
-        if (listEl) {
-            const nearby = state.nearbyFacilities || [];
-            const radiusKm = state.nearbyFacilitiesRadiusKm || 2;
-            const hasRef = (state.userLocation && state.userLocation.lat != null) || (state.nearbyFacilitiesRef === 'zone' && state.selectedZone && state.zones && state.zones.length);
-            if (state.facilitiesLoading) {
-                listEl.innerHTML = '<div class="text-secondary text-sm">' + (nl ? 'Laden...' : 'Loading...') + '</div>';
-            } else if (!hasRef) {
-                listEl.innerHTML = '<div class="text-secondary text-sm">' + (nl ? 'Sta locatie toe of selecteer een zone om garages en P+R te zien.' : 'Allow location or select a zone to see garages and P+R.') + '</div>';
-            } else if (nearby.length === 0) {
-                listEl.innerHTML = '<div class="text-secondary text-sm">' + (nl ? 'Geen garages of P+R binnen ' + radiusKm + ' km.' : 'No garages or P+R within ' + radiusKm + ' km.') + '</div>';
-            } else {
-                listEl.innerHTML = buildFacilitiesListHtml(state, nearby);
-            }
-        }
-    }
-
-    function toggleAllRates() {
-        const list = document.getElementById('details-all-rates-list');
-        const btn = document.getElementById('btn-toggle-all-rates');
-        if (!list || !btn) return;
-        const isOpen = list.style.display === 'block';
-        list.style.display = isOpen ? 'none' : 'block';
-        btn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
-        const nl = Q8.State.get.language === 'nl';
-        btn.textContent = (list.style.display === 'block') ? (nl ? 'Sluiten' : 'Close') : (nl ? 'Bekijk alle dagen' : 'View all days');
-        if (!isOpen && list.innerHTML === '') {
-            const rates = Q8.State.get.selectedZoneRates || [];
-            const zone = (Q8.State.get.zones || []).find(z => z.uid === Q8.State.get.selectedZone) || (Q8.State.get.zones || []).find(z => z.id === Q8.State.get.selectedZone);
-            const allRates = rates.length ? rates : (zone && zone.rates) || [];
-            renderRatesList(list, allRates, true);
-        }
-    }
-
-    function renderRatesList(container, rates, allDays) {
+    function renderRatesList(container, rates) {
         if (!rates || rates.length === 0) {
             container.innerHTML = '<div class="rate-item">No rate info</div>';
             return;
@@ -679,7 +459,7 @@ Q8.UI = (function() {
         const daysNL = ["Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag"];
         const todayNL = daysNL[new Date().getDay()];
 
-        const filtered = allDays ? rates : rates.filter(r => {
+        const filtered = rates.filter(r => {
             const t = (r.time || '').toLowerCase();
             return t.includes(todayNL.toLowerCase()) || t.includes('dagelijks') || t.includes('daily') || t === '24/7' || t.includes('check zone');
         });
@@ -694,13 +474,11 @@ Q8.UI = (function() {
         const finalRates = unique.length > 0 ? unique : [{time: `Geen tarieven voor ${todayNL}`, price: ''}];
 
         container.innerHTML = finalRates.map(r => {
-             // Bij "alle dagen": behoud dagnaam (Maandag, Dinsdag, Dagelijks). Bij alleen vandaag: strip dagnaam.
-             let displayTime = allDays ? r.time : r.time.replace(new RegExp(todayNL, 'gi'), '').replace(/Dagelijks/gi,'').trim();
+             let displayTime = r.time.replace(new RegExp(todayNL, 'gi'), '').replace(/Dagelijks/gi,'').trim();
              const timeMatch = displayTime.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
              if (timeMatch) {
                  const fmt = (h, m) => (parseInt(h, 10) < 10 ? String(h).replace(/^0/, '') : h) + ':' + m;
-                 const formattedTime = `${fmt(timeMatch[1], timeMatch[2])} – ${fmt(timeMatch[3], timeMatch[4])}`;
-                 displayTime = allDays ? displayTime.replace(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/, formattedTime) : formattedTime;
+                 displayTime = `${fmt(timeMatch[1], timeMatch[2])} – ${fmt(timeMatch[3], timeMatch[4])}`;
              }
              const priceStr = (r.price != null && r.price !== '') ? String(r.price) : '';
              const isFree = !priceStr ||
@@ -1056,7 +834,7 @@ Q8.UI = (function() {
         if (!list) return;
         list.innerHTML = '';
 
-        // 0. QUICK FILTERS + SUMMARY
+        // 0. QUICK FILTERS + SUMMARY (in één oogopslag zichtbaar)
         const quickEl = document.getElementById('history-quick-filters');
         const summaryEl = document.getElementById('history-filter-summary');
         const nl = state.language === 'nl';
@@ -1405,10 +1183,10 @@ Q8.UI = (function() {
             return;
         }
 
-        const query = state.searchQuery.toLowerCase();
+        const queryLower = (state.searchQuery || '').toLowerCase();
         const favorites = state.favorites || [];
         const favUids = new Set(favorites.map(f => f.zoneUid || f.zoneId));
-        const words = query.split(/[\s,]+/).filter(w => w.length > 0);
+        const words = queryLower.split(/[\s,]+/).filter(w => w.length > 0);
         const matches = state.zones.filter(z => {
             const id = (z.id || '').toLowerCase();
             const name = (z.name || '').toLowerCase();
@@ -1416,7 +1194,7 @@ Q8.UI = (function() {
             const city = (z.city || '').toLowerCase();
             const allFields = [id, name, street, city].join(' ');
             if (words.length === 0) return false;
-            if (words.length === 1) return id.includes(query) || name.includes(query) || street.includes(query) || city.includes(query);
+            if (words.length === 1) return id.includes(queryLower) || name.includes(queryLower) || street.includes(queryLower) || city.includes(queryLower);
             return words.every(w => allFields.includes(w));
         })
             .sort((a,b) => {
@@ -1424,8 +1202,8 @@ Q8.UI = (function() {
                 const bFav = favUids.has(b.uid) || favUids.has(b.id);
                 if (aFav && !bFav) return -1;
                 if (!aFav && bFav) return 1;
-                if (a.id === query) return -1;
-                if (b.id === query) return 1;
+                if (a.id === queryLower) return -1;
+                if (b.id === queryLower) return 1;
                 return 0;
             });
 
@@ -1442,7 +1220,7 @@ Q8.UI = (function() {
 
         container.className = 'search-results-panel search-results-panel--pill';
         container.style.display = 'block';
-        const q = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const q = queryLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const regex = q ? new RegExp(`(${q})`, 'gi') : null;
         container.innerHTML = matches.map(z => {
             // Format: "zonenummer · straatnaam + huisnummer + plaats"
@@ -1807,71 +1585,6 @@ Q8.UI = (function() {
                 });
                 this.container.appendChild(el);
             });
-            // B1/B2: Laadpunten (alleen tonen als toggle aan, met filters)
-            if (state.showChargingPoints && (state.chargingPoints || []).length > 0) {
-                const filters = state.chargingFilters || { minPowerKw: null, connectors: [] };
-                const minPower = filters.minPowerKw;
-                const filterConns = Array.isArray(filters.connectors) ? filters.connectors : [];
-
-                (state.chargingPoints || []).forEach(cp => {
-                    if (!cp.lat || !cp.lng) return;
-                    // Vermogen-filter
-                    if (minPower != null && cp.powerKw != null && cp.powerKw < minPower) return;
-                    // Connector-filter (tenzij leeg = geen filter)
-                    const cpConns = Array.isArray(cp.connectors) ? cp.connectors : [];
-                    if (filterConns.length > 0 && !cpConns.some(c => filterConns.includes(c))) return;
-                    const coordKey = 'cp:' + cp.lat.toFixed(5) + ',' + cp.lng.toFixed(5);
-                    if (seenCoords.has(coordKey)) return;
-                    seenCoords.add(coordKey);
-                    const pt = proj.fromLatLngToDivPixel(new google.maps.LatLng(cp.lat, cp.lng));
-                    if (!pt) return;
-                    const el = document.createElement('div');
-                    el.className = 'q8-charging-marker';
-                    el.innerHTML = '&#9881;';
-                    const connLabel = cpConns && cpConns.length ? ' · ' + cpConns.join(', ') : '';
-                    const powerLabel = (typeof cp.powerKw === 'number' && !isNaN(cp.powerKw))
-                        ? ' · ' + cp.powerKw + ' kW'
-                        : '';
-                    el.title = (cp.operator ? cp.operator + ' – ' : '') +
-                        (state.language === 'nl' ? 'Laadpunt' : 'Charging point') +
-                        connLabel + powerLabel;
-                    el.style.left = pt.x + 'px';
-                    el.style.top = pt.y + 'px';
-                    el.style.pointerEvents = 'auto';
-                    el.setAttribute('role', 'button');
-                    el.setAttribute('aria-label', state.language === 'nl' ? 'Laadpunt' : 'Charging point');
-                    el.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        window.open('https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(cp.lat + ',' + cp.lng), '_blank');
-                    });
-                    this.container.appendChild(el);
-                });
-            }
-            // Facility markers (garages & P+R)
-            (state.nearbyFacilities || []).forEach(f => {
-                if (!f.lat || !f.lng) return;
-                const coordKey = 'f:' + f.lat.toFixed(6) + ',' + f.lng.toFixed(6);
-                if (seenCoords.has(coordKey)) return;
-                seenCoords.add(coordKey);
-                const pt = proj.fromLatLngToDivPixel(new google.maps.LatLng(f.lat, f.lng));
-                if (!pt) return;
-                const label = (f.type === 'p_r') ? 'P+R' : 'G';
-                const el = document.createElement('div');
-                el.className = 'q8-facility-marker';
-                el.textContent = label;
-                el.setAttribute('role', 'button');
-                el.setAttribute('aria-label', (f.type === 'p_r' ? 'P+R: ' : 'Garage: ') + (f.name || label) + (f.city ? ', ' + f.city : ''));
-                el.title = (f.name || label) + (f.city ? ', ' + f.city : '');
-                el.style.left = pt.x + 'px';
-                el.style.top = pt.y + 'px';
-                el.style.pointerEvents = 'auto';
-                el.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const url = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(f.lat + ',' + f.lng);
-                    window.open(url, '_blank');
-                });
-                this.container.appendChild(el);
-            });
         };
         PriceMarkersOverlay.prototype.onRemove = function() {
             if (this.container && this.container.parentNode) {
@@ -1901,15 +1614,6 @@ Q8.UI = (function() {
             google.maps.event.trigger(map, 'resize');
             centerMapOnZones();
         }
-    }
-
-    /** B1: Geef huidige kaartbounds voor laadpunten-fetch. */
-    function getMapBounds() {
-        if (!map || typeof google === 'undefined' || !google.maps) return null;
-        const b = map.getBounds();
-        if (!b) return null;
-        const ne = b.getNorthEast(), sw = b.getSouthWest();
-        return { south: sw.lat(), west: sw.lng(), north: ne.lat(), east: ne.lng() };
     }
 
     function centerMapOnZones() {
@@ -1983,9 +1687,7 @@ Q8.UI = (function() {
         renderMapMarkers,
         centerMapOnZones,
         ensureMapResized,
-        getMapBounds,
-        populateConfirmStartModal,
-        toggleAllRates
+        populateConfirmStartModal
     };
 })();
 

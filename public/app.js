@@ -25,7 +25,7 @@ Q8.App = (function() {
 
     function handleClick(e) {
         try {
-            // Blur search input on any click (prevents persistent blinking caret on desktop)
+            // Blur search input on click outside (prevents persistent blinking caret on desktop)
             const inpSearch = document.getElementById('inp-search');
             if (inpSearch && document.activeElement === inpSearch && !e.target.closest('#ui-idle-search') && !e.target.closest('.map-search-float')) {
                 inpSearch.blur();
@@ -429,6 +429,8 @@ Q8.App = (function() {
                     break;
                 case 'toggle-remember':
                     S.update({ rememberMe: !S.get.rememberMe });
+                    // Persist preference immediately (so it survives refresh before login)
+                    if (S.saveAuthPrefs) S.saveAuthPrefs();
                     break;
                 case 'login':
                     const email = document.getElementById('inp-email')?.value;
@@ -514,64 +516,6 @@ Q8.App = (function() {
                             if (!loc && UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Locatie niet beschikbaar. Controleer toestemming of GPS.' : 'Location not available. Check permission or GPS.', 'error');
                         });
                     }
-                    break;
-
-                case 'retry-load-facilities':
-                    S.update({ facilitiesLoadError: null, facilitiesLoading: true });
-                    if (Services && Services.retryLoadFacilities) Services.retryLoadFacilities();
-                    break;
-
-                case 'set-facilities-radius': {
-                    const km = target.getAttribute('data-km');
-                    if (Services && Services.setFacilitiesRadius) Services.setFacilitiesRadius(km);
-                    if (UI && UI.update) UI.update();
-                    break;
-                }
-                case 'set-facilities-ref': {
-                    const ref = target.getAttribute('data-ref');
-                    if (Services && Services.setFacilitiesRef) Services.setFacilitiesRef(ref);
-                    if (UI && UI.update) UI.update();
-                    break;
-                }
-                case 'toggle-charging-points': {
-                    const show = !S.get.showChargingPoints;
-                    if (Services && Services.setShowChargingPoints) Services.setShowChargingPoints(show);
-                    if (show && Services && Services.loadChargingPoints && UI && UI.getMapBounds) {
-                        const b = UI.getMapBounds();
-                        if (b) Services.loadChargingPoints(b);
-                    }
-                    if (UI && UI.renderMapMarkers) UI.renderMapMarkers();
-                    if (UI && UI.update) UI.update();
-                    const btn = document.getElementById('btn-charging-points-float');
-                    if (btn) btn.setAttribute('aria-pressed', show ? 'true' : 'false');
-                    const lbl = document.getElementById('btn-charging-points-label');
-                    if (lbl) lbl.textContent = S.get.language === 'nl' ? (show ? 'Laadpunten aan' : 'Laadpunten') : (show ? 'Charging on' : 'Charging points');
-                    break;
-                }
-                case 'set-charging-filter': {
-                    const powerStr = target.getAttribute('data-power');
-                    const minPower = powerStr ? parseInt(powerStr, 10) : null;
-                    if (Services && Services.setChargingFilters) {
-                        Services.setChargingFilters({ minPowerKw: isNaN(minPower) ? null : minPower });
-                    }
-                    break;
-                }
-                case 'toggle-charging-connector': {
-                    const key = target.getAttribute('data-connector');
-                    const current = (S.get.chargingFilters && S.get.chargingFilters.connectors) || [];
-                    let next;
-                    if (current.includes(key)) {
-                        next = current.filter(c => c !== key);
-                    } else {
-                        next = [...current, key];
-                    }
-                    if (Services && Services.setChargingFilters) {
-                        Services.setChargingFilters({ connectors: next });
-                    }
-                    break;
-                }
-                case 'toggle-all-rates':
-                    if (UI && UI.toggleAllRates) UI.toggleAllRates();
                     break;
 
                 case 'toggle-filter-vehicle':
@@ -681,7 +625,7 @@ Q8.App = (function() {
             }
         });
 
-        // Event Listener for Search Input (auto-detects zone vs address from query)
+        // Event Listener for Search Input
         let geocodeTimeout = null;
         const searchInput = document.getElementById('inp-search');
         if(searchInput) {
@@ -689,9 +633,7 @@ Q8.App = (function() {
                 const q = e.target.value;
                 S.update({ searchQuery: q });
                 UI.renderSearchResults();
-                const mode = Services.detectSearchMode ? Services.detectSearchMode(q) : 'zone';
-                if (mode === 'address' && Services.geocodeAndSearch && q.trim().length >= 3) {
-                    S.update({ geocodeLoading: true });
+                if (S.get.searchMode === 'address' && Services.geocodeAndSearch) {
                     if (geocodeTimeout) clearTimeout(geocodeTimeout);
                     geocodeTimeout = setTimeout(() => {
                         geocodeTimeout = null;
@@ -765,12 +707,11 @@ Q8.App = (function() {
         } else {
             if(Services.initAuthListener) Services.initAuthListener();
 
-            // Don't init map here - wait until user is on parking screen
-            // Map will be initialized in services.js setScreen('parking')
+            // Load map immediately - don't wait for zones
+            if(UI.initGoogleMap) UI.initGoogleMap();
 
             if(Services.loadZones) {
                 Services.loadZones().then(() => {
-                     if(Services.loadFacilities) Services.loadFacilities();
                      if(UI.update) UI.update();
                 }).catch(err => {
                      console.error("Zones critical fail:", err);

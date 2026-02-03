@@ -9,10 +9,11 @@ Q8.State = (function() {
     'use strict';
 
     const _state = {
-        screen: 'login',      // 'login' | 'register' | 'parking' | 'history' | 'plates' | 'notifications' | 'car-specs' | 'car-specs'
+        screen: 'login',      // 'login' | 'register' | 'parking' | 'history' | 'plates' | 'notifications' | 'car-specs' | 'favorites'
         language: 'en',       // 'nl' | 'en'
         darkMode: 'system',   // 'light' | 'dark' | 'system' (follow phone)
         rememberMe: false,
+        rememberMeUntil: null, // epoch ms when remember-me expires
         passwordVisible: false,
         infoBanner: null,     // { type: 'info', text: string, dismissible: boolean }
         activeOverlay: null,
@@ -30,21 +31,6 @@ Q8.State = (function() {
         zones: [],            // Populated continuously via Firestore
         zonesLoading: true,   // True while zones are being loaded
         zonesLoadError: null, // Error message when zones fail to load (network etc.)
-        facilities: [],       // Garages & P+R from Firestore (npropendata)
-        facilitiesLoading: false,
-        facilitiesLoadError: null, // Error when facilities fail to load
-        nearbyFacilities: [], // Filtered by ref point + radius
-        nearbyFacilitiesRadiusKm: 2,
-        nearbyFacilitiesRef: 'user', // 'user' | 'zone' (zone = gekozen zone centrum)
-        facilityOccupancy: {}, // facilityId -> availableCapacity (from dynamicDataUrl)
-        chargingPoints: [],    // B1: laadpunten (Overpass/OSM) voor huidige kaartbounds
-        chargingPointsLoading: false,
-        showChargingPoints: false, // toggle "Toon laadpunten" (default uit)
-        chargingPointsError: null,
-        chargingFilters: {     // B2: filters voor laadpunten
-            minPowerKw: null,  // null = geen minimum
-            connectors: []     // bijv. ['type2', 'dc']
-        },
         // State "live" in localStorage, fallback naar 1 default
         plates: [],
         selectedPlateId: null, // Track currently selected plate in list
@@ -107,14 +93,16 @@ Q8.State = (function() {
 
     function load() {
         Q8.Utils.debug('STATE', 'Loading local state...');
-        let savedSession, savedPlates;
+        let savedSession, savedPlates, savedAuthPrefs;
         try {
             savedSession = localStorage.getItem('q8_parking_session');
             savedPlates = localStorage.getItem('q8_plates_v1');
+            savedAuthPrefs = localStorage.getItem('q8_auth_prefs_v1');
         } catch (e) {
             console.warn('[PERSIST] localStorage access failed (private mode?)', e);
             savedSession = null;
             savedPlates = null;
+            savedAuthPrefs = null;
         }
 
         // 1. Session
@@ -141,6 +129,19 @@ Q8.State = (function() {
             } catch (e) {
                 console.warn('[PERSIST] Plates load failed, using empty', e);
                 _state.plates = [];
+            }
+        }
+
+        // 2b. Auth prefs (Remember me)
+        if (savedAuthPrefs) {
+            try {
+                const p = JSON.parse(savedAuthPrefs);
+                _state.rememberMe = !!p.rememberMe;
+                _state.rememberMeUntil = (typeof p.rememberMeUntil === 'number') ? p.rememberMeUntil : null;
+            } catch (e) {
+                console.warn('[PERSIST] Auth prefs load failed, using defaults', e);
+                _state.rememberMe = false;
+                _state.rememberMeUntil = null;
             }
         }
 
@@ -217,6 +218,21 @@ Q8.State = (function() {
         } catch (e) { console.warn('[PERSIST] Plates save failed', e); }
     }
 
+    function saveAuthPrefs() {
+        try {
+            localStorage.setItem('q8_auth_prefs_v1', JSON.stringify({
+                rememberMe: !!_state.rememberMe,
+                rememberMeUntil: _state.rememberMeUntil
+            }));
+        } catch (e) { console.warn('[PERSIST] Auth prefs save failed', e); }
+    }
+
+    function clearRememberMe() {
+        _state.rememberMe = false;
+        _state.rememberMeUntil = null;
+        try { localStorage.removeItem('q8_auth_prefs_v1'); } catch (e) { /* ignore */ }
+    }
+
     function saveNotifications() {
         try {
             localStorage.setItem('q8_notifications_v1', JSON.stringify(_state.notifications));
@@ -270,6 +286,8 @@ Q8.State = (function() {
         load: load,
         save: save,
         savePlates: savePlates,
+        saveAuthPrefs: saveAuthPrefs,
+        clearRememberMe: clearRememberMe,
         saveNotifications: saveNotifications,
         loadNotifications: loadNotifications,
         saveFavorites: saveFavorites,

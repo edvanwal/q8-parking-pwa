@@ -72,7 +72,7 @@
   --z-map-ui: 400; --z-header: 800; --z-banner: 810; --z-overlay: 900; --z-modal: 1000; --z-toast: 1100;
 }
 
-/* Prevent text cursor (I-beam) and blinking caret on non-input elements - desktop UX */
+/* Prevent text cursor (I-beam) on non-input elements - desktop UX */
 #app, .screen, .bottom-sheet, .overlay-backdrop { cursor: default; }
 #app .card:not([data-action]) { cursor: default; }
 #app input, #app textarea, #app [contenteditable="true"] { cursor: text; }
@@ -468,86 +468,6 @@
 }
 .q8-price-marker.q8-price-marker--selected::after {
     border-top-color: #ce1818;
-}
-
-/* Facility markers (garages & P+R) – distinct from zone price pins */
-.q8-facility-marker {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    margin-left: -20px;
-    margin-top: -40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #0d9488;
-    border: 2px solid #fff;
-    border-radius: 50%;
-    box-sizing: border-box;
-    cursor: pointer;
-    font-size: 11px;
-    font-weight: 700;
-    color: #fff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    pointer-events: auto;
-}
-.q8-facility-marker:hover {
-    background-color: #0f766e;
-}
-
-/* B1: Laadpunten markers op kaart */
-.q8-charging-marker {
-    position: absolute;
-    width: 28px;
-    height: 28px;
-    margin-left: -14px;
-    margin-top: -14px;
-    border-radius: 50%;
-    background: #059669;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    pointer-events: auto;
-}
-.q8-charging-marker:hover {
-    background: #047857;
-}
-
-/* Garages & P+R floating button (map screen) */
-.facilities-float-btn {
-    position: absolute;
-    bottom: 24px;
-    right: 16px;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 10px 14px;
-    background: var(--primary, #003D6B);
-    color: #fff;
-    border-radius: 24px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-.facilities-float-btn:hover {
-    opacity: 0.95;
-}
-.facilities-float-label {
-    white-space: nowrap;
-}
-@media (max-width: 400px) {
-    .facilities-float-label { display: none; }
-}
-#btn-charging-points-float {
-    bottom: 76px;
-}
-#btn-charging-points-float[aria-pressed="true"] {
-    background: #059669;
 }
 
 /* Leaflet Custom Marker Reset */
@@ -1223,8 +1143,8 @@ body {
 }
 .search-result-item:last-child { border-bottom: none; }
 .search-result-item:hover { background: var(--q8-surface-2); }
-.search-result-item:focus-within { outline: 2px solid var(--primary); outline-offset: -2px; }
 .search-result-item:active { background: var(--bg-app); }
+.search-result-item:focus-within { outline: 2px solid var(--primary); outline-offset: -2px; }
 .search-result-text { flex: 1; font-size: 0.95rem; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; }
 .search-result-text .search-highlight { color: var(--primary); font-weight: 700; }
 .search-result-price { font-weight: 700; font-size: 0.9rem; color: var(--primary); flex-shrink: 0; }
@@ -1658,7 +1578,6 @@ body {
   font-weight: 700; font-size: 1.125rem;
 }
 
-/* History Filter Button Container */
 /* History: quick filters (in één oogopslag op mobiel) */
 .history-quick-filters {
   flex-shrink: 0;
@@ -1703,6 +1622,7 @@ body {
   min-height: 0;
 }
 
+/* History Filter Button Container */
 #history-filter-container {
   position: fixed; bottom: 80px; left: 0; right: 0;
   padding: 20px; z-index: 10; pointer-events: none;
