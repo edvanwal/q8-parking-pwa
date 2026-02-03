@@ -157,6 +157,48 @@ Q8.UI = (function() {
             }
         }
 
+        // Favorieten-strip + laatst gebruikte zone
+        const favStrip = document.getElementById('favorites-strip');
+        if (favStrip && !hideSearchUI) {
+            const nl = state.language === 'nl';
+            let lastUsedUid = '', lastUsedZoneId = '', lastUsedZone = null;
+            try {
+                lastUsedUid = localStorage.getItem('q8_last_used_zone_uid') || '';
+                lastUsedZoneId = localStorage.getItem('q8_last_used_zone_id') || lastUsedUid;
+            } catch (e) { /* ignore */ }
+            if (lastUsedUid) lastUsedZone = state.zones.find(z => z.uid === lastUsedUid || z.id === lastUsedUid || z.id === lastUsedZoneId);
+
+            const favs = (state.favorites || []).slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+            const favZones = favs.map(f => {
+                const zone = state.zones.find(z => z.uid === f.zoneUid || z.id === f.zoneUid || z.id === f.zoneId);
+                return zone ? { ...zone, zoneUid: zone.uid || zone.id, favName: f.name } : null;
+            }).filter(Boolean);
+
+            const hasLast = lastUsedZone && lastUsedUid;
+            const hasFavs = favZones.length > 0;
+            if (hasLast || hasFavs) {
+                let pills = '';
+                if (hasLast) {
+                    const uid = lastUsedZone.uid || lastUsedZone.id;
+                    const zid = lastUsedZoneId || lastUsedZone.id;
+                    pills += `<button type="button" class="favorite-pill last-used-pill" data-action="open-overlay" data-target="sheet-zone" data-zone-uid="${uid}" data-zone="${zid}" data-price="${lastUsedZone.price != null ? lastUsedZone.price : ''}" data-rates='${JSON.stringify(lastUsedZone.rates || [])}'>${nl ? 'Laatst: ' : 'Last: '}${zid}</button>`;
+                }
+                favZones.forEach(z => {
+                    const uid = z.uid || z.id;
+                    const zoneId = z.id || uid;
+                    const title = (z.favName && z.favName.trim()) ? z.favName.trim() : zoneId;
+                    pills += `<button type="button" class="favorite-pill" data-action="open-overlay" data-target="sheet-zone" data-zone-uid="${uid}" data-zone="${zoneId}" data-price="${z.price != null ? z.price : ''}" data-rates='${JSON.stringify(z.rates || [])}'>${title}</button>`;
+                });
+                favStrip.innerHTML = `<div class="favorites-strip-label">${nl ? 'Favorieten' : 'Favorites'}</div><div class="favorites-strip-scroll">${pills}</div>`;
+                favStrip.classList.remove('hidden');
+            } else {
+                favStrip.innerHTML = '';
+                favStrip.classList.add('hidden');
+            }
+        } else if (favStrip) {
+            favStrip.classList.add('hidden');
+        }
+
         // Zones loading / error indicator
         const zonesLoadingEl = document.getElementById('zones-loading-overlay');
         const zonesErrorEl = document.getElementById('zones-load-error');
