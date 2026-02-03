@@ -874,9 +874,12 @@ body {
   margin-bottom: 8px;
 }
 .sheet-section-duration { margin-bottom: var(--space-3); }
+/* 3.1 Tap targets: min 44×44 px */
 .sheet-duration-btn {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 50%;
   border: 1px solid var(--border);
   background: var(--surface);
@@ -1858,8 +1861,8 @@ body {
   }
   
   .sheet-duration-btn {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
   }
   
   .active-parking-card {
