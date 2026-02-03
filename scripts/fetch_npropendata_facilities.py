@@ -134,6 +134,7 @@ def parse_static_data(static_json, list_item):
         "openingTimesSummary": None,
         "paymentMethods": None,
         "updated_at": datetime.now(timezone.utc).isoformat(),
+        "staticDataLastUpdated": list_item.get("staticDataLastUpdated"),  # voor --incremental
     }
 
     # Specifications (eerste item)
