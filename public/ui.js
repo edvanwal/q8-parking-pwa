@@ -491,6 +491,23 @@ Q8.UI = (function() {
             durationLabelEl.textContent = state.language === 'nl' ? 'Duur' : 'Parking duration';
         }
 
+        // Standaard duur: label + welke pill geselecteerd
+        const defaultDurLabel = document.getElementById('default-duration-label');
+        const defaultDurPills = document.querySelectorAll('.duration-default-pill');
+        const defMin = state.defaultDurationMinutes || 0;
+        if (defaultDurLabel) {
+            defaultDurLabel.textContent = state.language === 'nl' ? 'Standaard duur' : 'Default duration';
+        }
+        defaultDurPills.forEach(btn => {
+            const min = parseInt(btn.getAttribute('data-minutes'), 10);
+            const nl = state.language === 'nl';
+            if (min === 0) btn.textContent = nl ? 'Tot stoppen' : 'Until stopped';
+            else if (min === 60) btn.textContent = '1u';
+            else if (min === 120) btn.textContent = '2u';
+            else if (min === 180) btn.textContent = '3u';
+            btn.classList.toggle('selected', defMin === min);
+        });
+
         // Favorite button state
         const favOutline = document.getElementById('fav-icon-outline');
         const favFilled = document.getElementById('fav-icon-filled');
