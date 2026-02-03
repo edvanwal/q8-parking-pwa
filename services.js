@@ -32,6 +32,63 @@ Q8.Services = (function() {
 
     let _historyUnsub = null;
 
+    const REMEMBER_ME_DAYS = 30;
+    const REMEMBER_ME_MS = REMEMBER_ME_DAYS * 24 * 60 * 60 * 1000;
+
+    function getAuthPersistenceConst(name) {
+        // Compat SDK exposes these constants; keep defensive for safety.
+        try {
+            const P = firebase?.auth?.Auth?.Persistence;
+            if (!P) return null;
+            return P[name] || null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function isRememberMeExpired() {
+        const until = S.get.rememberMeUntil;
+        return typeof until === 'number' && until > 0 && Date.now() > until;
+    }
+
+    function clearRememberMePrefs() {
+        S.update({ rememberMe: false, rememberMeUntil: null });
+        if (S.clearRememberMe) S.clearRememberMe();
+        else if (S.saveAuthPrefs) S.saveAuthPrefs();
+    }
+
+    function ensureRememberMeNotExpired() {
+        if (!auth) return Promise.resolve();
+        // If expired, force sign-out and reset prefs to avoid surprise auto-login.
+        if (S.get.rememberMe && isRememberMeExpired()) {
+            clearRememberMePrefs();
+            const session = getAuthPersistenceConst('SESSION');
+            return (session ? auth.setPersistence(session) : Promise.resolve())
+                .catch(() => {})
+                .then(() => auth.signOut().catch(() => {}));
+        }
+        return Promise.resolve();
+    }
+
+    function applyAuthPersistenceForNextLogin() {
+        if (!auth) return Promise.resolve();
+
+        const remember = !!S.get.rememberMe;
+        const persistence = getAuthPersistenceConst(remember ? 'LOCAL' : 'SESSION');
+
+        // Update 30-day window only when remember-me is enabled
+        if (remember) {
+            const until = Date.now() + REMEMBER_ME_MS;
+            S.update({ rememberMeUntil: until });
+        } else {
+            S.update({ rememberMeUntil: null });
+        }
+        if (S.saveAuthPrefs) S.saveAuthPrefs();
+
+        if (!persistence) return Promise.resolve();
+        return auth.setPersistence(persistence);
+    }
+
     function restoreSessionFromFirestore(uid) {
         if (!db || !uid || S.get.session) return Promise.resolve();
         return db.collection('sessions')
@@ -63,7 +120,9 @@ Q8.Services = (function() {
 
     function initAuthListener() {
         if (!auth) return;
-        auth.onAuthStateChanged(user => {
+        // Before listening, make sure a stale remember-me doesn't keep logging in.
+        ensureRememberMeNotExpired().finally(() => {
+            auth.onAuthStateChanged(user => {
             if (user) {
                 if (U && U.debug) U.debug('AUTH', "User Logged In", user.email);
                 restoreSessionFromFirestore(user.uid);
@@ -79,6 +138,7 @@ Q8.Services = (function() {
                     setScreen('login');
                 }
             }
+            });
         });
     }
 
@@ -198,7 +258,10 @@ Q8.Services = (function() {
 
     function loginUser(email, password) {
         if (U && U.debug) U.debug('AUTH', 'Attempting Login', email);
-        return auth.signInWithEmailAndPassword(email, password)
+        // Important: set persistence BEFORE signIn, otherwise Firebase defaults apply.
+        return applyAuthPersistenceForNextLogin()
+            .catch(() => {}) // don't block login on persistence errors
+            .then(() => auth.signInWithEmailAndPassword(email, password))
             .then(() => {
                 S.save();
                 // updateUI handled by listener
@@ -207,7 +270,9 @@ Q8.Services = (function() {
 
     function registerUser(email, password) {
         if (U && U.debug) U.debug('AUTH', 'Attempting Register', email);
-        return auth.createUserWithEmailAndPassword(email, password)
+        return applyAuthPersistenceForNextLogin()
+            .catch(() => {})
+            .then(() => auth.createUserWithEmailAndPassword(email, password))
             .then(() => {
                 S.save();
             });
