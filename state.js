@@ -13,6 +13,7 @@ Q8.State = (function() {
         language: 'en',       // 'nl' | 'en'
         darkMode: 'system',   // 'light' | 'dark' | 'system' (follow phone)
         rememberMe: false,
+        rememberMeUntil: null, // epoch ms when remember-me expires
         passwordVisible: false,
         infoBanner: null,     // { type: 'info', text: string, dismissible: boolean }
         activeOverlay: null,
@@ -91,14 +92,16 @@ Q8.State = (function() {
 
     function load() {
         Q8.Utils.debug('STATE', 'Loading local state...');
-        let savedSession, savedPlates;
+        let savedSession, savedPlates, savedAuthPrefs;
         try {
             savedSession = localStorage.getItem('q8_parking_session');
             savedPlates = localStorage.getItem('q8_plates_v1');
+            savedAuthPrefs = localStorage.getItem('q8_auth_prefs_v1');
         } catch (e) {
             console.warn('[PERSIST] localStorage access failed (private mode?)', e);
             savedSession = null;
             savedPlates = null;
+            savedAuthPrefs = null;
         }
 
         // 1. Session
@@ -125,6 +128,19 @@ Q8.State = (function() {
             } catch (e) {
                 console.warn('[PERSIST] Plates load failed, using empty', e);
                 _state.plates = [];
+            }
+        }
+
+        // 2b. Auth prefs (Remember me)
+        if (savedAuthPrefs) {
+            try {
+                const p = JSON.parse(savedAuthPrefs);
+                _state.rememberMe = !!p.rememberMe;
+                _state.rememberMeUntil = (typeof p.rememberMeUntil === 'number') ? p.rememberMeUntil : null;
+            } catch (e) {
+                console.warn('[PERSIST] Auth prefs load failed, using defaults', e);
+                _state.rememberMe = false;
+                _state.rememberMeUntil = null;
             }
         }
 
@@ -192,6 +208,21 @@ Q8.State = (function() {
         } catch (e) { console.warn('[PERSIST] Plates save failed', e); }
     }
 
+    function saveAuthPrefs() {
+        try {
+            localStorage.setItem('q8_auth_prefs_v1', JSON.stringify({
+                rememberMe: !!_state.rememberMe,
+                rememberMeUntil: _state.rememberMeUntil
+            }));
+        } catch (e) { console.warn('[PERSIST] Auth prefs save failed', e); }
+    }
+
+    function clearRememberMe() {
+        _state.rememberMe = false;
+        _state.rememberMeUntil = null;
+        try { localStorage.removeItem('q8_auth_prefs_v1'); } catch (e) { /* ignore */ }
+    }
+
     function saveNotifications() {
         try {
             localStorage.setItem('q8_notifications_v1', JSON.stringify(_state.notifications));
@@ -241,6 +272,8 @@ Q8.State = (function() {
         load: load,
         save: save,
         savePlates: savePlates,
+        saveAuthPrefs: saveAuthPrefs,
+        clearRememberMe: clearRememberMe,
         saveNotifications: saveNotifications,
         loadNotifications: loadNotifications,
         saveFavorites: saveFavorites,
