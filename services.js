@@ -424,8 +424,9 @@ Q8.Services = (function() {
         // Risk: contextData.uid/zone missing when clicked from marker with wrong data-* attributes.
         if (id === 'sheet-zone') {
             if (S.get.session !== null) {
-                if(Q8.UI && Q8.UI.showToast) Q8.UI.showToast("You have an active session.");
-                else if(typeof window.showToast === 'function') window.showToast("You have an active session.");
+                const msg = S.get.language === 'nl' ? 'Je hebt al een actieve sessie.' : 'You have an active session.';
+                if(Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg);
+                else if(typeof window.showToast === 'function') window.showToast(msg);
                 return;
             }
 
@@ -798,8 +799,9 @@ Q8.Services = (function() {
         }
 
         addNotification('sessionEndedByUser', S.get.language === 'nl' ? 'Parkeersessie beëindigd' : 'Parking session ended', `${session.zone} · ${session.plate || ''}`);
-        if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast('Parking session ended');
-        else if (typeof window.showToast === 'function') window.showToast('Parking session ended');
+        const endMsg = S.get.language === 'nl' ? 'Parkeersessie beëindigd' : 'Parking session ended';
+        if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(endMsg);
+        else if (typeof window.showToast === 'function') window.showToast(endMsg);
     }
 
     // --- MODIFY ACTIVE SESSION END TIME ---
@@ -846,16 +848,17 @@ Q8.Services = (function() {
         S.save();
 
         if (hitLimit && delta > 0) {
+            const nl = S.get.language === 'nl';
             const toast = (msg) => {
                 if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg, 'error');
                 else if (typeof window.showToast === 'function') window.showToast(msg, 'error');
             };
             if (maxDurMins >= 1440) {
-                toast('Max parking duration reached');
+                toast(nl ? 'Maximale parkeerduur bereikt' : 'Max parking duration reached');
             } else {
                 const hours = Math.floor(maxDurMins / 60);
-                const hoursStr = hours === 1 ? '1 hour' : `${hours} hours`;
-                toast(`Maximum parking duration for this zone is ${hoursStr}`);
+                const hoursStr = nl ? (hours === 1 ? '1 uur' : `${hours} uur`) : (hours === 1 ? '1 hour' : `${hours} hours`);
+                toast(nl ? `Maximale parkeerduur voor deze zone is ${hoursStr}` : `Maximum parking duration for this zone is ${hoursStr}`);
             }
         }
     }
