@@ -64,7 +64,31 @@ Q8.UI = (function() {
         // PWA Gate
         if (state.installMode.active) {
             renderInstallGate();
+        } else if (state.screen === 'parking') {
+            updateOnboardingOverlay();
         }
+    }
+
+    function updateOnboardingOverlay() {
+        const state = S.get;
+        const overlay = document.getElementById('onboarding-overlay');
+        if (!overlay) return;
+        let done = false;
+        try { done = !!localStorage.getItem('q8_onboarding_done'); } catch (e) { /* ignore */ }
+        if (done) {
+            overlay.classList.add('hidden');
+            return;
+        }
+        const isEn = state.language === 'en';
+        const titleEl = document.getElementById('onboarding-title');
+        const textEl = document.getElementById('onboarding-text');
+        const btnEl = overlay.querySelector('[data-action="dismiss-onboarding"]');
+        if (titleEl) titleEl.textContent = isEn ? 'Welcome' : 'Welkom';
+        if (textEl) textEl.textContent = isEn
+            ? 'This is the map. Search for a zone or tap a marker to start parking.'
+            : 'Dit is de kaart. Zoek een zone of tik op een marker om te starten.';
+        if (btnEl) btnEl.textContent = isEn ? 'Got it' : 'Begrepen';
+        overlay.classList.remove('hidden');
     }
 
     function renderParkingView() {
@@ -1437,6 +1461,17 @@ Q8.UI = (function() {
         `;
         const genericContent = platform === 'ios' ? iosSteps : (platform === 'android' ? androidSteps : (iosSteps + androidSteps));
 
+        const whyBlock = `
+            <div class="install-why-card">
+                <div class="card-section-title">${t.whyTitle}</div>
+                <ul class="install-why-list" aria-label="${t.whyTitle}">
+                    <li>${t.why1}</li>
+                    <li>${t.why2}</li>
+                    <li>${t.why3}</li>
+                </ul>
+            </div>
+        `;
+
         gate.innerHTML = `
             <div class="install-container">
                 <div class="install-lang-toggle">
@@ -1448,11 +1483,15 @@ Q8.UI = (function() {
                     <h1 class="install-title">${t.title}</h1>
                     <p class="install-subtitle">${t.subtitle}</p>
                 </div>
+                ${whyBlock}
                 <div class="install-alert">
-                    <div class="alert-title">${isEn ? 'Install required' : 'Installatie vereist'}</div>
-                    <div class="alert-desc">${isEn ? 'Install the app on your phone to use Q8 Parking. Follow the steps below.' : 'Installeer de app op je telefoon om Q8 Parking te gebruiken. Volg de stappen hieronder.'}</div>
+                    <div class="alert-title">${isEn ? 'How to install' : 'Zo installeer je'}</div>
+                    <div class="alert-desc">${isEn ? 'Follow the steps below for your device.' : 'Volg de stappen hieronder voor jouw apparaat.'}</div>
                 </div>
                 ${genericContent}
+                <div class="install-later-row">
+                    <button type="button" class="btn btn-outline install-later-btn" data-action="dismiss-install-gate">${t.laterBtn}</button>
+                </div>
             </div>
         `;
     }
