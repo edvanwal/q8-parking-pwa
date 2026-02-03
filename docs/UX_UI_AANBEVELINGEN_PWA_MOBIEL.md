@@ -93,10 +93,10 @@
   - Op het parkeer-scherm een duidelijke banner of kaart: “Voeg een kenteken toe om te kunnen parkeren” met CTA naar “Kenteken toevoegen” (opent modal of navigeert naar Plates).  
   - Niet pas bij het openen van een zone-sheet pas laten merken dat er geen kenteken is.
 
-### 2.4 Zone-sheet & CTA (medium)
+### 2.4 Zone-sheet & CTA (medium) — **Deels geïmplementeerd**
 
 - **START PARKING altijd bereikbaar:**  
-  - Zone-sheet: “Sticky” footer met alleen de knop “START PARKING” (blijft onderaan zichtbaar bij scroll), of de sheet zo ontwerpen dat de knop zonder scroll zichtbaar is op standaard telefoonhoogtes.  
+  - Zone-sheet: “Sticky” footer met alleen de knop “START PARKING” ; alleen tarieven/duur scrollen, de knop blijft zichtbaar.  
 - **Duur:** Huidige “2h 00m” met −/+ is duidelijk; optie “Alleen starten, later stoppen” (geen vaste eindtijd) kan power users helpen – alleen als dit in de business logic past.
 
 ### 2.5 Kaart (medium)
