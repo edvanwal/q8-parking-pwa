@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 import time
 
+load_dotenv()
+
 # --- Config ---
 # Zie docs/RDW_DATASETS_VARIABELEN_EN_KOPPELVELDEN.md voor alle resource-IDs en uitbreiding gemeenten (sectie 9).
 MAPPING_URL = "https://opendata.rdw.nl/resource/qtex-qwd8.json"
@@ -29,7 +31,6 @@ ALIASES = {
 }
 
 # --- LLM Setup ---
-load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY")
 if API_KEY:
     genai.configure(api_key=API_KEY)
@@ -134,16 +135,23 @@ def run_update():
     db = firestore.client()
 
     print("Fetching RDW data...")
+    reference_date = datetime.now().strftime("%Y%m%d")  # voor optionele datumfilter (D2)
 
     # 1. Fetch Zones (Specs)
     zones_raw = []
     for mgr in TARGET_CITIES:
         zones_raw.extend(fetch_json(AREAS_URL, {"areamanagerid": mgr, "$limit": 5000}))
 
-    # 2. Mappings
+    # 2. Mappings (optioneel: alleen regelingen die nu geldig zijn: enddate null of >= vandaag)
     mapping_raw = []
+    mapping_params_base = {"$limit": 5000}
+    if USE_DATE_FILTER:
+        mapping_params_base["$where"] = (
+            "enddatearearegulation is null or enddatearearegulation >= '" + reference_date + "'"
+        )
+        print("  Using date filter for mappings (enddatearearegulation null or >= today).")
     for mgr in TARGET_CITIES:
-        mapping_raw.extend(fetch_json(MAPPING_URL, {"areamanagerid": mgr, "$limit": 5000}))
+        mapping_raw.extend(fetch_json(MAPPING_URL, {"areamanagerid": mgr, **mapping_params_base}))
     mapping_raw.sort(key=lambda x: x.get('startdatearearegulation', '0'), reverse=True)
     area_to_reg = {}
     proc_map = set()
