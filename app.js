@@ -386,6 +386,8 @@ Q8.App = (function() {
                     break;
                 case 'toggle-remember':
                     S.update({ rememberMe: !S.get.rememberMe });
+                    // Persist preference immediately (so it survives refresh before login)
+                    if (S.saveAuthPrefs) S.saveAuthPrefs();
                     break;
                 case 'login':
                     const email = document.getElementById('inp-email')?.value;
