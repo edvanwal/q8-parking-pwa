@@ -1394,6 +1394,11 @@ Q8.UI = (function() {
         const t = {
             title: isEn ? 'Install app' : 'App installeren',
             subtitle: isEn ? 'Add Q8 Parking to your home screen for the best experience' : 'Voeg Q8 Parking toe aan je startscherm voor de beste ervaring',
+            whyTitle: isEn ? 'Why install?' : 'Waarom installeren?',
+            why1: isEn ? 'Open faster from your home screen' : 'Sneller openen vanaf je startscherm',
+            why2: isEn ? 'Notifications when parking is about to end' : 'Meldingen wanneer parkeren bijna afloopt',
+            why3: isEn ? 'Works better offline' : 'Werkt beter offline',
+            laterBtn: isEn ? 'Continue in browser' : 'Doorgaan in browser',
             iosTitle: isEn ? 'Install on iPhone / iPad' : 'Installeren op iPhone / iPad',
             iosStep1: isEn ? 'Open this page in <b>Safari</b>' : 'Open deze pagina in <b>Safari</b>',
             iosStep2: isEn ? 'Tap the <b>Share</b> button' : 'Tik op het <b>Deel</b>-icoon',
