@@ -13,7 +13,7 @@
 | 1 | Open de app → Login (of al ingelogd) | Login kan frustrerend zijn als “Remember me” niet werkt. |
 | 2 | Kaart + zoekbalk (Zone / Adres) | Zoekbalk zweeft; op kleine schermen kan die de kaart bedekken. Zone vs. Adres is duidelijk. |
 | 3 | Zoek zone of adres → Klik resultaat/marker | Zoekresultaten en markers logisch; verbeterd: duidelijke “geen resultaten”-tekst, grotere tap-targets op mobiel, zoekveld sluit bij openen zone. |
-| 4 | Zone-sheet opent (tarieven, duur, kenteken) | Veel info; “START PARKING” staat onderaan – moet scrollen op kleine schermen. |
+| 4 | Zone-sheet opent (tarieven, duur, kenteken) | Veel info; “START PARKING” Opgelost: "START PARKING" staat in een sticky footer; alleen tarieven/duur scrollen. |
 | 5 | Bevestigingsmodal (zone + kenteken) | Extra stap; nuttig voor zekerheid, maar vertraagt “snel parkeren”. |
 | 6 | Sessie gestart → Actieve parkeerkaart + timer | Duidelijk. “END PARKING” prominent. |
 
