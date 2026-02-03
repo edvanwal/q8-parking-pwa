@@ -385,10 +385,15 @@ Q8.App = (function() {
                      S.update({ installMode: { ...S.get.installMode, language: target.getAttribute('data-lang') } });
                      UI.renderInstallGate();
                     break;
-                case 'dismiss-install-gate':
+                case 'dismiss-install-gate': {
+                    const visitCount = S.get.installMode.visitCount;
+                    try {
+                        if (visitCount != null) localStorage.setItem('q8_install_gate_dismissed_at', String(visitCount));
+                    } catch (e) { /* ignore */ }
                     S.update({ installMode: { ...S.get.installMode, active: false } });
                     if (UI.update) UI.update();
                     break;
+                }
                 case 'dismiss-onboarding':
                     try { localStorage.setItem('q8_onboarding_done', '1'); } catch (e) { /* ignore */ }
                     const onboardingEl = document.getElementById('onboarding-overlay');

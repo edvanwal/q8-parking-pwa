@@ -1125,7 +1125,17 @@ Q8.Services = (function() {
 
         if (isTouch && !isStandalone) {
             const platform = isIOS ? 'ios' : (isAndroid ? 'android' : 'generic');
-            S.update({ installMode: { ...S.get.installMode, active: true, platform } });
+            // Gate niet elke keer: alleen op 1e bezoek, daarna weer op 3e bezoek (na "Doorgaan in browser")
+            let visitCount = 0;
+            let dismissedAt = null;
+            try {
+                visitCount = parseInt(localStorage.getItem('q8_install_visit_count') || '0', 10) + 1;
+                localStorage.setItem('q8_install_visit_count', String(visitCount));
+                const raw = localStorage.getItem('q8_install_gate_dismissed_at');
+                dismissedAt = raw ? parseInt(raw, 10) : null;
+            } catch (e) { /* ignore */ }
+            const showGate = dismissedAt == null || visitCount >= dismissedAt + 2;
+            S.update({ installMode: { ...S.get.installMode, active: showGate, platform, visitCount } });
         } else {
             S.update({ installMode: { ...S.get.installMode, active: false } });
         }
