@@ -1171,6 +1171,14 @@ body {
   width: 100%; text-align: left;
 }
 .side-menu .menu-item-pill:active { background: #E5E7EB; }
+.side-menu .menu-item-pill.menu-item-secondary {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px dashed var(--border);
+}
+.side-menu .menu-item-pill.menu-item-secondary .menu-icon-circle { color: var(--text-tertiary); }
+.side-menu .menu-item-pill.menu-item-secondary:active { background: var(--bg-secondary); }
 .side-menu .menu-icon-circle {
   width: 32px; height: 32px;
   display: flex; align-items: center; justify-content: center;
