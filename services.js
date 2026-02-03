@@ -65,7 +65,16 @@ Q8.Services = (function() {
             const session = getAuthPersistenceConst('SESSION');
             return (session ? auth.setPersistence(session) : Promise.resolve())
                 .catch(() => {})
-                .then(() => auth.signOut().catch(() => {}));
+                .then(() => auth.signOut().catch(() => {}))
+                .then(() => {
+                    const msg = S.get.language === 'nl'
+                        ? 'Sessie verlopen. Log opnieuw in.'
+                        : 'Session expired. Please sign in again.';
+                    setTimeout(() => {
+                        if (Q8.UI && Q8.UI.showToast) Q8.UI.showToast(msg, 'error');
+                        else if (typeof window.showToast === 'function') window.showToast(msg, 'error');
+                    }, 100);
+                });
         }
         return Promise.resolve();
     }
