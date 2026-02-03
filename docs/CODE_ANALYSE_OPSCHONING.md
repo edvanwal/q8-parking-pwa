@@ -21,13 +21,9 @@ Grondige analyse van de codebase: mogelijke problemen, conflicten, opschoning en
 ### 2.1 Root vs. public – services.js niet gesynchroniseerd
 
 - **Feit:** `scripts/sync-to-public.js` kopieert **niet** `services.js` ("public has portal/fleet integration").
-- **Gevolg:** Twee varianten: root (eenvoudiger) en public (portal, fleet, notificatiesync).
-- **Probleem:** In **root** ontbreekt o.a.:
-  - `syncNotificationSettingsToFirestore` – functie bestaat niet, wordt niet geëxporteerd.
-  - `app.js` roept wel `Services.syncNotificationSettingsToFirestore(next)` aan (met guard), dus er is geen runtime-fout, maar **notificatie-instellingen worden lokaal (root) niet naar Firestore weggeschreven**.
-- **Aanbeveling:**
-  - Of: in root een minimale versie van `syncNotificationSettingsToFirestore` implementeren (alleen `users/{uid}.notificationSettings` bijwerken) en exporteren, zodat hetzelfde gedrag lokaal en in productie werkt.
-  - Of: expliciet documenteren dat notificatie-sync alleen in de deployed (public) build werkt.
+- **Gevolg:** Twee varianten: root (eenvoudiger) en public (portal, fleet, extra integraties).
+- **Status – opgelost:** In root is `syncNotificationSettingsToFirestore` toegevoegd en geëxporteerd. Notificatie-instellingen worden daarmee ook lokaal (root) naar Firestore weggeschreven (`users/{uid}.notificationSettings`). Het gedrag is gelijk aan de public-build voor deze functionaliteit.
+- **Aanbeveling (blijft):** Bij wijzigingen aan services bewust zijn dat root en public kunnen divergeren; voor notificatie-sync is parity bereikt.
 
 ### 2.2 Muteerbare state-referentie
 
@@ -162,7 +158,7 @@ const toast = (msg) => {
 | Prioriteit | Actie |
 |------------|--------|
 | Hoog | **state.js:** Comment bij `screen` corrigeren (dubbele 'car-specs' / ontbrekende waarde). |
-| Hoog | **Root services.js:** Ofwel `syncNotificationSettingsToFirestore` implementeren + exporteren (voor parity met public), ofwel in docs vastleggen dat notificatie-sync alleen in public werkt. |
+| — | ~~**Root services.js:** `syncNotificationSettingsToFirestore` implementeren + exporteren~~ → **Opgelost.** |
 | Medium | **services.js:** Eén centrale `toast(msg, type)` helper; alle lokale `toast`-definities vervangen. |
 | Medium | **services.js:** Alle gebruikerszichtbare toasts i18n geven (NL/EN op basis van `S.get.language`). |
 | Laag | **service-worker.js:** Verwijderen of hernoemen naar `.legacy` en in docs vermelden. |
@@ -188,7 +184,7 @@ Geen grote refactor nodig; de genoemde punten zijn vooral verbeteringen en consi
 ## 8. Volgende stappen (aanbevolen volgorde)
 
 1. Comment in `state.js` corrigeren (eenmalige wijziging).
-2. Beslissen over notificatie-sync in root: ofwel functie toevoegen + exporteren, ofwel documenteren.
+2. ~~Notificatie-sync in root~~ – gedaan: functie toegevoegd en geëxporteerd.
 3. Centrale toast-helper in services en i18n voor toasts (in kleine stappen).
 4. Service worker opruimen (oude bestand) en legacy window-fallbacks na controle verwijderen.
 5. Optioneel: error handling en accessibility verder uitwerken in aparte taken.
