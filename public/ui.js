@@ -125,7 +125,7 @@ Q8.UI = (function() {
             zonesErrorEl.classList.toggle('hidden', !hasError);
             const msgEl = zonesErrorEl.querySelector('.zones-error-text');
             const nl = state.language === 'nl';
-            if (msgEl) msgEl.textContent = nl ? 'Kan parkeerzones niet laden. Controleer uw internetverbinding.' : 'Could not load parking zones. Check your internet connection.';
+            if (msgEl) msgEl.textContent = state.zonesLoadError || (nl ? 'Kan parkeerzones niet laden. Controleer uw internetverbinding.' : 'Could not load parking zones. Check your internet connection.';
             const retryBtn = zonesErrorEl.querySelector('[data-action="retry-load-zones"]');
             if (retryBtn) retryBtn.textContent = nl ? 'Opnieuw proberen' : 'Retry';
         }
