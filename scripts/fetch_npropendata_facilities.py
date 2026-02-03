@@ -224,10 +224,23 @@ def fetch_one_facility(list_item, dry_run=False):
         return None  # skip deze facility, ga door met de rest
 
 
+def _doc_from_list_item(list_item):
+    """Bouw een minimaal doc uit alleen de lijst (geen static fetch). Gebruikt bij --incremental als staticDataLastUpdated ongewijzigd."""
+    return {
+        "id": list_item.get("identifier"),
+        "name": list_item.get("name"),
+        "dynamicDataUrl": list_item.get("dynamicDataUrl") or None,
+        "staticDataLastUpdated": list_item.get("staticDataLastUpdated"),
+        "type": _facility_type_from_name(list_item.get("name") or ""),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description="Fetch npropendata facilities (garage + P+R) to Firestore")
     parser.add_argument("--dry-run", action="store_true", help="Do not write to Firestore, only print count and sample")
     parser.add_argument("--limit", type=int, default=0, help="Max number of facilities to fetch (0 = all)")
+    parser.add_argument("--incremental", action="store_true", help="Skip static fetch when staticDataLastUpdated unchanged (faster weekly run)")
     args = parser.parse_args()
 
     # Firebase (vanuit projectroot: service-account.json)
@@ -246,6 +259,18 @@ def main():
             firebase_admin.initialize_app(cred)
         db = firestore.client()
 
+    # Bij --incremental: laad bestaande docs (id -> doc) om staticDataLastUpdated te vergelijken
+    existing_by_id = {}
+    if args.incremental and not args.dry_run and db:
+        try:
+            for doc in db.collection("facilities").stream():
+                d = doc.to_dict()
+                existing_by_id[d.get("id")] = d
+            print(f"Incremental: loaded {len(existing_by_id)} existing facilities from Firestore.")
+        except Exception as e:
+            print(f"Incremental: could not load existing docs: {e}. Doing full fetch.", file=sys.stderr)
+            existing_by_id = {}
+
     print("Fetching facility list...")
     raw = fetch_json(FACILITY_LIST_URL)
     facilities_list = raw.get("ParkingFacilities") or []
@@ -255,14 +280,32 @@ def main():
     print(f"Found {len(to_fetch)} garage/P+R facilities (of {len(facilities_list)} total).")
 
     results = []
-    with ThreadPoolExecutor(max_workers=CONCURRENT_REQUESTS) as executor:
-        futures = {executor.submit(fetch_one_facility, item, args.dry_run): item for item in to_fetch}
-        for i, future in enumerate(as_completed(futures)):
-            doc = future.result()
-            if doc:
-                results.append(doc)
-            if (i + 1) % 50 == 0:
-                print(f"  Progress: {i + 1}/{len(to_fetch)}")
+    skipped_incremental = 0
+    for item in to_fetch:
+        fid = item.get("identifier")
+        list_ts = item.get("staticDataLastUpdated")
+        existing = existing_by_id.get(fid) if args.incremental else None
+        if args.incremental and existing and existing.get("staticDataLastUpdated") == list_ts and existing.get("lat") is not None:
+            # Hergebruik bestaand doc; werk alleen updated_at en list-velden bij
+            doc = dict(existing)
+            doc["updated_at"] = datetime.now(timezone.utc).isoformat()
+            if item.get("name") is not None:
+                doc["name"] = item.get("name")
+            if "dynamicDataUrl" in item:
+                doc["dynamicDataUrl"] = item.get("dynamicDataUrl") or None
+            doc["staticDataLastUpdated"] = list_ts
+            results.append(doc)
+            skipped_incremental += 1
+            continue
+        # Full fetch (eventueel in parallel)
+        doc = fetch_one_facility(item, args.dry_run)
+        if doc:
+            if list_ts is not None:
+                doc["staticDataLastUpdated"] = list_ts
+            results.append(doc)
+
+    if args.incremental and skipped_incremental:
+        print(f"Incremental: reused {skipped_incremental} facilities (no static fetch).")
     print(f"Parsed {len(results)} facilities with valid coordinates.")
 
     if args.dry_run:
