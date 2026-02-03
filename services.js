@@ -292,7 +292,9 @@ Q8.Services = (function() {
                 }
                 resolve(zones);
             }, (error) => {
-                const msg = error && error.message ? error.message : 'Network error';
+                const msg = S.get.language === 'nl'
+                    ? 'Tarieven tijdelijk niet beschikbaar. Controleer uw internet of probeer het later opnieuw.'
+                    : 'Rates temporarily unavailable. Check your connection or try again later.';
                 S.update({ zonesLoading: false, zonesLoadError: msg });
                 diag('onSnapshot', 'error', error && error.message);
                 console.error("Firestore zones sync error:", error);
