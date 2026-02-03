@@ -85,7 +85,7 @@
 - **Standaard duur:** Gebruiker kan in instellingen of in de zone-sheet een “standaard duur” (bijv. 2 uur) kiezen; dan hoeft hij alleen nog op “START PARKING” te tikken.  
 - **Herinnering vorige zone:** Bij terugkomen op de kaart (zonder actieve sessie) de laatst gebruikte zone kort highlighten of in zoekbalk voorstellen (optioneel, privacy-vriendelijk).
 
-### 2.3 Eerste keer / geen kenteken (medium)
+### 2.3 Eerste keer / geen kenteken (medium) — **Geïmplementeerd**
 
 - **Empty state kentekens:** Als `plates.length === 0`:  
   - Op het parkeer-scherm een duidelijke banner of kaart: “Voeg een kenteken toe om te kunnen parkeren” met CTA naar “Kenteken toevoegen” (opent modal of navigeert naar Plates).  
