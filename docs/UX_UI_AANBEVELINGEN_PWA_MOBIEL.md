@@ -2,6 +2,8 @@
 
 **Doel:** Verbeteringen voor gebruikerservaring en interface, gericht op **mobiel gebruik** en **installatie op telefoon** (PWA). Gebaseerd op customer journeys, bestaande documentatie en huidige implementatie.
 
+**Laatste update:** februari 2026 – status "Opgelost"/"Gereed" bijgewerkt voor zone-sheet sticky CTA, empty state kentekens, quick filters historie en prioriteitenmatrix.
+
 ---
 
 ## 1. Customer journeys – overzicht
