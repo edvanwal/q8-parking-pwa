@@ -21,7 +21,7 @@
 
 **Knelpunten:**  
 - Geen “snel parkeren”-pad voor gebruikers die altijd dezelfde zone/kenteken gebruiken (bijv. favoriet → één tap naar start).  
-- Zone-sheet kan op telefoon hoog zijn; CTA “START PARKING” niet altijd direct zichtbaar.  
+- **Opgelost:** Zone-sheet heeft sticky footer; CTA “START PARKING” blijft zichtbaar.  
 - Geen duidelijke “Mijn locatie”-knop in de kaart-UI voor “waar ben ik?”.
 
 ---
@@ -65,7 +65,7 @@
 
 **Knelpunten:**  
 - **Opgelost:** Op het history-scherm staan nu quick filter-pills (Alles, Laatste 7 dagen, Laatste 30 dagen, Deze maand) direct onder de header; filter op datum/voertuig is in één oogopslag zichtbaar via samenvatting + "Meer filters". Eerder: “filter op datum/voertuig” niet in één oogopslag zichtbaar.  
-- Geen duidelijke “laatste 7 dagen” of “deze maand” quick filters.
+- **Opgelost:** Quick filters “Laatste 7 dagen” en “Deze maand” zijn beschikbaar.
 
 ---
 
@@ -96,7 +96,7 @@
 ### 2.4 Zone-sheet & CTA (medium) — **Deels geïmplementeerd**
 
 - **START PARKING altijd bereikbaar:**  
-  - **Opgelost:** Zone-sheet heeft een sticky footer; “Sticky” footer met alleen de knop “START PARKING” ; alleen tarieven/duur scrollen, de knop blijft zichtbaar.  
+  - **Opgelost:** Zone-sheet heeft een sticky footer met “START PARKING”; alleen tarieven/duur scrollen, de knop blijft zichtbaar.  
 - **Duur:** Huidige “2h 00m” met −/+ is duidelijk; optie “Alleen starten, later stoppen” (geen vaste eindtijd) kan power users helpen – alleen als dit in de business logic past.
 
 ### 2.5 Kaart (medium)
