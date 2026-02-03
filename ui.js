@@ -1210,9 +1210,10 @@ Q8.UI = (function() {
         if (matches.length === 0) {
             container.className = 'search-results-panel search-results-panel--pill';
             container.style.display = 'block';
+            const query = (state.searchQuery || '').trim();
             const noResultsMsg = state.language === 'nl'
-                ? `Geen zones gevonden voor "${(state.searchQuery || '').trim()}". Probeer een ander zone-nummer of adres.`
-                : `No zones found for "${(state.searchQuery || '').trim()}". Try a different zone number or address.`;
+                ? (query ? `Geen zones gevonden voor "${query}". Probeer een ander zone-nummer of adres.` : 'Geen zones gevonden. Probeer een zone-nummer of adres.')
+                : (query ? `No zones found for "${query}". Try a different zone number or address.` : 'No zones found. Try a zone number or address.');
             container.innerHTML = '<div class="search-result-empty" style="padding:20px 20px 24px; text-align:center; color:var(--text-secondary); font-size:0.95rem; line-height:1.5;">' + noResultsMsg + '</div>';
             return;
         }
