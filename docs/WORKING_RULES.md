@@ -26,6 +26,9 @@
   - What works now
 - Never explain changes in code terms unless explicitly asked.
 
+## State Management
+- Application state lives in `Q8.State` (state.js). State may **only** be changed via `State.update(changes)`. Mutating `State.get` directly (e.g. `State.get.plates.push(...)` or `State.get.zones = []`) is **forbidden**; it would bypass UI updates and cause hard-to-debug bugs.
+
 ## Absolute Restrictions (Hard Stop Rules)
 Agents may NOT modify the following without explicit approval:
 - Deployment

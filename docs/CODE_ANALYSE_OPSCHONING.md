@@ -30,7 +30,7 @@ Grondige analyse van de codebase: mogelijke problemen, conflicten, opschoning en
 - **Feit:** `Q8.State` geeft `get: _state` terug – dezelfde objectreferentie.
 - **Risico:** Iets als `S.get.plates.push(...)` of `S.get.zones = []` zou state buiten `S.update()` om wijzigen en de UI niet updaten; ook lastiger te debuggen.
 - **Huidige situatie:** Er is nergens directe mutatie van `S.get.zones`/`plates`/`session` gevonden; overal wordt `S.update()` gebruikt.
-- **Aanbeveling:** In `ARCHITECTURE.md` of `WORKING_RULES.md` vastleggen: "State mag alleen via `State.update()` gewijzigd worden; mutatie van `State.get` is verboden." Optioneel: voor gevoelige keys een getter die een shallow copy teruggeeft (alleen als je wilt afdwingen dat niemand per ongeluk muteert).
+- **Status – opgelost:** De regel is vastgelegd in **WORKING_RULES.md** (sectie State Management) en in **ARCHITECTURE.md** (state.js): state mag alleen via `State.update()` gewijzigd worden; directe mutatie van `State.get` is verboden.
 
 ### 2.3 Firestore-rules – dubbele aanroep `userDoc()`
 

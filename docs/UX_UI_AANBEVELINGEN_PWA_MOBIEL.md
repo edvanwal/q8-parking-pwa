@@ -158,15 +158,15 @@
 
 | Prioriteit | Onderwerp | Impact | Inspanning | Status |
 |------------|-----------|--------|------------|--------|
-| Hoog | Install-gate: platformstappen + “waarom” + “Later” | Hoog | Medium |
-| Hoog | Favorieten snel toegankelijk op kaart (strip of iconen) | Hoog | Medium |
+| Hoog | Install-gate: platformstappen + “waarom” + “Later” | Hoog | Medium | Open |
+| Hoog | Favorieten snel toegankelijk op kaart (strip of iconen) | Hoog | Medium | Open |
 | Hoog | Sticky “START PARKING” of CTA altijd zichtbaar in zone-sheet | Hoog | Laag | **Gereed** |
-| Medium | “Mijn locatie”-knop op kaart | Medium | Laag |
+| Medium | “Mijn locatie”-knop op kaart | Medium | Laag | Open |
 | Medium | Empty state: “Voeg kenteken toe” als geen kentekens | Medium | Laag | **Gereed** |
-| Medium | Bottom navigation (Parkeren | Historie | Meer) | Medium | Hoog |
-| Medium | Eerste-keer tooltip na install (“Zoek zone of adres”) | Medium | Laag |
+| Medium | Bottom navigation (Parkeren, Historie, Meer) | Medium | Hoog |
+| Medium | Eerste-keer tooltip na install (“Zoek zone of adres”) | Medium | Laag | Open |
 | Laag | Quick filters historie (7 dagen, deze maand) | Laag | Medium | **Gereed** |
-| Laag | WCAG-check knoppen/tekst (contrast) | Medium | Laag |
+| Laag | WCAG-check knoppen/tekst (contrast) | Medium | Laag | Open |
 
 ---
 

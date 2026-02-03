@@ -61,6 +61,7 @@ User ends parking  →  handleEndParking()  →  state.session = null
 
 ### state.js – Shared State
 
+- State is read via `State.get` and updated **only** via `State.update(changes)`. Direct mutation of `State.get` is forbidden (see WORKING_RULES.md).
 - **session**: `{ zone, zoneUid, start, end }` – active parking
 - **selectedZone**: uid or id of chosen zone
 - **duration**: minutes (0 = until stopped)
