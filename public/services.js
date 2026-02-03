@@ -538,13 +538,42 @@ Q8.Services = (function() {
             const points = [];
             elements.forEach(function(el) {
                 if (el.type === 'node' && el.lat != null && el.lon != null) {
+                    const tags = el.tags || {};
+
+                    // Normaliseer connector-types op basis van OSM-tags
+                    const connectors = [];
+                    if (tags['socket:type2'] || tags['socket:type2:output']) connectors.push('type2');
+                    if (tags['socket:chademo'] || tags['socket:chademo:output']) connectors.push('chademo');
+                    if (tags['socket:ccs_combo'] || tags['socket:ccs_combo:output']) connectors.push('ccs');
+                    if (tags['socket:schuko'] || tags['socket:schuko:output'] || tags['socket:domestic']) connectors.push('schuko');
+
+                    // Vermogen (kW) uit maxpower waar beschikbaar
+                    let powerKw = null;
+                    if (tags.maxpower) {
+                        const m = String(tags.maxpower).match(/([\d.,]+)/);
+                        if (m) {
+                            const raw = parseFloat(m[1].replace(',', '.'));
+                            if (!isNaN(raw)) {
+                                powerKw = raw > 1000 ? raw / 1000 : raw; // vang eventuele waarden in W af
+                            }
+                        }
+                    }
+
+                    let capacity = null;
+                    if (tags.capacity) {
+                        const c = parseInt(String(tags.capacity), 10);
+                        capacity = isNaN(c) ? null : c;
+                    }
+
                     points.push({
                         id: el.id,
                         lat: el.lat,
                         lng: el.lon,
-                        operator: (el.tags && el.tags.operator) || null,
-                        capacity: (el.tags && el.tags.capacity) || null,
-                        socket: (el.tags && (el.tags.socket || el.tags['socket:type2'])) || null
+                        operator: tags.operator || null,
+                        capacity: capacity,
+                        socket: tags.socket || tags['socket:type2'] || null,
+                        connectors: connectors,
+                        powerKw: powerKw
                     });
                 }
             });
@@ -564,6 +593,18 @@ Q8.Services = (function() {
     function setShowChargingPoints(show) {
         S.update({ showChargingPoints: !!show });
         if (Q8.UI && typeof Q8.UI.renderMapMarkers === 'function') Q8.UI.renderMapMarkers();
+    }
+
+    // B2: laadpunten-filters (connector/vermogen)
+    function setChargingFilters(filters) {
+        const current = S.get.chargingFilters || { minPowerKw: null, connectors: [] };
+        const next = {
+            ...current,
+            ...filters
+        };
+        S.update({ chargingFilters: next });
+        if (Q8.UI && typeof Q8.UI.renderMapMarkers === 'function') Q8.UI.renderMapMarkers();
+        if (Q8.UI && typeof Q8.UI.update === 'function') Q8.UI.update();
     }
 
     function loadZones() {
@@ -1408,6 +1449,7 @@ Q8.Services = (function() {
         retryLoadFacilities: () => loadFacilities(0),
         loadChargingPoints,
         setShowChargingPoints,
+        setChargingFilters,
         geocodeAndSearch,
         detectSearchMode,
         setScreen,
