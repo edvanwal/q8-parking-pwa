@@ -156,16 +156,16 @@
 
 ## 4. Korte prioriteitenmatrix
 
-| Prioriteit | Onderwerp | Impact | Inspanning |
-|------------|-----------|--------|------------|
+| Prioriteit | Onderwerp | Impact | Inspanning | Status |
+|------------|-----------|--------|------------|--------|
 | Hoog | Install-gate: platformstappen + “waarom” + “Later” | Hoog | Medium |
 | Hoog | Favorieten snel toegankelijk op kaart (strip of iconen) | Hoog | Medium |
-| Hoog | Sticky “START PARKING” of CTA altijd zichtbaar in zone-sheet | Hoog | Laag |
+| Hoog | Sticky “START PARKING” of CTA altijd zichtbaar in zone-sheet | Hoog | Laag | **Gereed** |
 | Medium | “Mijn locatie”-knop op kaart | Medium | Laag |
-| Medium | Empty state: “Voeg kenteken toe” als geen kentekens | Medium | Laag |
+| Medium | Empty state: “Voeg kenteken toe” als geen kentekens | Medium | Laag | **Gereed** |
 | Medium | Bottom navigation (Parkeren | Historie | Meer) | Medium | Hoog |
 | Medium | Eerste-keer tooltip na install (“Zoek zone of adres”) | Medium | Laag |
-| Laag | Quick filters historie (7 dagen, deze maand) | Laag | Medium |
+| Laag | Quick filters historie (7 dagen, deze maand) | Laag | Medium | **Gereed** |
 | Laag | WCAG-check knoppen/tekst (contrast) | Medium | Laag |
 
 ---
