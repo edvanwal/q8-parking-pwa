@@ -791,7 +791,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('[Q8] Connection lost');
         document.body.classList.add('offline');
         if (Q8.UI && Q8.UI.showToast) {
-            Q8.UI.showToast(S.get && S.get.language === 'nl' ? 'Je bent offline' : 'You are offline', 'error');
+            Q8.UI.showToast(S.get && S.get.language === 'nl' ? 'Geen verbinding. Je kunt nog wel je actieve parkeren zien.' : 'No connection. You can still see your active parking.', 'error');
         }
     });
 });
