@@ -224,18 +224,6 @@ def fetch_one_facility(list_item, dry_run=False):
         return None  # skip deze facility, ga door met de rest
 
 
-def _doc_from_list_item(list_item):
-    """Bouw een minimaal doc uit alleen de lijst (geen static fetch). Gebruikt bij --incremental als staticDataLastUpdated ongewijzigd."""
-    return {
-        "id": list_item.get("identifier"),
-        "name": list_item.get("name"),
-        "dynamicDataUrl": list_item.get("dynamicDataUrl") or None,
-        "staticDataLastUpdated": list_item.get("staticDataLastUpdated"),
-        "type": _facility_type_from_name(list_item.get("name") or ""),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
-    }
-
-
 def main():
     parser = argparse.ArgumentParser(description="Fetch npropendata facilities (garage + P+R) to Firestore")
     parser.add_argument("--dry-run", action="store_true", help="Do not write to Firestore, only print count and sample")

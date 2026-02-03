@@ -299,4 +299,4 @@ Voor een **tweede bron** (bijv. npropendata voor zones in meer gemeenten) zie `d
 
 ---
 
-*Zie ook: `docs/RAPPORT_NPR_RDW_SHPV_PARKERDATA_ANALYSE.md`, `docs/ONDERZOEKSPRAPPORT_TARIEVEN_PARKEREN.md`, `docs/PLAN_GARAGES_P_R_NPROPENDATA.md`, `docs/RAPPORT_DATABRONNEN_VARIABELEN_PLAN.md`, en `fetch_rdw_data.py`.*
+*Zie ook: `docs/RAPPORT_NPR_RDW_SHPV_PARKERDATA_ANALYSE.md`, `docs/ONDERZOEKSPRAPPORT_TARIEVEN_PARKEREN.md`, `docs/PLAN_GARAGES_P_R_NPROPENDATA.md`, `docs/RAPPORT_DATABRONNEN_VARIABELEN_PLAN.md`, `docs/DATA_PIPELINE.md` (cron, datumfilter, incremental), en `fetch_rdw_data.py`.*
