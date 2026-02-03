@@ -110,6 +110,15 @@ Q8.UI = (function() {
         }
         if (activeParking) activeParking.style.display = isActive ? 'block' : 'none';
 
+        // Mijn locatie-knop: zichtbaar als er geen zone geselecteerd is en geen actieve sessie
+        const btnMyLocation = document.getElementById('btn-my-location');
+        if (btnMyLocation) {
+            btnMyLocation.style.display = hideSearchUI ? 'none' : 'block';
+            const locLabel = state.language === 'nl' ? 'Mijn locatie' : 'My location';
+            btnMyLocation.setAttribute('aria-label', locLabel);
+            btnMyLocation.setAttribute('title', locLabel);
+        }
+
         // Zones loading / error indicator
         const zonesLoadingEl = document.getElementById('zones-loading-overlay');
         const zonesErrorEl = document.getElementById('zones-load-error');

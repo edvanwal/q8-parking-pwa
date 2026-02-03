@@ -283,6 +283,27 @@
     }
 }
 
+/* Mijn locatie-knop op de kaart */
+.map-location-fab {
+  position: absolute;
+  bottom: calc(20px + var(--safe-area-bottom));
+  right: 16px;
+  z-index: var(--z-map-ui);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-float);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  -webkit-tap-highlight-color: transparent;
+}
+.map-location-fab:hover { background: var(--q8-surface-2); }
+.map-location-fab:active { transform: scale(0.96); }
+
 /* Q8 Price Markers (OverlayView - fixed size, no shrink bug) */
 .q8-price-marker {
     position: absolute;
