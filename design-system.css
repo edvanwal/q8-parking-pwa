@@ -853,8 +853,13 @@ body {
   padding: 0 12px;
   font-size: 1rem;
 }
+/* 3.1 Tap target min 44px */
 .sheet-zone-plate-badge {
   padding: 6px 12px;
+  min-height: 44px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
   background: var(--bg-app);
   border-radius: 9999px;
   font-size: 0.9rem;
