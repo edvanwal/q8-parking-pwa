@@ -7,12 +7,17 @@ import google.generativeai as genai
 import time
 
 # --- Config ---
+# Zie docs/RDW_DATASETS_VARIABELEN_EN_KOPPELVELDEN.md voor alle resource-IDs en uitbreiding gemeenten (sectie 9).
 MAPPING_URL = "https://opendata.rdw.nl/resource/qtex-qwd8.json"
 TIJDVAK_URL = "https://opendata.rdw.nl/resource/ixf8-gtwq.json"
 TARIEFDEEL_URL = "https://opendata.rdw.nl/resource/534e-5vdg.json"
 DESC_URL = "https://opendata.rdw.nl/resource/yefi-qfiq.json"
 CALC_URL = "https://opendata.rdw.nl/resource/nfzq-8g7y.json"
 AREAS_URL = "https://opendata.rdw.nl/resource/b3us-f26s.json"
+
+# Optioneel: alleen nu geldige regelingen ophalen (minder payload). Zet RDW_USE_DATE_FILTER=1 in omgeving.
+# Volledig "incrementeel" (alleen gewijzigde records) vereist last_modified van RDW; nu: full fetch, updated_at = run-timestamp.
+USE_DATE_FILTER = os.environ.get("RDW_USE_DATE_FILTER", "").strip().lower() in ("1", "true", "yes")
 
 TARGET_CITIES = {
     "363": "Amsterdam", "599": "Rotterdam", "518": "Den Haag",
