@@ -2,11 +2,9 @@
 D1 / T1 – Tariefintegriteit (RAPPORT_DATABRONNEN_VARIABELEN_PLAN.md, RAPPORT_NPR_RDW_SHPV_PARKERDATA_ANALYSE.md)
 Check: zones mogen geen lege rates hebben terwijl price > 0;
        price moet overeenkomen met max uurtarief uit rates (rate_numeric).
-Gebruik: python scripts/check_tarief_integriteit.py [--firestore]
+Gebruik: python scripts/check_tarief_integriteit.py
          Exit code 0 = ok, 1 = één of meer schendingen (bruikbaar in CI).
-         Zonder --firestore: geen check (alleen --help). Met --firestore: leest zones uit Firestore.
 """
-import argparse
 import os
 import sys
 import math
@@ -64,10 +62,6 @@ def check_zone_integrity(zid, d):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="D1 Tariefintegriteit: check zones in Firestore")
-    parser.add_argument("--firestore", action="store_true", help="Run check against Firestore (default if no other source)")
-    args = parser.parse_args()
-
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     cred_path = os.path.join(root, "service-account.json")
     if not os.path.isfile(cred_path):
