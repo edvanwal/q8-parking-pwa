@@ -342,6 +342,98 @@
   }
 }
 
+/* Favorieten-strip: horizontale balk direct onder zoekbalk */
+.favorites-strip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--safe-area-top) + 68px);
+  z-index: var(--z-map-ui);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 10px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.favorites-strip.hidden { display: none !important; }
+.favorites-strip-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+.favorites-strip-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  min-width: 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.favorites-strip-scroll::-webkit-scrollbar { display: none; }
+.favorite-pill {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-main);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.favorite-pill:hover, .favorite-pill:active { background: var(--primary); color: white; border-color: var(--primary); }
+
+/* Laatst gebruikte zone chip */
+.last-used-chip-wrap {
+  position: absolute;
+  left: 16px;
+  top: calc(var(--safe-area-top) + 68px);
+  z-index: var(--z-map-ui);
+}
+.last-used-chip-wrap.hidden { display: none !important; }
+.last-used-zone-chip {
+  padding: 6px 12px;
+  border-radius: 9999px;
+  border: 1px dashed var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+.last-used-zone-chip:hover { background: var(--bg-secondary); color: var(--primary); }
+
+/* Zone sheet: standaard duur pills */
+.sheet-section-default-duration { margin-top: 8px; }
+.default-duration-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.duration-default-pill {
+  padding: 8px 14px;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-main);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.duration-default-pill.selected { background: var(--primary); color: white; border-color: var(--primary); }
+.duration-default-pill:hover:not(.selected) { background: var(--q8-surface-2); }
+
+@media (max-width: 768px) {
+  .favorites-strip { top: auto; position: relative; margin: 0 12px 8px; border-radius: 12px; border: 1px solid var(--border); }
+  .last-used-chip-wrap { top: auto; position: relative; margin: 0 16px 8px; }
+}
+
 /* Q8 Price Markers (OverlayView - fixed size, no shrink bug) */
 .q8-price-marker {
     position: absolute;
