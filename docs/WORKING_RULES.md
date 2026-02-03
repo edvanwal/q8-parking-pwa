@@ -55,6 +55,10 @@ Without explicit approval: NO ACTION.
 - Follow `directives/ui-parking-pwa.md` when touching UI behavior.
 - Visual changes are forbidden unless requested.
 
+## Verificatie in de browser
+- Na wijzigingen aan de frontend/UI moet de agent **eigen werk in de browser controleren** met de browser-MCP (navigeer naar de app op http://localhost:3000, maak een snapshot, test de gewijzigde flow).
+- Zie `.cursor/rules/verify-in-browser.mdc` voor de concrete stappen.
+
 ## Conflict Handling (Multiple Agents)
 - Only ONE agent may modify code at any given time.
 - Other agents must operate in READ-ONLY mode:
