@@ -279,14 +279,14 @@ def main():
         to_fetch = to_fetch[: args.limit]
     print(f"Found {len(to_fetch)} garage/P+R facilities (of {len(facilities_list)} total).")
 
-    results = []
-    skipped_incremental = 0
+    # Bij --incremental: scheid items die we kunnen hergebruiken vs. opnieuw ophalen
+    reused_results = []
+    need_static_fetch = []
     for item in to_fetch:
         fid = item.get("identifier")
         list_ts = item.get("staticDataLastUpdated")
         existing = existing_by_id.get(fid) if args.incremental else None
         if args.incremental and existing and existing.get("staticDataLastUpdated") == list_ts and existing.get("lat") is not None:
-            # Hergebruik bestaand doc; werk alleen updated_at en list-velden bij
             doc = dict(existing)
             doc["updated_at"] = datetime.now(timezone.utc).isoformat()
             if item.get("name") is not None:
@@ -294,18 +294,28 @@ def main():
             if "dynamicDataUrl" in item:
                 doc["dynamicDataUrl"] = item.get("dynamicDataUrl") or None
             doc["staticDataLastUpdated"] = list_ts
-            results.append(doc)
-            skipped_incremental += 1
-            continue
-        # Full fetch (eventueel in parallel)
-        doc = fetch_one_facility(item, args.dry_run)
-        if doc:
-            if list_ts is not None:
-                doc["staticDataLastUpdated"] = list_ts
-            results.append(doc)
+            reused_results.append(doc)
+        else:
+            need_static_fetch.append(item)
 
-    if args.incremental and skipped_incremental:
-        print(f"Incremental: reused {skipped_incremental} facilities (no static fetch).")
+    if args.incremental and reused_results:
+        print(f"Incremental: reusing {len(reused_results)} facilities (no static fetch).")
+
+    fetched_results = []
+    if need_static_fetch:
+        with ThreadPoolExecutor(max_workers=CONCURRENT_REQUESTS) as executor:
+            future_to_item = {executor.submit(fetch_one_facility, item, args.dry_run): item for item in need_static_fetch}
+            for i, future in enumerate(as_completed(future_to_item)):
+                doc = future.result()
+                if doc:
+                    item = future_to_item[future]
+                    if item and item.get("staticDataLastUpdated") is not None:
+                        doc["staticDataLastUpdated"] = item.get("staticDataLastUpdated")
+                    fetched_results.append(doc)
+                if (i + 1) % 50 == 0:
+                    print(f"  Progress: {i + 1}/{len(need_static_fetch)}")
+
+    results = reused_results + fetched_results
     print(f"Parsed {len(results)} facilities with valid coordinates.")
 
     if args.dry_run:
