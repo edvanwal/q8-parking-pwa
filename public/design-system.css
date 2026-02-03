@@ -255,6 +255,30 @@
     background: #f0f0f0; /* Fallback */
 }
 
+/* Small screens: search bar in flow above map (no overlap) */
+@media screen and (max-width: 768px) {
+    .map-area {
+        display: flex;
+        flex-direction: column;
+    }
+    .map-area .map-search-float {
+        position: static;
+        flex-shrink: 0;
+        margin: 10px 12px 0;
+        width: auto;
+        top: auto;
+        left: auto;
+        right: auto;
+        transform: none;
+    }
+    .map-area #map-container {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+        inset: auto;
+    }
+}
+
 /* Q8 Price Markers (OverlayView - fixed size, no shrink bug) */
 .q8-price-marker {
     position: absolute;
