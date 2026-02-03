@@ -495,19 +495,29 @@ def run_update():
     print(f"Filtered out {skipped_count} zones. Uploading {len(filtered_zones)} valid zones...")
 
     # D1: tariefintegriteit – check vóór upload (geen lege rates bij price > 0; price vs max(rate_numeric))
-    try:
-        from scripts.check_tarief_integriteit import check_zone_integrity
-        integrity_violations = []
-        for z in filtered_zones:
-            doc_id = f"{z['mgr_id']}_{z['id']}" if z['id'] != z['name'] else z['id']
-            integrity_violations.extend(check_zone_integrity(doc_id, z))
-        if integrity_violations:
-            print("D1 Tariefintegriteit: schendingen gevonden (geen upload):")
-            for zid, code, msg in integrity_violations:
-                print(f"  [{zid}] {code}: {msg}")
-            sys.exit(1)
-    except ImportError:
-        pass  # script kan standalone draaien zonder scripts-package
+    _tol = 0.02
+    integrity_violations = []
+    for z in filtered_zones:
+        doc_id = f"{z['mgr_id']}_{z['id']}" if z['id'] != z['name'] else z['id']
+        p = float(z.get("price") or 0)
+        rates = z.get("rates") or []
+        if p > 0 and (not isinstance(rates, list) or len(rates) == 0):
+            integrity_violations.append((doc_id, "empty_rates_price_positive", f"price={p} but rates empty"))
+        elif rates and isinstance(rates, list):
+            nums = []
+            for r in rates:
+                if isinstance(r, dict) and r.get("rate_numeric") is not None:
+                    try:
+                        nums.append(float(r["rate_numeric"]))
+                    except (TypeError, ValueError):
+                        pass
+            if nums and p > 0 and abs(p - max(nums)) > _tol:
+                integrity_violations.append((doc_id, "price_mismatch_max_rate", f"price={p} max(rate_numeric)={max(nums)}"))
+    if integrity_violations:
+        print("D1 Tariefintegriteit: schendingen gevonden (geen upload):")
+        for zid, code, msg in integrity_violations:
+            print(f"  [{zid}] {code}: {msg}")
+        sys.exit(1)
 
     # D2: timestamp per run for debugging / datum- en versiecontrole
     run_updated_at = datetime.now(timezone.utc).isoformat()
