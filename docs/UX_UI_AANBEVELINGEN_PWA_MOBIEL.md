@@ -49,7 +49,7 @@
 | 3 | In zone-sheet: klik op kentekenbadge → plate selector sheet | Goed; snel wisselen zonder naar Plates te gaan. |
 
 **Knelpunten:**  
-- Wie nog geen kenteken heeft, komt daar pas in zone-sheet achter (na zoeken/klik). Beter: na login of op kaart een duidelijke hint “Voeg een kenteken toe” als `plates.length === 0`.  
+- **Opgelost:** Op het parkeer-/kaartscherm wordt een hint “Voeg een kenteken toe” als `plates.length === 0`.  
 - Menu-item “Car specs” is voor veel gebruikers minder belangrijk; kan secundair.
 
 ---
