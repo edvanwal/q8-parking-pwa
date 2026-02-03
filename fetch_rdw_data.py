@@ -1,4 +1,4 @@
-import urllib.request, json, urllib.parse, os
+import urllib.request, json, urllib.parse, os, sys
 from datetime import datetime, timezone
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -493,6 +493,21 @@ def run_update():
         filtered_zones.append(z)
 
     print(f"Filtered out {skipped_count} zones. Uploading {len(filtered_zones)} valid zones...")
+
+    # D1: tariefintegriteit – check vóór upload (geen lege rates bij price > 0; price vs max(rate_numeric))
+    try:
+        from scripts.check_tarief_integriteit import check_zone_integrity
+        integrity_violations = []
+        for z in filtered_zones:
+            doc_id = f"{z['mgr_id']}_{z['id']}" if z['id'] != z['name'] else z['id']
+            integrity_violations.extend(check_zone_integrity(doc_id, z))
+        if integrity_violations:
+            print("D1 Tariefintegriteit: schendingen gevonden (geen upload):")
+            for zid, code, msg in integrity_violations:
+                print(f"  [{zid}] {code}: {msg}")
+            sys.exit(1)
+    except ImportError:
+        pass  # script kan standalone draaien zonder scripts-package
 
     # D2: timestamp per run for debugging / datum- en versiecontrole
     run_updated_at = datetime.now(timezone.utc).isoformat()
