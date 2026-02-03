@@ -6,47 +6,48 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // One read per evaluation; helpers use pre-fetched doc to avoid duplicate get().
     function userDoc() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
 
-    function userRole() {
-      return userDoc() != null ? userDoc().role : null;
+    function roleFromDoc(doc) {
+      return doc != null ? doc.role : null;
     }
 
-    function userTenantId() {
-      return userDoc() != null && userDoc().tenantId != null ? userDoc().tenantId : 'default';
+    function tenantIdFromDoc(doc) {
+      return doc != null && doc.tenantId != null ? doc.tenantId : 'default';
     }
 
-    function isFleetManager() {
-      return isAuthenticated() && userRole() == 'fleetmanager';
+    function isFleetManagerFromDoc(doc) {
+      return doc != null && roleFromDoc(doc) == 'fleetmanager';
     }
 
     // Users: alleen eigen doc lezen/schrijven, fleetmanager kan binnen tenant
     match /users/{userId} {
       allow read, write: if isAuthenticated() && (
         request.auth.uid == userId ||
-        (isFleetManager() && get(/databases/$(database)/documents/users/$(userId)).data.tenantId == userTenantId())
+        (let doc = userDoc(); isFleetManagerFromDoc(doc) && get(/databases/$(database)/documents/users/$(userId)).data.tenantId == tenantIdFromDoc(doc))
       );
     }
 
     // Invites: fleetmanager kan maken binnen eigen tenant
     match /invites/{inviteId} {
-      allow read: if isAuthenticated() && resource.data.tenantId == userTenantId();
-      allow create: if isFleetManager() && request.resource.data.tenantId == userTenantId();
-      allow update, delete: if isFleetManager() && resource.data.tenantId == userTenantId();
+      allow read: if isAuthenticated() && (let doc = userDoc(); resource.data.tenantId == tenantIdFromDoc(doc));
+      allow create: if isAuthenticated() && (let doc = userDoc(); isFleetManagerFromDoc(doc) && request.resource.data.tenantId == tenantIdFromDoc(doc));
+      allow update, delete: if isAuthenticated() && (let doc = userDoc(); isFleetManagerFromDoc(doc) && resource.data.tenantId == tenantIdFromDoc(doc));
     }
 
     // Sessions: driver eigen sessies, fleetmanager binnen tenant
     match /sessions/{sessionId} {
       allow read: if isAuthenticated() && (
         resource.data.userId == request.auth.uid ||
-        (isFleetManager() && resource.data.tenantId == userTenantId())
+        (let doc = userDoc(); isFleetManagerFromDoc(doc) && resource.data.tenantId == tenantIdFromDoc(doc))
       );
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isAuthenticated() && (
         resource.data.userId == request.auth.uid ||
-        (isFleetManager() && resource.data.tenantId == userTenantId())
+        (let doc = userDoc(); isFleetManagerFromDoc(doc) && resource.data.tenantId == tenantIdFromDoc(doc))
       );
     }
 
@@ -54,7 +55,7 @@ service cloud.firestore {
     match /transactions/{txId} {
       allow read: if isAuthenticated() && (
         resource.data.userId == request.auth.uid ||
-        (isFleetManager() && resource.data.tenantId == userTenantId())
+        (let doc = userDoc(); isFleetManagerFromDoc(doc) && resource.data.tenantId == tenantIdFromDoc(doc))
       );
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if false;
@@ -68,26 +69,26 @@ service cloud.firestore {
 
     // Tenants: fleetmanager eigen tenant
     match /tenants/{tenantId} {
-      allow read, write: if isFleetManager() && tenantId == userTenantId();
+      allow read, write: if isAuthenticated() && (let doc = userDoc(); isFleetManagerFromDoc(doc) && tenantId == tenantIdFromDoc(doc));
     }
 
     // AuditLog: alleen fleetmanager lezen binnen tenant
     match /auditLog/{logId} {
-      allow read: if isFleetManager() && resource.data.tenantId == userTenantId();
-      allow create: if isFleetManager() && request.resource.data.tenantId == userTenantId();
+      allow read: if isAuthenticated() && (let doc = userDoc(); isFleetManagerFromDoc(doc) && resource.data.tenantId == tenantIdFromDoc(doc));
+      allow create: if isAuthenticated() && (let doc = userDoc(); isFleetManagerFromDoc(doc) && request.resource.data.tenantId == tenantIdFromDoc(doc));
       allow update, delete: if false;
     }
 
     // parking_sessions: billing export, fleetmanager read within tenant; create via Cloud Function only
     match /parking_sessions/{psId} {
-      allow read: if isFleetManager() && resource.data.company_id == userTenantId();
+      allow read: if isAuthenticated() && (let doc = userDoc(); isFleetManagerFromDoc(doc) && resource.data.company_id == tenantIdFromDoc(doc));
       allow create: if false;
       allow update, delete: if false;
     }
 
     // monthly_subscriptions: billing, fleetmanager read within tenant; create via admin/Cloud Function
     match /monthly_subscriptions/{subId} {
-      allow read: if isFleetManager() && resource.data.company_id == userTenantId();
+      allow read: if isAuthenticated() && (let doc = userDoc(); isFleetManagerFromDoc(doc) && resource.data.company_id == tenantIdFromDoc(doc));
       allow create: if false;
       allow update, delete: if false;
     }
