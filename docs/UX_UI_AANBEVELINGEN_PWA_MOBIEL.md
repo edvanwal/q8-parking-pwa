@@ -11,7 +11,7 @@
 | Stap | Huidige flow | UX-observatie |
 |------|--------------|---------------|
 | 1 | Open de app → Login (of al ingelogd) | Login kan frustrerend zijn als “Remember me” niet werkt. |
-| 2 | Kaart + zoekbalk (Zone / Adres) | Zoekbalk zweeft; op kleine schermen kan die kaart bedekken. Zone vs. Adres is duidelijk. |
+| 2 | Kaart + zoekbalk (Zone / Adres) | Zoekbalk zweeft; op kleine schermen kan die de kaart bedekken. Zone vs. Adres is duidelijk. |
 | 3 | Zoek zone of adres → Klik resultaat/marker | Zoekresultaten en markers zijn logisch. |
 | 4 | Zone-sheet opent (tarieven, duur, kenteken) | Veel info; “START PARKING” staat onderaan – moet scrollen op kleine schermen. |
 | 5 | Bevestigingsmodal (zone + kenteken) | Extra stap; nuttig voor zekerheid, maar vertraagt “snel parkeren”. |
