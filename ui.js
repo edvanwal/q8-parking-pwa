@@ -157,6 +157,58 @@ Q8.UI = (function() {
             }
         }
 
+        // Favorieten-strip: compact horizontaal direct onder zoekbalk, altijd zichtbaar bij favs
+        const favStrip = document.getElementById('favorites-strip');
+        if (favStrip && !hideSearchUI) {
+            const favs = (state.favorites || []).slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+            const favZones = favs.map(f => {
+                const zone = state.zones.find(z => z.uid === f.zoneUid || z.id === f.zoneUid || z.id === f.zoneId);
+                return zone ? { ...zone, zoneUid: zone.uid || zone.id, favName: f.name } : null;
+            }).filter(Boolean);
+            if (favZones.length > 0) {
+                const nl = state.language === 'nl';
+                favStrip.innerHTML = `<div class="favorites-strip-label">${nl ? 'Favorieten' : 'Favorites'}</div><div class="favorites-strip-scroll">` + favZones.map(z => {
+                    const uid = z.uid || z.id;
+                    const zoneId = z.id || uid;
+                    const title = (z.favName && z.favName.trim()) ? z.favName.trim() : zoneId;
+                    return `<button type="button" class="favorite-pill" data-action="open-overlay" data-target="sheet-zone" data-zone-uid="${uid}" data-zone="${zoneId}" data-price="${z.price != null ? z.price : ''}" data-rates='${JSON.stringify(z.rates || [])}'>${title}</button>`;
+                }).join('') + '</div>';
+                favStrip.classList.remove('hidden');
+            } else {
+                favStrip.innerHTML = '';
+                favStrip.classList.add('hidden');
+            }
+        } else if (favStrip) {
+            favStrip.classList.add('hidden');
+        }
+
+        // Laatst gebruikte zone: chip tonen wanneer geen sessie en we hebben een opgeslagen zone
+        const lastUsedWrap = document.getElementById('last-used-zone-chip-wrap');
+        const lastUsedChip = document.getElementById('last-used-zone-chip');
+        const lastUsedLabel = document.getElementById('last-used-zone-label');
+        if (lastUsedWrap && lastUsedChip && lastUsedLabel && !hideSearchUI && !isActive) {
+            let uid = '', zoneId = '', price = '', rates = '[]';
+            try {
+                uid = localStorage.getItem('q8_last_used_zone_uid') || '';
+                zoneId = localStorage.getItem('q8_last_used_zone_id') || uid;
+            } catch (e) { /* ignore */ }
+            const zone = uid ? state.zones.find(z => z.uid === uid || z.id === uid || z.id === zoneId) : null;
+            if (zone && uid) {
+                price = (zone.price != null) ? String(zone.price) : '';
+                rates = JSON.stringify(zone.rates || []);
+                lastUsedLabel.textContent = (state.language === 'nl' ? 'Laatst: ' : 'Last: ') + (zoneId || zone.id);
+                lastUsedChip.setAttribute('data-zone-uid', uid);
+                lastUsedChip.setAttribute('data-zone', zoneId || zone.id);
+                lastUsedChip.setAttribute('data-price', price);
+                lastUsedChip.setAttribute('data-rates', rates);
+                lastUsedWrap.classList.remove('hidden');
+            } else {
+                lastUsedWrap.classList.add('hidden');
+            }
+        } else if (lastUsedWrap) {
+            lastUsedWrap.classList.add('hidden');
+        }
+
         // Zones loading / error indicator
         const zonesLoadingEl = document.getElementById('zones-loading-overlay');
         const zonesErrorEl = document.getElementById('zones-load-error');
