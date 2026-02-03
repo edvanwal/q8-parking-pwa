@@ -124,6 +124,12 @@
     font-weight: 500;
     margin: 0;
 }
+.zones-loading-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 8px 0 0 0;
+    font-weight: 400;
+}
 
 .map-search-bar {
     flex-shrink: 0;
@@ -1539,8 +1545,15 @@ body {
 }
 
 /* --- History UI Components (Refactored from Inline) --- */
+/* 3.6 Geen historie: titel + korte uitleg */
 .history-empty-state {
-  padding: 40px; text-align: center; color: var(--text-secondary);
+  padding: 40px 24px; text-align: center; color: var(--text-secondary);
+}
+.history-empty-state-title {
+  font-weight: 700; font-size: 1.1rem; color: var(--text-main); margin: 0 0 8px 0;
+}
+.history-empty-state-subtitle {
+  font-size: 0.95rem; color: var(--text-secondary); margin: 0; line-height: 1.5;
 }
 
 .history-card-header {

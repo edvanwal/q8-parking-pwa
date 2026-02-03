@@ -211,6 +211,8 @@ Q8.UI = (function() {
             zonesLoadingEl.classList.toggle('hidden', !loading || hasError);
             const textEl = zonesLoadingEl.querySelector('.zones-loading-text');
             if (textEl) textEl.textContent = state.language === 'nl' ? 'Parkeerzones laden...' : 'Loading parking zones...';
+            const subEl = zonesLoadingEl.querySelector('.zones-loading-subtitle');
+            if (subEl) subEl.textContent = state.language === 'nl' ? 'Zones worden geladen…' : 'Loading zones…';
         }
         if (zonesErrorEl) {
             const hasError = !state.zonesLoading && state.zonesLoadError;
@@ -917,7 +919,10 @@ Q8.UI = (function() {
 
         // 2. RENDER LIST
         if (filteredHistory.length === 0) {
-            list.innerHTML = '<div class="history-empty-state">No parking history found.</div>';
+            const nl = state.language === 'nl';
+            const title = nl ? 'Nog geen parkeersessies' : 'No parking sessions yet';
+            const subtitle = nl ? 'Hier verschijnen je sessies na het beëindigen.' : 'Your sessions will appear here after you end them.';
+            list.innerHTML = '<div class="history-empty-state"><p class="history-empty-state-title">' + title + '</p><p class="history-empty-state-subtitle">' + subtitle + '</p></div>';
         } else {
             filteredHistory.forEach(h => {
                 const zone = state.zones.find(z => z.id === h.zone || z.uid === h.zoneUid || z.uid === h.zone);
