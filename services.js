@@ -605,7 +605,7 @@ Q8.Services = (function() {
                 userId,
                 tenantId,
                 zone: displayId,
-                zoneUid: S.get.selectedZone,
+                zoneUid: zoneObj.uid || zoneObj.id,
                 plate: plateText,
                 start: firebase.firestore.Timestamp.fromDate(now),
                 end: endDate ? firebase.firestore.Timestamp.fromDate(endDate) : null,
