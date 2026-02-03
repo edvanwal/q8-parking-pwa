@@ -206,4 +206,97 @@ Zo krijg je per zone: *waar*, *welke regels*, *wanneer* (dagen/tijden), *hoeveel
 
 ---
 
-*Zie ook: `docs/RAPPORT_NPR_RDW_SHPV_PARKERDATA_ANALYSE.md`, `docs/ONDERZOEKSPRAPPORT_TARIEVEN_PARKEREN.md`, en `fetch_rdw_data.py`.*
+## 7. npropendata.rdw.nl (SPDP) – garages en P+R
+
+**Bron:** [npropendata.rdw.nl](https://npropendata.rdw.nl/) – NPR OpenData Web API (SPDP).  
+**Script:** `scripts/fetch_npropendata_facilities.py` → Firestore collectie `facilities`.
+
+### 7.1 Facility-lijst (GET /parkingdata/v2/)
+
+| Veld | Type | Uitleg |
+|------|------|--------|
+| `name` | string | Naam van de facility. |
+| `identifier` | string | UUID van de facility (document-ID in Firestore). |
+| `staticDataUrl` | string | URL om statische data per facility op te halen. |
+| `dynamicDataUrl` | string (optioneel) | URL voor dynamische bezetting (SPDP). |
+| `limitedAccess` | boolean (optioneel) | Beperkte toegang (bijv. vergunninghouders). |
+| `staticDataLastUpdated` | number (optioneel) | Unix-timestamp laatste wijziging static data (voor incrementeel verversen). |
+
+### 7.2 Static data per facility (GET staticDataUrl)
+
+Onder `parkingFacilityInformation` (en elders in de JSON):
+
+| Bron / veld | Uitleg |
+|-------------|--------|
+| `name`, `description` | Naam en omschrijving. |
+| `accessPoints[0].accessPointLocation[0]` | `latitude`, `longitude` (WGS84). |
+| `accessPoints[0].accessPointAddress` | `streetName`, `houseNumber`, `city`, `zipcode`. |
+| `specifications[]` | `capacity`, `chargingPointCapacity`, `disabledAccess`, `minimumHeightInMeters`, `usage` (bijv. "Garage parkeren"). |
+| `operator` | `name`, `url` (website). |
+| `openingTimes[]` | `openAllYear`, `entryTimes[]` (enterFrom/enterUntil, dayNames). |
+| `tariffs[]` | `tariffDescription`, `intervalRates[]` (charge, chargePeriod, durationType). |
+| `paymentMethods[]` | `method` (Banknotes, Maestro, Visa, etc.). |
+
+**Output in Firestore (per facility):** `id`, `name`, `description`, `lat`, `lng`, `type` (garage|p_r), `city`, `street`, `tariffSummary`, `dynamicDataUrl`, `capacity`, `chargingPointCapacity`, `disabledAccess`, `minimumHeightInMeters`, `operatorUrl`, `openingTimesSummary`, `paymentMethods`, `updated_at`. Optioneel: `staticDataLastUpdated` (bij gebruik van `--incremental`).
+
+---
+
+## 8. RDW Kenteken / voertuig (opendata.rdw.nl)
+
+**Gebruik in app:** `kenteken.js` – validatie, lookup merk/type, Car specs (inclusief brandstof/EV). Geen API-key; cache TTL 5 min.
+
+### 8.1 Gekentekende voertuigen (m9d7-ebf2)
+
+- **URL:** `https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken=XXX&$limit=1`
+- **Variabelen (selectie; dataset heeft ~98 kolommen):**
+
+| Veld | Type | Gebruik in app |
+|------|------|-----------------|
+| `kenteken` | string | Lookup-key. |
+| `merk` | string | Weergave (bijv. "Volkswagen"). |
+| `handelsbenaming` | string | Type/model. |
+| `voertuigsoort` | string | Personenoauto, vrachtwagen, etc. |
+| `eerste_kleur`, `tweede_kleur` | string | Optioneel. |
+| `vervaldatum_apk` | number | APK-vervaldatum. |
+| `datum_tenaamstelling` | number | Eerste tenaamstelling NL. |
+
+### 8.2 Gekentekende voertuigen brandstof (8ys7-d773)
+
+- **URL:** `https://opendata.rdw.nl/resource/8ys7-d773.json?kenteken=XXX&$limit=1`
+- **Variabelen (selectie):**
+
+| Veld | Type | Gebruik in app |
+|------|------|-----------------|
+| `kenteken` | string | Koppeling met voertuigen-dataset. |
+| `brandstof_omschrijving` | string | Gebruikt voor "is elektrisch?" (regex op elektriciteit|elektrisch|plugin|bev|ev). |
+| `emissiecode_omschrijving` | string | Voor milieuzones (zie docs/MILIEUZONE_KENTEKEN_PLAN.md). |
+
+---
+
+## 9. Uitbreiding gemeenten (areamanagerid)
+
+De pipeline voor straatparkeren filtert op **areamanagerid** (beheerder/gemeente). De set staat in `fetch_rdw_data.py` als **TARGET_CITIES**.
+
+### 9.1 Huidige gemeenten (TARGET_CITIES)
+
+| areamanagerid | Gemeente |
+|---------------|----------|
+| 363 | Amsterdam |
+| 599 | Rotterdam |
+| 518 | Den Haag |
+| 344 | Utrecht |
+| 268 | Nijmegen |
+| 307 | Amersfoort |
+
+### 9.2 Meer gemeenten toevoegen
+
+1. **Optioneel – lijst beheerders ophalen:**  
+   `https://opendata.rdw.nl/resource/5754-u6df.json?$limit=1000` levert o.a. `areamanagerid`; of gebruik dataset **b3us-f26s** met `$select=areamanagerid` en groepeer om unieke beheerders te zien.
+2. **In `fetch_rdw_data.py`:** Voeg een regel toe aan het dictionary `TARGET_CITIES`, bijv. `"XXX": "Gemeentenaam"`. Dezelfde set wordt gebruikt voor alle zes Socrata-datasets (AREAS, MAPPING, TIJDVAK, TARIEFDEEL, DESC, CALC).
+3. **Filter in de app:** `services.js` filtert zones op straatparkeren (`isStreetParkingZone`); uitgesloten usage-types (o.a. VERGUNP, BEWONERP, GARAGEP) staan in `EXCLUDED_USAGE`.
+
+Voor een **tweede bron** (bijv. npropendata voor zones in meer gemeenten) zie `docs/RAPPORT_NPR_RDW_SHPV_PARKERDATA_ANALYSE.md` (AANBEVELING E1).
+
+---
+
+*Zie ook: `docs/RAPPORT_NPR_RDW_SHPV_PARKERDATA_ANALYSE.md`, `docs/ONDERZOEKSPRAPPORT_TARIEVEN_PARKEREN.md`, `docs/PLAN_GARAGES_P_R_NPROPENDATA.md`, `docs/RAPPORT_DATABRONNEN_VARIABELEN_PLAN.md`, en `fetch_rdw_data.py`.*
