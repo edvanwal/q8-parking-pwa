@@ -487,7 +487,30 @@ Q8.App = (function() {
                     if (Services && Services.loadZones) Services.loadZones().catch(() => {});
                     break;
 
-                case 'go-to-my-location':
+                case 'go-to-my-location': {
+                    if (!Services || !Services.requestUserLocation) break;
+                    const locKey = 'q8_location_explanation_shown';
+                    let explained = false;
+                    try { explained = !!localStorage.getItem(locKey); } catch (e) { /* ignore */ }
+                    if (explained) {
+                        Services.requestUserLocation().then(loc => {
+                            if (!loc && UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Locatie niet beschikbaar. Controleer toestemming of GPS.' : 'Location not available. Check permission or GPS.', 'error');
+                        });
+                    } else {
+                        const nl = S.get.language === 'nl';
+                        const titleEl = document.getElementById('location-explanation-title');
+                        const textEl = document.getElementById('location-explanation-text');
+                        const btnEl = document.querySelector('#modal-location-explanation [data-action="confirm-location-explanation"]');
+                        if (titleEl) titleEl.textContent = nl ? 'Locatie' : 'Location';
+                        if (textEl) textEl.textContent = nl ? 'We gebruiken je locatie om nabije parkeerzones te tonen.' : 'We use your location to show nearby parking zones.';
+                        if (btnEl) btnEl.textContent = nl ? 'Toestaan' : 'Allow';
+                        S.update({ activeOverlay: 'modal-location-explanation' });
+                    }
+                    break;
+                }
+                case 'confirm-location-explanation':
+                    try { localStorage.setItem('q8_location_explanation_shown', '1'); } catch (e) { /* ignore */ }
+                    S.update({ activeOverlay: null });
                     if (Services && Services.requestUserLocation) {
                         Services.requestUserLocation().then(loc => {
                             if (!loc && UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Locatie niet beschikbaar. Controleer toestemming of GPS.' : 'Location not available. Check permission or GPS.', 'error');
