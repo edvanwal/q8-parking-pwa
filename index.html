@@ -813,6 +813,15 @@
   <!-- Overlay for Sidebar -->
   <div id="menu-overlay-backdrop" class="overlay-backdrop" data-action="toggle-menu"></div>
 
+  <!-- Onboarding: eenmalige korte uitleg na eerste open (parkeer-scherm) -->
+  <div id="onboarding-overlay" class="onboarding-overlay hidden" role="dialog" aria-labelledby="onboarding-title" aria-modal="true">
+    <div class="onboarding-card">
+      <h2 id="onboarding-title" class="onboarding-title">Welkom</h2>
+      <p id="onboarding-text" class="onboarding-text">Dit is de kaart. Zoek een zone of tik op een marker om te starten.</p>
+      <button type="button" class="btn btn-primary btn-lg onboarding-dismiss" data-action="dismiss-onboarding">Begrepen</button>
+    </div>
+  </div>
+
 </div>
 </body>
 </html>
