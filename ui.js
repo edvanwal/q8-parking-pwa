@@ -143,6 +143,20 @@ Q8.UI = (function() {
             btnMyLocation.setAttribute('title', locLabel);
         }
 
+        // Geen kenteken-hint: tonen op kaart wanneer plates.length === 0 (na login / op kaart)
+        const noPlatesHint = document.getElementById('no-plates-hint');
+        if (noPlatesHint) {
+            const showHint = !isActive && !state.selectedZone && state.plates.length === 0;
+            noPlatesHint.classList.toggle('hidden', !showHint);
+            if (showHint) {
+                const textEl = document.getElementById('no-plates-hint-text');
+                const ctaEl = document.getElementById('no-plates-hint-cta');
+                const nl = state.language === 'nl';
+                if (textEl) textEl.textContent = nl ? 'Voeg een kenteken toe om te kunnen parkeren.' : 'Add a license plate to start parking.';
+                if (ctaEl) ctaEl.textContent = nl ? 'Kenteken toevoegen' : 'Add license plate';
+            }
+        }
+
         // Zones loading / error indicator
         const zonesLoadingEl = document.getElementById('zones-loading-overlay');
         const zonesErrorEl = document.getElementById('zones-load-error');
