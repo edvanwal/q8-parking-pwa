@@ -1474,6 +1474,7 @@ Q8.Services = (function() {
         addNotification,
         handleAutoEndSession,
         requestNotificationPermission,
-        syncNotificationSettingsToFirestore
+        syncNotificationSettingsToFirestore,
+        requestUserLocation
     };
 })();

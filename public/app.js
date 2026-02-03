@@ -433,6 +433,14 @@ Q8.App = (function() {
                     if (Services && Services.loadZones) Services.loadZones().catch(() => {});
                     break;
 
+                case 'go-to-my-location':
+                    if (Services && Services.requestUserLocation) {
+                        Services.requestUserLocation().then(loc => {
+                            if (!loc && UI.showToast) UI.showToast(S.get.language === 'nl' ? 'Locatie niet beschikbaar. Controleer toestemming of GPS.' : 'Location not available. Check permission or GPS.', 'error');
+                        });
+                    }
+                    break;
+
                 case 'retry-load-facilities':
                     S.update({ facilitiesLoadError: null, facilitiesLoading: true });
                     if (Services && Services.retryLoadFacilities) Services.retryLoadFacilities();
