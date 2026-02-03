@@ -389,6 +389,11 @@ Q8.App = (function() {
                     S.update({ installMode: { ...S.get.installMode, active: false } });
                     if (UI.update) UI.update();
                     break;
+                case 'dismiss-onboarding':
+                    try { localStorage.setItem('q8_onboarding_done', '1'); } catch (e) { /* ignore */ }
+                    const onboardingEl = document.getElementById('onboarding-overlay');
+                    if (onboardingEl) onboardingEl.classList.add('hidden');
+                    break;
                 case 'toggle-password':
                     S.update({ passwordVisible: !S.get.passwordVisible });
                     break;

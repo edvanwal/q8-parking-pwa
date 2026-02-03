@@ -64,7 +64,31 @@ Q8.UI = (function() {
         // PWA Gate
         if (state.installMode.active) {
             renderInstallGate();
+        } else if (state.screen === 'parking') {
+            updateOnboardingOverlay();
         }
+    }
+
+    function updateOnboardingOverlay() {
+        const state = S.get;
+        const overlay = document.getElementById('onboarding-overlay');
+        if (!overlay) return;
+        let done = false;
+        try { done = !!localStorage.getItem('q8_onboarding_done'); } catch (e) { /* ignore */ }
+        if (done) {
+            overlay.classList.add('hidden');
+            return;
+        }
+        const isEn = state.language === 'en';
+        const titleEl = document.getElementById('onboarding-title');
+        const textEl = document.getElementById('onboarding-text');
+        const btnEl = overlay.querySelector('[data-action="dismiss-onboarding"]');
+        if (titleEl) titleEl.textContent = isEn ? 'Welcome' : 'Welkom';
+        if (textEl) textEl.textContent = isEn
+            ? 'This is the map. Search for a zone or tap a marker to start parking.'
+            : 'Dit is de kaart. Zoek een zone of tik op een marker om te starten.';
+        if (btnEl) btnEl.textContent = isEn ? 'Got it' : 'Begrepen';
+        overlay.classList.remove('hidden');
     }
 
     function renderParkingView() {
