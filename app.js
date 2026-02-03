@@ -142,6 +142,10 @@ Q8.App = (function() {
                             : (S.get.language === 'nl' ? 'Weet u zeker dat u dit kenteken wilt verwijderen?' : 'Are you sure you want to remove this license plate? This cannot be undone.');
                     }
                     Services.tryOpenOverlay(targetId, context);
+                    if (targetId === 'sheet-zone') {
+                        const inpSearch = document.getElementById('inp-search');
+                        if (inpSearch && document.activeElement === inpSearch) inpSearch.blur();
+                    }
                     break;
                 }
 
