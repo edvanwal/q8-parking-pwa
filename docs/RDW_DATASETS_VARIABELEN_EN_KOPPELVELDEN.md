@@ -2,8 +2,27 @@
 
 Overzicht van de **zes gekoppelde RDW-datasets** die de app gebruikt: alle variabelen (velden) met een uitleg “voor dummies” en de velden waarmee je de datasets aan elkaar koppelt.
 
-**Bron:** opendata.rdw.nl (Socrata).  
-**Gebruik in app:** `fetch_rdw_data.py` haalt deze data op en schrijft verwerkte zones naar Firestore.
+**Bronnen:** opendata.rdw.nl (Socrata), npropendata.rdw.nl (SPDP).  
+**Gebruik in app:** `fetch_rdw_data.py` → Firestore `zones`; `scripts/fetch_npropendata_facilities.py` → Firestore `facilities`; `kenteken.js` → RDW lookup (client-side). Zie ook secties 7 (npropendata), 8 (kenteken) en 9 (uitbreiding gemeenten).
+
+---
+
+## Quick reference – alle RDW-resources in dit project
+
+| Bron | Resource ID / endpoint | URL / opmerking | Gebruik |
+|------|------------------------|------------------|---------|
+| **Parkeer – Gebied** | b3us-f26s | `https://opendata.rdw.nl/resource/b3us-f26s.json` | fetch_rdw_data.py → zones |
+| **Parkeer – Regeling-mapping** | qtex-qwd8 | `https://opendata.rdw.nl/resource/qtex-qwd8.json` | fetch_rdw_data.py → zones |
+| **Parkeer – Tijdvak** | ixf8-gtwq | `https://opendata.rdw.nl/resource/ixf8-gtwq.json` | fetch_rdw_data.py → zones |
+| **Parkeer – Tariefdeel** | 534e-5vdg | `https://opendata.rdw.nl/resource/534e-5vdg.json` | fetch_rdw_data.py → zones |
+| **Parkeer – Tariefberekening** | nfzq-8g7y | `https://opendata.rdw.nl/resource/nfzq-8g7y.json` | fetch_rdw_data.py → zones |
+| **Parkeer – Regeling-beschrijving** | yefi-qfiq | `https://opendata.rdw.nl/resource/yefi-qfiq.json` | fetch_rdw_data.py → zones |
+| **Garages/P+R – facility-lijst** | (SPDP v2) | `https://npropendata.rdw.nl/parkingdata/v2/` | fetch_npropendata_facilities.py → facilities |
+| **Garages/P+R – static per facility** | (per UUID) | GET `staticDataUrl` uit lijst | fetch_npropendata_facilities.py → facilities |
+| **Kenteken – Voertuigen** | m9d7-ebf2 | `https://opendata.rdw.nl/resource/m9d7-ebf2.json` | kenteken.js (validatie, merk/type) |
+| **Kenteken – Brandstof/emissie** | 8ys7-d773 | `https://opendata.rdw.nl/resource/8ys7-d773.json` | kenteken.js (Car specs, EV) |
+| **Optioneel – Gebruiksdoel** | hz3g-w2u9 | `https://opendata.rdw.nl/resource/hz3g-w2u9.json` | Gebruiksdoel omschrijving (niet in pipeline) |
+| **Optioneel – Verkooppunten** | 5754-u6df | `https://opendata.rdw.nl/resource/5754-u6df.json` | Lijst areamanagerid's (uitbreiding gemeenten) |
 
 ---
 
