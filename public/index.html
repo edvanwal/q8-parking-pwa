@@ -332,6 +332,32 @@
         <span aria-hidden="true">&#9881;</span>
         <span class="facilities-float-label" id="btn-charging-points-label">Laadpunten</span>
       </button>
+      <!-- B2: Laadpunten filters (connector / vermogen) -->
+      <div id="charging-filters" class="charging-filters hidden">
+        <span class="charging-filters-label text-secondary text-xs">Filter laadpunten:</span>
+        <div class="charging-filters-row">
+          <button type="button" class="btn btn-secondary btn-xs" data-action="set-charging-filter" data-power="">
+            Alle
+          </button>
+          <button type="button" class="btn btn-secondary btn-xs" data-action="set-charging-filter" data-power="11">
+            ≥11 kW
+          </button>
+          <button type="button" class="btn btn-secondary btn-xs" data-action="set-charging-filter" data-power="50">
+            ≥50 kW
+          </button>
+        </div>
+        <div class="charging-filters-row">
+          <button type="button" class="btn btn-outline btn-xs" data-action="toggle-charging-connector" data-connector="type2">
+            Type 2
+          </button>
+          <button type="button" class="btn btn-outline btn-xs" data-action="toggle-charging-connector" data-connector="ccs">
+            DC (CCS)
+          </button>
+          <button type="button" class="btn btn-outline btn-xs" data-action="toggle-charging-connector" data-connector="chademo">
+            CHAdeMO
+          </button>
+        </div>
+      </div>
 
       <!-- Active Parking Overlay (inside map-area for positioning) -->
       <div id="ui-active-parking" class="active-parking-overlay hidden" style="display:none;">
