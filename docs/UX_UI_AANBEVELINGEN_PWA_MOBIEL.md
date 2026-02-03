@@ -49,8 +49,8 @@
 | 3 | In zone-sheet: klik op kentekenbadge → plate selector sheet | Goed; snel wisselen zonder naar Plates te gaan. |
 
 **Knelpunten:**  
-- **Opgelost:** Op het parkeer-/kaartscherm wordt een hint “Voeg een kenteken toe” als `plates.length === 0`.  
-- Menu-item “Car specs” is voor veel gebruikers minder belangrijk; kan secundair.
+- **Opgelost:** Op het parkeer-/kaartscherm wordt een hint “Voeg een kenteken toe” als `plates.length === 0`, met CTA "Kenteken toevoegen" (opent add-plate modal).
+- **Opgelost:** Menu-item “Car specs” staat nu onder Favorites met secundaire styling (kleinere tekst, gestippelde rand).
 
 ---
 
