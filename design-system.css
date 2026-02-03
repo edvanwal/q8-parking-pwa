@@ -1469,6 +1469,50 @@ body {
   font-weight: 700; font-size: 1.125rem;
 }
 
+/* History: quick filters (in één oogopslag op mobiel) */
+.history-quick-filters {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 12px;
+  padding-bottom: 8px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.history-quick-filters .filter-pill {
+  padding: 8px 14px;
+  font-size: 0.8125rem;
+}
+.history-filter-summary {
+  flex-shrink: 0;
+  padding: 8px 16px 12px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.history-filter-summary.hidden { display: none !important; }
+.history-filter-summary .btn-link {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
+.history-list-wrap {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
 /* History Filter Button Container */
 #history-filter-container {
   position: fixed; bottom: 80px; left: 0; right: 0;
