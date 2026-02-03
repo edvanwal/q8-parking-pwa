@@ -429,19 +429,25 @@ Q8.Services = (function() {
                 return;
             }
 
-            // Context Data Processing (uid/zone, price, rates; duration default = 0 = Until stopped)
+            // Context Data Processing (uid/zone, price, rates; duration = standaard duur of 0)
             if (contextData) {
                 const zoneUid = contextData.uid || contextData.zone;
                 if (!zoneUid) {
                     console.warn('[ZONE_SELECT] tryOpenOverlay(sheet-zone) called with no uid/zone in context', contextData);
                 }
                 const rates = (contextData.rates && contextData.rates.length > 0) ? contextData.rates : null;
-
+                let duration = 0;
+                const defaultDur = S.get.defaultDurationMinutes || 0;
+                if (defaultDur > 0) {
+                    const zone = S.get.zones.find(z => z.uid === zoneUid || z.id === zoneUid);
+                    const maxM = (zone && zone.max_duration_mins && zone.max_duration_mins > 0) ? zone.max_duration_mins : 1440;
+                    duration = Math.min(defaultDur, maxM);
+                }
                 S.update({
                     selectedZone: zoneUid,
                     selectedZoneRate: contextData.price || 2.0,
                     selectedZoneRates: rates,
-                    duration: 0   // Default: Until stopped
+                    duration: duration
                 });
             } else if (!S.get.selectedZone) {
                 console.warn('[ZONE_SELECT] tryOpenOverlay(sheet-zone) called with no context and no selectedZone');
@@ -588,6 +594,11 @@ Q8.Services = (function() {
 
         S.update({ session, activeOverlay: null, selectedZone: null });
         S.save();
+
+        try {
+            localStorage.setItem('q8_last_used_zone_uid', String(zoneObj.uid || zoneObj.id));
+            localStorage.setItem('q8_last_used_zone_id', String(displayId));
+        } catch (e) { /* ignore */ }
 
         if (db && userId) {
             const sessionData = {
