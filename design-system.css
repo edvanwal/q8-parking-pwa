@@ -277,6 +277,10 @@
         min-height: 0;
         inset: auto;
     }
+    .search-result-item {
+        min-height: 52px;
+        padding: 16px 20px;
+    }
 }
 
 /* Q8 Price Markers (OverlayView - fixed size, no shrink bug) */
@@ -953,7 +957,8 @@ body {
 .search-result-item {
   padding: 14px 20px; border-bottom: 1px solid var(--border); cursor: pointer;
   display: flex; justify-content: space-between; align-items: center; gap: 12px;
-  transition: background 0.1s; min-height: 48px;
+  transition: background 0.15s ease; min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
 }
 .search-result-item:last-child { border-bottom: none; }
 .search-result-item:hover { background: var(--q8-surface-2); }
