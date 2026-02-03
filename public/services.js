@@ -506,7 +506,10 @@ Q8.Services = (function() {
                         setTimeout(() => resolve(loadFacilities(attempt + 1)), FACILITIES_RETRY_DELAY_MS);
                     });
                 }
-                S.update({ facilities: [], facilitiesLoading: false, facilitiesLoadError: msg });
+                const friendlyMsg = S.get.language === 'nl'
+                    ? 'Garages & P+R tijdelijk niet beschikbaar. Probeer het later opnieuw.'
+                    : 'Garages & P+R temporarily unavailable. Try again later.';
+                S.update({ facilities: [], facilitiesLoading: false, facilitiesLoadError: friendlyMsg });
                 console.warn('Facilities load failed:', err);
                 return [];
             });
@@ -524,7 +527,9 @@ Q8.Services = (function() {
             const timeoutId = setTimeout(() => {
                 if (resolved) return;
                 resolved = true;
-                const msg = S.get.language === 'nl' ? 'Zones laden duurt te lang. Controleer uw internet.' : 'Loading zones is taking too long. Check your connection.';
+                const msg = S.get.language === 'nl'
+                    ? 'Tarieven tijdelijk niet beschikbaar. Controleer uw internet of probeer het later opnieuw.'
+                    : 'Rates temporarily unavailable. Check your connection or try again later.';
                 S.update({ zonesLoading: false, zonesLoadError: msg });
                 diag('loadZones', 'timeout');
                 reject(new Error(msg));
@@ -572,7 +577,9 @@ Q8.Services = (function() {
                 if (resolved) return;
                 resolved = true;
                 clearTimeout(timeoutId);
-                const msg = error && error.message ? error.message : 'Network error';
+                const msg = S.get.language === 'nl'
+                    ? 'Tarieven tijdelijk niet beschikbaar. Controleer uw internet of probeer het later opnieuw.'
+                    : 'Rates temporarily unavailable. Check your connection or try again later.';
                 S.update({ zonesLoading: false, zonesLoadError: msg });
                 diag('onSnapshot', 'error', error && error.message);
                 console.error("Firestore zones sync error:", error);
