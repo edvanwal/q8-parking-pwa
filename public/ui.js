@@ -981,12 +981,45 @@ Q8.UI = (function() {
 
     function renderHistory() {
         const state = S.get;
+        const filters = state.historyFilters;
         const list = document.getElementById('list-history');
         if (!list) return;
         list.innerHTML = '';
 
+        // 0. QUICK FILTERS + SUMMARY
+        const quickEl = document.getElementById('history-quick-filters');
+        const summaryEl = document.getElementById('history-filter-summary');
+        const nl = state.language === 'nl';
+        if (quickEl) {
+            const dr = filters.dateRange || 'all';
+            quickEl.innerHTML = `
+                <button type="button" class="filter-pill ${dr === 'all' ? 'selected' : ''}" data-action="quick-filter-daterange" data-range="all">${nl ? 'Alles' : 'All'}</button>
+                <button type="button" class="filter-pill ${dr === 'week' ? 'selected' : ''}" data-action="quick-filter-daterange" data-range="week">${nl ? 'Laatste 7 dagen' : 'Last 7 days'}</button>
+                <button type="button" class="filter-pill ${dr === '30days' ? 'selected' : ''}" data-action="quick-filter-daterange" data-range="30days">${nl ? 'Laatste 30 dagen' : 'Last 30 days'}</button>
+                <button type="button" class="filter-pill ${dr === 'month' ? 'selected' : ''}" data-action="quick-filter-daterange" data-range="month">${nl ? 'Deze maand' : 'This month'}</button>
+            `;
+        }
+        const hasDateFilter = filters.dateRange && filters.dateRange !== 'all';
+        const hasVehicleFilter = filters.vehicles && filters.vehicles.length > 0;
+        const hasCustomRange = filters.dateRange === 'custom' && (filters.customStart || filters.customEnd);
+        if (summaryEl) {
+            if (hasDateFilter || hasVehicleFilter || hasCustomRange) {
+                const parts = [];
+                if (hasDateFilter && filters.dateRange !== 'custom') {
+                    const labels = { week: nl ? 'Laatste 7 dagen' : 'Last 7 days', 30days: nl ? 'Laatste 30 dagen' : 'Last 30 days', month: nl ? 'Deze maand' : 'This month' };
+                    parts.push((nl ? 'Datum: ' : 'Date: ') + (labels[filters.dateRange] || filters.dateRange));
+                }
+                if (hasCustomRange) parts.push((nl ? 'Datum: ' : 'Date: ') + (filters.customStart || '…') + ' – ' + (filters.customEnd || '…'));
+                if (hasVehicleFilter) parts.push((nl ? 'Voertuig: ' : 'Vehicle: ') + filters.vehicles.join(', '));
+                summaryEl.innerHTML = `<span class="history-filter-summary-text">${parts.join(' · ')}</span> <button type="button" class="btn-link" data-action="open-overlay" data-target="sheet-filter">${nl ? 'Meer filters' : 'More filters'}</button>`;
+                summaryEl.classList.remove('hidden');
+            } else {
+                summaryEl.innerHTML = '';
+                summaryEl.classList.add('hidden');
+            }
+        }
+
         // 1. FILTER LOGIC
-        const filters = state.historyFilters;
         let filteredHistory = state.history;
 
         // A. Vehicle Filter
@@ -997,11 +1030,13 @@ Q8.UI = (function() {
         // B. Date Filter
         let dateStart = filters.customStart;
         let dateEnd = filters.customEnd;
-        if (filters.dateRange === 'week' || filters.dateRange === '30days') {
+        if (filters.dateRange === 'week' || filters.dateRange === '30days' || filters.dateRange === 'month') {
             const now = new Date();
             dateEnd = now.toISOString().slice(0, 10);
             const d = new Date(now);
-            d.setDate(d.getDate() - (filters.dateRange === 'week' ? 7 : 30));
+            if (filters.dateRange === 'week') d.setDate(d.getDate() - 7);
+            else if (filters.dateRange === '30days') d.setDate(d.getDate() - 30);
+            else if (filters.dateRange === 'month') d.setDate(1);
             dateStart = d.toISOString().slice(0, 10);
         }
         if (dateStart || dateEnd) {
