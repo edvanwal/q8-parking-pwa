@@ -851,6 +851,15 @@
      </div>
   </div>
 
+  <!-- === OVERLAY: Locatie-uitleg (2.5) vóór eerste permissievraag === -->
+  <div id="modal-location-explanation" class="overlay-backdrop justify-center items-center" data-action="close-overlay" role="dialog" aria-modal="true" aria-labelledby="location-explanation-title">
+     <div class="card modal-card" role="document">
+        <h2 id="location-explanation-title" class="font-bold text-lg mb-md">Locatie</h2>
+        <p id="location-explanation-text" class="text-secondary mb-lg" style="line-height:1.5;">We gebruiken je locatie om nabije parkeerzones te tonen.</p>
+        <button type="button" class="btn btn-primary" data-action="confirm-location-explanation">Toestaan</button>
+     </div>
+  </div>
+
   <!-- Toast (header area, with progress & close) -->
   <div class="toast-container" role="status" aria-live="polite" aria-atomic="true">
     <div id="toast" class="toast">
