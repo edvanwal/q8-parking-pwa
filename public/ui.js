@@ -521,11 +521,13 @@ Q8.UI = (function() {
         const finalRates = unique.length > 0 ? unique : [{time: `Geen tarieven voor ${todayNL}`, price: ''}];
 
         container.innerHTML = finalRates.map(r => {
-             let displayTime = r.time.replace(new RegExp(todayNL, 'gi'), '').replace(/Dagelijks/gi,'').trim();
+             // Bij "alle dagen": behoud dagnaam (Maandag, Dinsdag, Dagelijks). Bij alleen vandaag: strip dagnaam.
+             let displayTime = allDays ? r.time : r.time.replace(new RegExp(todayNL, 'gi'), '').replace(/Dagelijks/gi,'').trim();
              const timeMatch = displayTime.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
              if (timeMatch) {
                  const fmt = (h, m) => (parseInt(h, 10) < 10 ? String(h).replace(/^0/, '') : h) + ':' + m;
-                 displayTime = `${fmt(timeMatch[1], timeMatch[2])} – ${fmt(timeMatch[3], timeMatch[4])}`;
+                 const formattedTime = `${fmt(timeMatch[1], timeMatch[2])} – ${fmt(timeMatch[3], timeMatch[4])}`;
+                 displayTime = allDays ? displayTime.replace(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/, formattedTime) : formattedTime;
              }
              const priceStr = (r.price != null && r.price !== '') ? String(r.price) : '';
              const isFree = !priceStr ||
