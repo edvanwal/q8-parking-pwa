@@ -446,6 +446,21 @@ Q8.App = (function() {
                     if (UI && UI.update) UI.update();
                     break;
                 }
+                case 'toggle-charging-points': {
+                    const show = !S.get.showChargingPoints;
+                    if (Services && Services.setShowChargingPoints) Services.setShowChargingPoints(show);
+                    if (show && Services && Services.loadChargingPoints && UI && UI.getMapBounds) {
+                        const b = UI.getMapBounds();
+                        if (b) Services.loadChargingPoints(b);
+                    }
+                    if (UI && UI.renderMapMarkers) UI.renderMapMarkers();
+                    if (UI && UI.update) UI.update();
+                    const btn = document.getElementById('btn-charging-points-float');
+                    if (btn) btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+                    const lbl = document.getElementById('btn-charging-points-label');
+                    if (lbl) lbl.textContent = S.get.language === 'nl' ? (show ? 'Laadpunten aan' : 'Laadpunten') : (show ? 'Charging on' : 'Charging points');
+                    break;
+                }
                 case 'toggle-all-rates':
                     if (UI && UI.toggleAllRates) UI.toggleAllRates();
                     break;
