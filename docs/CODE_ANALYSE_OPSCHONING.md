@@ -34,9 +34,9 @@ Grondige analyse van de codebase: mogelijke problemen, conflicten, opschoning en
 
 ### 2.3 Firestore-rules – dubbele aanroep `userDoc()`
 
-- **Feit:** In `firestore.rules` roepen `userRole()` en `userTenantId()` elk `userDoc()` aan; bij gebruik van beide (bijv. in één rule) levert dat twee reads op.
+- **Feit:** In `firestore.rules` roepen `userRole()` en `userTenantId()` elk `userDoc()` aan; bij gebruik van beide (bijv. in één rule) levert dat meerdere reads op.
 - **Impact:** Kleine performance-kosten; geen security-issue.
-- **Aanbeveling:** In rules waar zowel role als tenantId nodig zijn, indien mogelijk één keer de user doc lezen en doorgeven (als de rule-syntax dat toelaat), of accepteren als bewuste trade-off voor leesbaarheid.
+- **Status – opgelost:** De rules zijn herschreven: per rule-evaluatie wordt `userDoc()` nog maar één keer aangeroepen via `let doc = userDoc();`. Helpers `roleFromDoc(doc)`, `tenantIdFromDoc(doc)` en `isFleetManagerFromDoc(doc)` gebruiken die ene `doc`; er zijn geen aparte `userRole()`/`userTenantId()` meer die elk opnieuw `userDoc()` aanroepen.
 
 ### 2.4 Notificatie-sync en Firestore-rules
 
