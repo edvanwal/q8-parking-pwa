@@ -1188,9 +1188,10 @@ Q8.UI = (function() {
 
         const dateRange = state.historyFilters.dateRange || 'all';
         const dateRangePills = `
-            <button class="filter-pill ${dateRange === 'week' ? 'selected' : ''}" data-action="toggle-filter-daterange" data-range="week">LAST WEEK</button>
-            <button class="filter-pill ${dateRange === '30days' ? 'selected' : ''}" data-action="toggle-filter-daterange" data-range="30days">LAST 30 DAYS</button>
-            <button class="filter-pill ${dateRange === 'custom' ? 'selected' : ''}" data-action="toggle-filter-daterange" data-range="custom">CUSTOM RANGE</button>
+            <button class="filter-pill ${dateRange === 'week' ? 'selected' : ''}" data-action="toggle-filter-daterange" data-range="week">${state.language === 'nl' ? 'LAATSTE 7 DAGEN' : 'LAST WEEK'}</button>
+            <button class="filter-pill ${dateRange === '30days' ? 'selected' : ''}" data-action="toggle-filter-daterange" data-range="30days">${state.language === 'nl' ? 'LAATSTE 30 DAGEN' : 'LAST 30 DAYS'}</button>
+            <button class="filter-pill ${dateRange === 'month' ? 'selected' : ''}" data-action="toggle-filter-daterange" data-range="month">${state.language === 'nl' ? 'DEZE MAAND' : 'THIS MONTH'}</button>
+            <button class="filter-pill ${dateRange === 'custom' ? 'selected' : ''}" data-action="toggle-filter-daterange" data-range="custom">${state.language === 'nl' ? 'AANGEPAST' : 'CUSTOM RANGE'}</button>
         `;
 
         bottomSheet.innerHTML = `

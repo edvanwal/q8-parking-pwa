@@ -59,11 +59,13 @@ Q8.Utils = (function() {
                 list = list.filter(h => f.vehicles.includes(h.plate));
             }
             let dateStart = f.customStart, dateEnd = f.customEnd;
-            if (f.dateRange === 'week' || f.dateRange === '30days') {
+            if (f.dateRange === 'week' || f.dateRange === '30days' || f.dateRange === 'month') {
                 const now = new Date();
                 dateEnd = now.toISOString().slice(0, 10);
                 const d = new Date(now);
-                d.setDate(d.getDate() - (f.dateRange === 'week' ? 7 : 30));
+                if (f.dateRange === 'week') d.setDate(d.getDate() - 7);
+                else if (f.dateRange === '30days') d.setDate(d.getDate() - 30);
+                else if (f.dateRange === 'month') d.setDate(1);
                 dateStart = d.toISOString().slice(0, 10);
             }
             if (dateStart || dateEnd) {
