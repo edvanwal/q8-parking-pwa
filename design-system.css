@@ -387,27 +387,7 @@
   white-space: nowrap;
 }
 .favorite-pill:hover, .favorite-pill:active { background: var(--primary); color: white; border-color: var(--primary); }
-
-/* Laatst gebruikte zone chip */
-.last-used-chip-wrap {
-  position: absolute;
-  left: 16px;
-  top: calc(var(--safe-area-top) + 68px);
-  z-index: var(--z-map-ui);
-}
-.last-used-chip-wrap.hidden { display: none !important; }
-.last-used-zone-chip {
-  padding: 6px 12px;
-  border-radius: 9999px;
-  border: 1px dashed var(--border);
-  background: var(--surface);
-  color: var(--text-secondary);
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-}
-.last-used-zone-chip:hover { background: var(--bg-secondary); color: var(--primary); }
+.favorite-pill.last-used-pill { border-style: dashed; color: var(--text-secondary); }
 
 /* Zone sheet: standaard duur pills */
 .sheet-section-default-duration { margin-top: 8px; }

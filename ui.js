@@ -157,22 +157,39 @@ Q8.UI = (function() {
             }
         }
 
-        // Favorieten-strip: compact horizontaal direct onder zoekbalk, altijd zichtbaar bij favs
+        // Favorieten-strip + laatst gebruikte zone: compact horizontaal direct onder zoekbalk
         const favStrip = document.getElementById('favorites-strip');
         if (favStrip && !hideSearchUI) {
+            const nl = state.language === 'nl';
+            let lastUsedUid = '', lastUsedZoneId = '', lastUsedZone = null;
+            try {
+                lastUsedUid = localStorage.getItem('q8_last_used_zone_uid') || '';
+                lastUsedZoneId = localStorage.getItem('q8_last_used_zone_id') || lastUsedUid;
+            } catch (e) { /* ignore */ }
+            if (lastUsedUid) lastUsedZone = state.zones.find(z => z.uid === lastUsedUid || z.id === lastUsedUid || z.id === lastUsedZoneId);
+
             const favs = (state.favorites || []).slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
             const favZones = favs.map(f => {
                 const zone = state.zones.find(z => z.uid === f.zoneUid || z.id === f.zoneUid || z.id === f.zoneId);
                 return zone ? { ...zone, zoneUid: zone.uid || zone.id, favName: f.name } : null;
             }).filter(Boolean);
-            if (favZones.length > 0) {
-                const nl = state.language === 'nl';
-                favStrip.innerHTML = `<div class="favorites-strip-label">${nl ? 'Favorieten' : 'Favorites'}</div><div class="favorites-strip-scroll">` + favZones.map(z => {
+
+            const hasLast = lastUsedZone && lastUsedUid;
+            const hasFavs = favZones.length > 0;
+            if (hasLast || hasFavs) {
+                let pills = '';
+                if (hasLast) {
+                    const uid = lastUsedZone.uid || lastUsedZone.id;
+                    const zid = lastUsedZoneId || lastUsedZone.id;
+                    pills += `<button type="button" class="favorite-pill last-used-pill" data-action="open-overlay" data-target="sheet-zone" data-zone-uid="${uid}" data-zone="${zid}" data-price="${lastUsedZone.price != null ? lastUsedZone.price : ''}" data-rates='${JSON.stringify(lastUsedZone.rates || [])}'>${nl ? 'Laatst: ' : 'Last: '}${zid}</button>`;
+                }
+                favZones.forEach(z => {
                     const uid = z.uid || z.id;
                     const zoneId = z.id || uid;
                     const title = (z.favName && z.favName.trim()) ? z.favName.trim() : zoneId;
-                    return `<button type="button" class="favorite-pill" data-action="open-overlay" data-target="sheet-zone" data-zone-uid="${uid}" data-zone="${zoneId}" data-price="${z.price != null ? z.price : ''}" data-rates='${JSON.stringify(z.rates || [])}'>${title}</button>`;
-                }).join('') + '</div>';
+                    pills += `<button type="button" class="favorite-pill" data-action="open-overlay" data-target="sheet-zone" data-zone-uid="${uid}" data-zone="${zoneId}" data-price="${z.price != null ? z.price : ''}" data-rates='${JSON.stringify(z.rates || [])}'>${title}</button>`;
+                });
+                favStrip.innerHTML = `<div class="favorites-strip-label">${nl ? 'Favorieten' : 'Favorites'}</div><div class="favorites-strip-scroll">${pills}</div>`;
                 favStrip.classList.remove('hidden');
             } else {
                 favStrip.innerHTML = '';
@@ -180,33 +197,6 @@ Q8.UI = (function() {
             }
         } else if (favStrip) {
             favStrip.classList.add('hidden');
-        }
-
-        // Laatst gebruikte zone: chip tonen wanneer geen sessie en we hebben een opgeslagen zone
-        const lastUsedWrap = document.getElementById('last-used-zone-chip-wrap');
-        const lastUsedChip = document.getElementById('last-used-zone-chip');
-        const lastUsedLabel = document.getElementById('last-used-zone-label');
-        if (lastUsedWrap && lastUsedChip && lastUsedLabel && !hideSearchUI && !isActive) {
-            let uid = '', zoneId = '', price = '', rates = '[]';
-            try {
-                uid = localStorage.getItem('q8_last_used_zone_uid') || '';
-                zoneId = localStorage.getItem('q8_last_used_zone_id') || uid;
-            } catch (e) { /* ignore */ }
-            const zone = uid ? state.zones.find(z => z.uid === uid || z.id === uid || z.id === zoneId) : null;
-            if (zone && uid) {
-                price = (zone.price != null) ? String(zone.price) : '';
-                rates = JSON.stringify(zone.rates || []);
-                lastUsedLabel.textContent = (state.language === 'nl' ? 'Laatst: ' : 'Last: ') + (zoneId || zone.id);
-                lastUsedChip.setAttribute('data-zone-uid', uid);
-                lastUsedChip.setAttribute('data-zone', zoneId || zone.id);
-                lastUsedChip.setAttribute('data-price', price);
-                lastUsedChip.setAttribute('data-rates', rates);
-                lastUsedWrap.classList.remove('hidden');
-            } else {
-                lastUsedWrap.classList.add('hidden');
-            }
-        } else if (lastUsedWrap) {
-            lastUsedWrap.classList.add('hidden');
         }
 
         // Zones loading / error indicator
