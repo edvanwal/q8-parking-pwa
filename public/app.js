@@ -183,6 +183,21 @@ Q8.App = (function() {
                 }
 
                 case 'start-session': {
+                    // 2.7 Validate first; show inline error in zone-sheet if invalid
+                    if (Services.validateStartParking) {
+                        const result = Services.validateStartParking();
+                        if (!result.valid) {
+                            const errEl = document.getElementById('sheet-zone-error');
+                            if (errEl) {
+                                errEl.textContent = result.message || '';
+                                errEl.classList.remove('hidden');
+                            }
+                            if (result.field === 'plate' && document.getElementById('details-plate')) {
+                                document.getElementById('details-plate').focus();
+                            }
+                            break;
+                        }
+                    }
                     const zoneObj = S.get.zones && (S.get.zones.find(z => z.uid === S.get.selectedZone) || S.get.zones.find(z => z.id === S.get.selectedZone));
                     if (zoneObj && Services.hasDayPass && Services.hasDayPass(zoneObj)) {
                         const cost = Services.getDayPassCost && Services.getDayPassCost(zoneObj);

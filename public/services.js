@@ -832,6 +832,56 @@ Q8.Services = (function() {
         return match ? match[0].replace(',', '.') : (dagkaartRate.price || null);
     }
 
+    /** Returns { valid: true } or { valid: false, message, field: 'plate'|'zone' } for inline sheet errors (2.7). */
+    function validateStartParking() {
+        const nl = S.get.language === 'nl';
+        if (S.get.session) {
+            return { valid: false, message: nl ? 'Je hebt al een actieve parkeersessie.' : 'You already have an active parking session.', field: 'zone' };
+        }
+        if (!S.get.selectedZone) {
+            return { valid: false, message: nl ? 'Selecteer eerst een parkeerzone.' : 'Select a parking zone first.', field: 'zone' };
+        }
+        if (S.get.activeOverlay !== 'sheet-zone') {
+            return { valid: false, message: nl ? 'Open een zone om te parkeren.' : 'Open a zone to start parking.', field: 'zone' };
+        }
+        const zoneObj = S.get.zones.find(z => z.uid === S.get.selectedZone) || S.get.zones.find(z => z.id === S.get.selectedZone);
+        if (!zoneObj) {
+            return { valid: false, message: nl ? 'Zone niet meer beschikbaar. Selecteer de zone opnieuw.' : 'Zone no longer available. Please select the zone again.', field: 'zone' };
+        }
+        const adminPlates = (S.get.adminPlates || []).map(p => ({ id: p.id, text: p.text || p.id, default: false }));
+        const allPlates = [...adminPlates, ...(S.get.plates || [])];
+        const selPlate = allPlates.find(p => p.id === S.get.selectedPlateId) ||
+                         allPlates.find(p => p.default) ||
+                         allPlates[0];
+        const plateText = selPlate ? (selPlate.text || selPlate.id) : '';
+        if (!selPlate || !plateText) {
+            return { valid: false, message: nl ? 'Selecteer een kenteken.' : 'Select a license plate.', field: 'plate' };
+        }
+        const ds = S.get.driverSettings || {};
+        const nowCheck = new Date();
+        const dayOfWeek = nowCheck.getDay();
+        const allowedDays = ds.allowedDays;
+        if (Array.isArray(allowedDays) && allowedDays.length > 0 && !allowedDays.includes(dayOfWeek)) {
+            return { valid: false, message: nl ? 'Parkeren is niet toegestaan op deze dag.' : 'Parking is not allowed on this day.', field: 'zone' };
+        }
+        if (ds.allowedTimeStart || ds.allowedTimeEnd) {
+            const mins = nowCheck.getHours() * 60 + nowCheck.getMinutes();
+            const parseTime = (t) => {
+                if (!t) return null;
+                const m = String(t).match(/^(\d{1,2}):(\d{2})/);
+                return m ? parseInt(m[1], 10) * 60 + parseInt(m[2], 10) : null;
+            };
+            const startM = parseTime(ds.allowedTimeStart), endM = parseTime(ds.allowedTimeEnd);
+            if (startM != null && mins < startM) {
+                return { valid: false, message: nl ? 'Parkeren nog niet toegestaan.' : 'Parking not yet allowed.', field: 'zone' };
+            }
+            if (endM != null && mins > endM) {
+                return { valid: false, message: nl ? 'Parkeren niet meer toegestaan vandaag.' : 'Parking no longer allowed today.', field: 'zone' };
+            }
+        }
+        return { valid: true };
+    }
+
     function handleStartParking(options) {
         const skipOverlayCheck = options && (options.fromDayPassConfirm === true || options.fromConfirmStart === true);
         if (S.get.session) {
@@ -890,6 +940,10 @@ Q8.Services = (function() {
                          allPlates.find(p => p.default) ||
                          allPlates[0];
         const plateText = selPlate ? (selPlate.text || selPlate.id) : '';
+        if (!selPlate || !plateText) {
+            toast(S.get.language === 'nl' ? 'Selecteer een kenteken.' : 'Select a license plate.', 'error');
+            return;
+        }
 
         const now = new Date();
         const endDate = S.get.duration === 0 ? null : new Date(now.getTime() + S.get.duration * 60000);
@@ -1480,6 +1534,7 @@ Q8.Services = (function() {
         detectSearchMode,
         setScreen,
         tryOpenOverlay,
+        validateStartParking,
         handleStartParking,
         hasDayPass,
         getDayPassCost,
