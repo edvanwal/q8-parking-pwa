@@ -211,6 +211,8 @@ Q8.UI = (function() {
             zonesLoadingEl.classList.toggle('hidden', !loading || hasError);
             const textEl = zonesLoadingEl.querySelector('.zones-loading-text');
             if (textEl) textEl.textContent = state.language === 'nl' ? 'Parkeerzones laden...' : 'Loading parking zones...';
+            const subEl = zonesLoadingEl.querySelector('.zones-loading-subtitle');
+            if (subEl) subEl.textContent = state.language === 'nl' ? 'Zones worden geladen…' : 'Loading zones…';
         }
         if (zonesErrorEl) {
             const hasError = !state.zonesLoading && state.zonesLoadError;
@@ -1139,7 +1141,10 @@ Q8.UI = (function() {
 
         // 2. RENDER LIST
         if (filteredHistory.length === 0) {
-            list.innerHTML = '<div class="history-empty-state">No parking history found.</div>';
+            const nl = state.language === 'nl';
+            const title = nl ? 'Nog geen parkeersessies' : 'No parking sessions yet';
+            const subtitle = nl ? 'Hier verschijnen je sessies na het beëindigen.' : 'Your sessions will appear here after you end them.';
+            list.innerHTML = '<div class="history-empty-state"><p class="history-empty-state-title">' + title + '</p><p class="history-empty-state-subtitle">' + subtitle + '</p></div>';
         } else {
             filteredHistory.forEach(h => {
                 const zone = state.zones.find(z => z.id === h.zone || z.uid === h.zoneUid || z.uid === h.zone);
@@ -1427,9 +1432,10 @@ Q8.UI = (function() {
         if (matches.length === 0) {
             container.className = 'search-results-panel search-results-panel--pill';
             container.style.display = 'block';
+            const query = (state.searchQuery || '').trim();
             const noResultsMsg = state.language === 'nl'
-                ? `Geen zones gevonden voor "${(state.searchQuery || '').trim()}". Probeer een ander zone-nummer of adres.`
-                : `No zones found for "${(state.searchQuery || '').trim()}". Try a different zone number or address.`;
+                ? (query ? `Geen zones gevonden voor "${query}". Probeer een ander zone-nummer of adres.` : 'Geen zones gevonden. Probeer een zone-nummer of adres.')
+                : (query ? `No zones found for "${query}". Try a different zone number or address.` : 'No zones found. Try a zone number or address.');
             container.innerHTML = '<div class="search-result-empty" style="padding:20px 20px 24px; text-align:center; color:var(--text-secondary); font-size:0.95rem; line-height:1.5;">' + noResultsMsg + '</div>';
             return;
         }
