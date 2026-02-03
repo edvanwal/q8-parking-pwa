@@ -1554,6 +1554,31 @@ Q8.UI = (function() {
                 });
                 this.container.appendChild(el);
             });
+            // B1: Laadpunten (alleen tonen als toggle aan)
+            if (state.showChargingPoints && (state.chargingPoints || []).length > 0) {
+                (state.chargingPoints || []).forEach(cp => {
+                    if (!cp.lat || !cp.lng) return;
+                    const coordKey = 'cp:' + cp.lat.toFixed(5) + ',' + cp.lng.toFixed(5);
+                    if (seenCoords.has(coordKey)) return;
+                    seenCoords.add(coordKey);
+                    const pt = proj.fromLatLngToDivPixel(new google.maps.LatLng(cp.lat, cp.lng));
+                    if (!pt) return;
+                    const el = document.createElement('div');
+                    el.className = 'q8-charging-marker';
+                    el.innerHTML = '&#9881;';
+                    el.title = (cp.operator ? cp.operator + ' – ' : '') + (state.language === 'nl' ? 'Laadpunt' : 'Charging point');
+                    el.style.left = pt.x + 'px';
+                    el.style.top = pt.y + 'px';
+                    el.style.pointerEvents = 'auto';
+                    el.setAttribute('role', 'button');
+                    el.setAttribute('aria-label', state.language === 'nl' ? 'Laadpunt' : 'Charging point');
+                    el.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        window.open('https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(cp.lat + ',' + cp.lng), '_blank');
+                    });
+                    this.container.appendChild(el);
+                });
+            }
             // Facility markers (garages & P+R)
             (state.nearbyFacilities || []).forEach(f => {
                 if (!f.lat || !f.lng) return;
@@ -1608,6 +1633,15 @@ Q8.UI = (function() {
             google.maps.event.trigger(map, 'resize');
             centerMapOnZones();
         }
+    }
+
+    /** B1: Geef huidige kaartbounds voor laadpunten-fetch. */
+    function getMapBounds() {
+        if (!map || typeof google === 'undefined' || !google.maps) return null;
+        const b = map.getBounds();
+        if (!b) return null;
+        const ne = b.getNorthEast(), sw = b.getSouthWest();
+        return { south: sw.lat(), west: sw.lng(), north: ne.lat(), east: ne.lng() };
     }
 
     function centerMapOnZones() {
@@ -1681,6 +1715,7 @@ Q8.UI = (function() {
         renderMapMarkers,
         centerMapOnZones,
         ensureMapResized,
+        getMapBounds,
         populateConfirmStartModal,
         toggleAllRates
     };
