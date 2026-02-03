@@ -49,17 +49,10 @@ Grondige analyse van de codebase: mogelijke problemen, conflicten, opschoning en
 
 ### 3.1 Toasts in het Engels in services.js
 
-Veel gebruikerszichtbare strings in `services.js` zijn alleen in het Engels, terwijl elders wel NL/EN wordt gebruikt:
-
-- "You already have an active parking session."
-- "Select a parking zone first."
-- "Open a zone to start parking."
-- "Parking session started"
-- "Parking session ended"
-- "Default plate updated"
-- "Please enter a license plate", "License plate already exists", etc.
-
-**Aanbeveling:** Overal waar de taal van de gebruiker relevant is, het patroon `S.get.language === 'nl' ? '...' : '...'` gebruiken (zoals al bij o.a. `addNotification`).
+- **Status – opgelost:** Alle genoemde toasts in `services.js` gebruiken nu het patroon `S.get.language === 'nl' ? '...' : '...'`, o.a.:
+  - Actieve sessie, zone selecteren, parkeersessie gestart/beëindigd, standaard kenteken bijgewerkt
+  - Kenteken: voer in, te lang, letters/cijfers, ongeldig formaat, bestaat al, verwijderd
+  - Maximale parkeerduur (inclusief "X uur" / "X hours" in de boodschap)
 
 ### 3.2 Dubbele toast-helper in services.js
 
@@ -160,7 +153,7 @@ const toast = (msg) => {
 | Hoog | **state.js:** Comment bij `screen` corrigeren (dubbele 'car-specs' / ontbrekende waarde). |
 | — | ~~**Root services.js:** `syncNotificationSettingsToFirestore` implementeren + exporteren~~ → **Opgelost.** |
 | Medium | **services.js:** Eén centrale `toast(msg, type)` helper; alle lokale `toast`-definities vervangen. |
-| Medium | **services.js:** Alle gebruikerszichtbare toasts i18n geven (NL/EN op basis van `S.get.language`). |
+| — | ~~**services.js:** toasts i18n (NL/EN)~~ → **Opgelost.** |
 | Laag | **service-worker.js:** Verwijderen of hernoemen naar `.legacy` en in docs vermelden. |
 | Laag | **Legacy:** Na controle alle `window.updateUI` / `window.showToast` fallbacks verwijderen en alleen Q8.UI gebruiken. |
 | Laag | **app_recovery.js:** Doel en gebruik documenteren of verplaatsen naar legacy/dev-tools. |
