@@ -1,5 +1,7 @@
 # Agent Context & Technical Overview
 
+**Volledig overzicht van alle documentatie:** [MASTER.md](MASTER.md)
+
 ## Project Overview
 
 This project is a **B2B Parking PWA (Progressive Web App)** designed for commercial drivers. It allows users to find parking zones, view rates, and manage parking sessions. The system relies on real-time data from the RDW (Netherlands Vehicle Authority) and uses AI for data enrichment.
