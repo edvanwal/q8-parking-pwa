@@ -40,6 +40,10 @@ Q8.State = (function() {
         chargingPointsLoading: false,
         showChargingPoints: false, // toggle "Toon laadpunten" (default uit)
         chargingPointsError: null,
+        chargingFilters: {     // B2: filters voor laadpunten
+            minPowerKw: null,  // null = geen minimum
+            connectors: []     // bijv. ['type2', 'dc']
+        },
         // State "live" in localStorage, fallback naar 1 default
         plates: [],
         selectedPlateId: null, // Track currently selected plate in list
