@@ -429,6 +429,19 @@ Q8.App = (function() {
                     S.update({ activeOverlay: 'sheet-filter' });
                     break;
 
+                case 'quick-filter-daterange': {
+                    const range = target.getAttribute('data-range') || 'all';
+                    S.update({
+                        historyFilters: {
+                            ...S.get.historyFilters,
+                            dateRange: range,
+                            customStart: range === 'custom' ? S.get.historyFilters.customStart : null,
+                            customEnd: range === 'custom' ? S.get.historyFilters.customEnd : null
+                        }
+                    });
+                    break;
+                }
+
                 case 'export-history-csv':
                     if (Q8.Utils && Q8.Utils.exportHistoryToCSV) Q8.Utils.exportHistoryToCSV(S.get);
                     if (UI.showToast) UI.showToast(S.get.language === 'nl' ? 'CSV gedownload' : 'CSV downloaded', 'success');
