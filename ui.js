@@ -775,11 +775,13 @@ Q8.UI = (function() {
         // B. Date Filter
         let dateStart = filters.customStart;
         let dateEnd = filters.customEnd;
-        if (filters.dateRange === 'week' || filters.dateRange === '30days') {
+        if (filters.dateRange === 'week' || filters.dateRange === '30days' || filters.dateRange === 'month') {
             const now = new Date();
             dateEnd = now.toISOString().slice(0, 10);
             const d = new Date(now);
-            d.setDate(d.getDate() - (filters.dateRange === 'week' ? 7 : 30));
+            if (filters.dateRange === 'week') d.setDate(d.getDate() - 7);
+            else if (filters.dateRange === '30days') d.setDate(d.getDate() - 30);
+            else if (filters.dateRange === 'month') d.setDate(1);
             dateStart = d.toISOString().slice(0, 10);
         }
         if (dateStart || dateEnd) {
