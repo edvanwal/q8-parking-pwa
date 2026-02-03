@@ -1406,6 +1406,8 @@ Q8.Services = (function() {
         setFacilitiesRadius,
         setFacilitiesRef,
         retryLoadFacilities: () => loadFacilities(0),
+        loadChargingPoints,
+        setShowChargingPoints,
         geocodeAndSearch,
         detectSearchMode,
         setScreen,
