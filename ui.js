@@ -23,6 +23,9 @@ Q8.UI = (function() {
     function update() {
         const state = S.get; // Access raw state object
 
+        // 2.7 Offline banner NL/EN: sync data-lang for CSS ::before content
+        document.body.setAttribute('data-lang', state.language || 'en');
+
         // 1. Screens
         const activeViewId = `view-${state.screen === 'parking' ? 'map' : state.screen}`;
         document.querySelectorAll('.screen').forEach(el => {
@@ -289,6 +292,12 @@ Q8.UI = (function() {
 
     function renderZoneSheet() {
         const state = S.get;
+        // 2.7 Clear inline validation error when (re)rendering sheet
+        const sheetErrorEl = document.getElementById('sheet-zone-error');
+        if (sheetErrorEl) {
+            sheetErrorEl.textContent = '';
+            sheetErrorEl.classList.add('hidden');
+        }
         // Find zone object
         const zone = state.zones.find(z => z.uid === state.selectedZone) ||
                      state.zones.find(z => z.id === state.selectedZone);
