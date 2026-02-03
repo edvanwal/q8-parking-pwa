@@ -752,6 +752,11 @@ Q8.Services = (function() {
             }
         }
 
+        // C5: Garages & P+R sheet bereikbaar zonder zone – bij openen lijst op basis van gebruikerslocatie verversen
+        if (id === 'sheet-facilities') {
+            updateNearbyFacilities();
+        }
+
         // Logic: Context Checks
         if (id === 'modal-confirm' && S.get.session === null) return;
         if ((id === 'modal-add-plate' || id === 'modal-edit-plate') && S.get.screen !== 'plates') return;
