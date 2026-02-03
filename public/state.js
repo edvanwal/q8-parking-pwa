@@ -260,6 +260,10 @@ Q8.State = (function() {
         try { localStorage.setItem('q8_dark_v2', _state.darkMode); } catch (e) {}
     }
 
+    function saveDefaultDuration() {
+        try { localStorage.setItem('q8_default_duration', String(_state.defaultDurationMinutes)); } catch (e) {}
+    }
+
     return {
         get: _state,
         update: update,
@@ -271,6 +275,7 @@ Q8.State = (function() {
         saveFavorites: saveFavorites,
         loadFavorites: loadFavorites,
         setDarkMode: setDarkMode,
-        applyThemeFromPref: applyThemeFromPref
+        applyThemeFromPref: applyThemeFromPref,
+        saveDefaultDuration: saveDefaultDuration
     };
 })();
