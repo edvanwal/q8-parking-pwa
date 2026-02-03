@@ -253,6 +253,30 @@ Q8.UI = (function() {
         });
     }
 
+    /** C2: Bepaal uurtarief voor het huidige moment uit rates met rate_numeric en time (bijv. "Maandag 09:00 - 18:00"). */
+    function getCurrentSlotRate(rates, now) {
+        if (!rates || rates.length === 0) return null;
+        const dayNames = ['Zondag', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag'];
+        const todayName = dayNames[now.getDay()];
+        const nowMins = now.getHours() * 60 + now.getMinutes();
+        for (let i = 0; i < rates.length; i++) {
+            const r = rates[i];
+            const timeStr = (r.time || '').trim();
+            const match = timeStr.match(/(Dagelijks|Zondag|Maandag|Dinsdag|Woensdag|Donderdag|Vrijdag|Zaterdag)\s*(\d{1,2}):(\d{2})\s*[-–]\s*(\d{1,2}):(\d{2})/i);
+            if (!match) continue;
+            const dayLabel = match[1];
+            const startMins = parseInt(match[2], 10) * 60 + parseInt(match[3], 10);
+            let endMins = parseInt(match[4], 10) * 60 + parseInt(match[5], 10);
+            if (endMins <= startMins) endMins += 24 * 60;
+            const dayMatches = /Dagelijks/i.test(dayLabel) || dayLabel.toLowerCase() === todayName.toLowerCase();
+            const timeInRange = nowMins >= startMins && nowMins < endMins;
+            if (dayMatches && timeInRange && r.rate_numeric != null) {
+                return parseFloat(r.rate_numeric);
+            }
+        }
+        return null;
+    }
+
     function renderZoneSheet() {
         const state = S.get;
         // Find zone object
