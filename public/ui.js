@@ -194,6 +194,15 @@ Q8.UI = (function() {
             btn.classList.toggle('btn-primary', r === ref);
             btn.classList.toggle('btn-outline', r !== ref);
         });
+        const chargingBtn = document.getElementById('btn-charging-points-float');
+        const chargingLbl = document.getElementById('btn-charging-points-label');
+        if (chargingBtn) {
+            chargingBtn.setAttribute('aria-pressed', state.showChargingPoints ? 'true' : 'false');
+            chargingBtn.setAttribute('aria-label', state.language === 'nl' ? (state.showChargingPoints ? 'Laadpunten verbergen' : 'Laadpunten tonen') : (state.showChargingPoints ? 'Hide charging points' : 'Show charging points'));
+        }
+        if (chargingLbl) {
+            chargingLbl.textContent = state.language === 'nl' ? (state.showChargingPoints ? 'Laadpunten aan' : 'Laadpunten') : (state.showChargingPoints ? 'Charging on' : 'Charging points');
+        }
 
         // Search input sync
         const inpSearch = document.getElementById('inp-search');
