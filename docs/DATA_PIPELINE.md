@@ -10,6 +10,7 @@ Korte beschrijving van de data-pipeline: wanneer welke scripts draaien, optionel
 |--------|------|--------|------------------------|
 | `fetch_rdw_data.py` | Straatparkeerzones (gebieden, regelingen, tarieven) uit opendata.rdw.nl | Firestore collectie `zones` | Na wijziging in TARGET_CITIES of periodiek (bijv. wekelijks) |
 | `scripts/fetch_npropendata_facilities.py` | Garages en P+R uit npropendata.rdw.nl | Firestore collectie `facilities` | 1× per week (cron/scheduled task) |
+| `scripts/check_tarief_integriteit.py` | D1 – Tariefintegriteit: controle op lege rates bij price > 0 en price vs max(rate_numeric) | Exit 0 = ok, 1 = schendingen | Periodiek of in CI na zone-upload |
 
 Zie `docs/RDW_DATASETS_VARIABELEN_EN_KOPPELVELDEN.md` voor alle RDW-resources en variabelen.
 
@@ -71,8 +72,31 @@ Zie ook `docs/PLAN_GARAGES_P_R_NPROPENDATA.md` sectie 9.
 
 ---
 
-## 4. Referenties
+## 4. D1 – Tariefintegriteit (check)
+
+**Script:** `scripts/check_tarief_integriteit.py`
+
+Controleert alle zones in Firestore:
+
+- Geen lege `rates` wanneer `price > 0`.
+- `price` consistent met het maximale uurtarief uit `rates` (veld `rate_numeric`), met een tolerantie van 0,02.
+
+**Uitvoeren (vanuit projectroot, met service-account.json):**
+```bash
+python scripts/check_tarief_integriteit.py
+```
+- **Exit 0:** Geen schendingen.
+- **Exit 1:** Een of meer schendingen (geschikt voor CI: faal de build bij exit 1).
+
+**Integratie in de pipeline:** `fetch_rdw_data.py` voert dezelfde controles uit **vóór** de upload. Bij schendingen wordt er niet geüpload en eindigt het script met exit 1.
+
+**CI:** Voer het script periodiek uit (bijv. na een zone-update of wekelijks), of na elke run van `fetch_rdw_data.py` als extra verificatie op de live database.
+
+---
+
+## 5. Referenties
 
 - `docs/RDW_DATASETS_VARIABELEN_EN_KOPPELVELDEN.md` – Alle RDW-resources en variabelen
 - `docs/RAPPORT_DATABRONNEN_VARIABELEN_PLAN.md` – Bronnen, variabelen, aanbevelingen
 - `docs/PLAN_GARAGES_P_R_NPROPENDATA.md` – Garages/P+R plan en cron
+- `docs/RAPPORT_DATABRONNEN_VARIABELEN_PLAN.md` – Aanbeveling D1 (tariefintegriteit)
