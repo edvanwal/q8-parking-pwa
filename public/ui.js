@@ -194,6 +194,8 @@ Q8.UI = (function() {
             btn.classList.toggle('btn-primary', r === ref);
             btn.classList.toggle('btn-outline', r !== ref);
         });
+
+        // B1/B2: Laadpunten toggle + filters
         const chargingBtn = document.getElementById('btn-charging-points-float');
         const chargingLbl = document.getElementById('btn-charging-points-label');
         if (chargingBtn) {
@@ -206,6 +208,33 @@ Q8.UI = (function() {
             chargingLbl.textContent = loading
                 ? (state.language === 'nl' ? 'Laden…' : 'Loading…')
                 : (state.language === 'nl' ? (state.showChargingPoints ? 'Laadpunten aan' : 'Laadpunten') : (state.showChargingPoints ? 'Charging on' : 'Charging points'));
+        }
+
+        const chargingFiltersEl = document.getElementById('charging-filters');
+        if (chargingFiltersEl) {
+            chargingFiltersEl.classList.toggle('hidden', !state.showChargingPoints);
+            const nl = state.language === 'nl';
+            const labelEl = chargingFiltersEl.querySelector('.charging-filters-label');
+            if (labelEl) {
+                labelEl.textContent = nl ? 'Filter laadpunten:' : 'Filter charging:';
+            }
+            const filters = state.chargingFilters || { minPowerKw: null, connectors: [] };
+            const minPower = filters.minPowerKw;
+            const conns = filters.connectors || [];
+
+            chargingFiltersEl.querySelectorAll('[data-action="set-charging-filter"]').forEach(btn => {
+                const v = btn.getAttribute('data-power');
+                const val = v === null ? null : parseInt(v, 10);
+                const isActive = (minPower == null && (v === null || v === '')) || (minPower != null && val === minPower);
+                btn.classList.toggle('btn-primary', isActive);
+                btn.classList.toggle('btn-secondary', !isActive);
+            });
+            chargingFiltersEl.querySelectorAll('[data-action="toggle-charging-connector"]').forEach(btn => {
+                const key = btn.getAttribute('data-connector');
+                const active = conns.includes(key);
+                btn.classList.toggle('btn-primary', active);
+                btn.classList.toggle('btn-outline', !active);
+            });
         }
 
         // Search input sync
