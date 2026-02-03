@@ -304,6 +304,44 @@
 .map-location-fab:hover { background: var(--q8-surface-2); }
 .map-location-fab:active { transform: scale(0.96); }
 
+/* No-plates hint on map when user has no license plates */
+.no-plates-hint {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: calc(var(--safe-area-top) + 80px);
+  z-index: var(--z-map-ui);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-float);
+  border: 1px solid var(--border);
+}
+.no-plates-hint.hidden { display: none !important; }
+.no-plates-hint-text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  flex: 1;
+  line-height: 1.35;
+}
+.no-plates-hint-btn { flex-shrink: 0; white-space: nowrap; }
+@media (max-width: 768px) {
+  .no-plates-hint {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    top: auto;
+    bottom: calc(80px + var(--safe-area-bottom));
+    left: 12px;
+    right: 12px;
+  }
+}
+
 /* Q8 Price Markers (OverlayView - fixed size, no shrink bug) */
 .q8-price-marker {
     position: absolute;
