@@ -420,12 +420,15 @@ Q8.UI = (function() {
             ? 'Tarieven zijn indicatief; definitief bedrag kan afwijken. Bron: RDW Open Data.'
             : 'Rates are indicative; final amount may differ. Source: RDW Open Data.';
 
-        // Estimated cost (F2)
+        // Estimated cost (F2 / C2): toon altijd wanneer we een bedrag kunnen berekenen; gebruik bij rate_numeric per tijdslot het tarief voor het huidige moment
         const estSection = document.getElementById('sheet-section-estimated-cost');
         const estEl = document.getElementById('details-estimated-cost');
         if (estSection && estEl) {
             const dur = state.duration || 0;
-            const rate = (zone && zone.price != null) ? parseFloat(zone.price) : (state.selectedZoneRate || 2);
+            const rates = state.selectedZoneRates || (zone && zone.rates) || [];
+            const currentSlotRate = getCurrentSlotRate(rates, new Date());
+            const fallbackRate = (zone && zone.price != null) ? parseFloat(zone.price) : (state.selectedZoneRate || 2);
+            const rate = (currentSlotRate != null && currentSlotRate >= 0) ? currentSlotRate : fallbackRate;
             let cost = null;
             if (dur > 0 && rate > 0) {
                 const hours = dur / 60;
