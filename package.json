@@ -5,6 +5,7 @@
   "scripts": {
     "screenshot": "node scripts/screenshot.js",
     "sync": "node scripts/sync-to-public.js",
+    "test:e2e:proof": "node scripts/e2e-proof.mjs",
     "deploy": "npm run sync && firebase deploy",
     "deploy:hosting": "firebase deploy --only hosting",
     "deploy:firestore": "firebase deploy --only firestore",
