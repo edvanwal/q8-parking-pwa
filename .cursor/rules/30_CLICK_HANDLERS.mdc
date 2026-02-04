@@ -1,0 +1,29 @@
+---
+scope: project
+priority: high
+alwaysApply: true
+enforced: true
+---
+# CLICK HANDLERS — CAPTURE PHASE RULES
+
+This project uses a capture-phase click handler on document.body.
+
+---
+
+## MANDATORY RULES
+- Use data-* attributes for targets (e.g. data-close)
+- Do NOT rely on classes alone
+- All decorative children (SVG, span, icon):
+  → pointer-events: none
+
+---
+
+## IMPLEMENTATION ORDER
+- Close / sheet logic FIRST in handleClick
+- Before any stopPropagation or other logic
+
+---
+
+## VERIFICATION
+- Click the CENTER of the element
+- If only the edge works → bug
