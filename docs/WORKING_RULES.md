@@ -72,6 +72,20 @@ Without explicit approval: NO ACTION.
 - Agents must not squash or rewrite history.
 - Rollback must always be possible.
 
+## Probleem oplossen en uit de loop blijven
+- Bij bugs die na meerdere pogingen nog steeds door de gebruiker als "werkt niet" worden gemeld: **niet blijven proberen** met weer een vergelijkbare fix.
+- Volg het stappenplan in **docs/PROBLEM_SOLVING_AND_LEARNING.md** (root cause, documentatie, dan gerichte fix).
+- Zie dat document ook voor wanneer een post-mortem te schrijven.
+
+## Docs-as-code verplicht
+- Documentatie en traceability zijn onderdeel van de werkwijze. Zie **.cursor/rules/25_DOCS_AND_TRACEABILITY.mdc**.
+- Bij elke **user-facing wijziging:** een story in docs/product/stories/ (aanmaken of bijwerken) en **SYSTEM_STATUS.md** (root) bijwerken.
+- Bij **API-wijziging:** docs/api/openapi.yaml aanpassen.
+- Bij **architectuurkeuze:** ADR toevoegen in docs/decisions/ (template: ADR_TEMPLATE.md).
+- Bij **debugging/root cause:** korte notitie (oorzaak + fix + preventie) in docs/ops/observability.md of docs/PROBLEM_SOLVING_AND_LEARNING.md.
+
+Templates: docs/product/ (PRD, BACKLOG, stories), docs/architecture/c4.md, docs/flows/FLOW_TEMPLATE.md, docs/ops/observability.md.
+
 ## Mandatory Rule
 Before making ANY changes:
 - Read this file.

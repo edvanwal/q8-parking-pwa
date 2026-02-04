@@ -1,0 +1,62 @@
+---
+scope: project
+priority: high
+alwaysApply: true
+enforced: true
+---
+# Documentatie & traceability (docs-as-code)
+
+Bij wijzigingen die product, API of architectuur raken moet de documentatie meebewegen. Anders weten we niet meer wat hoort te werken en waar de data vandaan komt.
+
+## Bij elke user-facing wijziging
+- Er MOET een story bestaan of worden aangepast in **docs/product/stories/** (user story + acceptatiecriteria).
+- **SYSTEM_STATUS.md** (projectroot) MOET worden bijgewerkt: "Wat werkt nu", "Known issues", "Hoe test je dit" waar van toepassing.
+
+## Bij wijziging aan API
+- **docs/api/openapi.yaml** aanpassen: relevante paths, request/response, schemas. Contract = waarheid.
+
+## Bij architectuurkeuze
+- Een **ADR** toevoegen in **docs/decisions/** (gebruik ADR_TEMPLATE.md). Context, beslissing, opties, trade-offs, gevolgen.
+
+## Bij debugging / root cause
+- Een korte notitie toevoegen: **root cause + fix + preventie** in **docs/ops/observability.md** of **docs/PROBLEM_SOLVING_AND_LEARNING.md** (als die bestaat). Geen lange rapporten; wel genoeg om dezelfde fout te voorkomen.
+
+## Verplichte user-flow referentie
+
+De bron van waarheid voor user flows en dataflows is **docs/USER_FLOWS_AND_DATAFLOWS.md**. Deze rule verplicht referentie en consistentie; kopieer geen flow-inhoud in rules.
+
+Bij elke wijziging die **user-facing** is, een **bestaande flow raakt**, of een **nieuwe flow introduceert**, MOET de agent:
+
+**a) Bepalen welke flow(s) van toepassing zijn**
+- Lees **docs/USER_FLOWS_AND_DATAFLOWS.md** en bepaal welke beschreven flow(s) door de wijziging worden geraakt (of welke nieuwe flow wordt toegevoegd).
+
+**b) Expliciet benoemen**
+- Welke flow wordt geraakt (bij naam uit het document).
+- Welk onderdeel van de flow verandert: UI / handler / state / service / API.
+
+**c) Controleren en expliciet bevestigen**
+- De wijziging is niet in tegenspraak met de beschreven dataflow in dat document; OF
+- Als dat wel zo is: **docs/USER_FLOWS_AND_DATAFLOWS.md** wordt bijgewerkt zodat de beschrijving weer klopt (geen stille inconsistentie).
+
+DO: Verwijs naar het document; noem flow en laag; bevestig consistentie of werk de doc bij.  
+DO NOT: User-flow-wijziging doorvoeren zonder te bepalen welke flow(s) geraakt worden; documentatie laten afwijken van de feitelijke dataflow.
+
+## Waar wat staat
+- **Product:** docs/product/ (PRD.md, BACKLOG.md), docs/product/stories/ (STORY_TEMPLATE.md)
+- **Architectuur:** docs/architecture/c4.md (Mermaid placeholders)
+- **Beslissingen:** docs/decisions/ (ADR_TEMPLATE.md)
+- **API:** docs/api/openapi.yaml
+- **Flows:** docs/flows/ (FLOW_TEMPLATE.md)
+- **Ops / observability:** docs/ops/observability.md
+- **Status:** SYSTEM_STATUS.md (root)
+
+## DO
+- Nieuwe feature → story aanmaken of bijwerken + SYSTEM_STATUS bijwerken.
+- API-wijziging → openapi.yaml bijwerken.
+- Architectuurkeuze → ADR toevoegen.
+- Bug opgelost → korte root-cause-notitie in observability of PROBLEM_SOLVING_AND_LEARNING.
+
+## DO NOT
+- User-facing wijziging zonder story of SYSTEM_STATUS-update.
+- API-wijziging zonder openapi.yaml-update.
+- Geen "algemene praat" in docs; gebruik de templates met invulvelden.

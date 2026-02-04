@@ -1,0 +1,20 @@
+---
+scope: project
+priority: high
+alwaysApply: true
+enforced: true
+---
+# ROOT CAUSE BEFORE RETRY
+
+If the user says:
+"werkt nog steeds niet"
+
+You MUST:
+1. Stop guess-fixes
+2. Add diagnostics/logging
+3. Identify root cause (1–3 sentences)
+4. Document it
+5. Implement ONE targeted fix
+6. Verify (browser + E2E)
+
+Never stack fixes.

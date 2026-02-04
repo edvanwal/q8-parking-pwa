@@ -1,0 +1,29 @@
+---
+scope: project
+priority: high
+alwaysApply: true
+enforced: true
+---
+# BROWSER VERIFICATION — SELF-CHECK REQUIRED
+
+After ANY frontend/UI change:
+- you MUST verify your own work in the browser
+- using browser automation (MCP or Playwright)
+
+Do NOT ask the user to do this.
+
+---
+
+## REQUIREMENTS
+- Determine the correct local URL/port from the project (e.g. package.json scripts, SYSTEM_STATUS.md, or docs/MASTER.md — use whichever exists).
+- If the project serves a static public folder locally, a typical approach is e.g. `npx serve public -l 3000`; treat this as a fallback example, not a universal mandate.
+- Navigate, click, scroll as a human would.
+- Verify visible behavior, not just state.
+
+---
+
+## PROCESS
+1. Start or use the running app at the project’s local URL.
+2. Navigate to the app, perform the changed flow.
+3. Confirm expected UI behavior.
+4. If incorrect: fix and repeat.

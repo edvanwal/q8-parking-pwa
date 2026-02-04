@@ -1,0 +1,62 @@
+---
+scope: project
+priority: high
+alwaysApply: true
+enforced: true
+---
+# E2E TESTING — HUMAN-VISIBLE OR IT DOES NOT COUNT
+
+## BROWSER REQUIREMENT
+All E2E tests MUST be run:
+- in a VISIBLE browser window
+- headed mode only
+- with real navigation and real clicks
+
+Headless runs may exist in CI; the proof gate and verification of user-visible behavior require headed runs with trace/video/screenshots.
+
+---
+
+## HUMAN TIMING
+- No fixed sleeps
+- Wait only on visible UI state changes
+- After EVERY click: assert what the user sees
+
+Assertions must be based on user-visible UI state (visibility, text, enabled/disabled, overlays open/closed), not internal flags or hidden state.
+
+---
+
+## CLEAN STATE (EVERY RUN)
+Each run must start with:
+- new browser context
+- no cache
+- no cookies
+- empty localStorage/sessionStorage
+- service workers unregistered
+
+If refresh changes behavior → bug.
+
+---
+
+## FAILURE HANDLING
+On ANY failure:
+1. Screenshot
+2. Console logs
+3. Trace and/or video
+4. Human-readable error message
+
+Example:
+"Zone sheet still visible after clicking X — user cannot close the panel"
+
+---
+
+## AUTONOMOUS LOOP
+Fail → diagnose → fix → re-run → repeat  
+Do NOT ask the user for approval in this loop.
+
+---
+
+## STOP CONDITION
+You may stop ONLY when:
+- E2E is green
+- browser was visible
+- behavior matches human expectation
