@@ -1440,6 +1440,15 @@ Q8.Services = (function() {
         const capped = Math.min(newDur, maxDur);
         const hitLimit = delta > 0 && newDur > maxDur;
         S.update({ duration: capped });
+        var elDur = document.getElementById('val-duration');
+        if (elDur) {
+            if (capped === 0) elDur.innerText = 'Until stopped';
+            else {
+                var h = Math.floor(capped / 60);
+                var m = capped % 60;
+                elDur.innerText = m === 0 ? String(h) : h + 'h ' + (m < 10 ? '0' : '') + m + 'm';
+            }
+        }
 
         if (hitLimit) {
             const toast = (msg) => {

@@ -25,6 +25,27 @@ Q8.App = (function() {
 
     function handleClick(e) {
         try {
+            // 0. Close button (data-close): handle first so click on button or child always closes the right overlay
+            var closeEl = e.target.closest('[data-close]');
+            if (closeEl) {
+                var overlayId = closeEl.getAttribute('data-close');
+                if (overlayId && S && S.update) {
+                    var current = S.get.activeOverlay;
+                    var returnTo = S.get.plateSelectorReturnTo;
+                    if (current === 'sheet-plate-selector' && returnTo === 'modal-confirm-start') {
+                        S.update({ activeOverlay: returnTo, plateSelectorReturnTo: null });
+                    } else {
+                        S.update({ activeOverlay: null, ...(current === 'sheet-plate-selector' && { plateSelectorReturnTo: null }) });
+                    }
+                    if (Q8.UI && typeof Q8.UI.update === 'function') Q8.UI.update();
+                    var sheetEl = overlayId === 'sheet-zone' ? document.getElementById('sheet-zone') : null;
+                    if (sheetEl) sheetEl.classList.remove('open');
+                }
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
+
             // Blur search input on click outside (prevents persistent blinking caret on desktop)
             const inpSearch = document.getElementById('inp-search');
             if (inpSearch && document.activeElement === inpSearch && !e.target.closest('#ui-idle-search') && !e.target.closest('.map-search-float')) {
