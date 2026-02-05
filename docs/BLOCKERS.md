@@ -27,4 +27,12 @@ Concrete blockers met repro en waar onderzocht. Bij oplossing: verplaatsen naar 
 
 ---
 
+---
+
+## Laatste gate-run
+
+- format:check: PASS
+- preflight: PASS (GH_TOKEN missing mode)
+- test:e2e:proof: PASS
+
 *Gebruik: bij nieuwe blocker toevoegen met id B<n>, korte repro, waar onderzocht, impact, actie.*
