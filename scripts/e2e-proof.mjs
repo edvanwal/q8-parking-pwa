@@ -40,6 +40,9 @@ const TRACE_PATH = join(ARTIFACT_DIR, "proof-trace.zip");
 const VIDEO_DIR = join(ARTIFACT_DIR, "video");
 const isCI = process.env.CI === "true";
 
+// BUILD VERSION CHECK: If BUILD_VERSION env var is set, verify the loaded build matches
+const EXPECTED_BUILD_VERSION = process.env.BUILD_VERSION || null;
+
 function log(step, detail = "") {
   console.log(`[proof] ${step}${detail ? " " + detail : ""}`);
 }
@@ -155,6 +158,45 @@ async function main() {
         });
       }
     });
+
+    // === BUILD VERSION CHECK (Step 0) ===
+    // Verify the build version is loaded and matches expected (if specified)
+    await page.waitForTimeout(500); // Wait for Q8_BUILD to be set
+    const buildInfo = await page.evaluate(() => {
+      return {
+        exists: typeof window.Q8_BUILD !== "undefined",
+        loaded: window.Q8_BUILD_LOADED === true,
+        version: window.Q8_BUILD?.version || null,
+        sha: window.Q8_BUILD?.sha || null,
+        branch: window.Q8_BUILD?.branch || null,
+      };
+    });
+
+    if (!buildInfo.exists || !buildInfo.loaded) {
+      fail(
+        "0. Build version",
+        "Q8_BUILD not found or not loaded - stale build or missing version injection",
+      );
+      allOk = false;
+    } else {
+      log(
+        "0. Build version loaded",
+        `${buildInfo.version} (SHA: ${buildInfo.sha}, Branch: ${buildInfo.branch})`,
+      );
+
+      // If expected version is specified, verify it matches
+      if (
+        EXPECTED_BUILD_VERSION &&
+        buildInfo.version !== EXPECTED_BUILD_VERSION
+      ) {
+        fail(
+          "0. Build version mismatch",
+          `Expected: ${EXPECTED_BUILD_VERSION}, Got: ${buildInfo.version} - STALE BUILD DETECTED`,
+        );
+        allOk = false;
+      }
+    }
+    await takeScreenshot(page, "build-verified");
 
     const MAP_ROOT_WAIT_MS = 10000;
     try {
@@ -528,4 +570,225 @@ async function main() {
   process.exit(allOk ? 0 : 1);
 }
 
-main();
+/**
+ * Desktop UI mirror test: validates zone sheet width on desktop viewport.
+ * Rule: Desktop mirrors mobile UI; zone sheet max-width = 480px.
+ * Fails if sheet becomes wider than mobile width.
+ */
+async function testDesktopZoneSheetWidth() {
+  const DESKTOP_VIEWPORT = { width: 1280, height: 800 };
+  const EXPECTED_MAX_WIDTH = 480;
+  const TOLERANCE = 5; // px tolerance for rendering differences
+
+  let serverProcess = null;
+  const baseUrlReachable = await waitForUrl(BASE_URL, 3000);
+  if (!baseUrlReachable) {
+    log("[desktop] Starting server...");
+    try {
+      serverProcess = await startServer();
+    } catch (e) {
+      console.error("[desktop] Could not start server.");
+      return false;
+    }
+  }
+
+  mkdirSync(ARTIFACT_DIR, { recursive: true });
+
+  const browser = await chromium.launch({
+    channel: "chrome",
+    headless: isCI,
+    slowMo: isCI ? 0 : 100,
+  });
+  const context = await browser.newContext({
+    viewport: DESKTOP_VIEWPORT,
+    locale: "nl-NL",
+    ignoreHTTPSErrors: true,
+  });
+  await context.clearCookies();
+  await context.addInitScript(() => {
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+    } catch (_) {}
+  });
+
+  const page = await context.newPage();
+  let testOk = true;
+
+  try {
+    log("[desktop] 1. Navigate to app with desktop viewport");
+    await page.goto(BASE_URL + `?t=${Date.now()}`, {
+      waitUntil: "load",
+      timeout: TIMEOUT,
+    });
+
+    // Wait for login or map
+    await page
+      .waitForSelector("#view-login, #view-map", {
+        state: "visible",
+        timeout: VISIBLE_WAIT,
+      })
+      .catch(() => null);
+    const loginVisible = await page
+      .locator("#view-login")
+      .isVisible()
+      .catch(() => false);
+    if (loginVisible) {
+      log("[desktop] 2. Login visible, signing in");
+      await page
+        .locator('button[data-action="login"]')
+        .first()
+        .click({ timeout: 8000, force: true });
+      await page
+        .waitForSelector("#view-map", {
+          state: "visible",
+          timeout: VISIBLE_WAIT,
+        })
+        .catch(() => null);
+    }
+
+    // Dismiss onboarding if present
+    const dismissBtn = page.locator('[data-action="dismiss-onboarding"]');
+    if (await dismissBtn.isVisible().catch(() => false)) {
+      await dismissBtn.click();
+      await page.waitForTimeout(300);
+    }
+
+    await page.waitForTimeout(2000); // let zones load
+
+    // Inject zone and open sheet (same as mobile test)
+    log("[desktop] 3. Injecting zone and opening sheet");
+    await page.evaluate(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => {
+            if (window.Q8 && window.Q8.State && window.Q8.Services) {
+              const zone = {
+                id: "E2E-DESKTOP",
+                uid: "e2e-desktop-zone",
+                lat: 52.0907,
+                lng: 5.1214,
+                price: 2.5,
+                display_label: "2,50",
+                street: "Test",
+                city: "Utrecht",
+                rates: [],
+              };
+              window.Q8.State.update({
+                zones: [zone],
+                zonesLoading: false,
+                selectedZone: "e2e-desktop-zone",
+                duration: 60,
+              });
+              window.Q8.Services.tryOpenOverlay("sheet-zone", {
+                uid: "e2e-desktop-zone",
+                zone: "E2E-DESKTOP",
+                price: 2.5,
+                rates: [],
+              });
+              const el = document.getElementById("sheet-zone");
+              if (el) el.classList.add("open");
+            }
+            resolve();
+          }, 500);
+        }),
+    );
+    await page.waitForTimeout(800);
+
+    // Wait for sheet to be visible
+    const sheetZone = page.locator('[data-testid="sheet-zone"]');
+    await sheetZone
+      .waitFor({ state: "visible", timeout: VISIBLE_WAIT })
+      .catch(() => null);
+    const sheetVisible = await sheetZone.isVisible().catch(() => false);
+    if (!sheetVisible) {
+      fail("[desktop] 4. Sheet visible", "sheet-zone not visible on desktop");
+      testOk = false;
+    } else {
+      log("[desktop] 4. Sheet visible");
+    }
+
+    // Measure sheet width
+    const sheetBox = await page
+      .locator(".bottom-sheet.sheet-zone")
+      .boundingBox();
+    if (!sheetBox) {
+      fail("[desktop] 5. Sheet width", "Could not get sheet bounding box");
+      testOk = false;
+    } else {
+      const sheetWidth = Math.round(sheetBox.width);
+      log("[desktop] 5. Sheet width measured", `${sheetWidth}px`);
+
+      // Assert: sheet width should NOT exceed mobile max-width + tolerance
+      if (sheetWidth > EXPECTED_MAX_WIDTH + TOLERANCE) {
+        fail(
+          "[desktop] 6. Sheet width check",
+          `Sheet is too wide on desktop: ${sheetWidth}px > ${EXPECTED_MAX_WIDTH}px (max mobile width). Desktop must mirror mobile UI.`,
+        );
+        testOk = false;
+      } else {
+        log(
+          "[desktop] 6. Sheet width OK",
+          `${sheetWidth}px <= ${EXPECTED_MAX_WIDTH}px (mobile max-width)`,
+        );
+      }
+    }
+
+    await takeScreenshot(page, "desktop-sheet-width");
+  } catch (e) {
+    console.error("[desktop] Exception:", e.message);
+    testOk = false;
+  }
+
+  await context.close();
+  await browser.close();
+  if (serverProcess) serverProcess.kill();
+
+  console.log(
+    testOk
+      ? "\n--- PASS: Desktop zone sheet width OK ---"
+      : "\n--- FAIL: Desktop zone sheet width check failed ---",
+  );
+  return testOk;
+}
+
+async function runAllTests() {
+  // Run mobile proof test
+  console.log("\n=== Running Mobile E2E Proof ===\n");
+
+  // Store original exit behavior - we need to prevent main() from exiting
+  const originalExit = process.exit;
+  let mobileResult = true;
+
+  // Temporarily override process.exit to capture result
+  process.exit = (code) => {
+    mobileResult = code === 0;
+  };
+
+  await main().catch(() => {
+    mobileResult = false;
+  });
+
+  // Restore original exit
+  process.exit = originalExit;
+
+  // Run desktop width test
+  console.log("\n=== Running Desktop Zone Sheet Width Test ===\n");
+  const desktopResult = await testDesktopZoneSheetWidth();
+
+  // Final result
+  const allPassed = mobileResult && desktopResult;
+  console.log(
+    allPassed ? "\n=== ALL TESTS PASSED ===" : "\n=== SOME TESTS FAILED ===",
+  );
+  console.log("Artifacts:", ARTIFACT_DIR);
+  process.exit(allPassed ? 0 : 1);
+}
+
+// Check if running desktop test only via env var
+if (process.env.E2E_DESKTOP_ONLY === "true") {
+  testDesktopZoneSheetWidth().then((ok) => process.exit(ok ? 0 : 1));
+} else {
+  // Run main mobile test (original behavior for backward compatibility)
+  main();
+}

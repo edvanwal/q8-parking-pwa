@@ -2,6 +2,8 @@
 
 **Startpunt voor alle informatie over deze app.** Vanuit hier vind je wat de app is, wat er werkt, welke plannen en ideeën er zijn, en waar elk document staat.
 
+> **Complete inventaris:** Zie [docs/DOCS_INVENTORY.md](DOCS_INVENTORY.md) voor een volledige lijst van alle documentatie en regels.
+
 ---
 
 ## 1. Wat is deze app
@@ -75,6 +77,7 @@ De **Q8 Parking B2B PWA** is een Progressive Web App voor zakelijke chauffeurs (
 
 | Onderwerp | Beschrijving | Document |
 |-----------|--------------|----------|
+| **Data model en tarieven** | Datamodel, tarieflogica, bewijsbaarheid. | [product/DATA_MODEL_AND_TARIFFS.md](product/DATA_MODEL_AND_TARIFFS.md) |
 | **Data pipeline** | Scripts (zones, facilities), frequentie, optionele filters. | [DATA_PIPELINE.md](DATA_PIPELINE.md) |
 | **Billing-database** | Schema voor facturatie/export. | [BILLING_DATABASE_SCHEMA.md](BILLING_DATABASE_SCHEMA.md), [BILLING_EXPORT_EXAMPLE.md](BILLING_EXPORT_EXAMPLE.md) |
 | **Sync-architectuur** | Hoe data wordt gesynchroniseerd. | [SYNC_ARCHITECTUUR.md](SYNC_ARCHITECTUUR.md) |
@@ -99,6 +102,7 @@ De **Q8 Parking B2B PWA** is een Progressive Web App voor zakelijke chauffeurs (
 
 | Onderwerp | Document |
 |-----------|----------|
+| **PWA Updates, Caching en Versiegedrag** | [product/PWA_UPDATE_AND_CACHE.md](product/PWA_UPDATE_AND_CACHE.md) |
 | PWA installatie-instructies | [PWA_INSTALL_INSTRUCTIES.md](PWA_INSTALL_INSTRUCTIES.md) |
 | PWA cross-platform | [PWA_CROSS_PLATFORM_GUIDE.md](PWA_CROSS_PLATFORM_GUIDE.md) |
 | Quick checklist (icons, manifest, testen) | [QUICK_CHECKLIST.md](QUICK_CHECKLIST.md) |
@@ -108,8 +112,34 @@ De **Q8 Parking B2B PWA** is een Progressive Web App voor zakelijke chauffeurs (
 
 ---
 
-## 9. Hoe we werken
+## 9. Huisstijl
 
+De visuele bron van waarheid voor kleuren, typografie, spacing en componenten:
+
+- **UI Style Guide:** [product/UI_STYLE_GUIDE.md](product/UI_STYLE_GUIDE.md)
+
+Bij layout, kleuren, knoppen en tekst: volg altijd de UI Style Guide.
+
+---
+
+## 9b. Security
+
+De security-baseline voor webapps en PWA's:
+
+- **Security Baseline:** [product/SECURITY_BASELINE.md](product/SECURITY_BASELINE.md)
+
+Bij security-vragen of technische keuzes: volg SECURITY_BASELINE.md.
+
+---
+
+## 10. Hoe we werken
+
+- **Audit Prompt Master:** [audit/AUDIT_PROMPT_MASTER.md](audit/AUDIT_PROMPT_MASTER.md) — standaard prompt voor alle audits, inclusief PROMPT_QA en bewijs-formaat.
+- **Nacht-run 2026-02-06:** [audit/NIGHT_RUN_SUMMARY_2026-02-06.md](audit/NIGHT_RUN_SUMMARY_2026-02-06.md) — samenvatting codebase, security en PWA audit.
+- **Procedure Docset (startpunt voor audits):** [PROCEDURE_DOCSET.md](PROCEDURE_DOCSET.md) — orkestratie van alle docs, feedback loops, bron-van-waarheid regels.
+- **User Flows & Dataflows (bron van waarheid):** [USER_FLOWS_AND_DATAFLOWS.md](USER_FLOWS_AND_DATAFLOWS.md) — alle user flows en dataflows.
+- **Functionele Canon:** [FUNCTIONAL_CANON.md](FUNCTIONAL_CANON.md) — wat werkt, acceptatiecriteria per feature.
+- **Cursor Toolkit:** [product/CURSOR_TOOLKIT.md](product/CURSOR_TOOLKIT.md) — welke Cursor-functies wanneer, multi-agent werkwijze, integraties, releases.
 - **Project Geheugenboek (lees dit eerst!):** [PROJECT_MEMORY.md](PROJECT_MEMORY.md) — bekende valkuilen en learnings.
 - **Snelle check:** De agent draait `npm run quick:check` en rapporteert het resultaat aan Edwin.
 - **Verplichte werkregels (productowner, agents, hard stops):** [WORKING_RULES.md](WORKING_RULES.md)  
@@ -118,15 +148,16 @@ De **Q8 Parking B2B PWA** is een Progressive Web App voor zakelijke chauffeurs (
 
 ### Checklist en feedback
 
-- **Acceptatie-checklists:** [product/ACCEPTANCE_CHECKLISTS.md](product/ACCEPTANCE_CHECKLISTS.md) — per categorie een afvinklijst met IDs (306 punten).
-- **Feedback backlog:** [product/FEEDBACK_BACKLOG.md](product/FEEDBACK_BACKLOG.md) — feedback die niet direct wordt opgepakt (20 items).
+- **Acceptatie-checklists:** [product/ACCEPTANCE_CHECKLISTS.md](product/ACCEPTANCE_CHECKLISTS.md) — per categorie een afvinklijst met IDs (496 punten).
+- **UX-copy en validatie:** [product/UX_COPY_AND_VALIDATION.md](product/UX_COPY_AND_VALIDATION.md) — labels, foutmeldingen, validatieregels per scherm.
+- **Feedback backlog:** [product/FEEDBACK_BACKLOG.md](product/FEEDBACK_BACKLOG.md) — grote productkeuzes en geparkeerde items.
 - **Edge cases library:** [product/EDGE_CASES_LIBRARY.md](product/EDGE_CASES_LIBRARY.md) — standaard patronen voor edge cases (herbruikbaar in checklists).
 
 **Afspraak:** Bij wijzigingen altijd [WORKING_RULES.md](WORKING_RULES.md) nalezen en volgen.
 
 ---
 
-## 10. Volledige documentlijst
+## 11. Volledige documentlijst
 
 Alle documenten in `docs/` en relevante bestanden in de projectroot, met categorie en korte omschrijving.
 

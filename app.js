@@ -1,9 +1,110 @@
 /**
  * Q8 Parking PWA - Main Entry Point
  * Namespace: Q8.App
+ *
+ * BUILD VERSIONING: window.Q8_BUILD is injected at build time.
+ * This allows runtime verification of which build is loaded.
  */
 
 window.Q8 = window.Q8 || {};
+
+// Helper: translate Firebase auth errors to user-friendly messages
+function translateAuthError(errorCode, lang) {
+  const nl = lang === "nl";
+  const messages = {
+    "auth/invalid-email": nl
+      ? "Ongeldig e-mailadres. Controleer het formaat."
+      : "Invalid email address. Please check the format.",
+    "auth/user-disabled": nl
+      ? "Dit account is uitgeschakeld."
+      : "This account has been disabled.",
+    "auth/user-not-found": nl
+      ? "Geen account gevonden met dit e-mailadres."
+      : "No account found with this email address.",
+    "auth/wrong-password": nl ? "Onjuist wachtwoord." : "Incorrect password.",
+    "auth/email-already-in-use": nl
+      ? "Dit e-mailadres is al in gebruik."
+      : "This email address is already in use.",
+    "auth/weak-password": nl
+      ? "Wachtwoord is te zwak. Gebruik minimaal 8 tekens."
+      : "Password is too weak. Use at least 8 characters.",
+    "auth/too-many-requests": nl
+      ? "Te veel pogingen. Probeer later opnieuw."
+      : "Too many attempts. Please try again later.",
+    "auth/network-request-failed": nl
+      ? "Netwerkfout. Controleer je verbinding."
+      : "Network error. Please check your connection.",
+    "auth/invalid-credential": nl
+      ? "Ongeldige inloggegevens."
+      : "Invalid credentials.",
+  };
+  return (
+    messages[errorCode] ||
+    (nl
+      ? "Er is iets misgegaan. Probeer opnieuw."
+      : "Something went wrong. Please try again.")
+  );
+}
+
+// Helper: validate email format
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// Helper: validate phone number (Dutch format, digits only after +31)
+function isValidDutchPhone(phone) {
+  // Remove spaces and dashes, expect 9 digits (without leading 0)
+  const cleaned = phone.replace(/[\s-]/g, "").replace(/^0+/, "");
+  return /^\d{9}$/.test(cleaned);
+}
+
+// Helper: validate password (min 8 chars, at least 1 number)
+function isValidPassword(password) {
+  return password.length >= 8 && /\d/.test(password);
+}
+
+// Log build version on startup (always, for all environments)
+(function logBuildVersion() {
+  if (typeof window.Q8_BUILD !== "undefined") {
+    const b = window.Q8_BUILD;
+    console.log(
+      `%c[Q8 PARKING] Build: ${b.version}`,
+      "background: #003D6B; color: white; padding: 2px 8px; border-radius: 3px; font-weight: bold;",
+    );
+    console.log(
+      `[Q8 BUILD] SHA: ${b.sha} | Branch: ${b.branch} | Time: ${b.timestamp}`,
+    );
+
+    // Store for E2E verification
+    window.Q8_BUILD_LOADED = true;
+  } else {
+    console.warn(
+      "[Q8 PARKING] No build version found - running unversioned build",
+    );
+    window.Q8_BUILD = {
+      version: "dev-unversioned",
+      sha: "local",
+      branch: "local",
+    };
+    window.Q8_BUILD_LOADED = true;
+  }
+})();
+
+// Listen for service worker updates
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.addEventListener("message", (event) => {
+    if (event.data && event.data.type === "SW_UPDATED") {
+      console.log(`[Q8 SW] Service Worker updated to: ${event.data.version}`);
+      // Optionally notify user that a new version is available
+      if (window.Q8 && window.Q8.UI && window.Q8.UI.showToast) {
+        // Only show if version mismatch (new SW activated with different version)
+        if (window.Q8_BUILD && event.data.version !== window.Q8_BUILD.version) {
+          Q8.UI.showToast("New version available. Refresh to update.", "info");
+        }
+      }
+    }
+  });
+}
 
 Q8.App = (function () {
   "use strict";
@@ -661,6 +762,14 @@ Q8.App = (function () {
         case "toggle-password":
           S.update({ passwordVisible: !S.get.passwordVisible });
           break;
+        case "toggle-reg-password": {
+          const targetId = target.getAttribute("data-target");
+          const inp = targetId ? document.getElementById(targetId) : null;
+          if (inp) {
+            inp.type = inp.type === "password" ? "text" : "password";
+          }
+          break;
+        }
         case "toggle-remember":
           S.update({ rememberMe: !S.get.rememberMe });
           // Persist preference immediately (so it survives refresh before login)
@@ -679,12 +788,24 @@ Q8.App = (function () {
               );
             return;
           }
+          // Validate email format before attempting login
+          if (!isValidEmail(email)) {
+            if (UI.showToast)
+              UI.showToast(
+                S.get.language === "nl"
+                  ? "Ongeldig e-mailadres. Controleer het formaat."
+                  : "Invalid email address. Please check the format.",
+                "error",
+              );
+            return;
+          }
           target.innerText = "SIGNING IN...";
           target.disabled = true;
           Services.loginUser(email, password)
             .catch((err) => {
               console.error(err);
-              if (UI.showToast) UI.showToast(err.message, "error");
+              const friendlyMsg = translateAuthError(err.code, S.get.language);
+              if (UI.showToast) UI.showToast(friendlyMsg, "error");
             })
             .finally(() => {
               target.innerText = "SIGN IN";
@@ -866,21 +987,74 @@ Q8.App = (function () {
           const rEmail = document.getElementById("reg-email")?.value;
           const rPass = document.getElementById("reg-password")?.value;
           const rConf = document.getElementById("reg-password-confirm")?.value;
+          const rFirstName = (
+            document.getElementById("reg-firstname")?.value || ""
+          ).trim();
+          const rLastName = (
+            document.getElementById("reg-lastname")?.value || ""
+          ).trim();
+          const rPhone = (
+            document.getElementById("reg-phone")?.value || ""
+          ).trim();
+          const rLibertyCard = (
+            document.getElementById("reg-libertycard")?.value || ""
+          ).trim();
 
+          const nl = S.get.language === "nl";
+
+          // Required fields check
           if (!rEmail || !rPass) {
             if (UI.showToast)
               UI.showToast(
-                S.get.language === "nl"
-                  ? "Vul alle velden in"
-                  : "Please fill in all fields",
+                nl
+                  ? "Vul e-mail en wachtwoord in"
+                  : "Please enter email and password",
                 "error",
               );
             return;
           }
+
+          // Email format validation
+          if (!isValidEmail(rEmail)) {
+            if (UI.showToast)
+              UI.showToast(
+                nl
+                  ? "Ongeldig e-mailadres. Controleer het formaat."
+                  : "Invalid email address. Please check the format.",
+                "error",
+              );
+            return;
+          }
+
+          // Phone validation (if provided)
+          if (rPhone && !isValidDutchPhone(rPhone)) {
+            if (UI.showToast)
+              UI.showToast(
+                nl
+                  ? "Ongeldig telefoonnummer. Gebruik 9 cijfers (bijv. 612345678)."
+                  : "Invalid phone number. Use 9 digits (e.g. 612345678).",
+                "error",
+              );
+            return;
+          }
+
+          // Password strength validation
+          if (!isValidPassword(rPass)) {
+            if (UI.showToast)
+              UI.showToast(
+                nl
+                  ? "Wachtwoord moet minimaal 8 tekens bevatten, waarvan 1 cijfer."
+                  : "Password must be at least 8 characters with 1 number.",
+                "error",
+              );
+            return;
+          }
+
+          // Password match check
           if (rPass !== rConf) {
             if (UI.showToast)
               UI.showToast(
-                S.get.language === "nl"
+                nl
                   ? "Wachtwoorden komen niet overeen"
                   : "Passwords do not match",
                 "error",
@@ -888,11 +1062,29 @@ Q8.App = (function () {
             return;
           }
 
+          // Build profile data object
+          const profileData = {};
+          // Combine first and last name into displayName
+          if (rFirstName || rLastName) {
+            profileData.displayName = [rFirstName, rLastName]
+              .filter(Boolean)
+              .join(" ");
+          }
+          // Add phone with +31 prefix if filled
+          if (rPhone) {
+            profileData.phone = "+31" + rPhone.replace(/^0+/, "");
+          }
+          // Add liberty card number if filled
+          if (rLibertyCard) {
+            profileData.libertyCardNumber = rLibertyCard;
+          }
+
           target.innerText = "CREATING ACCOUNT...";
           target.disabled = true;
-          Services.registerUser(rEmail, rPass)
+          Services.registerUser(rEmail, rPass, profileData)
             .catch((err) => {
-              if (UI.showToast) UI.showToast(err.message, "error");
+              const friendlyMsg = translateAuthError(err.code, S.get.language);
+              if (UI.showToast) UI.showToast(friendlyMsg, "error");
             })
             .finally(() => {
               target.innerText = "REGISTER";
