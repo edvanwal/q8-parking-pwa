@@ -17,7 +17,8 @@ jobs:
           cp -f design-system.css public/design-system.css
           cp -f app.js public/app.js || true
           cp -f utils.js public/utils.js || true
-          cp -f services.js public/services.js || true
+          # public/services.js is de portal/fleet deploy-variant
+          # sync-to-public kopieert services.js bewust niet
           cp -f state.js public/state.js || true
           cp -f firebase-config.js public/firebase-config.js || true
           cp -r assets public/assets || true
