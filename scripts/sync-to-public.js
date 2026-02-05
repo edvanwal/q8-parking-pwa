@@ -19,11 +19,12 @@ const FILES = [
   'firebase-config.js',
   'kenteken.js',
   'manifest.webmanifest',
-  'sw.js'
+  'sw.js',
 ];
 // services.js excluded: public has portal/fleet integration (ensureAppUser, adminPlates, userPlates)
 
-let ok = 0, err = 0;
+let ok = 0,
+  err = 0;
 for (const f of FILES) {
   const src = path.join(ROOT, f);
   const dst = path.join(PUBLIC, f);

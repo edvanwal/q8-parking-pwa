@@ -1,4 +1,5 @@
 # PWA Cross-Platform Best Practices Guide
+
 ## Q8 Parking App - Complete Implementation Plan
 
 **Last Updated:** February 1, 2026  
@@ -15,6 +16,7 @@ This guide provides a comprehensive plan to ensure the Q8 Parking PWA displays c
 ## 1. Icon System (CRITICAL - Currently Missing)
 
 ### Current State
+
 - ❌ Only has `favicon.ico` (64x64, 32x32, 24x24, 16x16)
 - ❌ No proper PWA icons
 - ❌ No maskable icons for Android
@@ -44,18 +46,21 @@ icons/
 ### Design Specifications
 
 **Standard Icons:**
+
 - Use transparent background
 - Center the Q8 logo
 - Ensure logo is clearly visible at smallest size (48x48)
 - Use PNG format with transparency
 
 **Maskable Icons (Android):**
+
 - Create 10% safe zone padding on all sides
 - Place important content in center 80%
 - Test with circular, rounded square, and squircle masks
 - Background should be solid color (Q8 blue: #003D6B)
 
 **Apple Touch Icon:**
+
 - 180x180px PNG
 - No transparency (use white or Q8 blue background)
 - No rounded corners (iOS adds them automatically)
@@ -80,6 +85,7 @@ convert logo-source.png -resize 192x192 -background transparent icon-192x192.png
 ## 2. Enhanced Web App Manifest
 
 ### Current Manifest Issues
+
 - ❌ No icons array (critical failure)
 - ❌ Missing description
 - ❌ Missing categories
@@ -104,7 +110,7 @@ Replace `public/manifest.webmanifest` with:
   "categories": ["business", "utilities", "productivity"],
   "lang": "en",
   "dir": "ltr",
-  
+
   "icons": [
     {
       "src": "/icons/icon-48x48.png",
@@ -173,7 +179,7 @@ Replace `public/manifest.webmanifest` with:
       "purpose": "maskable"
     }
   ],
-  
+
   "screenshots": [
     {
       "src": "/screenshots/map-view.png",
@@ -190,7 +196,7 @@ Replace `public/manifest.webmanifest` with:
       "label": "Zone details and pricing"
     }
   ],
-  
+
   "shortcuts": [
     {
       "name": "Start Parking",
@@ -216,7 +222,7 @@ Replace `public/manifest.webmanifest` with:
       ]
     }
   ],
-  
+
   "prefer_related_applications": false
 }
 ```
@@ -231,41 +237,51 @@ Add to `<head>` section in `public/index.html`:
 
 ```html
 <!-- iOS-Specific Meta Tags -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Q8 Parking">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Q8 Parking" />
 
 <!-- Apple Touch Icons -->
-<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
-<link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png">
-<link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167x167.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+<link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png" />
+<link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167x167.png" />
 
 <!-- iOS Splash Screens (Optional but recommended) -->
 <!-- iPhone 14 Pro Max -->
-<link rel="apple-touch-startup-image" 
-      media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" 
-      href="/splash/iphone-14-pro-max.png">
+<link
+  rel="apple-touch-startup-image"
+  media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)"
+  href="/splash/iphone-14-pro-max.png"
+/>
 
 <!-- iPhone 14 Pro -->
-<link rel="apple-touch-startup-image" 
-      media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" 
-      href="/splash/iphone-14-pro.png">
+<link
+  rel="apple-touch-startup-image"
+  media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)"
+  href="/splash/iphone-14-pro.png"
+/>
 
 <!-- iPhone 14 -->
-<link rel="apple-touch-startup-image" 
-      media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" 
-      href="/splash/iphone-14.png">
+<link
+  rel="apple-touch-startup-image"
+  media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)"
+  href="/splash/iphone-14.png"
+/>
 
 <!-- iPhone SE -->
-<link rel="apple-touch-startup-image" 
-      media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" 
-      href="/splash/iphone-se.png">
+<link
+  rel="apple-touch-startup-image"
+  media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)"
+  href="/splash/iphone-se.png"
+/>
 
 <!-- iPad Pro 12.9" -->
-<link rel="apple-touch-startup-image" 
-      media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" 
-      href="/splash/ipad-pro-12.9.png">
+<link
+  rel="apple-touch-startup-image"
+  media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)"
+  href="/splash/ipad-pro-12.9.png"
+/>
 ```
 
 ### iOS-Specific CSS Considerations
@@ -300,16 +316,19 @@ Your current viewport is good, but verify these settings:
 Your current viewport is GOOD but can be improved:
 
 **Current:**
+
 ```html
-<meta name="viewport" 
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+/>
 ```
 
 **Recommendation:**
+
 ```html
 <!-- Remove user-scalable=no for accessibility -->
-<meta name="viewport" 
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 ```
 
 **Note:** `user-scalable=no` is considered bad for accessibility. Only use if absolutely required for your app's UX.
@@ -320,7 +339,7 @@ Your app uses a mobile-first approach with max-width constraint:
 
 ```css
 #app {
-  width: 100%; 
+  width: 100%;
   max-width: 480px; /* Mobile first constraint */
   height: 100%;
 }
@@ -331,8 +350,12 @@ Your app uses a mobile-first approach with max-width constraint:
 ```css
 /* Small phones (320px - 374px) */
 @media (max-width: 374px) {
-  .btn-lg { font-size: 0.95rem; }
-  .page-title { font-size: 1rem; }
+  .btn-lg {
+    font-size: 0.95rem;
+  }
+  .page-title {
+    font-size: 1rem;
+  }
 }
 
 /* Standard phones (375px - 428px) */
@@ -340,16 +363,18 @@ Your app uses a mobile-first approach with max-width constraint:
 
 /* Large phones (429px - 480px) */
 @media (min-width: 429px) {
-  .login-container { max-width: 420px; }
+  .login-container {
+    max-width: 420px;
+  }
 }
 
 /* Tablets and Desktop (481px+) */
 @media (min-width: 481px) {
   #app {
-    box-shadow: 0 0 60px rgba(0,0,0,0.15);
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.15);
     border-radius: 16px;
   }
-  
+
   /* Center content better on large screens */
   .content {
     max-width: 600px;
@@ -359,9 +384,15 @@ Your app uses a mobile-first approach with max-width constraint:
 
 /* Landscape mode */
 @media (orientation: landscape) and (max-height: 500px) {
-  .top-bar { height: 56px; }
-  .bottom-nav { height: 60px; }
-  .login-logo-img { height: 80px; }
+  .top-bar {
+    height: 56px;
+  }
+  .bottom-nav {
+    height: 60px;
+  }
+  .login-logo-img {
+    height: 80px;
+  }
 }
 ```
 
@@ -371,9 +402,16 @@ Verify all interactive elements meet minimum touch targets:
 
 ```css
 /* Minimum touch target: 44x44px (iOS) or 48x48px (Android) */
-.btn { min-height: 48px; }
-.icon-btn { min-width: 44px; min-height: 44px; }
-.nav-item { min-height: 48px; }
+.btn {
+  min-height: 48px;
+}
+.icon-btn {
+  min-width: 44px;
+  min-height: 44px;
+}
+.nav-item {
+  min-height: 48px;
+}
 ```
 
 ---
@@ -391,46 +429,51 @@ Create `public/platform-detection.js`:
  */
 
 const PlatformDetection = {
-  
   // Detect if running as installed PWA
   isStandalone() {
-    return window.matchMedia('(display-mode: standalone)').matches ||
-           window.navigator.standalone === true || // iOS Safari
-           document.referrer.includes('android-app://'); // Android TWA
+    return (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true || // iOS Safari
+      document.referrer.includes('android-app://')
+    ); // Android TWA
   },
-  
+
   // Detect iOS
   isIOS() {
     return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   },
-  
+
   // Detect Android
   isAndroid() {
     return /Android/.test(navigator.userAgent);
   },
-  
+
   // Detect Safari
   isSafari() {
     return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   },
-  
+
   // Detect Chrome/Chromium
   isChrome() {
     return /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
   },
-  
+
   // Get device type
   getDeviceType() {
     const ua = navigator.userAgent;
     if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
       return 'tablet';
     }
-    if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+    if (
+      /Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(
+        ua
+      )
+    ) {
       return 'mobile';
     }
     return 'desktop';
   },
-  
+
   // Get OS name
   getOS() {
     const ua = navigator.userAgent;
@@ -441,28 +484,29 @@ const PlatformDetection = {
     if (/Linux/.test(ua)) return 'Linux';
     return 'Unknown';
   },
-  
+
   // Check if installable
   canInstall() {
     return 'BeforeInstallPromptEvent' in window;
   },
-  
+
   // Get viewport dimensions
   getViewport() {
     return {
       width: window.innerWidth,
       height: window.innerHeight,
-      devicePixelRatio: window.devicePixelRatio || 1
+      devicePixelRatio: window.devicePixelRatio || 1,
     };
   },
-  
+
   // Check for notch/safe areas
   hasNotch() {
-    const safeAreaTop = getComputedStyle(document.documentElement)
-      .getPropertyValue('--safe-area-top');
+    const safeAreaTop = getComputedStyle(document.documentElement).getPropertyValue(
+      '--safe-area-top'
+    );
     return safeAreaTop !== '0px' && safeAreaTop !== '';
   },
-  
+
   // Log platform info (for debugging)
   logInfo() {
     console.group('🔍 Platform Detection');
@@ -475,7 +519,7 @@ const PlatformDetection = {
     console.log('Has Notch:', this.hasNotch());
     console.log('Can Install:', this.canInstall());
     console.groupEnd();
-  }
+  },
 };
 
 // Export for use in other modules
@@ -491,36 +535,39 @@ if (typeof module !== 'undefined' && module.exports) {
 
 // Detect platform and apply adaptive features
 document.addEventListener('DOMContentLoaded', () => {
-  
   // Log platform info (remove in production)
   if (window.location.hostname === 'localhost') {
     PlatformDetection.logInfo();
   }
-  
+
   // Apply platform-specific classes
   const platform = PlatformDetection.getOS();
   const deviceType = PlatformDetection.getDeviceType();
   document.body.classList.add(`platform-${platform.toLowerCase()}`);
   document.body.classList.add(`device-${deviceType}`);
-  
+
   if (PlatformDetection.isStandalone()) {
     document.body.classList.add('standalone');
   }
-  
+
   // iOS-specific adjustments
   if (PlatformDetection.isIOS()) {
     // Prevent pull-to-refresh on iOS
-    document.body.addEventListener('touchmove', (e) => {
-      if (e.target === document.body) {
-        e.preventDefault();
-      }
-    }, { passive: false });
-    
+    document.body.addEventListener(
+      'touchmove',
+      (e) => {
+        if (e.target === document.body) {
+          e.preventDefault();
+        }
+      },
+      { passive: false }
+    );
+
     // Fix iOS input zoom
     const viewportMeta = document.querySelector('meta[name="viewport"]');
     if (viewportMeta && window.innerWidth < 768) {
       // Prevent zoom on input focus
-      document.querySelectorAll('input, textarea, select').forEach(input => {
+      document.querySelectorAll('input, textarea, select').forEach((input) => {
         input.addEventListener('focus', () => {
           viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0';
         });
@@ -530,24 +577,27 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   }
-  
+
   // Android-specific adjustments
   if (PlatformDetection.isAndroid()) {
     // Android Chrome address bar handling
     let lastScrollY = 0;
-    window.addEventListener('scroll', () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY) {
-        // Scrolling down - hide address bar
-        document.body.classList.add('scrolling-down');
-      } else {
-        // Scrolling up
-        document.body.classList.remove('scrolling-down');
-      }
-      lastScrollY = currentScrollY;
-    }, { passive: true });
+    window.addEventListener(
+      'scroll',
+      () => {
+        const currentScrollY = window.scrollY;
+        if (currentScrollY > lastScrollY) {
+          // Scrolling down - hide address bar
+          document.body.classList.add('scrolling-down');
+        } else {
+          // Scrolling up
+          document.body.classList.remove('scrolling-down');
+        }
+        lastScrollY = currentScrollY;
+      },
+      { passive: true }
+    );
   }
-  
 });
 ```
 
@@ -558,6 +608,7 @@ document.addEventListener('DOMContentLoaded', () => {
 ### Device Testing Matrix
 
 **Priority 1 - Must Test:**
+
 - ✅ iPhone 14 Pro (iOS 17+) - Safari
 - ✅ iPhone SE (iOS 16+) - Safari
 - ✅ Samsung Galaxy S23 (Android 13+) - Chrome
@@ -565,12 +616,14 @@ document.addEventListener('DOMContentLoaded', () => {
 - ✅ iPad Air (iPadOS 17+) - Safari
 
 **Priority 2 - Should Test:**
+
 - ⚠️ OnePlus 11 (Android 13+) - Chrome
 - ⚠️ Xiaomi 13 (Android 13+) - Chrome
 - ⚠️ iPhone 12 (iOS 16+) - Safari
 - ⚠️ Samsung Galaxy Tab S8 - Chrome
 
 **Priority 3 - Nice to Test:**
+
 - 🔹 Desktop Chrome (Windows/Mac)
 - 🔹 Desktop Firefox (Windows/Mac)
 - 🔹 Desktop Edge (Windows)
@@ -579,6 +632,7 @@ document.addEventListener('DOMContentLoaded', () => {
 ### Browser Testing Tools
 
 **Remote Device Testing:**
+
 ```bash
 # BrowserStack (Recommended)
 https://www.browserstack.com/
@@ -591,6 +645,7 @@ https://saucelabs.com/
 ```
 
 **Local Testing:**
+
 ```bash
 # Chrome DevTools Device Emulation
 1. Open Chrome DevTools (F12)
@@ -610,6 +665,7 @@ https://saucelabs.com/
 ```
 
 **PWA Testing Tools:**
+
 ```bash
 # Lighthouse PWA Audit
 1. Open Chrome DevTools
@@ -628,6 +684,7 @@ https://manifest-validator.appspot.com/
 ### Testing Checklist
 
 **Visual Testing:**
+
 - [ ] All text is readable (no truncation)
 - [ ] Images scale properly
 - [ ] Buttons are properly sized (min 44x44px)
@@ -637,6 +694,7 @@ https://manifest-validator.appspot.com/
 - [ ] Icons render correctly
 
 **Functional Testing:**
+
 - [ ] Touch targets work on all devices
 - [ ] Gestures work (swipe, pinch, tap)
 - [ ] Keyboard appears correctly on input focus
@@ -646,6 +704,7 @@ https://manifest-validator.appspot.com/
 - [ ] Offline functionality works
 
 **Performance Testing:**
+
 - [ ] App loads in < 3 seconds
 - [ ] Smooth scrolling (60fps)
 - [ ] No layout shifts (CLS < 0.1)
@@ -653,6 +712,7 @@ https://manifest-validator.appspot.com/
 - [ ] Map renders smoothly
 
 **Installation Testing:**
+
 - [ ] Install prompt appears (Android Chrome)
 - [ ] Add to Home Screen works (iOS Safari)
 - [ ] App icon displays correctly
@@ -667,10 +727,12 @@ https://manifest-validator.appspot.com/
 ### Issue 1: Icons Not Showing on Android
 
 **Symptoms:**
+
 - White square icon on home screen
 - Generic PWA icon in app drawer
 
 **Solution:**
+
 ```json
 // Ensure manifest has proper icons array
 {
@@ -700,33 +762,37 @@ https://manifest-validator.appspot.com/
 ### Issue 2: iOS Add to Home Screen Not Working
 
 **Symptoms:**
+
 - Share button doesn't show "Add to Home Screen"
 - App doesn't open in standalone mode
 
 **Solution:**
+
 ```html
 <!-- Add these meta tags -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
 ```
 
 ### Issue 3: Layout Breaks on Small Screens
 
 **Symptoms:**
+
 - Content overflows
 - Buttons too large
 - Text truncated
 
 **Solution:**
+
 ```css
 /* Add responsive breakpoints */
 @media (max-width: 374px) {
-  .btn-lg { 
-    font-size: 0.95rem; 
+  .btn-lg {
+    font-size: 0.95rem;
     padding: 12px;
   }
-  .page-title { 
-    font-size: 1rem; 
+  .page-title {
+    font-size: 1rem;
   }
 }
 ```
@@ -734,18 +800,20 @@ https://manifest-validator.appspot.com/
 ### Issue 4: Keyboard Pushes Content Off Screen (iOS)
 
 **Symptoms:**
+
 - Input fields hidden behind keyboard
 - Submit button not visible
 
 **Solution:**
+
 ```javascript
 // Scroll input into view on focus
-document.querySelectorAll('input, textarea').forEach(input => {
+document.querySelectorAll('input, textarea').forEach((input) => {
   input.addEventListener('focus', (e) => {
     setTimeout(() => {
-      e.target.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'center' 
+      e.target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
       });
     }, 300); // Wait for keyboard animation
   });
@@ -755,10 +823,12 @@ document.querySelectorAll('input, textarea').forEach(input => {
 ### Issue 5: Notch/Safe Area Issues
 
 **Symptoms:**
+
 - Content hidden behind notch
 - Bottom bar hidden behind home indicator
 
 **Solution:**
+
 ```css
 /* Use safe area insets */
 .top-bar {
@@ -816,23 +886,37 @@ document.querySelectorAll('input, textarea').forEach(input => {
 ```html
 <!-- Add lang attribute (already present) -->
 <html lang="en">
+  <!-- Ensure all images have alt text -->
+  <img src="q8-logo.png" alt="Q8 Liberty Logo" />
 
-<!-- Ensure all images have alt text -->
-<img src="q8-logo.png" alt="Q8 Liberty Logo">
-
-<!-- Use semantic HTML (already doing well) -->
-<header>, <nav>, <main>, <footer>
-
-<!-- Ensure sufficient color contrast -->
-/* Check with Chrome DevTools or WAVE */
+  <!-- Use semantic HTML (already doing well) -->
+  <header>
+    ,
+    <nav>
+      ,
+      <main>
+        ,
+        <footer>
+          <!-- Ensure sufficient color contrast -->
+          /* Check with Chrome DevTools or WAVE */
+        </footer>
+      </main>
+    </nav>
+  </header>
+</html>
 ```
 
 ### Touch Target Sizes
 
 ```css
 /* Ensure all interactive elements are at least 44x44px */
-.btn { min-height: 48px; }
-.icon-btn { min-width: 44px; min-height: 44px; }
+.btn {
+  min-height: 48px;
+}
+.icon-btn {
+  min-width: 44px;
+  min-height: 44px;
+}
 ```
 
 ---
@@ -840,18 +924,21 @@ document.querySelectorAll('input, textarea').forEach(input => {
 ## 10. Implementation Priority
 
 ### Phase 1: Critical (Do First)
+
 1. ✅ Create icon set (192x192, 512x512, maskable)
 2. ✅ Update manifest.webmanifest with icons
 3. ✅ Add iOS meta tags
 4. ✅ Test on real devices (iPhone + Android)
 
 ### Phase 2: Important (Do Soon)
+
 5. ⚠️ Create splash screens for iOS
 6. ⚠️ Add platform detection utilities
 7. ⚠️ Implement responsive breakpoints
 8. ⚠️ Test on tablet devices
 
 ### Phase 3: Enhancement (Nice to Have)
+
 9. 🔹 Add app shortcuts
 10. 🔹 Create screenshots for manifest
 11. 🔹 Optimize performance
@@ -879,17 +966,20 @@ Before deploying, verify:
 ## 12. Resources
 
 **Documentation:**
+
 - [MDN PWA Guide](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
 - [Web.dev PWA](https://web.dev/learn/pwa/)
 - [Apple iOS Web Apps](https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html)
 
 **Tools:**
+
 - [PWA Builder](https://www.pwabuilder.com/)
 - [Maskable.app](https://maskable.app/) - Test maskable icons
 - [RealFaviconGenerator](https://realfavicongenerator.net/)
 - [Lighthouse](https://developers.google.com/web/tools/lighthouse)
 
 **Testing:**
+
 - [BrowserStack](https://www.browserstack.com/)
 - [LambdaTest](https://www.lambdatest.com/)
 - [Chrome DevTools Device Mode](https://developer.chrome.com/docs/devtools/device-mode/)

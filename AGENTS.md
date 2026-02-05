@@ -7,18 +7,25 @@
 2. **Canonical set (all alwaysApply: true; follow these):**  
    alwaysApply: true means the rule always applies. enforced: true marks it as non-negotiable for fast scanning; all alwaysApply rules are mandatory.
    - [10_E2E_TESTING.mdc](.cursor/rules/10_E2E_TESTING.mdc) — headed E2E, clean state, failure handling
+   - [12_CANON_GATING.mdc](.cursor/rules/12_CANON_GATING.mdc) — geen human review zonder groen canon; canon status + checks + bewijs rapporteren
+   - [13_AGENT_HANDOVER_DISCIPLINE.mdc](.cursor/rules/13_AGENT_HANDOVER_DISCIPLINE.mdc) — AGENT_HANDOVER.md en BLOCKERS.md verplicht actueel; handover na elke iteratie
+   - [14_AUTOPILOT_WORKFLOW.mdc](.cursor/rules/14_AUTOPILOT_WORKFLOW.mdc) — bij "start autopilot": volg AUTOPILOT_RUNBOOK; geen browser review zolang preflight faalt
    - [15_LOGGING_AND_DIAGNOSTICS.mdc](.cursor/rules/15_LOGGING_AND_DIAGNOSTICS.mdc) — logging for root cause, click/state/negative paths
    - [20_BROWSER_VERIFICATION.mdc](.cursor/rules/20_BROWSER_VERIFICATION.mdc) — verify your own UI work in the browser
    - [20_GIT_AND_COMMIT_DISCIPLINE.mdc](.cursor/rules/20_GIT_AND_COMMIT_DISCIPLINE.mdc) — commit only after verification; no broken/WIP commits
    - [25_DOCS_AND_TRACEABILITY.mdc](.cursor/rules/25_DOCS_AND_TRACEABILITY.mdc) — docs-as-code: story + SYSTEM_STATUS bij user-facing wijziging; openapi bij API; ADR bij architectuur; user-flow referentie
-   - [30_CLICK_HANDLERS.mdc](.cursor/rules/30_CLICK_HANDLERS.mdc) — capture-phase rules, data-*, pointer-events
+   - [22_STYLING_AND_UI.mdc](.cursor/rules/22_STYLING_AND_UI.mdc) — design-system tokens only; no inline theme/layout
+   - [30_CLICK_HANDLERS.mdc](.cursor/rules/30_CLICK_HANDLERS.mdc) — capture-phase rules, data-\*, pointer-events
    - [40_ROOT_CAUSE_LOOP.mdc](.cursor/rules/40_ROOT_CAUSE_LOOP.mdc) — when user says "werkt nog steeds niet"
+
+**Run preflight:** `npm run preflight` (must PASS before asking for human review).
 
 Rules override docs if there is conflict.
 
 ---
 
 ## Documentatie & traceability
+
 - **User story + acceptatie:** [docs/product/stories/STORY_TEMPLATE.md](docs/product/stories/STORY_TEMPLATE.md)
 - **Product:** [docs/product/PRD.md](docs/product/PRD.md), [docs/product/BACKLOG.md](docs/product/BACKLOG.md)
 - **Architectuur:** [docs/architecture/c4.md](docs/architecture/c4.md); beslissingen: [docs/decisions/ADR_TEMPLATE.md](docs/decisions/ADR_TEMPLATE.md)

@@ -11,7 +11,7 @@ const admin = require('firebase-admin');
  * Normalize a parking session doc for export (Firestore Timestamp -> ISO string, numbers).
  */
 function normalizeSessionForExport(doc) {
-  const d = typeof doc.data === 'function' ? doc.data() : (doc.data || doc);
+  const d = typeof doc.data === 'function' ? doc.data() : doc.data || doc;
   const id = doc.id || d.session_id;
   const toIso = (v) => {
     if (!v) return null;
@@ -52,10 +52,18 @@ function normalizeSessionForExport(doc) {
     currency: d.currency ?? 'EUR',
     is_zero_transaction: d.is_zero_transaction ?? false,
     transaction_fee_applicable: d.transaction_fee_applicable ?? false,
-    transaction_fee_excl_vat: d.transaction_fee_applicable ? toNum(d.transaction_fee_excl_vat) : null,
-    transaction_fee_vat_rate: d.transaction_fee_applicable ? toNum(d.transaction_fee_vat_rate) : null,
-    transaction_fee_vat_amount: d.transaction_fee_applicable ? toNum(d.transaction_fee_vat_amount) : null,
-    transaction_fee_incl_vat: d.transaction_fee_applicable ? toNum(d.transaction_fee_incl_vat) : null,
+    transaction_fee_excl_vat: d.transaction_fee_applicable
+      ? toNum(d.transaction_fee_excl_vat)
+      : null,
+    transaction_fee_vat_rate: d.transaction_fee_applicable
+      ? toNum(d.transaction_fee_vat_rate)
+      : null,
+    transaction_fee_vat_amount: d.transaction_fee_applicable
+      ? toNum(d.transaction_fee_vat_amount)
+      : null,
+    transaction_fee_incl_vat: d.transaction_fee_applicable
+      ? toNum(d.transaction_fee_incl_vat)
+      : null,
   };
 }
 
@@ -63,7 +71,7 @@ function normalizeSessionForExport(doc) {
  * Normalize subscription doc for export.
  */
 function normalizeSubscriptionForExport(doc) {
-  const d = typeof doc.data === 'function' ? doc.data() : (doc.data || doc);
+  const d = typeof doc.data === 'function' ? doc.data() : doc.data || doc;
   const id = doc.id || d.subscription_id;
   const toIso = (v) => {
     if (!v) return null;
@@ -104,7 +112,9 @@ function toCSV(rows, columns) {
   const escape = (v) => {
     if (v == null) return '';
     const s = String(v);
-    return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s.replace(/"/g, '""')}"` : s;
+    return s.includes(',') || s.includes('"') || s.includes('\n')
+      ? `"${s.replace(/"/g, '""')}"`
+      : s;
   };
   const header = columns.join(',') + '\n';
   const body = rows.map((r) => columns.map((c) => escape(r[c])).join(',')).join('\n');
@@ -113,23 +123,62 @@ function toCSV(rows, columns) {
 
 /** Parking sessions CSV columns (in schema order). */
 const PARKING_SESSION_COLUMNS = [
-  'session_id', 'card_number', 'card_type', 'user_id', 'user_name', 'user_email',
-  'company_id', 'company_name', 'provider_transaction_id', 'source_system', 'created_at', 'updated_at',
-  'start_datetime', 'end_datetime', 'duration_seconds',
-  'location_type', 'location_name', 'city', 'country', 'zone_id', 'zone_name', 'license_plate',
-  'parking_amount_excl_vat', 'parking_amount_incl_vat', 'parking_vat_amount',
-  'parking_vat_exempt', 'parking_vat_exemption_reason', 'currency',
-  'is_zero_transaction', 'transaction_fee_applicable',
-  'transaction_fee_excl_vat', 'transaction_fee_vat_rate', 'transaction_fee_vat_amount', 'transaction_fee_incl_vat',
+  'session_id',
+  'card_number',
+  'card_type',
+  'user_id',
+  'user_name',
+  'user_email',
+  'company_id',
+  'company_name',
+  'provider_transaction_id',
+  'source_system',
+  'created_at',
+  'updated_at',
+  'start_datetime',
+  'end_datetime',
+  'duration_seconds',
+  'location_type',
+  'location_name',
+  'city',
+  'country',
+  'zone_id',
+  'zone_name',
+  'license_plate',
+  'parking_amount_excl_vat',
+  'parking_amount_incl_vat',
+  'parking_vat_amount',
+  'parking_vat_exempt',
+  'parking_vat_exemption_reason',
+  'currency',
+  'is_zero_transaction',
+  'transaction_fee_applicable',
+  'transaction_fee_excl_vat',
+  'transaction_fee_vat_rate',
+  'transaction_fee_vat_amount',
+  'transaction_fee_incl_vat',
 ];
 
 /** Subscription CSV columns. */
 const SUBSCRIPTION_COLUMNS = [
-  'subscription_id', 'billing_period', 'user_id', 'card_number', 'company_id',
-  'subscription_type', 'subscription_fee_excl_vat', 'subscription_vat_rate',
-  'subscription_vat_amount', 'subscription_fee_incl_vat', 'currency',
-  'subscription_start_date', 'subscription_end_date', 'proration_applied', 'proration_ratio',
-  'source', 'created_at', 'updated_at',
+  'subscription_id',
+  'billing_period',
+  'user_id',
+  'card_number',
+  'company_id',
+  'subscription_type',
+  'subscription_fee_excl_vat',
+  'subscription_vat_rate',
+  'subscription_vat_amount',
+  'subscription_fee_incl_vat',
+  'currency',
+  'subscription_start_date',
+  'subscription_end_date',
+  'proration_applied',
+  'proration_ratio',
+  'source',
+  'created_at',
+  'updated_at',
 ];
 
 /**
@@ -197,9 +246,7 @@ async function exportParkingSessions(db, filters, format) {
     snapshot = await coll.orderBy('start_datetime', 'asc').limit(5000).get();
   }
 
-  const rows = snapshot.docs.map((doc) =>
-    normalizeSessionForExport({ id: doc.id, ...doc.data() })
-  );
+  const rows = snapshot.docs.map((doc) => normalizeSessionForExport({ id: doc.id, ...doc.data() }));
   if (format === 'csv') return toCSV(rows, PARKING_SESSION_COLUMNS);
   return JSON.stringify(rows, null, 2);
 }
@@ -259,8 +306,12 @@ function createParkingSessionDoc(data) {
 
   const feeExcl = feeApplicable ? Number(data.transaction_fee_excl_vat ?? 0) : null;
   const feeRate = feeApplicable ? Number(data.transaction_fee_vat_rate ?? 21) : null;
-  const feeVat = feeApplicable && feeExcl != null ? Math.round(feeExcl * (feeRate / 100) * 100) / 100 : null;
-  const feeIncl = feeApplicable && feeExcl != null && feeVat != null ? Math.round((feeExcl + feeVat) * 100) / 100 : null;
+  const feeVat =
+    feeApplicable && feeExcl != null ? Math.round(feeExcl * (feeRate / 100) * 100) / 100 : null;
+  const feeIncl =
+    feeApplicable && feeExcl != null && feeVat != null
+      ? Math.round((feeExcl + feeVat) * 100) / 100
+      : null;
 
   return {
     session_id: data.session_id || null,

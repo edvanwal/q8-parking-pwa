@@ -1,30 +1,8 @@
 ---
-description: Na frontend/UI-wijzigingen eigen werk in de browser controleren
-globs: public/**/*,app.js,ui.js,design-system.css,state.js,services.js,kenteken.js
+deprecated: true
+replaced_by: .cursor/rules/20_BROWSER_VERIFICATION.mdc
 alwaysApply: false
 ---
-
-# Eigen werk in de browser controleren
-
-Na **elke wijziging** aan de frontend of UI moet je je werk **zelf in de browser verifiëren** met de browser-MCP (cursor-ide-browser of cursor-browser-extension).
-
-## Wanneer
-- Na wijzigingen in: `public/`, `app.js`, `ui.js`, `design-system.css`, `state.js`, `services.js`, `kenteken.js`, of andere bestanden die het gedrag of uiterlijk van de PWA beïnvloeden.
-
-## Vereiste
-- De app moet lokaal draaien op **http://localhost:3000** (bijv. via "Start parking app.bat" of `npx serve public`). Als er nog geen server draait, start die dan in de achtergrond voordat je naar de browser gaat.
-
-## Stappen
-1. **Tabs controleren**: `browser_tabs` met action "list" om te zien of er al een tab is.
-2. **Navigeren**: `browser_navigate` naar `http://localhost:3000`.
-3. **Lock** (cursor-ide-browser): na navigatie `browser_lock` aanroepen.
-4. **Snapshot**: `browser_snapshot` om de pagina-structuur en elementen te zien.
-5. **Verifiëren**: controleren of de gewijzigde functionaliteit of het uiterlijk klopt (tekst, knoppen, flows). Zo nodig: klikken, typen of scrollen om de gewijzigde flow te testen.
-6. **Unlock** (cursor-ide-browser): aan het einde `browser_unlock` aanroepen.
-
-## Korte waits
-Bij laden of navigatie: korte waits (1–3 s) en daarna opnieuw `browser_snapshot` in plaats van één lange wait.
-
-## Resultaat
-- Rapporteer in producttaal: wat je hebt gecontroleerd en of het werkt zoals bedoeld.
-- Als iets niet werkt: beschrijf wat je ziet en pas de code aan tot de verificatie slaagt.
+# DEPRECATED
+Dit bestand is vervangen door: .cursor/rules/20_BROWSER_VERIFICATION.mdc
+Gebruik uitsluitend de canonical rule. Dit bestand bevat geen afdwingregels meer.

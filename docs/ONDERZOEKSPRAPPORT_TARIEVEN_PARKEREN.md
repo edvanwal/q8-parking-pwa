@@ -17,21 +17,21 @@ De parkeertarieven komen uit **RDW Open Data** en worden via een Python-pipeline
 
 De tarieven worden opgebouwd uit meerdere gekoppelde datasets:
 
-| Dataset | Resource ID | Rol |
-|--------|-------------|-----|
-| **Gebied** | b3us-f26s | Gebiedsspecificaties (areaid, areamanagerid, geometrie) |
-| **Regeling-mapping** | qtex-qwd8 | Koppelt gebied → regeling (regulationid), met start-/einddatum |
-| **Tijdvak** | ixf8-gtwq | Per regeling: dag (MAANDAG etc.), start-/eindtijd (0–2400), farecalculationcode, maxdurationright |
-| **Tariefdeel** | 534e-5vdg | Per farecalculationcode: amountfarepart, stepsizefarepart, startdatefarepart, enddatefarepart |
-| **Tariefberekening** | nfzq-8g7y | Omschrijving per farecalculationcode (farecalculationdesc) |
-| **Regeling-beschrijving** | yefi-qfiq | Regulationdesc, regulationtype |
+| Dataset                   | Resource ID | Rol                                                                                               |
+| ------------------------- | ----------- | ------------------------------------------------------------------------------------------------- |
+| **Gebied**                | b3us-f26s   | Gebiedsspecificaties (areaid, areamanagerid, geometrie)                                           |
+| **Regeling-mapping**      | qtex-qwd8   | Koppelt gebied → regeling (regulationid), met start-/einddatum                                    |
+| **Tijdvak**               | ixf8-gtwq   | Per regeling: dag (MAANDAG etc.), start-/eindtijd (0–2400), farecalculationcode, maxdurationright |
+| **Tariefdeel**            | 534e-5vdg   | Per farecalculationcode: amountfarepart, stepsizefarepart, startdatefarepart, enddatefarepart     |
+| **Tariefberekening**      | nfzq-8g7y   | Omschrijving per farecalculationcode (farecalculationdesc)                                        |
+| **Regeling-beschrijving** | yefi-qfiq   | Regulationdesc, regulationtype                                                                    |
 
 **Berekening uurtarief (in de pipeline):**
 
 - `amountfarepart` = bedrag per stap (bijv. € 1,00)
 - `stepsizefarepart` = stapgrootte in **minuten** (bijv. 20)
 - **Uurtarief** = `(amountfarepart / stepsizefarepart) * 60`  
-  Voorbeeld: (1,00 / 20) * 60 = € 3,00 per uur.
+  Voorbeeld: (1,00 / 20) \* 60 = € 3,00 per uur.
 
 Alleen tariefdelen met **geldige datum** (startdatefarepart ≤ vandaag ≤ enddatefarepart) en de **nieuwste** per (areamanagerid, farecalculationcode) worden gebruikt.
 
@@ -63,15 +63,15 @@ Alleen tariefdelen met **geldige datum** (startdatefarepart ≤ vandaag ≤ endd
 
 **Collectie:** `zones`
 
-**Veld** | **Type** | **Betekenis**
---------|----------|----------------
-`id` / `uid` | string | Zone-ID (bijv. 363_AREN, 12100)
-`name` | string | Weergavenaam
-`lat`, `lng` | number | Coördinaten
-`price` | number | Uurtarief (of max tarief) voor o.a. map-pin
-`rates` | array | Lijst van `{ time, price, detail }` (price = string)
-`max_duration_mins` | number | Max. parkeertijd in minuten (uit tijdvak)
-`has_special_rules` | boolean | Waarschuwing feestdagen/speciale regels
+| **Veld**            | **Type** | **Betekenis**                                        |
+| ------------------- | -------- | ---------------------------------------------------- |
+| `id` / `uid`        | string   | Zone-ID (bijv. 363_AREN, 12100)                      |
+| `name`              | string   | Weergavenaam                                         |
+| `lat`, `lng`        | number   | Coördinaten                                          |
+| `price`             | number   | Uurtarief (of max tarief) voor o.a. map-pin          |
+| `rates`             | array    | Lijst van `{ time, price, detail }` (price = string) |
+| `max_duration_mins` | number   | Max. parkeertijd in minuten (uit tijdvak)            |
+| `has_special_rules` | boolean  | Waarschuwing feestdagen/speciale regels              |
 
 Lokaal gebruikt ook `display_label` (indien gezet) voor de map-pin; anders `price`.
 
@@ -140,61 +140,61 @@ Er wordt **geen** numerieke berekening op `rates[].price` gedaan; het is puur te
 
 ### 5.1 Korte termijn (begrijpelijkheid en nauwkeurigheid in de app)
 
-1. **Geschatte kosten tonen in het zonesheet**  
-   - Gebruik `Q8.Utils.calculateCost(state.duration, zone.price)` (of `selectedZoneRate`).  
-   - Toon bij duur > 0 een regel zoals: *"Geschatte kosten: ca. € X,XX"* (of NL: *"Indicatie: ca. € X,XX"*).  
+1. **Geschatte kosten tonen in het zonesheet**
+   - Gebruik `Q8.Utils.calculateCost(state.duration, zone.price)` (of `selectedZoneRate`).
+   - Toon bij duur > 0 een regel zoals: _"Geschatte kosten: ca. € X,XX"_ (of NL: _"Indicatie: ca. € X,XX"_).
    - Bij "Until stopped" (duration 0): geen bedrag of tekst "Duur onbekend – geen indicatie".
 
-2. **Disclaimer bij tarieven**  
-   - Korte zin bij de rates-sectie, bijv.: *"Tarieven zijn indicatief. Het definitieve bedrag kan afwijken."*
+2. **Disclaimer bij tarieven**
+   - Korte zin bij de rates-sectie, bijv.: _"Tarieven zijn indicatief. Het definitieve bedrag kan afwijken."_
 
-3. **Label duration**  
+3. **Label duration**
    - Wijzig "Parking duration (h)" in bijv. "Parking duration" of "Duur" en behoud de weergave in uren/minuten (bijv. "1h 30m"), zodat het consistent is met de 15-min-stappen.
 
-4. **Optioneel: tarief voor huidig tijdslot**  
-   - Als eerste verbetering volstaat het om zone.price (of selectedZoneRate) te gebruiken voor de geschatte kosten.  
+4. **Optioneel: tarief voor huidig tijdslot**
+   - Als eerste verbetering volstaat het om zone.price (of selectedZoneRate) te gebruiken voor de geschatte kosten.
    - Later: uit `rates` de regel voor "nu" bepalen (op basis van huidige tijd + vandaag), daar een numeriek uurtarief uit afleiden (bijv. door in de pipeline een extra veld `rate_numeric` per rates-item mee te geven) en dat gebruiken voor een nauwere indicatie.
 
 ### 5.2 Medium termijn (data en weergave)
 
-5. **Numeriek tarief in rates (pipeline)**  
-   - Voeg per rates-item een veld toe, bijv. `rate_numeric` (uurtarief als number). De app kan dan:  
-     - geschatte kosten berekenen op basis van het tijdslot dat "nu" actief is;  
+5. **Numeriek tarief in rates (pipeline)**
+   - Voeg per rates-item een veld toe, bijv. `rate_numeric` (uurtarief als number). De app kan dan:
+     - geschatte kosten berekenen op basis van het tijdslot dat "nu" actief is;
      - eventueel meerdere tijdsloten tonen met bijbehorende indicatie.
 
-6. **Uitbreiding weergave tarieven**  
+6. **Uitbreiding weergave tarieven**
    - Optie om **alle dagen** of "Maandag–zondag" te tonen (bijv. uitklapbaar "Bekijk alle dagen"), naast de standaardfilter "vandaag", zodat de klant kan plannen.
 
-7. **Dagkaarten en lange stappen (pipeline)**  
+7. **Dagkaarten en lange stappen (pipeline)**
    - Beoordeel of slots met step > 60 (bijv. dagkaart) als aparte regel in `rates` moeten, met een duidelijke `detail` (bijv. "Dagkaart € X"). Nu worden ze weggelaten, wat bij zones met alleen zulke tarieven tot lege of onduidelijke weergave kan leiden.
 
 ### 5.3 Langer termijn (volledigheid en transparantie)
 
-8. **Validatie en monitoring**  
+8. **Validatie en monitoring**
    - Periodieke checks (bijv. script) of zones geen lege `rates` hebben terwijl er wel betaald parkeren geldt, en of `price` overeenkomt met de inhoud van `rates`.
 
-9. **Toelichting in de app**  
+9. **Toelichting in de app**
    - Korte uitleg bij "Rates" (bijv. tooltip of link "Hoe worden tarieven bepaald?") die vermeldt dat de tarieven op RDW Open Data zijn gebaseerd en indicatief zijn.
 
-10. **Tests**  
+10. **Tests**
     - Unit tests voor `calculateCost` (bestaan al in `tests/test_core.js`). Uitbreiden met: weergave geschatte kosten in het sheet en (indien geïmplementeerd) gebruik van `rate_numeric` per tijdslot.
 
 ---
 
 ## 6. Overzicht aanbevelingen
 
-| Nr | Aanbeveling | Impact | Inspanning |
-|----|-------------|--------|------------|
-| 1 | Geschatte kosten in zonesheet (calculateCost + selectedZoneRate) | Hoog | Laag |
-| 2 | Disclaimer bij tarieven | Medium | Laag |
-| 3 | Label duration consistent maken | Laag | Laag |
-| 4 | Optioneel: tarief voor huidig tijdslot (rate_numeric) | Medium | Medium |
-| 5 | rate_numeric in pipeline per rates-item | Medium | Medium |
-| 6 | Optie "alle dagen" bij rates | Laag | Medium |
-| 7 | Dagkaart / step > 60 in rates opnemen | Medium | Medium |
-| 8 | Validatie/monitoring lege/onjuiste tarieven | Medium | Medium |
-| 9 | Toelichting "Hoe worden tarieven bepaald?" | Laag | Laag |
-| 10 | Tests uitbreiden voor kostenweergave | Laag | Laag |
+| Nr  | Aanbeveling                                                      | Impact | Inspanning |
+| --- | ---------------------------------------------------------------- | ------ | ---------- |
+| 1   | Geschatte kosten in zonesheet (calculateCost + selectedZoneRate) | Hoog   | Laag       |
+| 2   | Disclaimer bij tarieven                                          | Medium | Laag       |
+| 3   | Label duration consistent maken                                  | Laag   | Laag       |
+| 4   | Optioneel: tarief voor huidig tijdslot (rate_numeric)            | Medium | Medium     |
+| 5   | rate_numeric in pipeline per rates-item                          | Medium | Medium     |
+| 6   | Optie "alle dagen" bij rates                                     | Laag   | Medium     |
+| 7   | Dagkaart / step > 60 in rates opnemen                            | Medium | Medium     |
+| 8   | Validatie/monitoring lege/onjuiste tarieven                      | Medium | Medium     |
+| 9   | Toelichting "Hoe worden tarieven bepaald?"                       | Laag   | Laag       |
+| 10  | Tests uitbreiden voor kostenweergave                             | Laag   | Laag       |
 
 Prioriteit voor maximale begrijpelijkheid en perceptie van nauwkeurigheid: **1 (geschatte kosten)** en **2 (disclaimer)**.
 
@@ -204,17 +204,17 @@ Prioriteit voor maximale begrijpelijkheid en perceptie van nauwkeurigheid: **1 (
 
 De volgende onderdelen uit het plan zijn geïmplementeerd:
 
-| Onderdeel | Status | Bestanden |
-|-----------|--------|-----------|
-| **Geschatte kosten in zonesheet** | ✅ | `public/ui.js`, `ui.js`, `public/index.html`, `index.html`: blok `#details-estimated-cost`; `calculateCost(duration, zone.price \|\| selectedZoneRate)`; NL/EN teksten. |
-| **Disclaimer bij tarieven** | ✅ | Zelfde bestanden: `#details-rates-disclaimer` met "Tarieven zijn indicatief…" / "Rates are indicative…". |
-| **Label duration** | ✅ | HTML: label "Parking duration (h)" → "Parking duration" met id `details-duration-label`; in `renderZoneSheet` NL "Duur" / EN "Parking duration". |
-| **Toelichting bij Rates** | ✅ | Label "Rates" heeft id `details-rates-label`; in JS wordt tekst (Rates/Tarieven) en tooltip (RDW Open Data) op taal gezet. |
-| **CSS** | ✅ | `public/design-system.css`, `design-system.css`: `.sheet-rates-disclaimer`, `.sheet-estimated-cost`, `.sheet-estimated-cost--muted`. |
-| **Tests** | ✅ | `tests/test_core.js`: TEST 1b "Pricing: Estimated cost formatting for zone sheet" (calculateCost + formatting); mocks voor Q8, saveFavorites, loadFavorites. |
+| Onderdeel                         | Status | Bestanden                                                                                                                                                               |
+| --------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Geschatte kosten in zonesheet** | ✅     | `public/ui.js`, `ui.js`, `public/index.html`, `index.html`: blok `#details-estimated-cost`; `calculateCost(duration, zone.price \|\| selectedZoneRate)`; NL/EN teksten. |
+| **Disclaimer bij tarieven**       | ✅     | Zelfde bestanden: `#details-rates-disclaimer` met "Tarieven zijn indicatief…" / "Rates are indicative…".                                                                |
+| **Label duration**                | ✅     | HTML: label "Parking duration (h)" → "Parking duration" met id `details-duration-label`; in `renderZoneSheet` NL "Duur" / EN "Parking duration".                        |
+| **Toelichting bij Rates**         | ✅     | Label "Rates" heeft id `details-rates-label`; in JS wordt tekst (Rates/Tarieven) en tooltip (RDW Open Data) op taal gezet.                                              |
+| **CSS**                           | ✅     | `public/design-system.css`, `design-system.css`: `.sheet-rates-disclaimer`, `.sheet-estimated-cost`, `.sheet-estimated-cost--muted`.                                    |
+| **Tests**                         | ✅     | `tests/test_core.js`: TEST 1b "Pricing: Estimated cost formatting for zone sheet" (calculateCost + formatting); mocks voor Q8, saveFavorites, loadFavorites.            |
 
 **Opmerking:** De test "Services: Add/Delete Plate" faalt door plate-normalisatie (1-TEST-999 → 1TEST999); dat is een bestaand gedrag, geen gevolg van deze wijzigingen.
 
 ---
 
-*Einde rapport*
+_Einde rapport_

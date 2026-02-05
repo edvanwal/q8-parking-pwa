@@ -10,13 +10,13 @@
 
 ### 1.1 Van jou (product/keuzes)
 
-| Vraag | Opties | Aanbeveling |
-|-------|--------|-------------|
-| **“In de buurt” van wat?** | (A) Huidige locatie gebruiker, (B) Gekozen straatparkeerzone, (C) Beide | Start met (A): straal rond gebruiker. Later (B) toevoegen. |
-| **Straal “in de buurt”?** | Bijv. 1 km, 2 km, 5 km | 2 km als default; evt. instelbaar. |
-| **Waar tonen?** | Alleen kaart, alleen lijst, of beide | Kaart: aparte markertype (icoon garage/P+R). Lijst: sectie “Garages & P+R in de buurt” (bijv. in zone-sheet of apart paneel). |
-| **Welke types?** | Alleen garages, alleen P+R, of beide | Beide; filter op naam/usage (zie hieronder). |
-| **Dynamische bezetting?** | “X plekken vrij” tonen waar beschikbaar | Fase 2b: optioneel; alleen als facility een `dynamicDataUrl` heeft. |
+| Vraag                      | Opties                                                                  | Aanbeveling                                                                                                                   |
+| -------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **“In de buurt” van wat?** | (A) Huidige locatie gebruiker, (B) Gekozen straatparkeerzone, (C) Beide | Start met (A): straal rond gebruiker. Later (B) toevoegen.                                                                    |
+| **Straal “in de buurt”?**  | Bijv. 1 km, 2 km, 5 km                                                  | 2 km als default; evt. instelbaar.                                                                                            |
+| **Waar tonen?**            | Alleen kaart, alleen lijst, of beide                                    | Kaart: aparte markertype (icoon garage/P+R). Lijst: sectie “Garages & P+R in de buurt” (bijv. in zone-sheet of apart paneel). |
+| **Welke types?**           | Alleen garages, alleen P+R, of beide                                    | Beide; filter op naam/usage (zie hieronder).                                                                                  |
+| **Dynamische bezetting?**  | “X plekken vrij” tonen waar beschikbaar                                 | Fase 2b: optioneel; alleen als facility een `dynamicDataUrl` heeft.                                                           |
 
 ### 1.2 Technisch
 
@@ -29,12 +29,12 @@
 
 ## 2. Kosten
 
-| Onderdeel | Kosten |
-|-----------|--------|
-| **npropendata.rdw.nl** | € 0 – open data, geen registratie. |
-| **Ontwikkeling** | Alleen tijd: script + app-aanpassingen. |
+| Onderdeel              | Kosten                                                                                                                                                                                     |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **npropendata.rdw.nl** | € 0 – open data, geen registratie.                                                                                                                                                         |
+| **Ontwikkeling**       | Alleen tijd: script + app-aanpassingen.                                                                                                                                                    |
 | **Firebase Firestore** | Extra collectie `facilities`: schrijf bij refresh (bijv. 1× per week); lees bij openen kaart/zone. Bij beperkt aantal faciliteiten (bijv. &lt; 2000) en 2 km-straal: beperkte extra reads. |
-| **Firebase Hosting** | Geen wijziging. |
+| **Firebase Hosting**   | Geen wijziging.                                                                                                                                                                            |
 
 **Conclusie:** Geen externe kosten; alleen Firestore-usage (naar verwachting beperkt).
 
@@ -48,8 +48,8 @@
    `GET https://npropendata.rdw.nl/parkingdata/v2/`  
    → JSON met o.a. per item: `name`, `identifier` (UUID), `staticDataUrl`, optioneel `dynamicDataUrl`, `limitedAccess`.
 
-2. **Filter op type (garage / P+R)**  
-   - Op **naam**: bevat “garage”, “parkeergarage”, “P+R”, “Carpool” (Carpool evt. uitsluiten als je alleen garage + P+R wilt).  
+2. **Filter op type (garage / P+R)**
+   - Op **naam**: bevat “garage”, “parkeergarage”, “P+R”, “Carpool” (Carpool evt. uitsluiten als je alleen garage + P+R wilt).
    - Of na ophalen static data: in `specifications[].usage` staat o.a. “Garage parkeren”; naam bevat vaak “P+R” of “Carpool”.
 
 3. **Static data per facility**  
@@ -69,26 +69,26 @@
 
 Voorgestelde velden (minimaal voor “in de buurt” + kaart):
 
-| Veld | Type | Bron |
-|------|------|------|
-| `id` | string | `identifier` (UUID) |
-| `name` | string | `parkingFacilityInformation.name` |
-| `description` | string | optioneel |
-| `lat` | number | `accessPoints[0].accessPointLocation[0].latitude` |
-| `lng` | number | `accessPoints[0].accessPointLocation[0].longitude` |
-| `type` | string | `"garage"` \| `"p_r"` (afgeleid uit naam/usage) |
-| `city` | string | uit accessPointAddress of operator |
-| `street` | string | optioneel (adres) |
-| `tariffSummary` | string | optioneel; bijv. eerste `tariffDescription` of “€ X / Y min” |
-| `dynamicDataUrl` | string | optioneel; voor later “X plekken vrij” |
-| `capacity` | number | optioneel; totaal aantal plekken (specifications[0]) |
-| `chargingPointCapacity` | number | optioneel; laadplekken |
-| `disabledAccess` | boolean | optioneel; rolstoeltoegankelijk |
-| `minimumHeightInMeters` | number | optioneel; max hoogte |
-| `operatorUrl` | string | optioneel; website beheerder |
-| `openingTimesSummary` | string | optioneel; "24/7" of "Ma-Vr 07:00-23:00" |
-| `paymentMethods` | array string | optioneel; bv. ["Maestro","Visa","Coins"] |
-| `updated_at` | string | timestamp laatste refresh |
+| Veld                    | Type         | Bron                                                         |
+| ----------------------- | ------------ | ------------------------------------------------------------ |
+| `id`                    | string       | `identifier` (UUID)                                          |
+| `name`                  | string       | `parkingFacilityInformation.name`                            |
+| `description`           | string       | optioneel                                                    |
+| `lat`                   | number       | `accessPoints[0].accessPointLocation[0].latitude`            |
+| `lng`                   | number       | `accessPoints[0].accessPointLocation[0].longitude`           |
+| `type`                  | string       | `"garage"` \| `"p_r"` (afgeleid uit naam/usage)              |
+| `city`                  | string       | uit accessPointAddress of operator                           |
+| `street`                | string       | optioneel (adres)                                            |
+| `tariffSummary`         | string       | optioneel; bijv. eerste `tariffDescription` of “€ X / Y min” |
+| `dynamicDataUrl`        | string       | optioneel; voor later “X plekken vrij”                       |
+| `capacity`              | number       | optioneel; totaal aantal plekken (specifications[0])         |
+| `chargingPointCapacity` | number       | optioneel; laadplekken                                       |
+| `disabledAccess`        | boolean      | optioneel; rolstoeltoegankelijk                              |
+| `minimumHeightInMeters` | number       | optioneel; max hoogte                                        |
+| `operatorUrl`           | string       | optioneel; website beheerder                                 |
+| `openingTimesSummary`   | string       | optioneel; "24/7" of "Ma-Vr 07:00-23:00"                     |
+| `paymentMethods`        | array string | optioneel; bv. ["Maestro","Visa","Coins"]                    |
+| `updated_at`            | string       | timestamp laatste refresh                                    |
 
 Geen volledige static JSON in Firestore bewaren (te groot); alleen wat de app nodig heeft.
 
@@ -96,25 +96,25 @@ Geen volledige static JSON in Firestore bewaren (te groot); alleen wat de app no
 
 De **static data** per facility bevat meer dan we nu in Firestore zetten. Overzicht:
 
-| Bron (onder `parkingFacilityInformation`) | Wat het is | Waarde voor de app |
-|-------------------------------------------|------------|--------------------|
-| **specifications[]** | Specificaties per periode | **capacity** = totaal aantal plekken; **chargingPointCapacity** = laadplekken; **disabledAccess** = rolstoeltoegankelijk; **minimumHeightInMeters** = max hoogte; **usage** = "Garage parkeren" e.d. |
-| **operator** | Beheerder (vaak gemeente) | **name**, **url** (website), **administrativeAddresses** (email, telefoon) – nuttig voor “Meer info” / contact. |
-| **openingTimes[]** | Openingstijden | **openAllYear**, **entryTimes** (enterFrom/enterUntil, dayNames) – “Open 24/7” vs “Ma–Vr 07:00–23:00” in de lijst of detail. |
-| **tariffs[]** (volledig) | Alle tariefregels | Nu gebruiken we alleen eerste intervalRate voor `tariffSummary`. Volledige **tariffDescription** + **intervalRates** per dag/tijd voor gedetailleerde tarieven in een facility-detailscherm. |
-| **paymentMethods[]** | Betaalmethoden | **method** (Banknotes, Coins, Maestro, MasterCard, Visa, VPay), **atPaystation**, **atExit** – “Pinnen bij uitrit” / “Contant bij automaat” in de UI. |
-| **accessPoints[]** (meerdere) | Meerdere ingangen/locaties | Nu alleen eerste punt; sommige garages hebben **meerdere** accessPoints met elk eigen lat/lng en adres – bv. “Ingang A” / “Ingang B” of aparte coördinaten. |
-| **contactPersons[]** | Contactpersonen | Naam, email, telefoon – voor zakelijk/beheer. |
-| **specialDays[]** | Uitzonderingen | Feestdagen / bijzondere dagen met andere regels. |
-| **parkingRestrictions[]** | Beperkingen | Bv. voertuigtype, max verblijf – voor toegankelijkheid / filters. |
+| Bron (onder `parkingFacilityInformation`) | Wat het is                 | Waarde voor de app                                                                                                                                                                                   |
+| ----------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **specifications[]**                      | Specificaties per periode  | **capacity** = totaal aantal plekken; **chargingPointCapacity** = laadplekken; **disabledAccess** = rolstoeltoegankelijk; **minimumHeightInMeters** = max hoogte; **usage** = "Garage parkeren" e.d. |
+| **operator**                              | Beheerder (vaak gemeente)  | **name**, **url** (website), **administrativeAddresses** (email, telefoon) – nuttig voor “Meer info” / contact.                                                                                      |
+| **openingTimes[]**                        | Openingstijden             | **openAllYear**, **entryTimes** (enterFrom/enterUntil, dayNames) – “Open 24/7” vs “Ma–Vr 07:00–23:00” in de lijst of detail.                                                                         |
+| **tariffs[]** (volledig)                  | Alle tariefregels          | Nu gebruiken we alleen eerste intervalRate voor `tariffSummary`. Volledige **tariffDescription** + **intervalRates** per dag/tijd voor gedetailleerde tarieven in een facility-detailscherm.         |
+| **paymentMethods[]**                      | Betaalmethoden             | **method** (Banknotes, Coins, Maestro, MasterCard, Visa, VPay), **atPaystation**, **atExit** – “Pinnen bij uitrit” / “Contant bij automaat” in de UI.                                                |
+| **accessPoints[]** (meerdere)             | Meerdere ingangen/locaties | Nu alleen eerste punt; sommige garages hebben **meerdere** accessPoints met elk eigen lat/lng en adres – bv. “Ingang A” / “Ingang B” of aparte coördinaten.                                          |
+| **contactPersons[]**                      | Contactpersonen            | Naam, email, telefoon – voor zakelijk/beheer.                                                                                                                                                        |
+| **specialDays[]**                         | Uitzonderingen             | Feestdagen / bijzondere dagen met andere regels.                                                                                                                                                     |
+| **parkingRestrictions[]**                 | Beperkingen                | Bv. voertuigtype, max verblijf – voor toegankelijkheid / filters.                                                                                                                                    |
 
 **Facility-lijst (v2/):**
 
-| Veld | Waarde |
-|------|--------|
-| **dynamicDataUrl** | Al opgeslagen; gebruikt voor **dynamische bezetting** (“ca. X plekken vrij”) – Fase 2d. |
-| **limitedAccess** | Of de facility beperkt toegankelijk is (bv. vergunninghouders). |
-| **staticDataLastUpdated** | Unix timestamp – handig voor cache/refresh. |
+| Veld                      | Waarde                                                                                  |
+| ------------------------- | --------------------------------------------------------------------------------------- |
+| **dynamicDataUrl**        | Al opgeslagen; gebruikt voor **dynamische bezetting** (“ca. X plekken vrij”) – Fase 2d. |
+| **limitedAccess**         | Of de facility beperkt toegankelijk is (bv. vergunninghouders).                         |
+| **staticDataLastUpdated** | Unix timestamp – handig voor cache/refresh.                                             |
 
 **Dynamische data (dynamicDataUrl):**  
 SPDP-formaat met o.a. **beschikbare capaciteit** (vrije plekken), soms per laag/sectie. Alleen beschikbaar bij facilities met `dynamicDataUrl`; nuttig voor “X plekken vrij” in de lijst of op de kaart.
@@ -151,31 +151,31 @@ SPDP-formaat met o.a. **beschikbare capaciteit** (vrije plekken), soms per laag/
   Voor afstandsfilter heb je ofwel:
   - **Optie A:** Alle facilities ophalen en in de app filteren op afstand (lat/lng) – eenvoudig als aantal beperkt is (&lt; 2000).
   - **Optie B:** Firestore geohash/geopoint query (vereist veld met `GeoPoint` + composite index).  
-  Start met **Optie A**; bij groei kan Optie B later.
+    Start met **Optie A**; bij groei kan Optie B later.
 
 ### 4.4 Stap 3: App (frontend)
 
 1. **Data ophalen**  
-   Bij laden kaart (of bij eerste openen “Garages & P+R”):  
-   - Firestore `facilities` ophalen (eenmalig of bij focus op kaart).  
+   Bij laden kaart (of bij eerste openen “Garages & P+R”):
+   - Firestore `facilities` ophalen (eenmalig of bij focus op kaart).
    - In state bijv. `state.facilities` (array).
 
-2. **Filter “in de buurt”**  
-   - **Referentiepunt:** huidige locatie gebruiker (`state.userLocation`) of centrum van gekozen zone.  
-   - **Straal:** bijv. 2 km.  
+2. **Filter “in de buurt”**
+   - **Referentiepunt:** huidige locatie gebruiker (`state.userLocation`) of centrum van gekozen zone.
+   - **Straal:** bijv. 2 km.
    - Afstand berekenen (Haversine of eenvoudige benadering) en filteren: `facilities.filter(f => distance(f, ref) <= 2000)`.
 
-3. **Kaart**  
-   - Andere icoon of kleur voor garage/P+R dan voor straatparkeerzones (bijv. icoon “parking” of “garage”).  
+3. **Kaart**
+   - Andere icoon of kleur voor garage/P+R dan voor straatparkeerzones (bijv. icoon “parking” of “garage”).
    - Markers voor `state.nearbyFacilities` (of vergelijkbare variabele).
 
-4. **Lijst “Garages & P+R in de buurt”**  
-   - Nieuwe sectie in het zone-sheet, of apart paneel/knop “Garages & P+R”.  
-   - Toon naam, adres/plaats, evt. tariefsamenvatting, afstand.  
+4. **Lijst “Garages & P+R in de buurt”**
+   - Nieuwe sectie in het zone-sheet, of apart paneel/knop “Garages & P+R”.
+   - Toon naam, adres/plaats, evt. tariefsamenvatting, afstand.
    - Klik opent evt. detail of navigatie.
 
-5. **Geen straatparkeer-flow breken**  
-   - Bestaande `zones`, `loadZones`, zoeken, start parkeren blijven ongewijzigd.  
+5. **Geen straatparkeer-flow breken**
+   - Bestaande `zones`, `loadZones`, zoeken, start parkeren blijven ongewijzigd.
    - Facilities zijn alleen informatief (tonen, navigatie); geen “start parkeersessie” voor garage in deze fase.
 
 ### 4.5 Stap 4 (optioneel): Dynamische bezetting
@@ -183,18 +183,18 @@ SPDP-formaat met o.a. **beschikbare capaciteit** (vrije plekken), soms per laag/
 - Alleen voor facilities met `dynamicDataUrl`.
 - GET dynamic URL → SPDP-formaat met o.a. beschikbare capaciteit.
 - In UI: “ca. X plekken vrij” bij de facility.  
-Dit kan in een latere iteratie.
+  Dit kan in een latere iteratie.
 
 ---
 
 ## 5. Fasering
 
-| Fase | Inhoud | Geschat |
-|------|--------|---------|
-| **2a** | Script `fetch_npropendata_facilities.py`: facility-lijst ophalen, filteren op garage + P+R, static data parsen, Firestore `facilities` vullen. | 1–2 dag |
-| **2b** | App: facilities ophalen, filter “in de buurt” (2 km rond gebruiker), markers op kaart + sectie “Garages & P+R in de buurt”. | ✓ Gedaan |
-| **2c** | (Optioneel) “In de buurt” ook t.o.v. gekozen zone; straal instelbaar. | 0,5 dag |
-| **2d** | (Optioneel) Dynamische bezetting waar `dynamicDataUrl` beschikbaar is. | 1 dag |
+| Fase   | Inhoud                                                                                                                                         | Geschat  |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| **2a** | Script `fetch_npropendata_facilities.py`: facility-lijst ophalen, filteren op garage + P+R, static data parsen, Firestore `facilities` vullen. | 1–2 dag  |
+| **2b** | App: facilities ophalen, filter “in de buurt” (2 km rond gebruiker), markers op kaart + sectie “Garages & P+R in de buurt”.                    | ✓ Gedaan |
+| **2c** | (Optioneel) “In de buurt” ook t.o.v. gekozen zone; straal instelbaar.                                                                          | 0,5 dag  |
+| **2d** | (Optioneel) Dynamische bezetting waar `dynamicDataUrl` beschikbaar is.                                                                         | 1 dag    |
 
 ---
 
@@ -238,30 +238,30 @@ Het script gebruikt retries bij netwerkfouten en slaat mislukte facilities over,
 
 ### Garages & P+R (plan)
 
-| Verbetering | Beschrijving | Moeite |
-|-------------|--------------|--------|
-| **Fase 2c** | “In de buurt” ook t.o.v. **gekozen zone** (niet alleen locatie); **straal instelbaar** (1 / 2 / 5 km) in instellingen. | 0,5 dag |
-| **Fase 2d** | **Dynamische bezetting**: voor facilities met `dynamicDataUrl` de SPDP-URL ophalen en “ca. X plekken vrij” tonen in lijst en/of op kaart. | 1 dag |
-| **Zichtbaarheid** | Sectie “Garages & P+R” ook bereikbaar **zonder** zone te selecteren (bijv. knop op kaartscherm of apart paneel). | 0,5 dag |
-| **Meer info** | Link naar **operatorUrl** (website beheerder) per facility (“Meer info” / “Website”). | Klein |
-| **Foutafhandeling** | Duidelijke melding als `facilities` niet laden (netwerk/Firestore); retry-optie. | Klein |
+| Verbetering         | Beschrijving                                                                                                                              | Moeite  |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| **Fase 2c**         | “In de buurt” ook t.o.v. **gekozen zone** (niet alleen locatie); **straal instelbaar** (1 / 2 / 5 km) in instellingen.                    | 0,5 dag |
+| **Fase 2d**         | **Dynamische bezetting**: voor facilities met `dynamicDataUrl` de SPDP-URL ophalen en “ca. X plekken vrij” tonen in lijst en/of op kaart. | 1 dag   |
+| **Zichtbaarheid**   | Sectie “Garages & P+R” ook bereikbaar **zonder** zone te selecteren (bijv. knop op kaartscherm of apart paneel).                          | 0,5 dag |
+| **Meer info**       | Link naar **operatorUrl** (website beheerder) per facility (“Meer info” / “Website”).                                                     | Klein   |
+| **Foutafhandeling** | Duidelijke melding als `facilities` niet laden (netwerk/Firestore); retry-optie.                                                          | Klein   |
 
 ### Script & data
 
-| Verbetering | Beschrijving | Moeite |
-|-------------|--------------|--------|
-| **Cron** | Script 1× per week draaien via cron/scheduled task; in README of plan vastleggen. | Klein |
-| **Robuustheid** | Retries bij netwerkfout of 5xx; tijdelijk overslaan van één facility bij parsefout (nu stille skip). | Klein |
-| **Incrementeel** | Alleen facilities verversen waar `staticDataLastUpdated` gewijzigd is (minder requests, sneller). | Medium |
+| Verbetering               | Beschrijving                                                                                                   | Moeite |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------- | ------ |
+| **Cron**                  | Script 1× per week draaien via cron/scheduled task; in README of plan vastleggen.                              | Klein  |
+| **Robuustheid**           | Retries bij netwerkfout of 5xx; tijdelijk overslaan van één facility bij parsefout (nu stille skip).           | Klein  |
+| **Incrementeel**          | Alleen facilities verversen waar `staticDataLastUpdated` gewijzigd is (minder requests, sneller).              | Medium |
 | **Meerdere accessPoints** | Bij garages met meerdere ingangen: tweede/derde coördinaat of aparte “ingang”-markers (nu alleen eerste punt). | Medium |
 
 ### App algemeen
 
-| Verbetering | Beschrijving | Moeite |
-|-------------|--------------|--------|
-| **Performance** | Bij >2000 facilities: overwegen Firestore-geoquery of server-side filter op afstand i.p.v. alle docs ophalen. | Medium |
-| **i18n** | Facility-labels (24/7, plekken, laadplekken, Toegankelijk, Pinnen/Contant) in vertaalset voor Engels. | Klein |
-| **Toegankelijkheid** | Facility-markers en lijst items voor screenreaders (aria-label, role). | Klein |
+| Verbetering          | Beschrijving                                                                                                  | Moeite |
+| -------------------- | ------------------------------------------------------------------------------------------------------------- | ------ |
+| **Performance**      | Bij >2000 facilities: overwegen Firestore-geoquery of server-side filter op afstand i.p.v. alle docs ophalen. | Medium |
+| **i18n**             | Facility-labels (24/7, plekken, laadplekken, Toegankelijk, Pinnen/Contant) in vertaalset voor Engels.         | Klein  |
+| **Toegankelijkheid** | Facility-markers en lijst items voor screenreaders (aria-label, role).                                        | Klein  |
 
 ### Aansluiting NPR-rapport (RAPPORT_NPR_RDW_SHPV_PARKERDATA_ANALYSE.md)
 
@@ -272,4 +272,4 @@ Het script gebruikt retries bij netwerkfouten en slaat mislukte facilities over,
 
 ---
 
-*Zie ook: `docs/RAPPORT_NPR_RDW_SHPV_PARKERDATA_ANALYSE.md` (E1, E2).*
+_Zie ook: `docs/RAPPORT_NPR_RDW_SHPV_PARKERDATA_ANALYSE.md` (E1, E2)._

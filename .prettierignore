@@ -1,0 +1,7 @@
+node_modules
+test-output
+*.min.js
+
+# Legacy recovery preview; HTML parser reports "Unexpected closing tag div" (nesting).
+# File is outside main app surface; excluding so format:check can PASS without changing legacy markup.
+recovery-preview.html

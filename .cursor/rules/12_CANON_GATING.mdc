@@ -1,0 +1,39 @@
+---
+scope: project
+priority: high
+alwaysApply: true
+enforced: true
+---
+
+# CANON GATING — GEEN HUMAN REVIEW ZONDER GROEN CANON
+
+De Functional Canon is de bron van waarheid: **docs/FUNCTIONAL_CANON.md**.
+
+---
+
+## VERBOD
+- Een agent mag **NOOIT** zeggen "kijk even in de browser" of "het is klaar" als:
+  - er user-visible features in de canon op 🟡 of ❌ staan, of
+  - er gates openstaan (zoals bij PARK-TIME-001: min niet adresseerbaar, proof alleen plus, enz.).
+- Edwin kijkt pas naar de app als de canon groen is, of het feature expliciet als manual-only is goedgekeurd.
+
+---
+
+## BIJ ELKE USER-VISIBLE WIJZIGING
+- De canon moet **in dezelfde change** worden bijgewerkt.
+- Status moet kloppen: geen ✅ zonder geautomatiseerde dekking.
+
+---
+
+## DEFINITIE "READY FOR HUMAN REVIEW"
+- **Canon-index:** alle user-visible features ✅ (of expliciet manual-only).
+- **Checks:** alle proof/smoke-checks die in de canon staan: PASS.
+- **Deviations:** geen openstaande blocking deviations (bijv. inline-style afwijkingen) tenzij expliciet toegestaan.
+
+---
+
+## OUTPUT-DISCIPLINE
+- Vóór er om human review wordt gevraagd moet de agent **altijd** rapporteren:
+  - Canon-status (welke features ✅/🟡/❌).
+  - Welke checks zijn gedraaid (proof, smoke, …).
+  - Bewijs: trace/video/screenshot-pad (bijv. test-output/e2e-proof/).

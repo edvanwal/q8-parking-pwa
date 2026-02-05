@@ -6,17 +6,17 @@ Maps and zone visualization are **infrastructure**. The core product is the park
 
 ## Subsystems Overview
 
-| Subsystem | Purpose | Where it lives |
-|-----------|---------|----------------|
-| **Zone selection** | User picks a zone to start parking | app.js (events) → Services.tryOpenOverlay → state.selectedZone |
-| **Parking actions** | Start session, end session | Services.handleStartParking, handleEndParking |
-| **License plates** | Add, delete, set default, select for session | Services.saveNewPlate, deletePlate, setDefaultPlate; app.js select-plate |
-| **Parking history** | List past sessions, filter by vehicle/date | ui.js renderHistory, renderHistoryFilters; state.historyFilters |
-| **End time / duration** | Set fixed end time for parking | Services.modifyDuration; state.duration |
-| **Session state** | Active parking session (zone, start, end, plate) | state.session; persisted in localStorage |
-| **Pricing logic** | Cost calculation | utils.js calculateCost |
-| **Maps (infra)** | Show zones on map | ui.js initGoogleMap, renderMapMarkers |
-| **Zone data (infra)** | Load zones from Firestore | Services.loadZones |
+| Subsystem               | Purpose                                          | Where it lives                                                           |
+| ----------------------- | ------------------------------------------------ | ------------------------------------------------------------------------ |
+| **Zone selection**      | User picks a zone to start parking               | app.js (events) → Services.tryOpenOverlay → state.selectedZone           |
+| **Parking actions**     | Start session, end session                       | Services.handleStartParking, handleEndParking                            |
+| **License plates**      | Add, delete, set default, select for session     | Services.saveNewPlate, deletePlate, setDefaultPlate; app.js select-plate |
+| **Parking history**     | List past sessions, filter by vehicle/date       | ui.js renderHistory, renderHistoryFilters; state.historyFilters          |
+| **End time / duration** | Set fixed end time for parking                   | Services.modifyDuration; state.duration                                  |
+| **Session state**       | Active parking session (zone, start, end, plate) | state.session; persisted in localStorage                                 |
+| **Pricing logic**       | Cost calculation                                 | utils.js calculateCost                                                   |
+| **Maps (infra)**        | Show zones on map                                | ui.js initGoogleMap, renderMapMarkers                                    |
+| **Zone data (infra)**   | Load zones from Firestore                        | Services.loadZones                                                       |
 
 ---
 

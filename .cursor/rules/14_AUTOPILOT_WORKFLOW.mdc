@@ -1,0 +1,23 @@
+---
+scope: project
+priority: high
+alwaysApply: true
+enforced: true
+---
+
+# AUTOPILOT WORKFLOW
+
+Als de gebruiker zegt **"start autopilot"** of **"vannacht doorwerken"**: volg **docs/AUTOPILOT_RUNBOOK.md** stap voor stap.
+
+---
+
+## Verplicht
+- De agent mag **niet** stoppen door onduidelijkheid. Bij twijfel: log als blocker in docs/BLOCKERS.md en ga door met het volgende feature.
+- De agent mag **nooit** om browser review vragen zolang `npm run preflight` faalt.
+- Elke iteratie: handover en blockers bijwerken, gates draaien (preflight, format:check, test:e2e:proof waar relevant), commit, bewijs-pad noteren.
+
+---
+
+## Koppeling
+- Zie 12_CANON_GATING voor "Ready for Human Review".
+- Zie 13_AGENT_HANDOVER_DISCIPLINE voor de verplichte updates aan AGENT_HANDOVER.md en BLOCKERS.md na elke iteratie.

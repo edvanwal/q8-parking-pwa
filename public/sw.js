@@ -8,9 +8,7 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
-  );
+  event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
 });
 
 // Push notifications (FCM)
@@ -24,7 +22,7 @@ self.addEventListener('push', (event) => {
         body: payload.notification?.body || payload.data?.body || payload.data?.message || '',
         icon: payload.notification?.icon || payload.data?.icon || '/icons/favicon-32x32.png',
         tag: payload.data?.tag || 'q8-parking',
-        url: payload.data?.url || '/'
+        url: payload.data?.url || '/',
       };
     }
   } catch (e) {}
@@ -33,7 +31,7 @@ self.addEventListener('push', (event) => {
       body: data.body,
       icon: data.icon,
       tag: data.tag,
-      data: { url: data.url }
+      data: { url: data.url },
     })
   );
 });

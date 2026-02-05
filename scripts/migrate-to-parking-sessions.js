@@ -44,7 +44,11 @@ async function migrate() {
 
   for (const doc of txSnap.docs) {
     const t = doc.data();
-    const existing = await db.collection('parking_sessions').where('provider_transaction_id', '==', doc.id).limit(1).get();
+    const existing = await db
+      .collection('parking_sessions')
+      .where('provider_transaction_id', '==', doc.id)
+      .limit(1)
+      .get();
     if (!existing.empty) {
       skipped++;
       continue;
@@ -63,7 +67,9 @@ async function migrate() {
     const isZero = parkingAmountExcl <= 0;
     const feeApplicable = !isZero;
 
-    let feeExcl = null, feeVat = null, feeIncl = null;
+    let feeExcl = null,
+      feeVat = null,
+      feeIncl = null;
     if (feeApplicable) {
       feeExcl = TRANSACTION_FEE_EXCL;
       feeVat = Math.round(feeExcl * (TRANSACTION_FEE_RATE / 100) * 100) / 100;

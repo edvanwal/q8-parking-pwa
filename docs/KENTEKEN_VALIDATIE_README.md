@@ -28,10 +28,10 @@ Er is **gratis kentekenvalidatie** toegevoegd: formaatcontrole volgens Nederland
 ### 4. Bestanden
 
 - **Nieuw:** `public/kenteken.js`, root `kenteken.js`.
-- **Aangepast:**  
-  - `public/index.html` en root `index.html` (script-tag kenteken.js, modal add-plate uitgebreid),  
-  - `public/services.js` en root `services.js` (saveNewPlate, updatePlate, checkPlateRDW, modal-reset),  
-  - `public/app.js` en root `app.js` (action `check-plate`, live format-feedback),  
+- **Aangepast:**
+  - `public/index.html` en root `index.html` (script-tag kenteken.js, modal add-plate uitgebreid),
+  - `public/services.js` en root `services.js` (saveNewPlate, updatePlate, checkPlateRDW, modal-reset),
+  - `public/app.js` en root `app.js` (action `check-plate`, live format-feedback),
   - `public/design-system.css` en root `design-system.css` (classes voor plate-rdw-result en plate-format-error).
 
 ## Waar je niets voor hoeft te doen

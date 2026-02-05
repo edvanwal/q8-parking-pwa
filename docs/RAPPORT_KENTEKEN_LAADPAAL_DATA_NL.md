@@ -24,28 +24,28 @@ Voor een parkeerapp zijn de meest relevante vervolgstappen: **RDW open data** bl
 
 **Rol:** Officiële beheerder van de Basisregistratie Voertuigen; alle gekentekende voertuigen in Nederland.
 
-| Aspect | Beschrijving |
-|--------|--------------|
+| Aspect        | Beschrijving                                                                                        |
+| ------------- | --------------------------------------------------------------------------------------------------- |
 | **Open data** | [opendata.rdw.nl](https://opendata.rdw.nl/) – gratis, geen registratie verplicht voor download/API. |
-| **Catalogus** | [opendata.rdw.nl/browse](https://opendata.rdw.nl/browse) – alle datasets per thema. |
-| **Licentie** | Creative Commons 0 (CC0) / Public Domain. |
+| **Catalogus** | [opendata.rdw.nl/browse](https://opendata.rdw.nl/browse) – alle datasets per thema.                 |
+| **Licentie**  | Creative Commons 0 (CC0) / Public Domain.                                                           |
 
 **Belangrijke datasets (voertuigen):**
 
-- **Open Data RDW: Gekentekende_voertuigen** (dataset-id o.a. m9d7-ebf2)  
-  - ~16,7 miljoen rijen, 98 kolommen.  
-  - Bevat o.a.: kenteken, voertuigsoort, merk, handelsbenaming, vervaldatum_apk, datum_tenaamstelling, bruto_bpm, inrichting, aantal_zitplaatsen, eerste_kleur, tweede_kleur, aantal_cilinders, cilinderinhoud, massa_ledig_voertuig, toegestane_maximum_massa_voertuig.  
+- **Open Data RDW: Gekentekende_voertuigen** (dataset-id o.a. m9d7-ebf2)
+  - ~16,7 miljoen rijen, 98 kolommen.
+  - Bevat o.a.: kenteken, voertuigsoort, merk, handelsbenaming, vervaldatum_apk, datum_tenaamstelling, bruto_bpm, inrichting, aantal_zitplaatsen, eerste_kleur, tweede_kleur, aantal_cilinders, cilinderinhoud, massa_ledig_voertuig, toegestane_maximum_massa_voertuig.
   - Toegang: OData V2/V4, Socrata REST (JSON), export.
 
-- **Open Data RDW: Gekentekende_voertuigen_brandstof** (o.a. 8ys7-d773)  
-  - Koppeling brandstof/energie per voertuig (o.a. elektrisch, hybride).  
+- **Open Data RDW: Gekentekende_voertuigen_brandstof** (o.a. 8ys7-d773)
+  - Koppeling brandstof/energie per voertuig (o.a. elektrisch, hybride).
   - Relevant voor: “is dit een EV?”, “welk type brandstof?”.
 
-- **Elektrische voertuigen** (o.a. w4rt-e856)  
+- **Elektrische voertuigen** (o.a. w4rt-e856)
   - Subset/weergave voor elektrische voertuigen.
 
-- **Parkeergebieden Nederland** (gebruikt in dit project)  
-  - o.a. b3us-f26s (gebied/specs), qtex-qwd8 (regeling/mapping), ixf8-gtwq (tijdvak), 534e-5vdg (tariefdeel), nfzq-8g7y (tariefberekening), yefi-qfiq (beschrijving).  
+- **Parkeergebieden Nederland** (gebruikt in dit project)
+  - o.a. b3us-f26s (gebied/specs), qtex-qwd8 (regeling/mapping), ixf8-gtwq (tijdvak), 534e-5vdg (tariefdeel), nfzq-8g7y (tariefberekening), yefi-qfiq (beschrijving).
   - Geen kenteken; wel gebied, regels, tarieven.
 
 **API/toegang open data:**
@@ -68,12 +68,12 @@ Voor een parkeerapp: open data volstaat voor parkeerzones (zoals nu) en voor bul
 
 ### 2.2 Overheid.io (Kenteken API)
 
-| Aspect | Beschrijving |
-|--------|--------------|
-| **Doel** | Consumptie van Nederlandse open data; voertuiggegevens op kenteken. |
-| **API** | [overheid.io/documentatie/voertuiggegevens](https://overheid.io/documentatie/voertuiggegevens). |
+| Aspect        | Beschrijving                                                                                                                          |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Doel**      | Consumptie van Nederlandse open data; voertuiggegevens op kenteken.                                                                   |
+| **API**       | [overheid.io/documentatie/voertuiggegevens](https://overheid.io/documentatie/voertuiggegevens).                                       |
 | **Endpoints** | `GET https://api.overheid.io/voertuiggegevens` (overzicht), `GET https://api.overheid.io/voertuiggegevens/{kenteken}` (per kenteken). |
-| **Update** | Wekelijkse volledige update, dagelijkse aanvulling nieuwe kentekens. |
+| **Update**    | Wekelijkse volledige update, dagelijkse aanvulling nieuwe kentekens.                                                                  |
 
 **Parameters (o.a.):**
 
@@ -109,21 +109,21 @@ Handig voor “kenteken invullen → voertuiggegevens tonen” (merk, type, bran
 
 ### 3.1 RDW Gekentekende_voertuigen (98 kolommen – selectie)
 
-| Variabele (API-naam) | Type | Beschrijving |
-|----------------------|------|--------------|
-| kenteken | tekst | Kenteken |
-| voertuigsoort | tekst | Personenoauto, vrachtwagen, etc. |
-| merk | tekst | Merk |
-| handelsbenaming | tekst | Type/model |
-| vervaldatum_apk | nummer | Vervaldatum APK |
-| datum_tenaamstelling | nummer | Datum eerste tenaamstelling NL |
-| bruto_bpm | nummer | Bruto BPM |
-| inrichting | tekst | Inrichting |
-| aantal_zitplaatsen | nummer | Aantal zitplaatsen |
-| eerste_kleur, tweede_kleur | tekst | Kleur |
-| aantal_cilinders, cilinderinhoud | nummer | Motor |
-| massa_ledig_voertuig | nummer | Massa ledig (kg) |
-| toegestane_maximum_massa_voertuig | nummer | Max. massa (kg) |
+| Variabele (API-naam)              | Type   | Beschrijving                     |
+| --------------------------------- | ------ | -------------------------------- |
+| kenteken                          | tekst  | Kenteken                         |
+| voertuigsoort                     | tekst  | Personenoauto, vrachtwagen, etc. |
+| merk                              | tekst  | Merk                             |
+| handelsbenaming                   | tekst  | Type/model                       |
+| vervaldatum_apk                   | nummer | Vervaldatum APK                  |
+| datum_tenaamstelling              | nummer | Datum eerste tenaamstelling NL   |
+| bruto_bpm                         | nummer | Bruto BPM                        |
+| inrichting                        | tekst  | Inrichting                       |
+| aantal_zitplaatsen                | nummer | Aantal zitplaatsen               |
+| eerste_kleur, tweede_kleur        | tekst  | Kleur                            |
+| aantal_cilinders, cilinderinhoud  | nummer | Motor                            |
+| massa_ledig_voertuig              | nummer | Massa ledig (kg)                 |
+| toegestane_maximum_massa_voertuig | nummer | Max. massa (kg)                  |
 
 De overige kolommen zijn o.a. varianten van datums, catalogusnummers, Europese typegoedkeuring, etc. Voor brandstof/elektrisch: aparte dataset **Gekentekende_voertuigen_brandstof** gebruiken.
 
@@ -149,13 +149,13 @@ Geen kenteken in deze datasets; wel alles wat nodig is voor zone, regels en tari
 
 ## 4. API-verbindingen en kosten (samenvatting)
 
-| Bron | Type | Kosten | Opmerking |
-|-----|------|--------|-----------|
-| **RDW Open Data** | REST (Socrata), OData | Gratis | Geen key; rate limits mogelijk. |
-| **RDW Web (per kenteken)** | Web | €0,18/opvraging | Voor bedrijven. |
-| **RDW XML API** | API | €580 eenmalig + €0,07/opvraging | KvK vereist. |
-| **Overheid.io** | REST API | Gratis tier (beperkt), daarna abonnement | Eenvoudige integratie per kenteken. |
-| **Amsterdam Datapunt** | REST API | Gratis (gebruiksvoorwaarden) | RDW + andere Amsterdam-data. |
+| Bron                       | Type                  | Kosten                                   | Opmerking                           |
+| -------------------------- | --------------------- | ---------------------------------------- | ----------------------------------- |
+| **RDW Open Data**          | REST (Socrata), OData | Gratis                                   | Geen key; rate limits mogelijk.     |
+| **RDW Web (per kenteken)** | Web                   | €0,18/opvraging                          | Voor bedrijven.                     |
+| **RDW XML API**            | API                   | €580 eenmalig + €0,07/opvraging          | KvK vereist.                        |
+| **Overheid.io**            | REST API              | Gratis tier (beperkt), daarna abonnement | Eenvoudige integratie per kenteken. |
+| **Amsterdam Datapunt**     | REST API              | Gratis (gebruiksvoorwaarden)             | RDW + andere Amsterdam-data.        |
 
 Aanbeveling: voor alleen parkeerzones en bulk-voertuigstatistieken: RDW open data. Voor “live” kentekencheck in de app: overheid.io (test) of RDW betaald afwegen tegen volume en budget.
 
@@ -178,10 +178,10 @@ Aanbeveling: voor alleen parkeerzones en bulk-voertuigstatistieken: RDW open dat
 ### 5.2 Data.overheid.nl / gemeenten
 
 - **data.overheid.nl** – thema “Oplaadpunten elektrische voertuigen”: meerdere datasets.
-- Voorbeeld: **Eindhoven – Oplaadpunten** (dataset 22449).  
-  - Velden: o.a. locatie, status (gepland / in ontwikkeling / bestaand).  
-  - Export: JSON, CSV, GeoJSON, SHP.  
-  - Licentie: Publiek domein.  
+- Voorbeeld: **Eindhoven – Oplaadpunten** (dataset 22449).
+  - Velden: o.a. locatie, status (gepland / in ontwikkeling / bestaand).
+  - Export: JSON, CSV, GeoJSON, SHP.
+  - Licentie: Publiek domein.
   - URL: [data.eindhoven.nl – oplaadpalen](https://data.eindhoven.nl/explore/dataset/oplaadpalen/).
 - Vergelijkbaar: o.a. Breda, Heemstede (op data.overheid.nl te vinden).
 
@@ -231,8 +231,8 @@ Aanbeveling: voor alleen parkeerzones en bulk-voertuigstatistieken: RDW open dat
 
 ## 6. Laadinformatie die “bij de auto” hoort (type lader, snelheid)
 
-- **RDW** levert **per voertuig** (kenteken):  
-  - Brandstofsoort / type aandrijving (benzine, diesel, elektrisch, hybride, etc.) via **Gekentekende_voertuigen_brandstof** en **Elektrische voertuigen**.  
+- **RDW** levert **per voertuig** (kenteken):
+  - Brandstofsoort / type aandrijving (benzine, diesel, elektrisch, hybride, etc.) via **Gekentekende_voertuigen_brandstof** en **Elektrische voertuigen**.
   - Geen technische laad-specificaties zoals “CCS”, “Type 2”, “max. 11 kW” in de standaard open data; dat zit in typegoedkeuringen/constructie, niet in de kenteken-registratie.
 - **Connector-type en laadsnelheid** zitten dus vooral bij **laadpunten** (DOT-NL, OCM, OSM), niet bij het kenteken in RDW.
 
@@ -248,70 +248,70 @@ Aanbeveling: voor alleen parkeerzones en bulk-voertuigstatistieken: RDW open dat
 
 ### 7.1 Direct toepasbaar
 
-1. **Laadpunten op de kaart**  
-   - Integreer een laadpaallaag via **Open Charge Map** (gratis API-key) of **Overpass API** (OSM).  
+1. **Laadpunten op de kaart**
+   - Integreer een laadpaallaag via **Open Charge Map** (gratis API-key) of **Overpass API** (OSM).
    - Toon naast parkeerzones ook laadpunten; filter op connector (Type 2, CCS, CHAdeMO) en vermogen (AC 11/22 kW, DC snelladen).
 
-2. **EV-filter / “Ik rijd elektrisch”**  
-   - Optionele toggle “Toon laadpunten” of “Alleen zones met laadpunten in de buurt”.  
+2. **EV-filter / “Ik rijd elektrisch”**
+   - Optionele toggle “Toon laadpunten” of “Alleen zones met laadpunten in de buurt”.
    - Gebruik RDW brandstof/elektrisch alleen als je kenteken koppelt (dan “deze auto is elektrisch”); anders: gebruikersvoorkeur.
 
-3. **Kenteken → voertuiginfo**  
-   - Bij “kenteken toevoegen”: optionele check via **overheid.io** (of RDW betaald) om merk/type/brandstof te tonen en invoer te valideren.  
+3. **Kenteken → voertuiginfo**
+   - Bij “kenteken toevoegen”: optionele check via **overheid.io** (of RDW betaald) om merk/type/brandstof te tonen en invoer te valideren.
    - Verkleint typefouten en versterkt vertrouwen.
 
-4. **Zone + laadpaal in één kaart**  
-   - Eén kaart: parkeerzones (huidige RDW-laag) + laadpunten (OCM/OSM).  
+4. **Zone + laadpaal in één kaart**
+   - Eén kaart: parkeerzones (huidige RDW-laag) + laadpunten (OCM/OSM).
    - Handig voor: “parkeren én laden in de buurt”.
 
 ### 7.2 Middellange termijn
 
-5. **DOT-NL aansluiting**  
-   - Voor meest actuele en officiële laadpaaldata: aanvragen bij NDW.  
+5. **DOT-NL aansluiting**
+   - Voor meest actuele en officiële laadpaaldata: aanvragen bij NDW.
    - Geschikt als je professionele B2B-dienst wilt met realtime beschikbaarheid.
 
-6. **Snelheid/connector per laadpunt**  
-   - OCM en OSM hebben connector/vermogen; toon in popup of lijst: “Type 2, 22 kW”, “CCS, 50 kW”, etc.  
+6. **Snelheid/connector per laadpunt**
+   - OCM en OSM hebben connector/vermogen; toon in popup of lijst: “Type 2, 22 kW”, “CCS, 50 kW”, etc.
    - Optioneel: “Alleen snelladers” filter.
 
-7. **Geschatte laadtijd (indicatief)**  
-   - Op basis van vermogen laadpunt en een aanname (bijv. 50 kWh batterij, gemiddeld vermogen): “ca. 30 min snelladen”.  
+7. **Geschatte laadtijd (indicatief)**
+   - Op basis van vermogen laadpunt en een aanname (bijv. 50 kWh batterij, gemiddeld vermogen): “ca. 30 min snelladen”.
    - Geen kenteken nodig; wel duidelijke disclaimer dat het een indicatie is.
 
-8. **Parkeerduur + laadduur**  
+8. **Parkeerduur + laadduur**
    - Bij een zone met laadpunten: “Parkeerduur X min, geschatte laadduur Y min” als UX-tekst, zodat chauffeurs tijd kunnen inschatten.
 
 ### 7.3 Brede ideeën (niet beperkt tot laden)
 
-9. **Favoriete zones / recente zones**  
+9. **Favoriete zones / recente zones**
    - Opgeslagen zones en laatst gebruikte zones voor snelle keuze.
 
-10. **Meldingen**  
+10. **Meldingen**
     - Herinnering “parkeersessie nog X min” of “sessie verlopen” (indien toegestaan door parkeerregels).
 
-11. **Offline-first**  
+11. **Offline-first**
     - Cache van zonegegevens en (optioneel) laadpunten voor gebruik bij slecht bereik (nu al deels via PWA).
 
-12. **Toegankelijkheid**  
+12. **Toegankelijkheid**
     - Filter “laadpunten met brede parkeerplaats” of “toegankelijke parkeerplaatsen” als data beschikbaar is (OCM/OSM soms).
 
-13. **Tariefindicatie parkeren**  
+13. **Tariefindicatie parkeren**
     - Jullie hebben al RDW-tarieven; uitbreiden met “geschatte kosten voor 2 uur” in zone-sheet.
 
-14. **Meerdere voertuigen**  
+14. **Meerdere voertuigen**
     - Per kenteken evt. “is elektrisch” onthouden, zodat laadpaallaag automatisch relevant is voor het gekozen voertuig.
 
 ---
 
 ## 8. Aanbevolen volgorde van implementatie
 
-| Prioriteit | Actie | Bron | Opmerking |
-|------------|--------|------|-----------|
-| 1 | Laadpuntenlaag op kaart | Open Charge Map of OSM Overpass | Gratis; snel zichtbaar resultaat. |
-| 2 | Filter connector/vermogen | Zelfde API | Betere UX voor EV-rijders. |
-| 3 | Optionele kentekenvalidatie + voertuiginfo | Overheid.io (of RDW) | Minder fouten, meer vertrouwen. |
-| 4 | “Elektrisch”-voorkeur / EV-toggle | App state + evt. RDW brandstof | Zonder kenteken: voorkeur; met kenteken: uit data. |
-| 5 | DOT-NL verkennen | NDW | Voor officiële, realtime laadpaaldata op langere termijn. |
+| Prioriteit | Actie                                      | Bron                            | Opmerking                                                 |
+| ---------- | ------------------------------------------ | ------------------------------- | --------------------------------------------------------- |
+| 1          | Laadpuntenlaag op kaart                    | Open Charge Map of OSM Overpass | Gratis; snel zichtbaar resultaat.                         |
+| 2          | Filter connector/vermogen                  | Zelfde API                      | Betere UX voor EV-rijders.                                |
+| 3          | Optionele kentekenvalidatie + voertuiginfo | Overheid.io (of RDW)            | Minder fouten, meer vertrouwen.                           |
+| 4          | “Elektrisch”-voorkeur / EV-toggle          | App state + evt. RDW brandstof  | Zonder kenteken: voorkeur; met kenteken: uit data.        |
+| 5          | DOT-NL verkennen                           | NDW                             | Voor officiële, realtime laadpaaldata op langere termijn. |
 
 ---
 
@@ -330,4 +330,4 @@ Aanbeveling: voor alleen parkeerzones en bulk-voertuigstatistieken: RDW open dat
 
 ---
 
-*Dit rapport is opgesteld voor het B2B Parkeren PWA-project en kan worden uitgebreid met nieuwe bronnen of API-details na behoefte.*
+_Dit rapport is opgesteld voor het B2B Parkeren PWA-project en kan worden uitgebreid met nieuwe bronnen of API-details na behoefte._

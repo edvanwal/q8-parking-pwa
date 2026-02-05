@@ -1,0 +1,47 @@
+---
+scope: project
+priority: high
+alwaysApply: true
+enforced: true
+---
+# LOGGING AND DIAGNOSTICS (ROOT CAUSE FIRST)
+
+Logging exists to make root cause obvious and to avoid "works on my machine".
+
+## MANDATORY
+- When something fails, first answer:
+  - What did the user do (exact steps)?
+  - What did the app show (human-visible state)?
+  - What did the browser console show?
+  - What did the network tab show (requests/responses)?
+- Add logs only when they directly shorten time-to-root-cause.
+- Logs must be specific and removable. Do not add noisy logs.
+
+## UI DIAGNOSTICS
+- If a click does not work:
+  - Log event target details (tagName, id, dataset keys) at the handler.
+  - Confirm whether overlay/backdrop is intercepting clicks.
+  - Confirm pointer-events and z-index layering.
+- If overlay close does not work:
+  - Confirm the close handler runs.
+  - Confirm the "open" class or open-state is removed.
+  - Confirm the overlay is not re-opened immediately by another handler.
+
+## NETWORK DIAGNOSTICS
+- If any API is involved:
+  - Log request URL, method, status code, and key fields (no secrets).
+  - Verify expected payload shape and any error paths.
+
+## EXAMPLE (CLICK TARGET LOG)
+Use a minimal, structured log pattern:
+- event: "ui.click"
+- element: tagName + id + dataset keys
+- overlayOpen: true/false
+- action: the intended action name
+
+Example snippet (do not copy blindly, adapt to repo):
+console.log("[ui.click]", e.target.tagName + (e.target.id ? "#"+e.target.id : "") + " close=" + (e.target.dataset?.close || ""));
+
+## CLEANUP
+- After the fix is verified, remove or downgrade temporary logs.
+- Keep only logs that help detect regressions without noise.

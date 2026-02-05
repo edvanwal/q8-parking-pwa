@@ -6,14 +6,14 @@ Vergelijking van het originele ontwerp, bijlage 1 (doel), bijlage 2 (huidige liv
 
 ## Overzicht verschillen
 
-| Onderdeel | Origineel / Bijlage 1 | Bijlage 2 (live) | Bijlage 3 | Huidige implementatie |
-|-----------|------------------------|------------------|-----------|------------------------|
-| Zoekbalk | Input "321", zoekicoon rechts, Zone toggle lichtblauw | — | Zoekicoon links, Zone button donkerblauw, onder search | Input + zoekicoon links + Zone rechts |
-| Duration | Cijfer "1" (uren) met − / + | "2h 00m" | — | "2h 00m" |
-| Zone panel | ZONE 321, badge G-346-VN, rode ! | ZONE GRV0140DE, pill 1-ABC-123 | — | ZONE + id, kentekenbadge |
-| Rates | Tijdslots (0:00–12:00, 12:00–23:00) met bullets | 24/7, Standaard tarief, € 4,50/h | — | Dynamisch (data-afhankelijk) |
-| Map | Straatniveau, blauwe/rode P, POIs | Blurred, kleine rode markers | Nederland overzicht, geen markers | Google Maps, blauwe/rode P |
-| Zone toggle | Lichtblauw | — | Donkerblauw, prominent | Donkerblauw (#q8-blue-900) |
+| Onderdeel   | Origineel / Bijlage 1                                 | Bijlage 2 (live)                 | Bijlage 3                                              | Huidige implementatie                 |
+| ----------- | ----------------------------------------------------- | -------------------------------- | ------------------------------------------------------ | ------------------------------------- |
+| Zoekbalk    | Input "321", zoekicoon rechts, Zone toggle lichtblauw | —                                | Zoekicoon links, Zone button donkerblauw, onder search | Input + zoekicoon links + Zone rechts |
+| Duration    | Cijfer "1" (uren) met − / +                           | "2h 00m"                         | —                                                      | "2h 00m"                              |
+| Zone panel  | ZONE 321, badge G-346-VN, rode !                      | ZONE GRV0140DE, pill 1-ABC-123   | —                                                      | ZONE + id, kentekenbadge              |
+| Rates       | Tijdslots (0:00–12:00, 12:00–23:00) met bullets       | 24/7, Standaard tarief, € 4,50/h | —                                                      | Dynamisch (data-afhankelijk)          |
+| Map         | Straatniveau, blauwe/rode P, POIs                     | Blurred, kleine rode markers     | Nederland overzicht, geen markers                      | Google Maps, blauwe/rode P            |
+| Zone toggle | Lichtblauw                                            | —                                | Donkerblauw, prominent                                 | Donkerblauw (#q8-blue-900)            |
 
 ---
 
@@ -69,9 +69,10 @@ Vergelijking van het originele ontwerp, bijlage 1 (doel), bijlage 2 (huidige liv
 
 ### 6. Rates-sectie: tijdsloten en bullets
 
-**Origineel:**  
-- 0:00 – 12:00: Free parking  
-- 12:00 – 23:00: € 0,40/h, per 30 min, na 30 min € 3,20/h, per 15 min  
+**Origineel:**
+
+- 0:00 – 12:00: Free parking
+- 12:00 – 23:00: € 0,40/h, per 30 min, na 30 min € 3,20/h, per 15 min
 - 23:00 – 24:00: (meer details)
 
 **Huidig:** Data-afhankelijke weergave (24/7, Standaard tarief, etc.).
@@ -119,15 +120,15 @@ Vergelijking van het originele ontwerp, bijlage 1 (doel), bijlage 2 (huidige liv
 
 ## Volgorde van uitvoering (prioriteit)
 
-| Nr | Aanpassing | Impact | Moeite |
-|----|------------|--------|--------|
-| 1 | Zoekicoon rechts verplaatsen | Medium | Laag |
-| 2 | Zone toggle: lichtblauw i.p.v. donkerblauw | Laag | Laag |
-| 3 | Rates: tijdsloten en bullets verbeteren | Medium | Medium |
-| 4 | Duration: optie voor urenweergave ("1") | Laag | Medium |
-| 5 | Map: straatniveau bij zone-selectie | Medium | Laag |
-| 6 | Zone-boundaries op kaart (indien data) | Laag | Hoog |
-| 7 | Placeholder zoekbalk finetunen | Laag | Laag |
+| Nr  | Aanpassing                                 | Impact | Moeite |
+| --- | ------------------------------------------ | ------ | ------ |
+| 1   | Zoekicoon rechts verplaatsen               | Medium | Laag   |
+| 2   | Zone toggle: lichtblauw i.p.v. donkerblauw | Laag   | Laag   |
+| 3   | Rates: tijdsloten en bullets verbeteren    | Medium | Medium |
+| 4   | Duration: optie voor urenweergave ("1")    | Laag   | Medium |
+| 5   | Map: straatniveau bij zone-selectie        | Medium | Laag   |
+| 6   | Zone-boundaries op kaart (indien data)     | Laag   | Hoog   |
+| 7   | Placeholder zoekbalk finetunen             | Laag   | Laag   |
 
 ---
 

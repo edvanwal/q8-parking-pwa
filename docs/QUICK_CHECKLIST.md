@@ -13,8 +13,8 @@
 
 - [ ] **iOS Meta Tags Missing** - Add to `public/index.html`
   ```html
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
   ```
 
 ## ✅ Quick Wins (Easy Fixes)
@@ -27,12 +27,11 @@
 ## 📱 Device Testing Priority
 
 **Must Test:**
+
 1. iPhone (any model) - Safari
 2. Android phone (Samsung/Pixel) - Chrome
 
-**Should Test:**
-3. iPad - Safari
-4. Android tablet - Chrome
+**Should Test:** 3. iPad - Safari 4. Android tablet - Chrome
 
 ## 🔧 Tools You Need
 
@@ -52,20 +51,15 @@
 ## 🎯 Implementation Order
 
 **Day 1:**
+
 1. Create icons (use tool above)
 2. Update manifest with icons
 3. Add iOS meta tags
 4. Deploy and test
 
-**Day 2:**
-5. Add platform detection
-6. Test responsive breakpoints
-7. Fix any issues found
+**Day 2:** 5. Add platform detection 6. Test responsive breakpoints 7. Fix any issues found
 
-**Day 3:**
-8. Create splash screens (optional)
-9. Add app shortcuts (optional)
-10. Final testing and validation
+**Day 3:** 8. Create splash screens (optional) 9. Add app shortcuts (optional) 10. Final testing and validation
 
 ---
 

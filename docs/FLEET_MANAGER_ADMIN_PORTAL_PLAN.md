@@ -19,43 +19,43 @@ Dit document beschrijft het plan voor een **multitennend fleet manager- en admin
 
 ### 2.1 Doelgroep 1: Q8-medewerkers (Super Admin)
 
-| Aspect | Beschrijving |
-|--------|--------------|
-| **Wie** | Interne medewerkers van Q8 |
-| **Scope** | Alle tenants (bedrijven) in het systeem |
-| **Rechten** | Volledige toegang: tenants aanmaken, fleetmanagers beheren, sessies overal stoppen, alle variabelen aanpassen |
-| **Use case** | Support, configuratie, incidentbeheer |
+| Aspect       | Beschrijving                                                                                                  |
+| ------------ | ------------------------------------------------------------------------------------------------------------- |
+| **Wie**      | Interne medewerkers van Q8                                                                                    |
+| **Scope**    | Alle tenants (bedrijven) in het systeem                                                                       |
+| **Rechten**  | Volledige toegang: tenants aanmaken, fleetmanagers beheren, sessies overal stoppen, alle variabelen aanpassen |
+| **Use case** | Support, configuratie, incidentbeheer                                                                         |
 
 ### 2.2 Doelgroep 2: Fleetmanagers
 
-| Aspect | Beschrijving |
-|--------|--------------|
-| **Wie** | Medewerkers van klantbedrijven met wagenparkverantwoordelijkheid |
-| **Scope** | Alleen hun eigen organisatie (tenant) |
-| **Rechten** | Beperkt tot hun medewerkers/rijders (zie onderstaande matrix) |
+| Aspect      | Beschrijving                                                     |
+| ----------- | ---------------------------------------------------------------- |
+| **Wie**     | Medewerkers van klantbedrijven met wagenparkverantwoordelijkheid |
+| **Scope**   | Alleen hun eigen organisatie (tenant)                            |
+| **Rechten** | Beperkt tot hun medewerkers/rijders (zie onderstaande matrix)    |
 
 ### 2.3 Gebruikerstypen binnen een tenant
 
-| Type | Beschrijving | Rechten |
-|------|--------------|---------|
-| **Fleetmanager** | Beheert wagenpark en rijders | Zie sectie 5 |
-| **Bestuurder / Rijder** | Gebruikt de parkeerapp dagelijks | Parkeersessies starten/stoppen, eigen kentekens (indien toegestaan) |
-| **Collega / Medewerker** | Beperkte rol, bijvoorbeeld alleen kijkrechten | Alleen rapportages bekijken, geen sessies beheren |
+| Type                     | Beschrijving                                  | Rechten                                                             |
+| ------------------------ | --------------------------------------------- | ------------------------------------------------------------------- |
+| **Fleetmanager**         | Beheert wagenpark en rijders                  | Zie sectie 5                                                        |
+| **Bestuurder / Rijder**  | Gebruikt de parkeerapp dagelijks              | Parkeersessies starten/stoppen, eigen kentekens (indien toegestaan) |
+| **Collega / Medewerker** | Beperkte rol, bijvoorbeeld alleen kijkrechten | Alleen rapportages bekijken, geen sessies beheren                   |
 
 ### 2.4 Rechtenmatrix (voorbeeld)
 
-| Functie | Super Admin (Q8) | Fleetmanager | Bestuurder | Collega (kijk) |
-|---------|------------------|--------------|------------|----------------|
-| Tenants beheren | ✓ | – | – | – |
-| Fleetmanagers aanmaken | ✓ | – | – | – |
-| Bestuurders/collega’s aanmaken | ✓ | ✓ (eigen tenant) | – | – |
-| Gebruikers wijzigen | ✓ | ✓ | – | – |
-| Parkeersessies handmatig stoppen | ✓ (alle) | ✓ (eigen tenant) | Eigen sessie | – |
-| Auto-stop tijd instellen | ✓ | ✓ | – | – |
-| Berichten naar rijders sturen | ✓ | ✓ | – | – |
-| Kentekenbeheer (toevoegen, beperken) | ✓ | ✓ | Eigen (indien toegestaan) | – |
-| Rapporten bekijken | ✓ | ✓ | Eigen | ✓ (indien toegewezen) |
-| Rapporten exporteren (PDF/CSV/XLSX) | ✓ | ✓ | – | ✓ (indien toegewezen) |
+| Functie                              | Super Admin (Q8) | Fleetmanager     | Bestuurder                | Collega (kijk)        |
+| ------------------------------------ | ---------------- | ---------------- | ------------------------- | --------------------- |
+| Tenants beheren                      | ✓                | –                | –                         | –                     |
+| Fleetmanagers aanmaken               | ✓                | –                | –                         | –                     |
+| Bestuurders/collega’s aanmaken       | ✓                | ✓ (eigen tenant) | –                         | –                     |
+| Gebruikers wijzigen                  | ✓                | ✓                | –                         | –                     |
+| Parkeersessies handmatig stoppen     | ✓ (alle)         | ✓ (eigen tenant) | Eigen sessie              | –                     |
+| Auto-stop tijd instellen             | ✓                | ✓                | –                         | –                     |
+| Berichten naar rijders sturen        | ✓                | ✓                | –                         | –                     |
+| Kentekenbeheer (toevoegen, beperken) | ✓                | ✓                | Eigen (indien toegestaan) | –                     |
+| Rapporten bekijken                   | ✓                | ✓                | Eigen                     | ✓ (indien toegewezen) |
+| Rapporten exporteren (PDF/CSV/XLSX)  | ✓                | ✓                | –                         | ✓ (indien toegewezen) |
 
 ---
 
@@ -65,31 +65,31 @@ De volgende variabelen zijn momenteel in de app aanwezig en kunnen door een flee
 
 ### 3.1 State / localStorage (per gebruiker)
 
-| Variabele | Type | Beschrijving | Nu opgeslagen |
-|-----------|------|--------------|---------------|
-| `session` | Object | Actieve parkeersessie: zone, zoneUid, plate, start, end | localStorage |
-| `plates` | Array | Kentekens: id, text, description, default | localStorage |
-| `selectedPlateId` | string | Geselecteerd kenteken voor sessie | In-memory |
-| `duration` | number | Duur in minuten (0 = tot stoppen) | In-memory |
-| `selectedZone` | string | Geselecteerde zone uid | In-memory |
-| `historyFilters` | Object | vehicles, dateRange, customStart, customEnd | In-memory |
-| `notifications` | Array | Notificatiehistorie | localStorage |
-| `notificationSettings` | Object | sessionStarted, sessionExpiringSoon, expiringSoonMinutes, etc. | localStorage |
-| `favorites` | Array | Favoriete zones [{ zoneUid, zoneId }] | localStorage |
-| `language` | string | 'nl' \| 'en' | In-memory |
-| `history` | Array | Parkeerhistorie (transacties) | Nu leeg / mock |
+| Variabele              | Type   | Beschrijving                                                   | Nu opgeslagen  |
+| ---------------------- | ------ | -------------------------------------------------------------- | -------------- |
+| `session`              | Object | Actieve parkeersessie: zone, zoneUid, plate, start, end        | localStorage   |
+| `plates`               | Array  | Kentekens: id, text, description, default                      | localStorage   |
+| `selectedPlateId`      | string | Geselecteerd kenteken voor sessie                              | In-memory      |
+| `duration`             | number | Duur in minuten (0 = tot stoppen)                              | In-memory      |
+| `selectedZone`         | string | Geselecteerde zone uid                                         | In-memory      |
+| `historyFilters`       | Object | vehicles, dateRange, customStart, customEnd                    | In-memory      |
+| `notifications`        | Array  | Notificatiehistorie                                            | localStorage   |
+| `notificationSettings` | Object | sessionStarted, sessionExpiringSoon, expiringSoonMinutes, etc. | localStorage   |
+| `favorites`            | Array  | Favoriete zones [{ zoneUid, zoneId }]                          | localStorage   |
+| `language`             | string | 'nl' \| 'en'                                                   | In-memory      |
+| `history`              | Array  | Parkeerhistorie (transacties)                                  | Nu leeg / mock |
 
 ### 3.2 Gebruiker- en sessie-specifieke data (te migreren naar backend)
 
 De volgende data moet voor het portaal naar Firestore (of vergelijkbaar) worden verplaatst:
 
-| Entiteit | Velden | Doel |
-|----------|--------|------|
-| **User** | uid, email, tenantId, role, driverSettings | Koppeling aan tenant, rol, instellingen |
-| **DriverSettings** | allowedDays, maxPlates, canAddPlates, platesLocked, etc. | Fleet-gerelateerde beperkingen |
-| **Session** | zone, zoneUid, plate, start, end, userId, tenantId | Sessies centraal opslaan |
-| **Transaction** | zone, plate, start, end, cost, userId, tenantId | Voor rapportages en declaratie |
-| **Plates (per user)** | id, text, description, default, source (user/admin) | Kentekens kunnen door admin zijn toegevoegd |
+| Entiteit              | Velden                                                   | Doel                                        |
+| --------------------- | -------------------------------------------------------- | ------------------------------------------- |
+| **User**              | uid, email, tenantId, role, driverSettings               | Koppeling aan tenant, rol, instellingen     |
+| **DriverSettings**    | allowedDays, maxPlates, canAddPlates, platesLocked, etc. | Fleet-gerelateerde beperkingen              |
+| **Session**           | zone, zoneUid, plate, start, end, userId, tenantId       | Sessies centraal opslaan                    |
+| **Transaction**       | zone, plate, start, end, cost, userId, tenantId          | Voor rapportages en declaratie              |
+| **Plates (per user)** | id, text, description, default, source (user/admin)      | Kentekens kunnen door admin zijn toegevoegd |
 
 ---
 
@@ -104,13 +104,13 @@ De volgende data moet voor het portaal naar Firestore (of vergelijkbaar) worden 
 
 ### 4.2 Gebruiksdagen (uw idee 2)
 
-| Instelling | Beschrijving | Mogelijke waarden |
-|------------|--------------|-------------------|
-| `allowedDays` | Dagen waarop de bestuurder de app mag gebruiken | Ma–Zo, of selectie (bijv. Ma–Vr) |
-| `allowedTimeStart` | Start van toegestane tijd | Bijv. 07:00 |
-| `allowedTimeEnd` | Einde toegestane tijd | Bijv. 19:00 |
+| Instelling         | Beschrijving                                    | Mogelijke waarden                |
+| ------------------ | ----------------------------------------------- | -------------------------------- |
+| `allowedDays`      | Dagen waarop de bestuurder de app mag gebruiken | Ma–Zo, of selectie (bijv. Ma–Vr) |
+| `allowedTimeStart` | Start van toegestane tijd                       | Bijv. 07:00                      |
+| `allowedTimeEnd`   | Einde toegestane tijd                           | Bijv. 19:00                      |
 
-*Als de bestuurder buiten deze periode probeert te parkeren: melding tonen en start blokkeren.*
+_Als de bestuurder buiten deze periode probeert te parkeren: melding tonen en start blokkeren._
 
 ### 4.3 Handmatig sessies stoppen (uw idee 3)
 
@@ -120,31 +120,31 @@ De volgende data moet voor het portaal naar Firestore (of vergelijkbaar) worden 
 
 ### 4.4 Automatisch stoppen op vaste tijd (uw idee 4)
 
-| Instelling | Beschrijving | Voorbeeld |
-|------------|--------------|-----------|
-| `autoStopEnabled` | Schakelaar aan/uit | Ja |
-| `autoStopTime` | Tijd waarop alle sessies gestopt worden | 18:00 |
-| `autoStopTimeZone` | Tijdzone | Europe/Amsterdam |
+| Instelling         | Beschrijving                            | Voorbeeld        |
+| ------------------ | --------------------------------------- | ---------------- |
+| `autoStopEnabled`  | Schakelaar aan/uit                      | Ja               |
+| `autoStopTime`     | Tijd waarop alle sessies gestopt worden | 18:00            |
+| `autoStopTimeZone` | Tijdzone                                | Europe/Amsterdam |
 
-*Een cron/Cloud Function rond het ingestelde tijdstip: alle actieve sessies van de tenant stoppen.*
+_Een cron/Cloud Function rond het ingestelde tijdstip: alle actieve sessies van de tenant stoppen._
 
 ### 4.5 Berichten naar bestuurders (uw idee 5)
 
-| Functie | Beschrijving |
-|---------|--------------|
-| **Doelgroep** | Bestuurders met een lopende parkeersessie |
-| **Trigger** | Handmatig of op schema (bijv. 19:00) |
-| **Kanaal** | Push, in-app, e-mail (naar keuze) |
-| **Template** | Vooringesteld bericht, bijv. “Let op: je hebt nog een lopende parkeersessie. Sluit deze af als je klaar bent.” |
-| **Custom bericht** | Fleetmanager kan eigen tekst invullen |
+| Functie            | Beschrijving                                                                                                   |
+| ------------------ | -------------------------------------------------------------------------------------------------------------- |
+| **Doelgroep**      | Bestuurders met een lopende parkeersessie                                                                      |
+| **Trigger**        | Handmatig of op schema (bijv. 19:00)                                                                           |
+| **Kanaal**         | Push, in-app, e-mail (naar keuze)                                                                              |
+| **Template**       | Vooringesteld bericht, bijv. “Let op: je hebt nog een lopende parkeersessie. Sluit deze af als je klaar bent.” |
+| **Custom bericht** | Fleetmanager kan eigen tekst invullen                                                                          |
 
 ### 4.6 Kentekenbeheer (uw idee 6)
 
-| Instelling | Beschrijving | Mogelijke waarden |
-|------------|--------------|-------------------|
-| `canAddPlates` | Mag de bestuurder zelf kentekens toevoegen? | Ja / Nee |
-| `maxPlates` | Maximaal aantal kentekens | 1, 2, 3, …, onbeperkt |
-| `platesLocked` | Kentekens door fleetmanager; bestuurder mag niets wijzigen | Ja / Nee |
+| Instelling     | Beschrijving                                               | Mogelijke waarden     |
+| -------------- | ---------------------------------------------------------- | --------------------- |
+| `canAddPlates` | Mag de bestuurder zelf kentekens toevoegen?                | Ja / Nee              |
+| `maxPlates`    | Maximaal aantal kentekens                                  | 1, 2, 3, …, onbeperkt |
+| `platesLocked` | Kentekens door fleetmanager; bestuurder mag niets wijzigen | Ja / Nee              |
 
 **Kentekens door fleetmanager toevoegen:**
 
@@ -154,15 +154,15 @@ De volgende data moet voor het portaal naar Firestore (of vergelijkbaar) worden 
 
 ### 4.7 Overige variabelen die de fleetmanager kan instellen
 
-| Categorie | Variabele | Beschrijving |
-|-----------|-----------|--------------|
-| **Sessie** | `maxSessionDuration` | Maximale sessieduur (minuten) per bestuurder |
-| **Sessie** | `requireEndTime` | Altijd een vaste eindtijd verplicht (geen “tot stoppen”) |
-| **Notificaties** | `expiringSoonMinutes` | Minuten vóór einde waarschuwingsmelding |
-| **Notificaties** | `notificationsEnabled` | Globale aan/uit voor notificaties |
-| **Zone** | `allowedZones` | Alleen specifieke zones toegestaan (whitelist, optioneel) |
-| **Kosten** | `costCenter` | Kostenplaats voor rapportage/export |
-| **Taal** | `defaultLanguage` | Standaardtaal voor de tenant |
+| Categorie        | Variabele              | Beschrijving                                              |
+| ---------------- | ---------------------- | --------------------------------------------------------- |
+| **Sessie**       | `maxSessionDuration`   | Maximale sessieduur (minuten) per bestuurder              |
+| **Sessie**       | `requireEndTime`       | Altijd een vaste eindtijd verplicht (geen “tot stoppen”)  |
+| **Notificaties** | `expiringSoonMinutes`  | Minuten vóór einde waarschuwingsmelding                   |
+| **Notificaties** | `notificationsEnabled` | Globale aan/uit voor notificaties                         |
+| **Zone**         | `allowedZones`         | Alleen specifieke zones toegestaan (whitelist, optioneel) |
+| **Kosten**       | `costCenter`           | Kostenplaats voor rapportage/export                       |
+| **Taal**         | `defaultLanguage`      | Standaardtaal voor de tenant                              |
 
 ---
 
@@ -204,17 +204,17 @@ De volgende data moet voor het portaal naar Firestore (of vergelijkbaar) worden 
 
 ### 5.6 Wat wij extra/uniek kunnen bieden
 
-| Feature | Q8 Parking (dit plan) |
-|---------|------------------------|
-| Multitennancy | Ja |
-| Automatisch stoppen op vaste tijd | Ja |
-| Custom berichten naar rijders | Ja |
-| Bulk kentekens voor poolauto’s | Ja |
-| Gebruiksdagen per bestuurder | Ja |
-| Handmatig sessies stoppen | Ja |
-| PDF-rapport per maand | Ja |
-| CSV/XLSX-export met filters | Ja |
-| Rolgebaseerde rechten (fleet/bestuurder/collega) | Ja |
+| Feature                                          | Q8 Parking (dit plan) |
+| ------------------------------------------------ | --------------------- |
+| Multitennancy                                    | Ja                    |
+| Automatisch stoppen op vaste tijd                | Ja                    |
+| Custom berichten naar rijders                    | Ja                    |
+| Bulk kentekens voor poolauto’s                   | Ja                    |
+| Gebruiksdagen per bestuurder                     | Ja                    |
+| Handmatig sessies stoppen                        | Ja                    |
+| PDF-rapport per maand                            | Ja                    |
+| CSV/XLSX-export met filters                      | Ja                    |
+| Rolgebaseerde rechten (fleet/bestuurder/collega) | Ja                    |
 
 ---
 
@@ -228,38 +228,38 @@ De volgende data moet voor het portaal naar Firestore (of vergelijkbaar) worden 
 
 ### 6.2 Beschikbare gegevens per transactie
 
-| Veld | Beschrijving |
-|------|--------------|
-| Datum | Startdatum |
-| Starttijd | Start parkeersessie |
-| Eindtijd | Einde parkeersessie |
-| Duur | Parkeerduur (minuten) |
-| Zone | Zone-ID / zone-naam |
-| Adres | Straat, stad (indien beschikbaar) |
-| Kenteken | Gebruikt kenteken |
-| Bestuurder | Naam / e-mail |
-| Kosten | Berekende parkeerkosten (€) |
-| Kostenplaats | Optioneel |
-| Sessie-ID | Unieke referentie |
+| Veld         | Beschrijving                      |
+| ------------ | --------------------------------- |
+| Datum        | Startdatum                        |
+| Starttijd    | Start parkeersessie               |
+| Eindtijd     | Einde parkeersessie               |
+| Duur         | Parkeerduur (minuten)             |
+| Zone         | Zone-ID / zone-naam               |
+| Adres        | Straat, stad (indien beschikbaar) |
+| Kenteken     | Gebruikt kenteken                 |
+| Bestuurder   | Naam / e-mail                     |
+| Kosten       | Berekende parkeerkosten (€)       |
+| Kostenplaats | Optioneel                         |
+| Sessie-ID    | Unieke referentie                 |
 
 ### 6.3 Rapportformaten
 
-| Formaat | Gebruik |
-|---------|---------|
+| Formaat           | Gebruik                                     |
+| ----------------- | ------------------------------------------- |
 | **PDF per maand** | Maandrapport, kant-en-klaar voor declaratie |
-| **CSV** | Import in Excel of boekhouding |
-| **XLSX** | Excel met kolommen en optionele opmaak |
+| **CSV**           | Import in Excel of boekhouding              |
+| **XLSX**          | Excel met kolommen en optionele opmaak      |
 
 ### 6.4 Filters
 
-| Filter | Mogelijke waarden |
-|--------|-------------------|
-| Datum | Van–tot, of vooringesteld (deze week, deze maand, kwartaal, jaar) |
-| Bestuurder(s) | Een of meer bestuurders |
-| Kenteken(s) | Specifieke kentekens |
-| Zone(s) | Specifieke zones |
-| Kostenplaats | Specifieke kostenplaats |
-| Minimum kosten | Alleen transacties boven een bedrag |
+| Filter         | Mogelijke waarden                                                 |
+| -------------- | ----------------------------------------------------------------- |
+| Datum          | Van–tot, of vooringesteld (deze week, deze maand, kwartaal, jaar) |
+| Bestuurder(s)  | Een of meer bestuurders                                           |
+| Kenteken(s)    | Specifieke kentekens                                              |
+| Zone(s)        | Specifieke zones                                                  |
+| Kostenplaats   | Specifieke kostenplaats                                           |
+| Minimum kosten | Alleen transacties boven een bedrag                               |
 
 ---
 
@@ -301,16 +301,16 @@ auditLog         – userId, action, target, timestamp
 
 ## 8. Implementatiefasen (voorstel)
 
-| Fase | Inhoud | Geschatte prioriteit |
-|------|--------|----------------------|
-| **Fase 1** | Multi-tenancy, tenants, basisrollen, inloggen | Hoog |
-| **Fase 2** | Gebruikersbeheer (aanmaken/wijzigen bestuurders) | Hoog |
-| **Fase 3** | Sessies naar Firestore, handmatig stoppen, auto-stop tijd | Hoog |
-| **Fase 4** | Kentekenbeheer (restricties, bulk, locked plates) | Middel |
-| **Fase 5** | Gebruiksdagen, berichten naar rijders | Middel |
-| **Fase 6** | Rapportagemodule (PDF, CSV, XLSX, filters) | Middel |
-| **Fase 7** | Super-admin portaal (Q8-medewerkers) | Middel |
-| **Fase 8** | Auditlog, extra restricties (zones, max duration) | Laag |
+| Fase       | Inhoud                                                    | Geschatte prioriteit |
+| ---------- | --------------------------------------------------------- | -------------------- |
+| **Fase 1** | Multi-tenancy, tenants, basisrollen, inloggen             | Hoog                 |
+| **Fase 2** | Gebruikersbeheer (aanmaken/wijzigen bestuurders)          | Hoog                 |
+| **Fase 3** | Sessies naar Firestore, handmatig stoppen, auto-stop tijd | Hoog                 |
+| **Fase 4** | Kentekenbeheer (restricties, bulk, locked plates)         | Middel               |
+| **Fase 5** | Gebruiksdagen, berichten naar rijders                     | Middel               |
+| **Fase 6** | Rapportagemodule (PDF, CSV, XLSX, filters)                | Middel               |
+| **Fase 7** | Super-admin portaal (Q8-medewerkers)                      | Middel               |
+| **Fase 8** | Auditlog, extra restricties (zones, max duration)         | Laag                 |
 
 ---
 
@@ -349,13 +349,13 @@ Een eerste werkende versie van het portal is gebouwd.
 
 ### 10.4 Firestore-collecties
 
-| Collectie | Documenten |
-|-----------|------------|
-| `users` | Per gebruiker: email, displayName, tenantId, role, driverSettings, adminPlates |
-| `sessions` | Per parkeersessie: userId, tenantId, zone, plate, start, end, status |
-| `invites` | Uitnodigingen: email, tenantId, role, createdBy |
-| `tenants` | Instellingen per tenant: autoStopEnabled, autoStopTime |
+| Collectie  | Documenten                                                                     |
+| ---------- | ------------------------------------------------------------------------------ |
+| `users`    | Per gebruiker: email, displayName, tenantId, role, driverSettings, adminPlates |
+| `sessions` | Per parkeersessie: userId, tenantId, zone, plate, start, end, status           |
+| `invites`  | Uitnodigingen: email, tenantId, role, createdBy                                |
+| `tenants`  | Instellingen per tenant: autoStopEnabled, autoStopTime                         |
 
 ---
 
-*Dit plan is gebaseerd op de huidige app-architectuur, state-variabelen en een benchmark van parkeerapps in Nederland. Aanvullingen en aanpassingen zijn mogelijk.*
+_Dit plan is gebaseerd op de huidige app-architectuur, state-variabelen en een benchmark van parkeerapps in Nederland. Aanvullingen en aanpassingen zijn mogelijk._

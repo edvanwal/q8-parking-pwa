@@ -7,223 +7,263 @@
 
 window.Q8 = window.Q8 || {};
 
-Q8.Kenteken = (function() {
-    'use strict';
+Q8.Kenteken = (function () {
+  'use strict';
 
-    // RDW Open Data: Gekentekende voertuigen (Socrata)
-    const RDW_VOERTUIGEN_URL = 'https://opendata.rdw.nl/resource/m9d7-ebf2.json';
-    const RDW_BRANDSTOF_URL = 'https://opendata.rdw.nl/resource/8ys7-d773.json';
+  // RDW Open Data: Gekentekende voertuigen (Socrata)
+  const RDW_VOERTUIGEN_URL = 'https://opendata.rdw.nl/resource/m9d7-ebf2.json';
+  const RDW_BRANDSTOF_URL = 'https://opendata.rdw.nl/resource/8ys7-d773.json';
 
-    // T3: cache voor lookupRDW (rate limits vermijden; TTL 5 min)
-    const RDW_CACHE_TTL_MS = 5 * 60 * 1000;
-    const _rdwCache = {};
+  // T3: cache voor lookupRDW (rate limits vermijden; TTL 5 min)
+  const RDW_CACHE_TTL_MS = 5 * 60 * 1000;
+  const _rdwCache = {};
 
-    /**
-     * Normaliseer invoer: hoofdletters, alleen letters/cijfers (geen streepjes/spaties).
-     * @param {string} input
-     * @returns {string} Bijv. "AB123C"
-     */
-    function normalize(input) {
-        if (typeof input !== 'string') return '';
-        return input.replace(/[\s\-]/g, '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  /**
+   * Normaliseer invoer: hoofdletters, alleen letters/cijfers (geen streepjes/spaties).
+   * @param {string} input
+   * @returns {string} Bijv. "AB123C"
+   */
+  function normalize(input) {
+    if (typeof input !== 'string') return '';
+    return input
+      .replace(/[\s\-]/g, '')
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '');
+  }
+
+  /**
+   * Formatteer genormaliseerd kenteken met streepjes (voor weergave).
+   * @param {string} normalized Bijv. "AB123C"
+   * @returns {string} Bijv. "AB-123-C" (indien sidecode past)
+   */
+  function formatDisplay(normalized) {
+    if (!normalized || normalized.length < 6) return normalized;
+    const n = normalized;
+    // Sidecode 1: XX-99-99 | 2: 99-XX-99 | 3: 99-99-XX | 4: X-99-XXX | 5: XXX-99-X
+    // 6: X-XXX-99 | 7: XX-999-X | 8: X-999-XX | 9: 999-X-XX | 10: XX-X-999 | 11: 999-XX-X
+    if (n.length === 6) {
+      if (/^[A-Z]{2}\d{2}\d{2}$/.test(n))
+        return n.slice(0, 2) + '-' + n.slice(2, 4) + '-' + n.slice(4, 6);
+      if (/^\d{2}[A-Z]{2}\d{2}$/.test(n))
+        return n.slice(0, 2) + '-' + n.slice(2, 4) + '-' + n.slice(4, 6);
+      if (/^\d{2}\d{2}[A-Z]{2}$/.test(n))
+        return n.slice(0, 2) + '-' + n.slice(2, 4) + '-' + n.slice(4, 6);
+      if (/^[A-Z]\d{2}[A-Z]{3}$/.test(n)) return n[0] + '-' + n.slice(1, 3) + '-' + n.slice(3, 6);
+      if (/^[A-Z]{3}\d{2}[A-Z]$/.test(n))
+        return n.slice(0, 3) + '-' + n.slice(3, 5) + '-' + n.slice(5, 6);
+      if (/^[A-Z]\d{3}\d{2}$/.test(n)) return n[0] + '-' + n.slice(1, 4) + '-' + n.slice(4, 6);
+      if (/^[A-Z]{2}\d{3}[A-Z]$/.test(n))
+        return n.slice(0, 2) + '-' + n.slice(2, 5) + '-' + n.slice(5, 6);
+      if (/^[A-Z]\d{3}[A-Z]{2}$/.test(n)) return n[0] + '-' + n.slice(1, 4) + '-' + n.slice(4, 6);
+      if (/^\d{3}[A-Z][A-Z]{2}$/.test(n)) return n.slice(0, 3) + '-' + n[3] + '-' + n.slice(4, 6);
     }
-
-    /**
-     * Formatteer genormaliseerd kenteken met streepjes (voor weergave).
-     * @param {string} normalized Bijv. "AB123C"
-     * @returns {string} Bijv. "AB-123-C" (indien sidecode past)
-     */
-    function formatDisplay(normalized) {
-        if (!normalized || normalized.length < 6) return normalized;
-        const n = normalized;
-        // Sidecode 1: XX-99-99 | 2: 99-XX-99 | 3: 99-99-XX | 4: X-99-XXX | 5: XXX-99-X
-        // 6: X-XXX-99 | 7: XX-999-X | 8: X-999-XX | 9: 999-X-XX | 10: XX-X-999 | 11: 999-XX-X
-        if (n.length === 6) {
-            if (/^[A-Z]{2}\d{2}\d{2}$/.test(n)) return n.slice(0,2) + '-' + n.slice(2,4) + '-' + n.slice(4,6);
-            if (/^\d{2}[A-Z]{2}\d{2}$/.test(n)) return n.slice(0,2) + '-' + n.slice(2,4) + '-' + n.slice(4,6);
-            if (/^\d{2}\d{2}[A-Z]{2}$/.test(n)) return n.slice(0,2) + '-' + n.slice(2,4) + '-' + n.slice(4,6);
-            if (/^[A-Z]\d{2}[A-Z]{3}$/.test(n)) return n[0] + '-' + n.slice(1,3) + '-' + n.slice(3,6);
-            if (/^[A-Z]{3}\d{2}[A-Z]$/.test(n)) return n.slice(0,3) + '-' + n.slice(3,5) + '-' + n.slice(5,6);
-            if (/^[A-Z]\d{3}\d{2}$/.test(n)) return n[0] + '-' + n.slice(1,4) + '-' + n.slice(4,6);
-            if (/^[A-Z]{2}\d{3}[A-Z]$/.test(n)) return n.slice(0,2) + '-' + n.slice(2,5) + '-' + n.slice(5,6);
-            if (/^[A-Z]\d{3}[A-Z]{2}$/.test(n)) return n[0] + '-' + n.slice(1,4) + '-' + n.slice(4,6);
-            if (/^\d{3}[A-Z][A-Z]{2}$/.test(n)) return n.slice(0,3) + '-' + n[3] + '-' + n.slice(4,6);
-        }
-        if (n.length === 7) {
-            if (/^\d{2}[A-Z]{2}\d{3}$/.test(n)) return n.slice(0,2) + '-' + n.slice(2,4) + '-' + n.slice(4,7);
-            if (/^[A-Z]{2}[A-Z]\d{3}$/.test(n)) return n.slice(0,2) + '-' + n[2] + '-' + n.slice(3,7);
-            if (/^\d{3}[A-Z]{2}[A-Z]$/.test(n)) return n.slice(0,3) + '-' + n.slice(3,5) + '-' + n.slice(5,7);
-        }
-        return normalized;
+    if (n.length === 7) {
+      if (/^\d{2}[A-Z]{2}\d{3}$/.test(n))
+        return n.slice(0, 2) + '-' + n.slice(2, 4) + '-' + n.slice(4, 7);
+      if (/^[A-Z]{2}[A-Z]\d{3}$/.test(n)) return n.slice(0, 2) + '-' + n[2] + '-' + n.slice(3, 7);
+      if (/^\d{3}[A-Z]{2}[A-Z]$/.test(n))
+        return n.slice(0, 3) + '-' + n.slice(3, 5) + '-' + n.slice(5, 7);
     }
+    return normalized;
+  }
 
-    /**
-     * Nederlands kenteken: toegestane letters (geen klinkers, geen C/Q). V,W voor o.a. bedrijfsauto's/aanhangwagens.
-     */
-    const DUTCH_LETTERS = 'BDFGHJKLMNPRSTVWXZ';
+  /**
+   * Nederlands kenteken: toegestane letters (geen klinkers, geen C/Q). V,W voor o.a. bedrijfsauto's/aanhangwagens.
+   */
+  const DUTCH_LETTERS = 'BDFGHJKLMNPRSTVWXZ';
 
-    /** Sidecode-patterns (zonder streepjes): 6–8 tekens. */
-    const SIDECODE_PATTERNS = [
-        /^[BDFGHJKLMNPRSTVWXZ]{2}\d{2}\d{2}$/,           // 1: XX-99-99
-        /^\d{2}[BDFGHJKLMNPRSTVWXZ]{2}\d{2}$/,           // 2: 99-XX-99
-        /^\d{2}\d{2}[BDFGHJKLMNPRSTVWXZ]{2}$/,           // 3: 99-99-XX
-        /^[BDFGHJKLMNPRSTVWXZ]\d{2}[BDFGHJKLMNPRSTVWXZ]{3}$/, // 4: X-99-XXX
-        /^[BDFGHJKLMNPRSTVWXZ]{3}\d{2}[BDFGHJKLMNPRSTVWXZ]$/, // 5: XXX-99-X
-        /^[BDFGHJKLMNPRSTVWXZ]\d{3}\d{2}$/,              // 6: X-XXX-99
-        /^[BDFGHJKLMNPRSTVWXZ]{2}\d{3}[BDFGHJKLMNPRSTVWXZ]$/, // 7: XX-999-X
-        /^[BDFGHJKLMNPRSTVWXZ]\d{3}[BDFGHJKLMNPRSTVWXZ]{2}$/, // 8: X-999-XX (bijv. G-346-VN)
-        /^\d{3}[BDFGHJKLMNPRSTVWXZ][BDFGHJKLMNPRSTVWXZ]{2}$/, // 9: 999-X-XX
-        /^[BDFGHJKLMNPRSTVWXZ]{2}[BDFGHJKLMNPRSTVWXZ]\d{3}$/, // 10: XX-X-999
-        /^\d{3}[BDFGHJKLMNPRSTVWXZ]{2}[BDFGHJKLMNPRSTVWXZ]$/, // 11: 999-XX-X
-        /^\d{2}[BDFGHJKLMNPRSTVWXZ]{2}\d{3}$/,           // 2 (7): 99-XX-999
-        /^[BDFGHJKLMNPRSTVWXZ]{2}\d{3}\d{2}$/,           // 7 (7): XX-999-99
-        /^\d{3}[BDFGHJKLMNPRSTVWXZ]{2}\d{2}$/,           // 11 (7): 999-XX-99
-        /^\d{2}\d{3}[BDFGHJKLMNPRSTVWXZ]{2}$/,           // 3 (7): 99-999-XX
-        /^[BDFGHJKLMNPRSTVWXZ]\d{2}[BDFGHJKLMNPRSTVWXZ]{2}\d{2}$/ // 4 (7): X-99-XX-99 (lenient 7)
-    ];
+  /** Sidecode-patterns (zonder streepjes): 6–8 tekens. */
+  const SIDECODE_PATTERNS = [
+    /^[BDFGHJKLMNPRSTVWXZ]{2}\d{2}\d{2}$/, // 1: XX-99-99
+    /^\d{2}[BDFGHJKLMNPRSTVWXZ]{2}\d{2}$/, // 2: 99-XX-99
+    /^\d{2}\d{2}[BDFGHJKLMNPRSTVWXZ]{2}$/, // 3: 99-99-XX
+    /^[BDFGHJKLMNPRSTVWXZ]\d{2}[BDFGHJKLMNPRSTVWXZ]{3}$/, // 4: X-99-XXX
+    /^[BDFGHJKLMNPRSTVWXZ]{3}\d{2}[BDFGHJKLMNPRSTVWXZ]$/, // 5: XXX-99-X
+    /^[BDFGHJKLMNPRSTVWXZ]\d{3}\d{2}$/, // 6: X-XXX-99
+    /^[BDFGHJKLMNPRSTVWXZ]{2}\d{3}[BDFGHJKLMNPRSTVWXZ]$/, // 7: XX-999-X
+    /^[BDFGHJKLMNPRSTVWXZ]\d{3}[BDFGHJKLMNPRSTVWXZ]{2}$/, // 8: X-999-XX (bijv. G-346-VN)
+    /^\d{3}[BDFGHJKLMNPRSTVWXZ][BDFGHJKLMNPRSTVWXZ]{2}$/, // 9: 999-X-XX
+    /^[BDFGHJKLMNPRSTVWXZ]{2}[BDFGHJKLMNPRSTVWXZ]\d{3}$/, // 10: XX-X-999
+    /^\d{3}[BDFGHJKLMNPRSTVWXZ]{2}[BDFGHJKLMNPRSTVWXZ]$/, // 11: 999-XX-X
+    /^\d{2}[BDFGHJKLMNPRSTVWXZ]{2}\d{3}$/, // 2 (7): 99-XX-999
+    /^[BDFGHJKLMNPRSTVWXZ]{2}\d{3}\d{2}$/, // 7 (7): XX-999-99
+    /^\d{3}[BDFGHJKLMNPRSTVWXZ]{2}\d{2}$/, // 11 (7): 999-XX-99
+    /^\d{2}\d{3}[BDFGHJKLMNPRSTVWXZ]{2}$/, // 3 (7): 99-999-XX
+    /^[BDFGHJKLMNPRSTVWXZ]\d{2}[BDFGHJKLMNPRSTVWXZ]{2}\d{2}$/, // 4 (7): X-99-XX-99 (lenient 7)
+  ];
 
-    /**
-     * Valideer formaat Nederlands kenteken (na normalisatie).
-     * @param {string} normalized Genormaliseerd kenteken (alleen A-Z0-9, 6–8 tekens)
-     * @returns {{ valid: boolean, errorKey?: string, errorMessage?: string }}
-     */
-    function validateFormat(normalized) {
-        if (!normalized || normalized.length < 6) {
-            return { valid: false, errorKey: 'too_short', errorMessage: 'Kenteken heeft minimaal 6 tekens (bijv. AB-123-C)' };
-        }
-        if (normalized.length > 8) {
-            return { valid: false, errorKey: 'too_long', errorMessage: 'Kenteken heeft maximaal 8 tekens' };
-        }
-        const letters = (normalized.match(/[A-Z]/g) || []).length;
-        const digits = (normalized.match(/\d/g) || []).length;
-        if (letters < 2 || digits < 2) {
-            return { valid: false, errorKey: 'invalid_mix', errorMessage: 'Nederlands kenteken heeft minimaal 2 letters en 2 cijfers' };
-        }
-        for (let i = 0; i < SIDECODE_PATTERNS.length; i++) {
-            if (SIDECODE_PATTERNS[i].test(normalized)) {
-                return { valid: true };
-            }
-        }
-        return { valid: false, errorKey: 'invalid_format', errorMessage: 'Geen geldig Nederlands kentekenformaat (bijv. AB-123-CD)' };
+  /**
+   * Valideer formaat Nederlands kenteken (na normalisatie).
+   * @param {string} normalized Genormaliseerd kenteken (alleen A-Z0-9, 6–8 tekens)
+   * @returns {{ valid: boolean, errorKey?: string, errorMessage?: string }}
+   */
+  function validateFormat(normalized) {
+    if (!normalized || normalized.length < 6) {
+      return {
+        valid: false,
+        errorKey: 'too_short',
+        errorMessage: 'Kenteken heeft minimaal 6 tekens (bijv. AB-123-C)',
+      };
     }
-
-    /**
-     * Volledige validatie: normaliseren + formaat.
-     * @param {string} input
-     * @returns {{ valid: boolean, normalized: string, display: string, errorKey?: string, errorMessage?: string }}
-     */
-    function validate(input) {
-        const n = normalize(input);
-        const fmt = validateFormat(n);
-        const display = formatDisplay(n);
-        return {
-            valid: fmt.valid,
-            normalized: n,
-            display: display || n,
-            errorKey: fmt.errorKey,
-            errorMessage: fmt.errorMessage
-        };
+    if (normalized.length > 8) {
+      return {
+        valid: false,
+        errorKey: 'too_long',
+        errorMessage: 'Kenteken heeft maximaal 8 tekens',
+      };
     }
-
-    /**
-     * Lookup kenteken bij RDW Open Data (gratis, geen API-key).
-     * T3: resultaat wordt 5 min gecached om rate limits te vermijden.
-     * @param {string} normalized Genormaliseerd kenteken (zonder streepjes)
-     * @returns {Promise<{ found: boolean, data?: { merk?: string, handelsbenaming?: string, voertuigsoort?: string } }>}
-     */
-    function lookupRDW(normalized) {
-        if (!normalized || normalized.length < 6) {
-            return Promise.resolve({ found: false });
-        }
-        const key = String(normalized).toUpperCase();
-        const now = Date.now();
-        const cached = _rdwCache[key];
-        if (cached && (now - cached.ts) < RDW_CACHE_TTL_MS) {
-            return Promise.resolve(cached.result);
-        }
-        const kentekenParam = encodeURIComponent(normalized);
-        const url = RDW_VOERTUIGEN_URL + '?kenteken=' + kentekenParam + '&$limit=1';
-        return fetch(url, { method: 'GET' })
-            .then(function(res) {
-                if (!res.ok) throw new Error('RDW request failed: ' + res.status);
-                return res.json();
-            })
-            .then(function(arr) {
-                if (!Array.isArray(arr) || arr.length === 0) {
-                    const result = { found: false };
-                    _rdwCache[key] = { result: result, ts: now };
-                    return result;
-                }
-                const row = arr[0];
-                const result = {
-                    found: true,
-                    data: {
-                        merk: row.merk || '',
-                        handelsbenaming: row.handelsbenaming || '',
-                        voertuigsoort: row.voertuigsoort || ''
-                    }
-                };
-                _rdwCache[key] = { result: result, ts: now };
-                return result;
-            })
-            .catch(function(err) {
-                if (typeof Q8 !== 'undefined' && Q8.Utils && Q8.Utils.logger && Q8.Utils.logger.warn) {
-                    Q8.Utils.logger.warn('Kenteken RDW lookup failed', err);
-                } else {
-                    console.warn('[Kenteken] RDW lookup failed', err);
-                }
-                return { found: false, error: true };
-            });
+    const letters = (normalized.match(/[A-Z]/g) || []).length;
+    const digits = (normalized.match(/\d/g) || []).length;
+    if (letters < 2 || digits < 2) {
+      return {
+        valid: false,
+        errorKey: 'invalid_mix',
+        errorMessage: 'Nederlands kenteken heeft minimaal 2 letters en 2 cijfers',
+      };
     }
-
-    function getVehicleSpecs(normalized) {
-        if (!normalized || normalized.length < 6) return Promise.resolve({ found: false });
-        const k = encodeURIComponent(normalized);
-        const mainUrl = RDW_VOERTUIGEN_URL + '?kenteken=' + k + '&$limit=1';
-        const brandstofUrl = RDW_BRANDSTOF_URL + '?kenteken=' + k + '&$limit=1';
-        return fetch(mainUrl, { method: 'GET' })
-            .then(function(res) { return res.ok ? res.json() : []; })
-            .then(function(mainArr) {
-                if (!Array.isArray(mainArr) || mainArr.length === 0) return { found: false };
-                return fetch(brandstofUrl, { method: 'GET' })
-                    .then(function(res) { return res.ok ? res.json() : []; })
-                    .then(function(brandstofArr) {
-                        const brandstofRow = (Array.isArray(brandstofArr) && brandstofArr.length > 0) ? brandstofArr[0] : null;
-                        const main = mainArr[0];
-                        const brandstofOmschrijving = brandstofRow ? (brandstofRow.brandstof_omschrijving || '') : '';
-                        const isElektrisch = /elektriciteit|elektrisch|plugin|plug-in|phev|bev|ev/i.test(brandstofOmschrijving);
-                        return {
-                            found: true,
-                            specs: {
-                                kenteken: main.kenteken || normalized,
-                                merk: main.merk || '',
-                                handelsbenaming: main.handelsbenaming || '',
-                                voertuigsoort: main.voertuigsoort || '',
-                                eerste_kleur: main.eerste_kleur || '',
-                                tweede_kleur: main.tweede_kleur || '',
-                                vervaldatum_apk: main.vervaldatum_apk || '',
-                                brandstof: brandstofOmschrijving || '—',
-                                elektrisch: isElektrisch,
-                                massa_ledig_voertuig: main.massa_ledig_voertuig != null ? String(main.massa_ledig_voertuig) : '',
-                                toegestane_maximum_massa_voertuig: main.toegestane_maximum_massa_voertuig != null ? String(main.toegestane_maximum_massa_voertuig) : '',
-                                laad_aansluiting: '—',
-                                laad_snelheid: '—'
-                            }
-                        };
-                    });
-            })
-            .catch(function(err) {
-                if (typeof Q8 !== 'undefined' && Q8.Utils && Q8.Utils.logger && Q8.Utils.logger.warn) Q8.Utils.logger.warn('Kenteken getVehicleSpecs failed', err);
-                return { found: false, error: true };
-            });
+    for (let i = 0; i < SIDECODE_PATTERNS.length; i++) {
+      if (SIDECODE_PATTERNS[i].test(normalized)) {
+        return { valid: true };
+      }
     }
-
     return {
-        normalize: normalize,
-        formatDisplay: formatDisplay,
-        validateFormat: validateFormat,
-        validate: validate,
-        lookupRDW: lookupRDW,
-        getVehicleSpecs: getVehicleSpecs
+      valid: false,
+      errorKey: 'invalid_format',
+      errorMessage: 'Geen geldig Nederlands kentekenformaat (bijv. AB-123-CD)',
     };
+  }
+
+  /**
+   * Volledige validatie: normaliseren + formaat.
+   * @param {string} input
+   * @returns {{ valid: boolean, normalized: string, display: string, errorKey?: string, errorMessage?: string }}
+   */
+  function validate(input) {
+    const n = normalize(input);
+    const fmt = validateFormat(n);
+    const display = formatDisplay(n);
+    return {
+      valid: fmt.valid,
+      normalized: n,
+      display: display || n,
+      errorKey: fmt.errorKey,
+      errorMessage: fmt.errorMessage,
+    };
+  }
+
+  /**
+   * Lookup kenteken bij RDW Open Data (gratis, geen API-key).
+   * T3: resultaat wordt 5 min gecached om rate limits te vermijden.
+   * @param {string} normalized Genormaliseerd kenteken (zonder streepjes)
+   * @returns {Promise<{ found: boolean, data?: { merk?: string, handelsbenaming?: string, voertuigsoort?: string } }>}
+   */
+  function lookupRDW(normalized) {
+    if (!normalized || normalized.length < 6) {
+      return Promise.resolve({ found: false });
+    }
+    const key = String(normalized).toUpperCase();
+    const now = Date.now();
+    const cached = _rdwCache[key];
+    if (cached && now - cached.ts < RDW_CACHE_TTL_MS) {
+      return Promise.resolve(cached.result);
+    }
+    const kentekenParam = encodeURIComponent(normalized);
+    const url = RDW_VOERTUIGEN_URL + '?kenteken=' + kentekenParam + '&$limit=1';
+    return fetch(url, { method: 'GET' })
+      .then(function (res) {
+        if (!res.ok) throw new Error('RDW request failed: ' + res.status);
+        return res.json();
+      })
+      .then(function (arr) {
+        if (!Array.isArray(arr) || arr.length === 0) {
+          const result = { found: false };
+          _rdwCache[key] = { result: result, ts: now };
+          return result;
+        }
+        const row = arr[0];
+        const result = {
+          found: true,
+          data: {
+            merk: row.merk || '',
+            handelsbenaming: row.handelsbenaming || '',
+            voertuigsoort: row.voertuigsoort || '',
+          },
+        };
+        _rdwCache[key] = { result: result, ts: now };
+        return result;
+      })
+      .catch(function (err) {
+        if (typeof Q8 !== 'undefined' && Q8.Utils && Q8.Utils.logger && Q8.Utils.logger.warn) {
+          Q8.Utils.logger.warn('Kenteken RDW lookup failed', err);
+        } else {
+          console.warn('[Kenteken] RDW lookup failed', err);
+        }
+        return { found: false, error: true };
+      });
+  }
+
+  function getVehicleSpecs(normalized) {
+    if (!normalized || normalized.length < 6) return Promise.resolve({ found: false });
+    const k = encodeURIComponent(normalized);
+    const mainUrl = RDW_VOERTUIGEN_URL + '?kenteken=' + k + '&$limit=1';
+    const brandstofUrl = RDW_BRANDSTOF_URL + '?kenteken=' + k + '&$limit=1';
+    return fetch(mainUrl, { method: 'GET' })
+      .then(function (res) {
+        return res.ok ? res.json() : [];
+      })
+      .then(function (mainArr) {
+        if (!Array.isArray(mainArr) || mainArr.length === 0) return { found: false };
+        return fetch(brandstofUrl, { method: 'GET' })
+          .then(function (res) {
+            return res.ok ? res.json() : [];
+          })
+          .then(function (brandstofArr) {
+            const brandstofRow =
+              Array.isArray(brandstofArr) && brandstofArr.length > 0 ? brandstofArr[0] : null;
+            const main = mainArr[0];
+            const brandstofOmschrijving = brandstofRow
+              ? brandstofRow.brandstof_omschrijving || ''
+              : '';
+            const isElektrisch = /elektriciteit|elektrisch|plugin|plug-in|phev|bev|ev/i.test(
+              brandstofOmschrijving
+            );
+            return {
+              found: true,
+              specs: {
+                kenteken: main.kenteken || normalized,
+                merk: main.merk || '',
+                handelsbenaming: main.handelsbenaming || '',
+                voertuigsoort: main.voertuigsoort || '',
+                eerste_kleur: main.eerste_kleur || '',
+                tweede_kleur: main.tweede_kleur || '',
+                vervaldatum_apk: main.vervaldatum_apk || '',
+                brandstof: brandstofOmschrijving || '—',
+                elektrisch: isElektrisch,
+                massa_ledig_voertuig:
+                  main.massa_ledig_voertuig != null ? String(main.massa_ledig_voertuig) : '',
+                toegestane_maximum_massa_voertuig:
+                  main.toegestane_maximum_massa_voertuig != null
+                    ? String(main.toegestane_maximum_massa_voertuig)
+                    : '',
+                laad_aansluiting: '—',
+                laad_snelheid: '—',
+              },
+            };
+          });
+      })
+      .catch(function (err) {
+        if (typeof Q8 !== 'undefined' && Q8.Utils && Q8.Utils.logger && Q8.Utils.logger.warn)
+          Q8.Utils.logger.warn('Kenteken getVehicleSpecs failed', err);
+        return { found: false, error: true };
+      });
+  }
+
+  return {
+    normalize: normalize,
+    formatDisplay: formatDisplay,
+    validateFormat: validateFormat,
+    validate: validate,
+    lookupRDW: lookupRDW,
+    getVehicleSpecs: getVehicleSpecs,
+  };
 })();

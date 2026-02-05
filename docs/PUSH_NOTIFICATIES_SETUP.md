@@ -18,13 +18,13 @@ De app stuurt echte push-notificaties via Firebase Cloud Messaging (FCM). Deze w
 In `firebase-config.js` (en `public/firebase-config.js`) staat:
 
 ```javascript
-messagingVapidKey: ""
+messagingVapidKey: '';
 ```
 
 Vervang de lege string door je VAPID-sleutel:
 
 ```javascript
-messagingVapidKey: "Bxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+messagingVapidKey: 'Bxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 ```
 
 ### 3. Cloud Functions deployen
@@ -44,12 +44,12 @@ npm run deploy:functions
 
 ## Welke meldingen worden verstuurd?
 
-| Gebeurtenis | Wanneer | Tekst (voorbeeld) |
-|-------------|---------|-------------------|
-| **Parkeersessie gestart** | Bij aanmaken sessie in Firestore | Parkeersessie gestart · Zone 123 · AB-123-CD |
-| **X minuten voor eindtijd** | 1× per sessie, X min voor einde | Parkeersessie verloopt over 10 minuten · Zone 123 · AB-123-CD |
-| **Parkeersessie gestopt** | Gebruiker klikt op Stop | Parkeersessie gestopt · Zone 123 · AB-123-CD |
-| **Eindtijd bereikt** | Sessie automatisch gestopt (timer/Cloud Function) | Parkeersessie gestopt omdat de eindtijd bereikt is · Zone 123 · AB-123-CD |
+| Gebeurtenis                 | Wanneer                                           | Tekst (voorbeeld)                                                         |
+| --------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------- |
+| **Parkeersessie gestart**   | Bij aanmaken sessie in Firestore                  | Parkeersessie gestart · Zone 123 · AB-123-CD                              |
+| **X minuten voor eindtijd** | 1× per sessie, X min voor einde                   | Parkeersessie verloopt over 10 minuten · Zone 123 · AB-123-CD             |
+| **Parkeersessie gestopt**   | Gebruiker klikt op Stop                           | Parkeersessie gestopt · Zone 123 · AB-123-CD                              |
+| **Eindtijd bereikt**        | Sessie automatisch gestopt (timer/Cloud Function) | Parkeersessie gestopt omdat de eindtijd bereikt is · Zone 123 · AB-123-CD |
 
 ## Instellingen per gebruiker
 

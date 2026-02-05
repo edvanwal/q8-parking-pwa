@@ -1,0 +1,33 @@
+---
+scope: project
+priority: highest
+alwaysApply: true
+enforced: true
+---
+# GLOBAL WORKING RULES (NON-NEGOTIABLE)
+
+These rules exist to stop "tests green, human broken" and agent drift.
+
+## 1) ALWAYS start here
+- You MUST read and follow all canonical rules in `.cursor/rules/*.mdc`.
+- If any rule conflicts with your plan, STOP and fix the plan.
+
+## 2) No assumptions
+- If you are unsure, you MUST inspect the repo and cite exact file paths and snippets.
+- Do not guess ports, routes, selectors, or behaviors.
+
+## 3) Minimal change, maximum proof
+- Prefer the smallest correct fix that addresses the root cause.
+- Provide visible proof (headed, trace/video/screenshots) whenever the rules require it.
+
+## 4) Human first, not "code first"
+- Assertions must match what a human sees (text, visibility, enabled/disabled, overlays open/closed).
+- Avoid internal flags or hidden state as the main proof.
+
+## 5) Stop on uncertainty
+- If something is unclear, write it as TBD with file references.
+- Do not "paper over" gaps.
+
+## 6) Discipline
+- Every decision that changes long-term behavior must be documented (ADR light if needed).
+- Every repeated issue is a process bug and MUST be expanded so this cannot happen again

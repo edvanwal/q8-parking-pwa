@@ -1,5 +1,5 @@
 name: Deploy to Firebase Hosting on merge
-"on":
+'on':
   push:
     branches:
       - main
@@ -23,7 +23,7 @@ jobs:
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          firebaseServiceAccount: "${{ secrets.Q8_PARKING_PWA_FIREBASE }}"
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.Q8_PARKING_PWA_FIREBASE }}'
           channelId: live
           projectId: q8-parking-pwa

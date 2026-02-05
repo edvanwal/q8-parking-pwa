@@ -3,6 +3,7 @@
 ## Symptoom
 
 In de "Active parking" kaart breken teksten ongewenst af op meerdere regels:
+
 - **Kenteken** (bijv. G-346-VN): "G-346-" op regel 1, "VN" op regel 2
 - **End-tijd** ("Until stopped"): breekt eveneens af
 

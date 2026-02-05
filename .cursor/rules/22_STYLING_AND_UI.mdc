@@ -1,0 +1,24 @@
+---
+scope: project
+priority: high
+alwaysApply: true
+enforced: true
+---
+# STYLING AND UI — DESIGN SYSTEM GUARDRAILS
+
+All UI styling MUST use the project design system. No ad-hoc colors or spacing.
+
+## MANDATORY RULES
+- Tokens only: Use CSS variables from design-system.css (:root). No hardcoded hex/rgb colors or magic numbers for spacing, radii, shadows. Add new tokens to :root if needed.
+- No inline theme/layout: Do NOT use inline styles for color, margin, padding, font, background, or layout. Use classes that reference tokens.
+- Single source: Global UI styles live in design-system.css (or explicitly documented overrides). Do not add a second global stylesheet without an ADR.
+- E2E targets: Interactive elements used by E2E MUST have stable data-testid or id attributes. Do not remove or rename them without updating proof/E2E.
+
+## CLASS NAMING
+- Prefer existing design-system classes.
+- New components must use a clear prefix (e.g. sheet-*, map-*).
+- Decorative children must not capture clicks (pointer-events: none or .no-pointer), see 30_CLICK_HANDLERS.
+
+## VERIFICATION
+- After UI changes: verify in browser (20_BROWSER_VERIFICATION) and ensure E2E proof still passes.
+- Grep for style=" usage. Only allow for dynamic values that cannot be expressed via CSS variables; never for theme or layout.

@@ -8,13 +8,13 @@ This guide explains how to create all required icons for the Q8 Parking PWA to e
 
 ## Required Icons Summary
 
-| Icon Type | Sizes | Purpose | Platform |
-|-----------|-------|---------|----------|
-| Standard PWA | 48, 72, 96, 144, 168, 192, 256, 384, 512 | App icons | All |
-| Maskable | 192, 512 | Adaptive icons | Android |
-| Apple Touch | 180 | Home screen | iOS |
-| Favicon | 16, 32 | Browser tab | Desktop |
-| Shortcuts | 96 | App shortcuts | Android/Windows |
+| Icon Type    | Sizes                                    | Purpose        | Platform        |
+| ------------ | ---------------------------------------- | -------------- | --------------- |
+| Standard PWA | 48, 72, 96, 144, 168, 192, 256, 384, 512 | App icons      | All             |
+| Maskable     | 192, 512                                 | Adaptive icons | Android         |
+| Apple Touch  | 180                                      | Home screen    | iOS             |
+| Favicon      | 16, 32                                   | Browser tab    | Desktop         |
+| Shortcuts    | 96                                       | App shortcuts  | Android/Windows |
 
 ---
 
@@ -37,6 +37,7 @@ pwa-asset-generator logo-source.png ./public/icons \
 ```
 
 This will automatically generate:
+
 - All PWA icon sizes
 - Maskable icons with safe zone
 - Apple touch icons
@@ -58,12 +59,14 @@ This will automatically generate:
 ### Step 1: Prepare Source Image
 
 **Requirements:**
+
 - Minimum size: 1024x1024 pixels
 - Format: PNG with transparency
 - Content: Q8 logo centered
 - Safe zone: Keep important content in center 80%
 
 **Design Tips:**
+
 - Use vector graphics if possible
 - Ensure logo is clear at small sizes
 - Test visibility on both light and dark backgrounds
@@ -122,6 +125,7 @@ convert logo-source.png \
 ```
 
 **Calculation:**
+
 - 512px with 10% safe zone = 410px content area
 - 192px with 10% safe zone = 154px content area
 
@@ -198,6 +202,7 @@ convert public/icons/favicon-16x16.png public/icons/favicon-32x32.png public/fav
 ```
 
 **Specs:**
+
 - Transparent background
 - Logo centered
 - Clear at 48x48 minimum
@@ -220,6 +225,7 @@ convert public/icons/favicon-16x16.png public/icons/favicon-32x32.png public/fav
 ```
 
 **Specs:**
+
 - Solid background (#003D6B)
 - 10% padding on all sides
 - Logo in center 80%
@@ -239,6 +245,7 @@ convert public/icons/favicon-16x16.png public/icons/favicon-32x32.png public/fav
 ```
 
 **Specs:**
+
 - Solid background (white or #003D6B)
 - No transparency
 - Square corners (iOS adds rounding)
@@ -335,6 +342,7 @@ pngquant --quality=80-100 --ext .png --force public/icons/*.png
 ```
 
 **Target sizes:**
+
 - 48x48: < 2KB
 - 192x192: < 5KB
 - 512x512: < 10KB
@@ -371,6 +379,7 @@ pngquant --quality=80-100 --ext .png --force public/icons/*.png
 
 **Problem:** White square or generic icon
 **Solution:**
+
 - Ensure manifest has icons array
 - Check icon paths are correct
 - Verify icon files exist
@@ -381,6 +390,7 @@ pngquant --quality=80-100 --ext .png --force public/icons/*.png
 
 **Problem:** Generic icon or no icon
 **Solution:**
+
 - Add `<link rel="apple-touch-icon">`
 - Ensure icon is 180x180
 - Use solid background (no transparency)
@@ -391,6 +401,7 @@ pngquant --quality=80-100 --ext .png --force public/icons/*.png
 
 **Problem:** Icons appear pixelated
 **Solution:**
+
 - Use higher resolution source (1024x1024+)
 - Ensure proper scaling algorithm
 - Don't upscale small images
@@ -400,6 +411,7 @@ pngquant --quality=80-100 --ext .png --force public/icons/*.png
 
 **Problem:** Logo is clipped in circular mask
 **Solution:**
+
 - Increase padding to 15-20%
 - Test with https://maskable.app/
 - Ensure content in center 80%
@@ -410,6 +422,7 @@ pngquant --quality=80-100 --ext .png --force public/icons/*.png
 ## Resources
 
 **Tools:**
+
 - PWA Asset Generator: https://github.com/onderceylan/pwa-asset-generator
 - PWA Builder: https://www.pwabuilder.com/imageGenerator
 - Maskable.app: https://maskable.app/
@@ -417,6 +430,7 @@ pngquant --quality=80-100 --ext .png --force public/icons/*.png
 - ImageMagick: https://imagemagick.org/
 
 **Documentation:**
+
 - Web App Manifest Icons: https://developer.mozilla.org/en-US/docs/Web/Manifest/icons
 - Maskable Icons: https://web.dev/maskable-icon/
 - Apple Touch Icons: https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html

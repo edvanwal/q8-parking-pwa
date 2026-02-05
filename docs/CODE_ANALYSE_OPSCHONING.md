@@ -6,13 +6,13 @@ Grondige analyse van de codebase: mogelijke problemen, conflicten, opschoning en
 
 ## 1. Samenvatting
 
-| Categorie | Aantal | Ernst |
-|-----------|--------|--------|
-| Mogelijke bugs / ontbrekende functionaliteit | 3 | Medium |
-| Inconsistenties (i18n, exports) | 4 | Laag |
-| Dubbele / dode code | 4 | Laag |
-| Best-practice verbeteringen | 6 | Info |
-| Opschoning (DRY, legacy) | 5 | Laag |
+| Categorie                                    | Aantal | Ernst  |
+| -------------------------------------------- | ------ | ------ |
+| Mogelijke bugs / ontbrekende functionaliteit | 3      | Medium |
+| Inconsistenties (i18n, exports)              | 4      | Laag   |
+| Dubbele / dode code                          | 4      | Laag   |
+| Best-practice verbeteringen                  | 6      | Info   |
+| Opschoning (DRY, legacy)                     | 5      | Laag   |
 
 ---
 
@@ -148,15 +148,15 @@ const toast = (msg) => {
 
 ## 6. Opschoning – actiepunten
 
-| Prioriteit | Actie |
-|------------|--------|
-| Hoog | **state.js:** Comment bij `screen` corrigeren (dubbele 'car-specs' / ontbrekende waarde). |
-| — | ~~**Root services.js:** `syncNotificationSettingsToFirestore` implementeren + exporteren~~ → **Opgelost.** |
-| Medium | **services.js:** Eén centrale `toast(msg, type)` helper; alle lokale `toast`-definities vervangen. |
-| — | ~~**services.js:** toasts i18n (NL/EN)~~ → **Opgelost.** |
-| Laag | **service-worker.js:** Verwijderen of hernoemen naar `.legacy` en in docs vermelden. |
-| Laag | **Legacy:** Na controle alle `window.updateUI` / `window.showToast` fallbacks verwijderen en alleen Q8.UI gebruiken. |
-| Laag | **app_recovery.js:** Doel en gebruik documenteren of verplaatsen naar legacy/dev-tools. |
+| Prioriteit | Actie                                                                                                                |
+| ---------- | -------------------------------------------------------------------------------------------------------------------- |
+| Hoog       | **state.js:** Comment bij `screen` corrigeren (dubbele 'car-specs' / ontbrekende waarde).                            |
+| —          | ~~**Root services.js:** `syncNotificationSettingsToFirestore` implementeren + exporteren~~ → **Opgelost.**           |
+| Medium     | **services.js:** Eén centrale `toast(msg, type)` helper; alle lokale `toast`-definities vervangen.                   |
+| —          | ~~**services.js:** toasts i18n (NL/EN)~~ → **Opgelost.**                                                             |
+| Laag       | **service-worker.js:** Verwijderen of hernoemen naar `.legacy` en in docs vermelden.                                 |
+| Laag       | **Legacy:** Na controle alle `window.updateUI` / `window.showToast` fallbacks verwijderen en alleen Q8.UI gebruiken. |
+| Laag       | **app_recovery.js:** Doel en gebruik documenteren of verplaatsen naar legacy/dev-tools.                              |
 
 ---
 

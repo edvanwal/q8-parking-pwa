@@ -1,14 +1,14 @@
 /**
  * PWA Icon Generator Script
- * 
+ *
  * This script generates all required PWA icons from a source image.
- * 
+ *
  * Prerequisites:
  *   npm install sharp
- * 
+ *
  * Usage:
  *   node scripts/generate-icons.js
- * 
+ *
  * Or with custom source:
  *   node scripts/generate-icons.js --source path/to/logo.png
  */
@@ -29,7 +29,7 @@ try {
 }
 
 // Configuration
-const SOURCE_IMAGE = process.argv.includes('--source') 
+const SOURCE_IMAGE = process.argv.includes('--source')
   ? process.argv[process.argv.indexOf('--source') + 1]
   : path.join(__dirname, '..', 'public', 'q8-logo.png');
 
@@ -109,17 +109,17 @@ function ensureDir(dir) {
 // Generate standard icons (transparent background)
 async function generateStandardIcons(sourceBuffer) {
   console.log('\n📦 Generating standard icons...');
-  
+
   for (const icon of STANDARD_ICONS) {
     try {
       await sharp(sourceBuffer)
         .resize(icon.size, icon.size, {
           fit: 'contain',
-          background: { r: 0, g: 0, b: 0, alpha: 0 }
+          background: { r: 0, g: 0, b: 0, alpha: 0 },
         })
         .png()
         .toFile(path.join(OUTPUT_DIR, icon.name));
-      
+
       console.log(`  ✅ ${icon.name} (${icon.size}x${icon.size})`);
     } catch (error) {
       console.error(`  ❌ Failed to create ${icon.name}:`, error.message);
@@ -130,42 +130,48 @@ async function generateStandardIcons(sourceBuffer) {
 // Generate maskable icons (with background and safe zone)
 async function generateMaskableIcons(sourceBuffer) {
   console.log('\n🎭 Generating maskable icons...');
-  
+
   for (const icon of MASKABLE_ICONS) {
     try {
       const innerSize = Math.round(icon.size * (1 - icon.padding * 2));
-      
+
       // Create background
       const background = await sharp({
         create: {
           width: icon.size,
           height: icon.size,
           channels: 4,
-          background: BRAND_NAVY
-        }
-      }).png().toBuffer();
-      
+          background: BRAND_NAVY,
+        },
+      })
+        .png()
+        .toBuffer();
+
       // Resize logo
       const resizedLogo = await sharp(sourceBuffer)
         .resize(innerSize, innerSize, {
           fit: 'contain',
-          background: { r: 0, g: 0, b: 0, alpha: 0 }
+          background: { r: 0, g: 0, b: 0, alpha: 0 },
         })
         .png()
         .toBuffer();
-      
+
       // Composite logo on background
       const padding = Math.round(icon.size * icon.padding);
       await sharp(background)
-        .composite([{
-          input: resizedLogo,
-          top: padding,
-          left: padding
-        }])
+        .composite([
+          {
+            input: resizedLogo,
+            top: padding,
+            left: padding,
+          },
+        ])
         .png()
         .toFile(path.join(OUTPUT_DIR, icon.name));
-      
-      console.log(`  ✅ ${icon.name} (${icon.size}x${icon.size} with ${icon.padding * 100}% safe zone)`);
+
+      console.log(
+        `  ✅ ${icon.name} (${icon.size}x${icon.size} with ${icon.padding * 100}% safe zone)`
+      );
     } catch (error) {
       console.error(`  ❌ Failed to create ${icon.name}:`, error.message);
     }
@@ -175,41 +181,45 @@ async function generateMaskableIcons(sourceBuffer) {
 // Generate Apple touch icons (solid background)
 async function generateAppleIcons(sourceBuffer) {
   console.log('\n🍎 Generating Apple touch icons...');
-  
+
   for (const icon of APPLE_ICONS) {
     try {
       const innerSize = Math.round(icon.size * 0.8);
       const padding = Math.round((icon.size - innerSize) / 2);
-      
+
       // Create white background
       const background = await sharp({
         create: {
           width: icon.size,
           height: icon.size,
           channels: 4,
-          background: WHITE
-        }
-      }).png().toBuffer();
-      
+          background: WHITE,
+        },
+      })
+        .png()
+        .toBuffer();
+
       // Resize logo
       const resizedLogo = await sharp(sourceBuffer)
         .resize(innerSize, innerSize, {
           fit: 'contain',
-          background: { r: 255, g: 255, b: 255, alpha: 0 }
+          background: { r: 255, g: 255, b: 255, alpha: 0 },
         })
         .png()
         .toBuffer();
-      
+
       // Composite
       await sharp(background)
-        .composite([{
-          input: resizedLogo,
-          top: padding,
-          left: padding
-        }])
+        .composite([
+          {
+            input: resizedLogo,
+            top: padding,
+            left: padding,
+          },
+        ])
         .png()
         .toFile(path.join(OUTPUT_DIR, icon.name));
-      
+
       console.log(`  ✅ ${icon.name} (${icon.size}x${icon.size})`);
     } catch (error) {
       console.error(`  ❌ Failed to create ${icon.name}:`, error.message);
@@ -220,17 +230,17 @@ async function generateAppleIcons(sourceBuffer) {
 // Generate favicon icons
 async function generateFavicons(sourceBuffer) {
   console.log('\n🔖 Generating favicons...');
-  
+
   for (const icon of FAVICON_ICONS) {
     try {
       await sharp(sourceBuffer)
         .resize(icon.size, icon.size, {
           fit: 'contain',
-          background: { r: 0, g: 0, b: 0, alpha: 0 }
+          background: { r: 0, g: 0, b: 0, alpha: 0 },
         })
         .png()
         .toFile(path.join(OUTPUT_DIR, icon.name));
-      
+
       console.log(`  ✅ ${icon.name} (${icon.size}x${icon.size})`);
     } catch (error) {
       console.error(`  ❌ Failed to create ${icon.name}:`, error.message);
@@ -241,42 +251,46 @@ async function generateFavicons(sourceBuffer) {
 // Generate Microsoft tiles
 async function generateMSTiles(sourceBuffer) {
   console.log('\n🪟 Generating Microsoft tiles...');
-  
+
   for (const tile of MS_TILES) {
     try {
       const width = tile.width || tile.size;
       const height = tile.height || tile.size;
       const innerSize = Math.min(width, height) * 0.6;
-      
+
       // Create brand background
       const background = await sharp({
         create: {
           width,
           height,
           channels: 4,
-          background: BRAND_NAVY
-        }
-      }).png().toBuffer();
-      
+          background: BRAND_NAVY,
+        },
+      })
+        .png()
+        .toBuffer();
+
       // Resize logo
       const resizedLogo = await sharp(sourceBuffer)
         .resize(Math.round(innerSize), Math.round(innerSize), {
           fit: 'contain',
-          background: { r: 0, g: 0, b: 0, alpha: 0 }
+          background: { r: 0, g: 0, b: 0, alpha: 0 },
         })
         .png()
         .toBuffer();
-      
+
       // Composite centered
       await sharp(background)
-        .composite([{
-          input: resizedLogo,
-          top: Math.round((height - innerSize) / 2),
-          left: Math.round((width - innerSize) / 2)
-        }])
+        .composite([
+          {
+            input: resizedLogo,
+            top: Math.round((height - innerSize) / 2),
+            left: Math.round((width - innerSize) / 2),
+          },
+        ])
         .png()
         .toFile(path.join(OUTPUT_DIR, tile.name));
-      
+
       console.log(`  ✅ ${tile.name} (${width}x${height})`);
     } catch (error) {
       console.error(`  ❌ Failed to create ${tile.name}:`, error.message);
@@ -287,7 +301,7 @@ async function generateMSTiles(sourceBuffer) {
 // Generate shortcut icons
 async function generateShortcutIcons(sourceBuffer) {
   console.log('\n⚡ Generating shortcut icons...');
-  
+
   for (const icon of SHORTCUT_ICONS) {
     try {
       // Create brand background with padding
@@ -296,32 +310,36 @@ async function generateShortcutIcons(sourceBuffer) {
           width: icon.size,
           height: icon.size,
           channels: 4,
-          background: BRAND_NAVY
-        }
-      }).png().toBuffer();
-      
+          background: BRAND_NAVY,
+        },
+      })
+        .png()
+        .toBuffer();
+
       const innerSize = Math.round(icon.size * 0.6);
       const padding = Math.round((icon.size - innerSize) / 2);
-      
+
       // Resize logo
       const resizedLogo = await sharp(sourceBuffer)
         .resize(innerSize, innerSize, {
           fit: 'contain',
-          background: { r: 0, g: 0, b: 0, alpha: 0 }
+          background: { r: 0, g: 0, b: 0, alpha: 0 },
         })
         .png()
         .toBuffer();
-      
+
       // Composite
       await sharp(background)
-        .composite([{
-          input: resizedLogo,
-          top: padding,
-          left: padding
-        }])
+        .composite([
+          {
+            input: resizedLogo,
+            top: padding,
+            left: padding,
+          },
+        ])
         .png()
         .toFile(path.join(OUTPUT_DIR, icon.name));
-      
+
       console.log(`  ✅ ${icon.name} (${icon.size}x${icon.size})`);
     } catch (error) {
       console.error(`  ❌ Failed to create ${icon.name}:`, error.message);
@@ -332,7 +350,7 @@ async function generateShortcutIcons(sourceBuffer) {
 // Generate social media images
 async function generateSocialImages(sourceBuffer) {
   console.log('\n📱 Generating social media images...');
-  
+
   for (const img of SOCIAL_ICONS) {
     try {
       // Create brand background
@@ -341,31 +359,35 @@ async function generateSocialImages(sourceBuffer) {
           width: img.width,
           height: img.height,
           channels: 4,
-          background: BRAND_NAVY
-        }
-      }).png().toBuffer();
-      
+          background: BRAND_NAVY,
+        },
+      })
+        .png()
+        .toBuffer();
+
       const logoSize = Math.min(img.width, img.height) * 0.4;
-      
+
       // Resize logo
       const resizedLogo = await sharp(sourceBuffer)
         .resize(Math.round(logoSize), Math.round(logoSize), {
           fit: 'contain',
-          background: { r: 0, g: 0, b: 0, alpha: 0 }
+          background: { r: 0, g: 0, b: 0, alpha: 0 },
         })
         .png()
         .toBuffer();
-      
+
       // Composite centered
       await sharp(background)
-        .composite([{
-          input: resizedLogo,
-          top: Math.round((img.height - logoSize) / 2),
-          left: Math.round((img.width - logoSize) / 2)
-        }])
+        .composite([
+          {
+            input: resizedLogo,
+            top: Math.round((img.height - logoSize) / 2),
+            left: Math.round((img.width - logoSize) / 2),
+          },
+        ])
         .png()
         .toFile(path.join(OUTPUT_DIR, img.name));
-      
+
       console.log(`  ✅ ${img.name} (${img.width}x${img.height})`);
     } catch (error) {
       console.error(`  ❌ Failed to create ${img.name}:`, error.message);
@@ -376,7 +398,7 @@ async function generateSocialImages(sourceBuffer) {
 // Generate splash screens
 async function generateSplashScreens(sourceBuffer) {
   console.log('\n💦 Generating iOS splash screens...');
-  
+
   for (const splash of SPLASH_SCREENS) {
     try {
       // Create brand background
@@ -385,31 +407,35 @@ async function generateSplashScreens(sourceBuffer) {
           width: splash.width,
           height: splash.height,
           channels: 4,
-          background: BRAND_NAVY
-        }
-      }).png().toBuffer();
-      
+          background: BRAND_NAVY,
+        },
+      })
+        .png()
+        .toBuffer();
+
       const logoSize = Math.min(splash.width, splash.height) * 0.3;
-      
+
       // Resize logo
       const resizedLogo = await sharp(sourceBuffer)
         .resize(Math.round(logoSize), Math.round(logoSize), {
           fit: 'contain',
-          background: { r: 0, g: 0, b: 0, alpha: 0 }
+          background: { r: 0, g: 0, b: 0, alpha: 0 },
         })
         .png()
         .toBuffer();
-      
+
       // Composite centered
       await sharp(background)
-        .composite([{
-          input: resizedLogo,
-          top: Math.round((splash.height - logoSize) / 2),
-          left: Math.round((splash.width - logoSize) / 2)
-        }])
+        .composite([
+          {
+            input: resizedLogo,
+            top: Math.round((splash.height - logoSize) / 2),
+            left: Math.round((splash.width - logoSize) / 2),
+          },
+        ])
         .png()
         .toFile(path.join(SPLASH_DIR, splash.name));
-      
+
       console.log(`  ✅ ${splash.name} (${splash.width}x${splash.height})`);
     } catch (error) {
       console.error(`  ❌ Failed to create ${splash.name}:`, error.message);
@@ -421,7 +447,7 @@ async function generateSplashScreens(sourceBuffer) {
 async function main() {
   console.log('🚀 Q8 Parking PWA Icon Generator\n');
   console.log('━'.repeat(50));
-  
+
   // Check if source image exists
   if (!fs.existsSync(SOURCE_IMAGE)) {
     console.error(`\n❌ Source image not found: ${SOURCE_IMAGE}`);
@@ -429,21 +455,21 @@ async function main() {
     console.log('Usage: node generate-icons.js --source path/to/logo.png');
     process.exit(1);
   }
-  
+
   console.log(`📷 Source image: ${SOURCE_IMAGE}`);
   console.log(`📁 Output directory: ${OUTPUT_DIR}`);
-  
+
   // Ensure directories exist
   ensureDir(OUTPUT_DIR);
   ensureDir(SPLASH_DIR);
-  
+
   // Load source image
   let sourceBuffer;
   try {
     sourceBuffer = await sharp(SOURCE_IMAGE).png().toBuffer();
     const metadata = await sharp(sourceBuffer).metadata();
     console.log(`📐 Source dimensions: ${metadata.width}x${metadata.height}`);
-    
+
     if (metadata.width < 512 || metadata.height < 512) {
       console.warn('\n⚠️  Warning: Source image is smaller than 512x512.');
       console.warn('   For best results, use a source image of at least 1024x1024 pixels.\n');
@@ -452,7 +478,7 @@ async function main() {
     console.error(`\n❌ Failed to load source image: ${error.message}`);
     process.exit(1);
   }
-  
+
   // Generate all icons
   await generateStandardIcons(sourceBuffer);
   await generateMaskableIcons(sourceBuffer);
@@ -462,7 +488,7 @@ async function main() {
   await generateShortcutIcons(sourceBuffer);
   await generateSocialImages(sourceBuffer);
   await generateSplashScreens(sourceBuffer);
-  
+
   console.log('\n━'.repeat(50));
   console.log('✅ Icon generation complete!\n');
   console.log('Next steps:');

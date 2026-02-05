@@ -51,9 +51,7 @@
     {
       "collectionGroup": "parking_sessions",
       "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "start_datetime", "order": "ASCENDING" }
-      ]
+      "fields": [{ "fieldPath": "start_datetime", "order": "ASCENDING" }]
     },
     {
       "collectionGroup": "monthly_subscriptions",

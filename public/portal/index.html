@@ -1,259 +1,367 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="nl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Q8 Fleet Portal</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../design-system.css">
-  <link rel="stylesheet" href="portal.css">
-</head>
-<body class="portal-body">
-  <div id="portal-app">
-    <!-- LOGIN -->
-    <div id="view-login" class="portal-view">
-      <div class="portal-login-box">
-        <img src="../q8-logo.png" alt="Q8" class="portal-logo">
-        <h1 class="portal-title">Fleet Manager Portal</h1>
-        <p class="portal-subtitle">Beheer uw wagenpark en bestuurders</p>
-        <form id="login-form" class="portal-form">
-          <input type="email" id="login-email" class="input-field" placeholder="Email address" required>
-          <input type="password" id="login-password" class="input-field" placeholder="Password" required>
-          <button type="submit" class="btn btn-primary btn-block" id="btn-login">Log in</button>
-          <p id="login-error" class="portal-error hidden"></p>
-        </form>
-        <p class="portal-hint"><a href="/">← Terug naar de parkeerapp</a></p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Q8 Fleet Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../design-system.css" />
+    <link rel="stylesheet" href="portal.css" />
+  </head>
+  <body class="portal-body">
+    <div id="portal-app">
+      <!-- LOGIN -->
+      <div id="view-login" class="portal-view">
+        <div class="portal-login-box">
+          <img src="../q8-logo.png" alt="Q8" class="portal-logo" />
+          <h1 class="portal-title">Fleet Manager Portal</h1>
+          <p class="portal-subtitle">Beheer uw wagenpark en bestuurders</p>
+          <form id="login-form" class="portal-form">
+            <input
+              type="email"
+              id="login-email"
+              class="input-field"
+              placeholder="Email address"
+              required
+            />
+            <input
+              type="password"
+              id="login-password"
+              class="input-field"
+              placeholder="Password"
+              required
+            />
+            <button type="submit" class="btn btn-primary btn-block" id="btn-login">Log in</button>
+            <p id="login-error" class="portal-error hidden"></p>
+          </form>
+          <p class="portal-hint"><a href="/">← Terug naar de parkeerapp</a></p>
+        </div>
       </div>
-    </div>
 
-    <!-- MAIN PORTAL (na login) -->
-    <div id="view-portal" class="portal-view hidden">
-      <aside class="portal-sidebar">
-        <div class="sidebar-header">
-          <img src="../q8-logo.png" alt="Q8" class="sidebar-logo">
-          <span>Fleet Portal</span>
-        </div>
-        <nav class="sidebar-nav">
-          <a href="#" class="nav-item active" data-section="dashboard">
-            <span class="nav-icon">📊</span>
-            <span>Dashboard</span>
-          </a>
-          <a href="#" class="nav-item" data-section="users">
-            <span class="nav-icon">👥</span>
-            <span>Users</span>
-          </a>
-          <a href="#" class="nav-item" data-section="sessions">
-            <span class="nav-icon">🅿️</span>
-            <span>Active sessions</span>
-          </a>
-          <a href="#" class="nav-item" data-section="settings">
-            <span class="nav-icon">⚙️</span>
-            <span>Settings</span>
-          </a>
-          <a href="#" class="nav-item" data-section="plates">
-            <span class="nav-icon">🚗</span>
-            <span>License plate management</span>
-          </a>
-          <a href="#" class="nav-item" data-section="auditlog">
-            <span class="nav-icon">📋</span>
-            <span>Auditlog</span>
-          </a>
-        </nav>
-        <div class="sidebar-footer">
-          <span id="portal-user-email" class="text-secondary text-sm"></span>
-          <button class="btn btn-secondary btn-sm" id="btn-portal-logout">Log out</button>
-        </div>
-      </aside>
+      <!-- MAIN PORTAL (na login) -->
+      <div id="view-portal" class="portal-view hidden">
+        <aside class="portal-sidebar">
+          <div class="sidebar-header">
+            <img src="../q8-logo.png" alt="Q8" class="sidebar-logo" />
+            <span>Fleet Portal</span>
+          </div>
+          <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" data-section="dashboard">
+              <span class="nav-icon">📊</span>
+              <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item" data-section="users">
+              <span class="nav-icon">👥</span>
+              <span>Users</span>
+            </a>
+            <a href="#" class="nav-item" data-section="sessions">
+              <span class="nav-icon">🅿️</span>
+              <span>Active sessions</span>
+            </a>
+            <a href="#" class="nav-item" data-section="settings">
+              <span class="nav-icon">⚙️</span>
+              <span>Settings</span>
+            </a>
+            <a href="#" class="nav-item" data-section="plates">
+              <span class="nav-icon">🚗</span>
+              <span>License plate management</span>
+            </a>
+            <a href="#" class="nav-item" data-section="auditlog">
+              <span class="nav-icon">📋</span>
+              <span>Auditlog</span>
+            </a>
+          </nav>
+          <div class="sidebar-footer">
+            <span id="portal-user-email" class="text-secondary text-sm"></span>
+            <button class="btn btn-secondary btn-sm" id="btn-portal-logout">Log out</button>
+          </div>
+        </aside>
 
-      <main class="portal-main">
-        <header class="portal-header">
-          <h1 id="portal-section-title">Dashboard</h1>
-        </header>
+        <main class="portal-main">
+          <header class="portal-header">
+            <h1 id="portal-section-title">Dashboard</h1>
+          </header>
 
-        <div id="section-dashboard" class="portal-section">
-          <div class="stats-grid">
-            <div class="stat-card">
-              <span class="stat-value" id="stat-active-sessions">0</span>
-              <span class="stat-label">Active parking sessions</span>
+          <div id="section-dashboard" class="portal-section">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <span class="stat-value" id="stat-active-sessions">0</span>
+                <span class="stat-label">Active parking sessions</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-value" id="stat-drivers">0</span>
+                <span class="stat-label">Drivers</span>
+              </div>
             </div>
-            <div class="stat-card">
-              <span class="stat-value" id="stat-drivers">0</span>
-              <span class="stat-label">Drivers</span>
+            <div class="portal-card">
+              <h2>Overview</h2>
+              <p class="text-secondary">
+                Welcome to the Fleet Manager Portal. Use the menu to manage users, monitor active
+                sessions and configure license plate settings.
+              </p>
             </div>
           </div>
-          <div class="portal-card">
-            <h2>Overview</h2>
-            <p class="text-secondary">Welcome to the Fleet Manager Portal. Use the menu to manage users, monitor active sessions and configure license plate settings.</p>
-          </div>
-        </div>
 
-        <div id="section-users" class="portal-section hidden">
-          <div class="portal-card">
-            <div class="card-header">
-              <h2>Drivers</h2>
-              <button class="btn btn-primary" id="btn-add-user">+ Invite driver</button>
-            </div>
-            <div id="users-list" class="table-container">
-              <table class="portal-table">
-                <thead>
-                  <tr><th>Email</th><th>Name</th><th>Role</th><th>Plate management</th><th></th></tr>
-                </thead>
-                <tbody id="users-tbody"></tbody>
-              </table>
-              <p id="users-empty" class="text-secondary text-center pad-lg hidden">No drivers yet. Add one.</p>
-            </div>
-          </div>
-        </div>
-
-        <div id="section-sessions" class="portal-section hidden">
-          <div class="portal-card">
-            <h2>Active parking sessions</h2>
-            <div id="sessions-list" class="table-container">
-              <table class="portal-table">
-                <thead>
-                  <tr><th>Driver</th><th>Zone</th><th>License plate</th><th>Started</th><th></th></tr>
-                </thead>
-                <tbody id="sessions-tbody"></tbody>
-              </table>
-              <p id="sessions-empty" class="text-secondary text-center pad-lg">No active sessions</p>
+          <div id="section-users" class="portal-section hidden">
+            <div class="portal-card">
+              <div class="card-header">
+                <h2>Drivers</h2>
+                <button class="btn btn-primary" id="btn-add-user">+ Invite driver</button>
+              </div>
+              <div id="users-list" class="table-container">
+                <table class="portal-table">
+                  <thead>
+                    <tr>
+                      <th>Email</th>
+                      <th>Name</th>
+                      <th>Role</th>
+                      <th>Plate management</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="users-tbody"></tbody>
+                </table>
+                <p id="users-empty" class="text-secondary text-center pad-lg hidden">
+                  No drivers yet. Add one.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div id="section-settings" class="portal-section hidden">
-          <div class="portal-card">
-            <h2>Tenant settings</h2>
+          <div id="section-sessions" class="portal-section hidden">
+            <div class="portal-card">
+              <h2>Active parking sessions</h2>
+              <div id="sessions-list" class="table-container">
+                <table class="portal-table">
+                  <thead>
+                    <tr>
+                      <th>Driver</th>
+                      <th>Zone</th>
+                      <th>License plate</th>
+                      <th>Started</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="sessions-tbody"></tbody>
+                </table>
+                <p id="sessions-empty" class="text-secondary text-center pad-lg">
+                  No active sessions
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div id="section-settings" class="portal-section hidden">
+            <div class="portal-card">
+              <h2>Tenant settings</h2>
+              <div class="form-group">
+                <label>Auto-stop time (all sessions stop)</label>
+                <div class="flex gap-md align-center">
+                  <input
+                    type="time"
+                    id="setting-auto-stop"
+                    class="input-field"
+                    style="max-width: 120px"
+                  />
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="setting-auto-stop-enabled" />
+                    <span>Enabled</span>
+                  </label>
+                </div>
+              </div>
+              <button class="btn btn-primary" id="btn-save-settings">Save</button>
+            </div>
+          </div>
+
+          <div id="section-plates" class="portal-section hidden">
+            <div class="portal-card">
+              <h2>License plate management per driver</h2>
+              <p class="text-secondary mb-lg">
+                Select a driver to add license plates or set restrictions.
+              </p>
+              <div class="form-group mb-lg">
+                <label>Select driver</label>
+                <select id="plates-driver-select" class="input-field">
+                  <option value="">-- Select driver --</option>
+                </select>
+              </div>
+              <div id="plates-driver-panel" class="hidden">
+                <div class="form-group mb-md">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="plates-can-add" />
+                    <span>Driver may add license plates</span>
+                  </label>
+                </div>
+                <div class="form-group mb-md">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="plates-locked" />
+                    <span>Plates locked (driver cannot change anything)</span>
+                  </label>
+                </div>
+                <div class="form-group mb-md">
+                  <label>Max. number of plates (0 = unlimited)</label>
+                  <input
+                    type="number"
+                    id="plates-max"
+                    class="input-field"
+                    min="0"
+                    value="0"
+                    style="max-width: 100px"
+                  />
+                </div>
+                <div class="form-group mb-md">
+                  <label>Usage days (empty = all days)</label>
+                  <div class="flex flex-wrap gap-sm" style="margin-top: 8px">
+                    <label class="checkbox-label" style="margin-right: 8px"
+                      ><input type="checkbox" class="allowed-day" data-day="0" /> Sun</label
+                    >
+                    <label class="checkbox-label" style="margin-right: 8px"
+                      ><input type="checkbox" class="allowed-day" data-day="1" /> Mon</label
+                    >
+                    <label class="checkbox-label" style="margin-right: 8px"
+                      ><input type="checkbox" class="allowed-day" data-day="2" /> Tue</label
+                    >
+                    <label class="checkbox-label" style="margin-right: 8px"
+                      ><input type="checkbox" class="allowed-day" data-day="3" /> Wed</label
+                    >
+                    <label class="checkbox-label" style="margin-right: 8px"
+                      ><input type="checkbox" class="allowed-day" data-day="4" /> Thu</label
+                    >
+                    <label class="checkbox-label" style="margin-right: 8px"
+                      ><input type="checkbox" class="allowed-day" data-day="5" /> Fri</label
+                    >
+                    <label class="checkbox-label"
+                      ><input type="checkbox" class="allowed-day" data-day="6" /> Sat</label
+                    >
+                  </div>
+                </div>
+                <div class="form-group mb-md flex gap-md">
+                  <div>
+                    <label>Allowed start time</label>
+                    <input
+                      type="time"
+                      id="plates-time-start"
+                      class="input-field"
+                      style="max-width: 100px"
+                    />
+                  </div>
+                  <div>
+                    <label>Allowed end time</label>
+                    <input
+                      type="time"
+                      id="plates-time-end"
+                      class="input-field"
+                      style="max-width: 100px"
+                    />
+                  </div>
+                </div>
+                <button class="btn btn-primary mb-lg" id="btn-save-plates-settings">
+                  Save settings
+                </button>
+                <hr class="portal-hr" />
+                <h3 class="mb-md">Add license plates</h3>
+                <div class="flex gap-md mb-md">
+                  <input
+                    type="text"
+                    id="plates-add-input"
+                    class="input-field"
+                    placeholder="1-ABC-123"
+                  />
+                  <button class="btn btn-secondary" id="btn-add-plate-driver">Add</button>
+                </div>
+                <div class="form-group mb-md">
+                  <label>Bulk add (pool cars – one license plate per line)</label>
+                  <textarea
+                    id="plates-bulk-input"
+                    class="input-field"
+                    rows="3"
+                    placeholder="1-ABC-123&#10;2-XYZ-456&#10;3-DEF-789"
+                    style="resize: vertical"
+                  ></textarea>
+                  <button class="btn btn-outline btn-sm mt-sm" id="btn-bulk-add-plates">
+                    Bulk add to this driver
+                  </button>
+                </div>
+                <div id="plates-driver-list" class="plates-list"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="section-auditlog" class="portal-section hidden">
+            <div class="portal-card">
+              <h2>Auditlog</h2>
+              <p class="text-secondary mb-lg">
+                Overview of actions by fleet managers. Compliance and traceability.
+              </p>
+              <div class="table-container">
+                <table class="portal-table">
+                  <thead>
+                    <tr>
+                      <th>Date/time</th>
+                      <th>Action</th>
+                      <th>By</th>
+                      <th>Details</th>
+                    </tr>
+                  </thead>
+                  <tbody id="auditlog-tbody"></tbody>
+                </table>
+                <p id="auditlog-empty" class="text-secondary text-center pad-lg hidden">
+                  No audit log data
+                </p>
+              </div>
+              <button class="btn btn-outline btn-sm mt-md" id="btn-refresh-auditlog">
+                Refresh
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <!-- Modal: Invite driver -->
+      <div id="modal-add-user" class="portal-modal hidden">
+        <div class="modal-content">
+          <h2>Invite driver</h2>
+          <p class="text-secondary mb-lg" style="font-size: 0.9rem">
+            Enter the email address. The driver registers in the parking app and will appear here.
+          </p>
+          <form id="add-user-form">
             <div class="form-group">
-              <label>Auto-stop time (all sessions stop)</label>
-              <div class="flex gap-md align-center">
-                <input type="time" id="setting-auto-stop" class="input-field" style="max-width:120px;">
-                <label class="checkbox-label">
-                  <input type="checkbox" id="setting-auto-stop-enabled">
-                  <span>Enabled</span>
-                </label>
-              </div>
+              <label>Email address</label>
+              <input
+                type="email"
+                id="add-user-email"
+                class="input-field"
+                placeholder="user@company.com"
+                required
+              />
             </div>
-            <button class="btn btn-primary" id="btn-save-settings">Save</button>
-          </div>
+            <div class="form-group">
+              <label>Name (optional)</label>
+              <input type="text" id="add-user-name" class="input-field" placeholder="John Doe" />
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn btn-secondary" id="btn-cancel-add-user">
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary">Save invitation</button>
+            </div>
+          </form>
         </div>
-
-        <div id="section-plates" class="portal-section hidden">
-          <div class="portal-card">
-            <h2>License plate management per driver</h2>
-            <p class="text-secondary mb-lg">Select a driver to add license plates or set restrictions.</p>
-            <div class="form-group mb-lg">
-              <label>Select driver</label>
-              <select id="plates-driver-select" class="input-field">
-                <option value="">-- Select driver --</option>
-              </select>
-            </div>
-            <div id="plates-driver-panel" class="hidden">
-              <div class="form-group mb-md">
-                <label class="checkbox-label">
-                  <input type="checkbox" id="plates-can-add">
-                  <span>Driver may add license plates</span>
-                </label>
-              </div>
-              <div class="form-group mb-md">
-                <label class="checkbox-label">
-                  <input type="checkbox" id="plates-locked">
-                  <span>Plates locked (driver cannot change anything)</span>
-                </label>
-              </div>
-              <div class="form-group mb-md">
-                <label>Max. number of plates (0 = unlimited)</label>
-                <input type="number" id="plates-max" class="input-field" min="0" value="0" style="max-width:100px;">
-              </div>
-              <div class="form-group mb-md">
-                <label>Usage days (empty = all days)</label>
-                <div class="flex flex-wrap gap-sm" style="margin-top:8px;">
-                  <label class="checkbox-label" style="margin-right:8px;"><input type="checkbox" class="allowed-day" data-day="0"> Sun</label>
-                  <label class="checkbox-label" style="margin-right:8px;"><input type="checkbox" class="allowed-day" data-day="1"> Mon</label>
-                  <label class="checkbox-label" style="margin-right:8px;"><input type="checkbox" class="allowed-day" data-day="2"> Tue</label>
-                  <label class="checkbox-label" style="margin-right:8px;"><input type="checkbox" class="allowed-day" data-day="3"> Wed</label>
-                  <label class="checkbox-label" style="margin-right:8px;"><input type="checkbox" class="allowed-day" data-day="4"> Thu</label>
-                  <label class="checkbox-label" style="margin-right:8px;"><input type="checkbox" class="allowed-day" data-day="5"> Fri</label>
-                  <label class="checkbox-label"><input type="checkbox" class="allowed-day" data-day="6"> Sat</label>
-                </div>
-              </div>
-              <div class="form-group mb-md flex gap-md">
-                <div>
-                  <label>Allowed start time</label>
-                  <input type="time" id="plates-time-start" class="input-field" style="max-width:100px;">
-                </div>
-                <div>
-                  <label>Allowed end time</label>
-                  <input type="time" id="plates-time-end" class="input-field" style="max-width:100px;">
-                </div>
-              </div>
-              <button class="btn btn-primary mb-lg" id="btn-save-plates-settings">Save settings</button>
-              <hr class="portal-hr">
-              <h3 class="mb-md">Add license plates</h3>
-              <div class="flex gap-md mb-md">
-                <input type="text" id="plates-add-input" class="input-field" placeholder="1-ABC-123">
-                <button class="btn btn-secondary" id="btn-add-plate-driver">Add</button>
-              </div>
-              <div class="form-group mb-md">
-                <label>Bulk add (pool cars – one license plate per line)</label>
-                <textarea id="plates-bulk-input" class="input-field" rows="3" placeholder="1-ABC-123&#10;2-XYZ-456&#10;3-DEF-789" style="resize:vertical;"></textarea>
-                <button class="btn btn-outline btn-sm mt-sm" id="btn-bulk-add-plates">Bulk add to this driver</button>
-              </div>
-              <div id="plates-driver-list" class="plates-list"></div>
-            </div>
-          </div>
-        </div>
-
-        <div id="section-auditlog" class="portal-section hidden">
-          <div class="portal-card">
-            <h2>Auditlog</h2>
-            <p class="text-secondary mb-lg">Overview of actions by fleet managers. Compliance and traceability.</p>
-            <div class="table-container">
-              <table class="portal-table">
-                <thead>
-                  <tr><th>Date/time</th><th>Action</th><th>By</th><th>Details</th></tr>
-                </thead>
-                <tbody id="auditlog-tbody"></tbody>
-              </table>
-              <p id="auditlog-empty" class="text-secondary text-center pad-lg hidden">No audit log data</p>
-            </div>
-            <button class="btn btn-outline btn-sm mt-md" id="btn-refresh-auditlog">Refresh</button>
-          </div>
-        </div>
-      </main>
-    </div>
-
-    <!-- Modal: Invite driver -->
-    <div id="modal-add-user" class="portal-modal hidden">
-      <div class="modal-content">
-        <h2>Invite driver</h2>
-        <p class="text-secondary mb-lg" style="font-size:0.9rem;">Enter the email address. The driver registers in the parking app and will appear here.</p>
-        <form id="add-user-form">
-          <div class="form-group">
-            <label>Email address</label>
-            <input type="email" id="add-user-email" class="input-field" placeholder="user@company.com" required>
-          </div>
-          <div class="form-group">
-            <label>Name (optional)</label>
-            <input type="text" id="add-user-name" class="input-field" placeholder="John Doe">
-          </div>
-          <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" id="btn-cancel-add-user">Cancel</button>
-            <button type="submit" class="btn btn-primary">Save invitation</button>
-          </div>
-        </form>
+        <div class="modal-backdrop" data-action="close-modal"></div>
       </div>
-      <div class="modal-backdrop" data-action="close-modal"></div>
+
+      <!-- Toast -->
+      <div id="portal-toast" class="portal-toast hidden"></div>
     </div>
 
-    <!-- Toast -->
-    <div id="portal-toast" class="portal-toast hidden"></div>
-  </div>
-
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-  <script src="../firebase-config.js"></script>
-  <script src="portal.js"></script>
-</body>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="../firebase-config.js"></script>
+    <script src="portal.js"></script>
+  </body>
 </html>

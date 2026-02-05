@@ -1,0 +1,29 @@
+---
+scope: project
+priority: high
+alwaysApply: true
+enforced: true
+---
+# GIT AND COMMIT DISCIPLINE
+
+We keep history clean and changes reviewable.
+
+## MANDATORY
+- Keep changes scoped. Do not mix unrelated changes.
+- If you need to do multiple things, split into separate commits.
+
+## BEFORE COMMIT
+- Run the relevant checks (proof, smoke, lint/format if present) and report results.
+- Summarize what changed and why in human terms.
+
+## COMMIT MESSAGE
+- Use clear prefixes where sensible (fix:, chore:, docs:, test:).
+- Mention the area (e.g. e2e, rules, docs) so history is searchable.
+
+## NO SURPRISES
+- Do not introduce extra files or refactors unless required by the task.
+- If conflicts happen, explain resolution and keep intent minimal.
+
+## VERIFICATION
+- For UI changes: verify in browser and ensure proof gates are respected.
+- For logic/backend change: Tests pass or you have repro + fix + verification evidence.

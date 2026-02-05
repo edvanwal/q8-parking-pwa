@@ -38,7 +38,7 @@
     "transaction_fee_excl_vat": 0.25,
     "transaction_fee_vat_rate": 21,
     "transaction_fee_vat_amount": 0.05,
-    "transaction_fee_incl_vat": 0.30
+    "transaction_fee_incl_vat": 0.3
   },
   {
     "session_id": "ps-def456",
@@ -116,9 +116,9 @@ ps-def456,NL-FUEL-67890,fuel_card,usr-uuid-2,Piet Pietersen,piet@company.nl,tena
 
 ## Payment Request Summary (derived from exports)
 
-| Line item                    | VAT treatment | Amount (excl) | VAT       | Amount (incl) |
-|-----------------------------|--------------|---------------|-----------|---------------|
-| Parking (sessions)          | VAT exempt   | 3.75          | 0         | 3.75          |
-| Transaction fees            | 21% VAT      | 0.25          | 0.05      | 0.30          |
-| Monthly subscription        | 21% VAT      | 9.95          | 2.09      | 12.04         |
-| **Total**                   |              | **13.95**     | **2.14**  | **16.09**     |
+| Line item            | VAT treatment | Amount (excl) | VAT      | Amount (incl) |
+| -------------------- | ------------- | ------------- | -------- | ------------- |
+| Parking (sessions)   | VAT exempt    | 3.75          | 0        | 3.75          |
+| Transaction fees     | 21% VAT       | 0.25          | 0.05     | 0.30          |
+| Monthly subscription | 21% VAT       | 9.95          | 2.09     | 12.04         |
+| **Total**            |               | **13.95**     | **2.14** | **16.09**     |

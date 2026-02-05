@@ -1,0 +1,53 @@
+---
+scope: project
+priority: high
+alwaysApply: true
+enforced: true
+---
+
+# AGENT HANDOVER DISCIPLINE
+
+Nieuwe agents moeten altijd volledige context hebben en niet vastlopen.
+
+---
+
+## Bron van waarheid voor agent context
+- **docs/AGENT_HANDOVER.md** is verplicht en moet actueel zijn.
+- **docs/BLOCKERS.md** is verplicht voor alles wat voortgang blokkeert.
+
+---
+
+## Definitie "iteratie"
+Elke werkcyclus waarin je 1 of meer commits maakt of een feature contract uitbreidt.
+
+---
+
+## Verplicht na elke iteratie (non-negotiable)
+
+**1) Update docs/AGENT_HANDOVER.md met:**
+- Huidige status in maximaal 10 regels
+- Wat is toegevoegd of veranderd
+- Welke scripts zijn gates en wat is de laatste uitslag (preflight, test:e2e:proof)
+- Waar de belangrijkste code zit (bestanden)
+- Wat de volgende 3 acties zijn, in volgorde
+
+**2) Update docs/BLOCKERS.md met:**
+- Blocker titel
+- Impact
+- Repro stappen
+- Waar onderzocht (filepad en functie)
+- Wat nog nodig is om door te kunnen
+
+---
+
+## Verbod
+- Een agent mag **niet** stoppen omdat iets onduidelijk is. Bij twijfel: log als blocker en ga door met de volgende feature.
+- Een agent mag Edwin **niet** vragen om context als het antwoord waarschijnlijk in docs/AGENT_HANDOVER.md, docs/FUNCTIONAL_CANON.md of SYSTEM_STATUS.md staat.
+
+---
+
+## Output discipline
+Elke agent output moet minimaal bevatten:
+- Laatste preflight resultaat
+- Top blockers
+- Pad naar bewijs-artifacts als die bestaan (bijv. test-output/e2e-proof)

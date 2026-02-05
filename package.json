@@ -6,6 +6,9 @@
     "screenshot": "node scripts/screenshot.js",
     "sync": "node scripts/sync-to-public.js",
     "test:e2e:proof": "node scripts/e2e-proof.mjs",
+    "preflight": "node scripts/canon-preflight.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "deploy": "npm run sync && firebase deploy",
     "deploy:hosting": "firebase deploy --only hosting",
     "deploy:firestore": "firebase deploy --only firestore",
@@ -17,7 +20,8 @@
     "firebase-tools": "^13.0.0"
   },
   "devDependencies": {
-    "playwright": "^1.49.0"
+    "playwright": "^1.49.0",
+    "prettier": "^3.4.2"
   },
   "cdnDependencies": {
     "firebase": "10.7.1",

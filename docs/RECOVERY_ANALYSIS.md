@@ -28,13 +28,13 @@
 
 ### Key Differences
 
-| Aspect | Original | Current |
-|--------|----------|---------|
-| Maps API | v=beta, AdvancedMarkerElement | v=weekly, PriceOverlay (OverlayView) |
-| mapId | Required ('4b360773d325776d') | None |
-| Debug | Always-on screen console | Console only on localhost |
-| Search bar ID | ui-idle-search | ui-search-bar (wrong in ui.js) |
-| Marker style | Custom HTML in AdvancedMarkerElement | PriceOverlay div |
+| Aspect        | Original                             | Current                              |
+| ------------- | ------------------------------------ | ------------------------------------ |
+| Maps API      | v=beta, AdvancedMarkerElement        | v=weekly, PriceOverlay (OverlayView) |
+| mapId         | Required ('4b360773d325776d')        | None                                 |
+| Debug         | Always-on screen console             | Console only on localhost            |
+| Search bar ID | ui-idle-search                       | ui-search-bar (wrong in ui.js)       |
+| Marker style  | Custom HTML in AdvancedMarkerElement | PriceOverlay div                     |
 
 ### Known Issues
 
@@ -89,6 +89,6 @@
 ## Next Steps
 
 1. Test `/rebuild/` locally to verify Firestore + Maps work
-2. If main app fails, enable `Q8_DIAG` and check console for DIAG_* logs
+2. If main app fails, enable `Q8_DIAG` and check console for DIAG\_\* logs
 3. Ensure Google Maps API key allows `*.web.app` and `localhost`
 4. Consider fixing `ui-search-bar` → `ui-idle-search` in ui.js if search bar visibility is broken

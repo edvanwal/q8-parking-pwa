@@ -7,6 +7,7 @@ Isolated clean implementation. No impact on main app.
 **Usage**: Open `index.html` via local server (e.g. `npx serve ..` then `/rebuild/`).
 
 **What it does**:
+
 - Loads Firebase + Firestore
 - Fetches zones from `zones` collection
 - Loads Google Maps
@@ -14,5 +15,6 @@ Isolated clean implementation. No impact on main app.
 - No login, no parking, no extra features
 
 **Files**:
+
 - `index.html` - Single file with inline script
 - Uses `../firebase-config.js` and `../design-system.css`

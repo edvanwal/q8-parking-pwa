@@ -16,12 +16,12 @@ Het **Nationaal Parkeer Register (NPR)** is een landelijke database met parkeerr
 
 ### 2.1 Nationaal Parkeer Register (NPR)
 
-| Aspect | Beschrijving |
-|--------|--------------|
-| **Definitie** | Landelijke database waarin alle actuele parkeerrechten **op kenteken** geregistreerd staan. |
-| **Beheer** | RDW ontwikkelt en beheert het systeem; SHPV heeft een contract met de RDW voor deze taken. |
-| **Doel** | Basisinfrastructuur voor gemeenten om parkeerdiensten te digitaliseren: mobiel parkeren, handhaving, vergunningen, parkeerautomaten, garageparkeren. |
-| **Bron** | [nationaalparkeerregister.nl](https://www.nationaalparkeerregister.nl/over-npr) |
+| Aspect        | Beschrijving                                                                                                                                         |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Definitie** | Landelijke database waarin alle actuele parkeerrechten **op kenteken** geregistreerd staan.                                                          |
+| **Beheer**    | RDW ontwikkelt en beheert het systeem; SHPV heeft een contract met de RDW voor deze taken.                                                           |
+| **Doel**      | Basisinfrastructuur voor gemeenten om parkeerdiensten te digitaliseren: mobiel parkeren, handhaving, vergunningen, parkeerautomaten, garageparkeren. |
+| **Bron**      | [nationaalparkeerregister.nl](https://www.nationaalparkeerregister.nl/over-npr)                                                                      |
 
 **Diensten die het NPR mogelijk maakt:**
 
@@ -54,14 +54,14 @@ Belangrijk: **Handhaving** vraagt parkeerrechten op via een **beveiligde verbind
 
 De app gebruikt momenteel uitsluitend deze bron. De data zijn opgebouwd uit **meerdere gekoppelde datasets**:
 
-| Dataset | Resource ID | Rol |
-|--------|-------------|-----|
-| **Gebied** | b3us-f26s | Gebiedsspecificaties (areaid, areamanagerid, areadesc, areageometryaswgs84) |
-| **Regeling-mapping** | qtex-qwd8 | Koppelt gebied → regeling (regulationid), met startdatearearegulation / enddatearearegulation |
-| **Tijdvak** | ixf8-gtwq | Per regeling: dag (MAANDAG e.d.), start-/eindtijd (0–2400), farecalculationcode, **maxdurationright** |
-| **Tariefdeel** | 534e-5vdg | Per farecalculationcode: amountfarepart, stepsizefarepart, startdatefarepart, enddatefarepart |
-| **Tariefberekening** | nfzq-8g7y | Omschrijving per farecalculationcode (farecalculationdesc) |
-| **Regeling-beschrijving** | yefi-qfiq | regulationdesc, regulationtype |
+| Dataset                   | Resource ID | Rol                                                                                                   |
+| ------------------------- | ----------- | ----------------------------------------------------------------------------------------------------- |
+| **Gebied**                | b3us-f26s   | Gebiedsspecificaties (areaid, areamanagerid, areadesc, areageometryaswgs84)                           |
+| **Regeling-mapping**      | qtex-qwd8   | Koppelt gebied → regeling (regulationid), met startdatearearegulation / enddatearearegulation         |
+| **Tijdvak**               | ixf8-gtwq   | Per regeling: dag (MAANDAG e.d.), start-/eindtijd (0–2400), farecalculationcode, **maxdurationright** |
+| **Tariefdeel**            | 534e-5vdg   | Per farecalculationcode: amountfarepart, stepsizefarepart, startdatefarepart, enddatefarepart         |
+| **Tariefberekening**      | nfzq-8g7y   | Omschrijving per farecalculationcode (farecalculationdesc)                                            |
+| **Regeling-beschrijving** | yefi-qfiq   | regulationdesc, regulationtype                                                                        |
 
 **Berekening uurtarief (in de pipeline):**
 
@@ -100,11 +100,11 @@ Voor dynamische data: CROW – Standard for the Publication of Dynamic Parking D
 
 ### 3.4 Overzicht databronnen
 
-| Bron | Type | Gebruik in app | Toegang |
-|------|------|-----------------|---------|
-| opendata.rdw.nl (Socrata) | Statisch: gebieden, regelingen, tijdvakken, tarieven | Ja (fetch_rdw_data.py → Firestore) | Open, geen API-key |
-| npropendata.rdw.nl (SPDP) | Statisch + dynamisch per facility | Nee | Open |
-| NPR (kenteken/parkeerrechten) | Realtime parkeerrechten voor handhaving/mobiel parkeren | Nee | Beveiligd (certificaat); alleen voor gemeenten/providers |
+| Bron                          | Type                                                    | Gebruik in app                     | Toegang                                                  |
+| ----------------------------- | ------------------------------------------------------- | ---------------------------------- | -------------------------------------------------------- |
+| opendata.rdw.nl (Socrata)     | Statisch: gebieden, regelingen, tijdvakken, tarieven    | Ja (fetch_rdw_data.py → Firestore) | Open, geen API-key                                       |
+| npropendata.rdw.nl (SPDP)     | Statisch + dynamisch per facility                       | Nee                                | Open                                                     |
+| NPR (kenteken/parkeerrechten) | Realtime parkeerrechten voor handhaving/mobiel parkeren | Nee                                | Beveiligd (certificaat); alleen voor gemeenten/providers |
 
 ---
 
@@ -159,17 +159,17 @@ Voor dynamische data: CROW – Standard for the Publication of Dynamic Parking D
 
 ## 6. Huidige app vs. live-omgeving – gap-analyse
 
-| Aspect | Huidige situatie | Vereiste voor live |
-|--------|-------------------|--------------------|
-| **Bron zones/tarieven** | Alleen opendata.rdw.nl (Socrata), vaste set gemeenten | Keuze: zelfde bron uitbreiden of aanvullen met npropendata.rdw.nl |
-| **Dynamische data** | Niet gebruikt | Optioneel: bezetting garages/P+R (SPDP) |
-| **Actualiteit data** | Firestore wordt gevuld door pipeline (fetch_rdw_data.py); geen gegarandeerde refresh-frequentie | Duidelijke refresh-strategie en eventueel caching/ETag |
-| **Tariefweergave** | rates als string; step > 60 weggelaten; alleen “vandaag” | Zie ONDERZOEKSPRAPPORT_TARIEVEN: o.a. rate_numeric, dagkaarten, disclaimer |
-| **Geschatte kosten** | Geïmplementeerd (ONDERZOEKSPRAPPORT); calculateCost + disclaimer | Behouden en monitoren |
-| **Kenteken** | Validatie + RDW lookup (open data) | Geen NPR-koppeling nodig voor alleen informatie |
-| **Foutafhandeling** | Beperkt (RDW timeouts, lege zones) | Duidelijke foutmeldingen, retry, fallback |
-| **Rate limiting** | Geen client-side throttling (RDW) | Overwegen bij veel verkeer (zie KENTEKEN_VALIDATIE_README) |
-| **Documentatie** | AGENT_CONTEXT, WORKING_RULES, rapporten | Dit rapport + aanbevelingen voor agent |
+| Aspect                  | Huidige situatie                                                                                | Vereiste voor live                                                         |
+| ----------------------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| **Bron zones/tarieven** | Alleen opendata.rdw.nl (Socrata), vaste set gemeenten                                           | Keuze: zelfde bron uitbreiden of aanvullen met npropendata.rdw.nl          |
+| **Dynamische data**     | Niet gebruikt                                                                                   | Optioneel: bezetting garages/P+R (SPDP)                                    |
+| **Actualiteit data**    | Firestore wordt gevuld door pipeline (fetch_rdw_data.py); geen gegarandeerde refresh-frequentie | Duidelijke refresh-strategie en eventueel caching/ETag                     |
+| **Tariefweergave**      | rates als string; step > 60 weggelaten; alleen “vandaag”                                        | Zie ONDERZOEKSPRAPPORT_TARIEVEN: o.a. rate_numeric, dagkaarten, disclaimer |
+| **Geschatte kosten**    | Geïmplementeerd (ONDERZOEKSPRAPPORT); calculateCost + disclaimer                                | Behouden en monitoren                                                      |
+| **Kenteken**            | Validatie + RDW lookup (open data)                                                              | Geen NPR-koppeling nodig voor alleen informatie                            |
+| **Foutafhandeling**     | Beperkt (RDW timeouts, lege zones)                                                              | Duidelijke foutmeldingen, retry, fallback                                  |
+| **Rate limiting**       | Geen client-side throttling (RDW)                                                               | Overwegen bij veel verkeer (zie KENTEKEN_VALIDATIE_README)                 |
+| **Documentatie**        | AGENT_CONTEXT, WORKING_RULES, rapporten                                                         | Dit rapport + aanbevelingen voor agent                                     |
 
 ---
 
@@ -236,4 +236,4 @@ De volgende aanbevelingen zijn zo geformuleerd dat een agent ze direct kan toepa
 
 ---
 
-*Einde rapport*
+_Einde rapport_
