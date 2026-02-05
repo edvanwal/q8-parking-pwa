@@ -1,0 +1,27 @@
+---
+scope: project
+priority: high
+alwaysApply: true
+enforced: true
+---
+
+# AUTOPILOT WORKFLOW
+
+Doel: zelfstandig doorwerken zonder Edwin te belasten, met harde gates en bewijs.
+
+## LOOP
+Herhaal deze cyclus:
+1) Inventariseer feature of wijziging (user-visible of technisch).
+2) Werk docs/FUNCTIONAL_CANON.md bij (scope, status, acceptatiecriteria).
+3) Run gates (minimaal preflight en format:check; proof als user-visible).
+4) Fix 1 root cause per keer, verifieer, herhaal.
+5) Update docs/AGENT_HANDOVER.md en docs/BLOCKERS.md.
+6) Commit kleine, logisch afgebakende changes.
+
+## STOPCRITERIA
+- Stop met vragen om human review tot 12_CANON_GATING "READY" is.
+- Als je 2 iteraties achter elkaar geen vooruitgang boekt: maak een blocker met concrete repro en onderzoekspaden, en ga door met andere feature.
+
+## VERBOD
+- Geen "het is klaar" zonder gate-uitslagen en bewijs-pad.
+- Geen grote refactors of styling rework zonder expliciete opdracht.

@@ -1,0 +1,19 @@
+---
+scope: project
+priority: high
+alwaysApply: true
+enforced: true
+---
+
+# GIT AND COMMIT DISCIPLINE
+
+## BRANCH HYGIENE
+- Houd branches smal: alleen changes die bij elkaar horen.
+- Als er extra commits in een PR-branch zitten die niet gevraagd zijn: stop en maak een nieuwe branch vanaf main en cherry-pick alleen wat nodig is.
+
+## COMMITS
+- Eén change-set per commit, met duidelijke message.
+- Grote format-wijzigingen alleen in een aparte commit met "chore(format): …".
+
+## OUTPUT
+- Rapporteer altijd: git status -sb en git log --oneline origin/main..HEAD (of relevante base).

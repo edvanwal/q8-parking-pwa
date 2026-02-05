@@ -1,0 +1,24 @@
+---
+scope: project
+priority: high
+alwaysApply: true
+enforced: true
+---
+
+# STYLING AND UI
+
+Alle UI styling gebruikt het design system. Geen losse kleuren of spacing.
+
+## VERPLICHT
+- Tokens gebruiken: gebruik CSS variables uit design-system.css (:root). Geen hardcoded hex/rgb voor kleuren, geen magic numbers voor spacing/radii.
+- Geen inline theme/layout: geen style="color: ...", style="margin: ...", etc. Gebruik classes die tokens gebruiken.
+- Single source: globale UI styles in design-system.css. Geen tweede globale stylesheet zonder ADR.
+- E2E targets: elementen die door proof/E2E worden gebruikt moeten stabiele data-testid of id hebben. Niet hernoemen zonder proof te updaten.
+
+## CLASS NAMING
+- Gebruik bestaande component-classes waar mogelijk.
+- Nieuwe UI: kies consistente prefix (bijv. sheet-*, map-*, menu-*), en documenteer kort in directives of comments.
+
+## VERIFICATIE
+- Na UI change: verify in browser (20_BROWSER_VERIFICATION) en proof moet PASS als dit user-visible is.
+- Zoek op style=" in HTML/JS en verwijder theme/layout inline styles.

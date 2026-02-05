@@ -1,0 +1,31 @@
+---
+scope: project
+priority: high
+alwaysApply: true
+enforced: true
+---
+
+# CANON GATING
+
+De Functional Canon is de bron van waarheid: docs/FUNCTIONAL_CANON.md.
+
+## VERBOD
+- Zeg nooit "kijk even in de browser" of "het is klaar" als:
+  - er user-visible features in de canon op 🟡 of ❌ staan, of
+  - er gates openstaan die in de canon genoemd zijn.
+- Edwin kijkt pas naar de app als de canon groen is, of een feature expliciet als manual-only is goedgekeurd.
+
+## BIJ ELKE USER-VISIBLE WIJZIGING
+- Update de canon in dezelfde change.
+- Geen ✅ zonder geautomatiseerde dekking of expliciete manual-only afspraak.
+
+## READY FOR HUMAN REVIEW
+- Canon-index: alle user-visible features ✅ of manual-only.
+- Checks: alle genoemde proof/smoke-checks PASS.
+- Deviations: geen open blocking deviations tenzij expliciet toegestaan.
+
+## OUTPUT
+Voor je om human review vraagt rapporteer je:
+- Canon-status (✅/🟡/❌)
+- Welke checks zijn gedraaid
+- Bewijs-pad (trace/video/screenshots)

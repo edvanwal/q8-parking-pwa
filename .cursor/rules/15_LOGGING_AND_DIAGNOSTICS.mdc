@@ -1,0 +1,22 @@
+---
+scope: project
+priority: high
+alwaysApply: true
+enforced: true
+---
+
+# LOGGING AND DIAGNOSTICS
+
+Doel: sneller root cause vinden zonder giswerk.
+
+## VERPLICHT BIJ BUGFIXES
+- Log altijd: user action, state vóór en na, en zichtbare UI uitkomst.
+- Voeg logs toe op de plek waar de state verandert (niet overal).
+- Voeg een korte "negatieve check" toe: wat mag niet gebeuren.
+
+## OPRUIMEN
+- Tijdelijke debug logs mogen blijven zolang ze niet spammen.
+- Als logs alleen voor tijdelijke diagnose waren: verwijder ze in dezelfde commit of in een direct opvolgende "cleanup" commit.
+
+## RAPPORTAGE
+- In je update: repro stappen + waar je hebt gekeken (bestandsnaam + sectie) + wat je hebt gemeten.
