@@ -16,5 +16,8 @@ jobs:
       - name: Build (sync to public)
         run: npm run sync
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
       - name: E2E proof
         run: npm run test:e2e:proof
