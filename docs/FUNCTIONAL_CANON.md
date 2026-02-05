@@ -3,11 +3,13 @@
 **Doel:** Eén bron van waarheid voor "wat moet werken" en "hoe we het verifiëren". Alle user-facing gedrag en acceptatiecriteria staan hier; code en tests moeten hiermee in lijn zijn.
 
 **Gebruik:**
+
 - Bij wijzigingen aan gedrag: canon eerst raadplegen, daarna aanpassen in dezelfde change.
 - Bij bugs: canon gebruiken om te bepalen wat de verwachting is.
 - Bij E2E/proof: canon bepaalt welke stappen en checks vereist zijn.
 
 **Statuslegende:**
+
 - ✅ Feature gedefinieerd, geïmplementeerd, en geautomatiseerd gecontroleerd (proof/unit/E2E).
 - 🟡 Feature gedefinieerd en geïmplementeerd; geautomatiseerde check ontbreekt of dekt niet alle criteria.
 - ❌ Niet geïmplementeerd of bewust uit scope.
@@ -24,19 +26,21 @@
 
 ## Feature-index
 
-| Feature-ID    | Naam                   | User-visible? | Backend? | Geautomatiseerde check | Owner   | Status | Waarom nog niet ✅ |
-|---------------|------------------------|---------------|----------|-------------------------|---------|--------|---------------------|
-| PARK-TIME-001 | Parkeertijd aanpassen  | Ja            | Nee      | E2E proof stap 4–7 (plus + close); min handmatig | Product | ✅     | — |
-| MAP-001       | Kaart + zones + marker | Ja            | Ja       | E2E proof (map-root, zone click) | Product | manual-only | Geen aparte E2E gate; onderdeel van proof-flow. |
-| AUTH-001      | Login / logout / register / forgot password | Ja | Ja      | — | Product | manual-only | Auth door Firebase; geen E2E. |
-| NAV-001       | Navigatie (menu, nav-to, screens) | Ja | Nee | — | Product | manual-only | Handmatig getest. |
-| ZONE-SHEET-002| Zone-sheet openen/sluiten | Ja | Nee | E2E proof stap 4, 7 | Product | manual-only | Dekking in proof; geen aparte feature-row nodig. |
-| PLATES-001    | Kentekens beheren (add/edit/delete/default) | Ja | Ja | — | Product | manual-only | Geen E2E. |
-| HISTORY-001   | Historie + filters + export CSV/print | Ja | Nee | — | Product | manual-only | Geen E2E. |
-| ACTIVE-001    | Actieve sessie (verleng/verkort eindtijd, END PARKING) | Ja | Nee | — | Product | manual-only | Geen E2E. |
-| FAVORITES-001 | Favorieten (toggle, remove, edit name) | Ja | Nee | — | Product | manual-only | Geen E2E. |
-| SETTINGS-001  | Taal, dark mode, onboarding dismiss | Ja | Nee | — | Product | manual-only | Geen E2E. |
-| TOAST-001     | Toast tonen/dismiss | Ja | Nee | — | Product | manual-only | Geen E2E. |
+| Feature-ID     | Naam                                                   | User-visible? | Backend? | Geautomatiseerde check                           | Owner   | Status      | Waarom nog niet ✅                               |
+| -------------- | ------------------------------------------------------ | ------------- | -------- | ------------------------------------------------ | ------- | ----------- | ------------------------------------------------ |
+| PARK-TIME-001  | Parkeertijd aanpassen                                  | Ja            | Nee      | E2E proof stap 4–7 (plus + close); min handmatig | Product | ✅          | —                                                |
+| MAP-001        | Kaart + zones + marker                                 | Ja            | Ja       | E2E proof (map-root, zone click)                 | Product | manual-only | Geen aparte E2E gate; onderdeel van proof-flow.  |
+| AUTH-001       | Login / logout / register / forgot password            | Ja            | Ja       | E2E proof stap 9 (logout → view-login)           | Product | manual-only | Proof dekt logout → login state.                 |
+| NAV-001        | Navigatie (menu, nav-to, screens)                      | Ja            | Nee      | E2E proof stap 8 (menu open + menu-item-parking) | Product | manual-only | Proof dekt menu open + item zichtbaar.           |
+| ZONE-SHEET-002 | Zone-sheet openen/sluiten                              | Ja            | Nee      | E2E proof stap 4, 7                              | Product | manual-only | Dekking in proof; geen aparte feature-row nodig. |
+| PLATES-001     | Kentekens beheren (add/edit/delete/default)            | Ja            | Ja       | —                                                | Product | manual-only | Geen E2E.                                        |
+| HISTORY-001    | Historie + filters + export CSV/print                  | Ja            | Nee      | —                                                | Product | manual-only | Geen E2E.                                        |
+| ACTIVE-001     | Actieve sessie (verleng/verkort eindtijd, END PARKING) | Ja            | Nee      | —                                                | Product | manual-only | Geen E2E.                                        |
+| FAVORITES-001  | Favorieten (toggle, remove, edit name)                 | Ja            | Nee      | —                                                | Product | manual-only | Geen E2E.                                        |
+| SETTINGS-001   | Taal, dark mode, onboarding dismiss                    | Ja            | Nee      | —                                                | Product | manual-only | Geen E2E.                                        |
+| TOAST-001      | Toast tonen/dismiss                                    | Ja            | Nee      | —                                                | Product | manual-only | Geen E2E.                                        |
+
+**E2E proof selectors (menu/logout):** `data-testid="btn-menu-open"` (menu button), `data-testid="side-menu"` (nav, open state via `.open`), `data-testid="menu-item-parking"` (eerste menu-item), `data-testid="btn-logout"` (logout button). Asserties: side-menu zichtbaar na open; view-login zichtbaar na logout.
 
 ---
 
@@ -59,7 +63,7 @@ De gebruiker kan in het zone-detailscherm (bottom sheet) de gewenste parkeertijd
 - **US1:** Als gebruiker wil ik de parkeertijd verhogen met de plus-knop zodat ik een langere duur kan kiezen (stappen 30 of 60 min, afhankelijk van huidige waarde).
 - **US2:** Als gebruiker wil ik de parkeertijd verlagen met de min-knop zodat ik een kortere duur of "Tot stoppen" kan kiezen.
 - **US3:** Als gebruiker wil ik een duidelijke melding zien wanneer ik de maximale duur van de zone bereik (toast + optioneel max-bericht onder de duur).
-- **TBD:** Of "Standaard duur"-pills (Until stopped, 1u, 2u, 3u) de *huidige* sheet-duur direct zetten of alleen de default voor volgende keer: in code zetten de pills alleen `defaultDurationMinutes`; de huidige `duration` in de sheet wordt alleen bij openen van de sheet uit default gehaald. Zie `public/app.js` (set-default-duration) en `public/services.js` (tryOpenOverlay, duration uit defaultDur).
+- **TBD:** Of "Standaard duur"-pills (Until stopped, 1u, 2u, 3u) de _huidige_ sheet-duur direct zetten of alleen de default voor volgende keer: in code zetten de pills alleen `defaultDurationMinutes`; de huidige `duration` in de sheet wordt alleen bij openen van de sheet uit default gehaald. Zie `public/app.js` (set-default-duration) en `public/services.js` (tryOpenOverlay, duration uit defaultDur).
 
 ### Niveau 3: UI-contract (wat moet ik zien gebeuren)
 
@@ -91,13 +95,14 @@ Op basis van de huidige code:
 
 - De pills ("Until stopped", "1u", "2u", "3u") zetten **alleen** `defaultDurationMinutes` in state (en persistentie). Zie `public/app.js` case `set-default-duration`: alleen `S.update({ defaultDurationMinutes: capped })` en `S.saveDefaultDuration()`.
 - De sheet haalt de **huidige** duur alleen bij **openen** van de sheet uit die default: `public/services.js` in `tryOpenOverlay('sheet-zone', contextData)` wordt `duration` uit `defaultDur` berekend en meegegeven in `S.update({ …, duration })`.
-- **Gevolg:** Klikken op een pill **terwijl de sheet open is** verandert **niet** de getoonde duur in `#val-duration`. Alleen de default voor de *volgende* keer dat je een zone opent wordt aangepast. De getoonde duur verandert pas als je de sheet sluit en opnieuw opent (of een andere zone opent).
+- **Gevolg:** Klikken op een pill **terwijl de sheet open is** verandert **niet** de getoonde duur in `#val-duration`. Alleen de default voor de _volgende_ keer dat je een zone opent wordt aangepast. De getoonde duur verandert pas als je de sheet sluit en opnieuw opent (of een andere zone opent).
 
 **User-visible expectation:** Een gebruiker die op "2u" klikt terwijl de sheet open staat, kan verwachten dat de duur direct naar 2u gaat; in de huidige implementatie gebeurt dat niet.
 
-**Risk/confusion:** Gebruikers kunnen denken dat de pill de *huidige* keuze zet; dat leidt tot verwarring als ze na het klikken op "2u" nog "0h 30m" zien tot ze de sheet sluiten en weer openen.
+**Risk/confusion:** Gebruikers kunnen denken dat de pill de _huidige_ keuze zet; dat leidt tot verwarring als ze na het klikken op "2u" nog "0h 30m" zien tot ze de sheet sluiten en weer openen.
 
-**Acceptatiecriterium (contract vastleggen):**  
+**Acceptatiecriterium (contract vastleggen):**
+
 - **PILL-1:** Terwijl de zone-sheet open is: na klik op een pill (bijv. "2u") verandert de tekst van `#val-duration` **niet**. PASS: tekst ongewijzigd. FAIL: tekst verandert direct. (Als product later kiest om pills wél de huidige duur te zetten, moet dit criterium en de UX-tekst hierboven worden aangepast.)
 
 ### Niveau 4: Technisch contract
@@ -124,38 +129,38 @@ Op basis van de huidige code:
 
 **A) Menselijk zichtbaar (browser)**
 
-| # | Criterium | Element (selector) | Verwachting | PASS/FAIL |
-|---|-----------|--------------------|-------------|-----------|
-| A1 | Plus verhoogt duur | `[data-testid="btn-zone-plus"]`, `#val-duration` | Na klik plus: tekst van `#val-duration` wijzigt (bijv. "2h 00m" → "2h 30m" of "0h 30m"). | PASS: tekst veranderd. FAIL: ongewijzigd. |
-| A2 | Min verlaagt duur | `.sheet-duration-control [data-delta="-15"]`, `#val-duration` | Na klik min: duur daalt of wordt 0 ("Until stopped"). | PASS: tekst daalt of "Until stopped". FAIL: stijgt of blijft gelijk waar dalen verwacht. |
-| A3 | Format 0 | `#val-duration` | Bij duration 0: exact "Until stopped". | PASS: tekst is "Until stopped". FAIL: anders. |
-| A4 | Format Xh YYm | `#val-duration` | Bij duration > 0: vorm "Xh YYm" of "X" (gehele uren), minuten met leading zero (bijv. "0h 30m"). | PASS: herkenbaar formaat. FAIL: decimaal of ander formaat. |
-| A5 | Max-toast | (toast) | Bij verhogen tot zone-max: toast met "Max parking duration reached" of zone-max uren. | PASS: toast zichtbaar. FAIL: geen toast bij max. |
-| A6 | Plus gedimd bij max | `[data-testid="btn-zone-plus"]` of `.sheet-duration-control [data-delta="15"]` | Bij duration === zone-max: plus-knop opacity 0.3 (of gelijkwaardig visueel gedimd). | PASS: gedimd. FAIL: vol opacity. |
+| #   | Criterium           | Element (selector)                                                             | Verwachting                                                                                      | PASS/FAIL                                                                                |
+| --- | ------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| A1  | Plus verhoogt duur  | `[data-testid="btn-zone-plus"]`, `#val-duration`                               | Na klik plus: tekst van `#val-duration` wijzigt (bijv. "2h 00m" → "2h 30m" of "0h 30m").         | PASS: tekst veranderd. FAIL: ongewijzigd.                                                |
+| A2  | Min verlaagt duur   | `.sheet-duration-control [data-delta="-15"]`, `#val-duration`                  | Na klik min: duur daalt of wordt 0 ("Until stopped").                                            | PASS: tekst daalt of "Until stopped". FAIL: stijgt of blijft gelijk waar dalen verwacht. |
+| A3  | Format 0            | `#val-duration`                                                                | Bij duration 0: exact "Until stopped".                                                           | PASS: tekst is "Until stopped". FAIL: anders.                                            |
+| A4  | Format Xh YYm       | `#val-duration`                                                                | Bij duration > 0: vorm "Xh YYm" of "X" (gehele uren), minuten met leading zero (bijv. "0h 30m"). | PASS: herkenbaar formaat. FAIL: decimaal of ander formaat.                               |
+| A5  | Max-toast           | (toast)                                                                        | Bij verhogen tot zone-max: toast met "Max parking duration reached" of zone-max uren.            | PASS: toast zichtbaar. FAIL: geen toast bij max.                                         |
+| A6  | Plus gedimd bij max | `[data-testid="btn-zone-plus"]` of `.sheet-duration-control [data-delta="15"]` | Bij duration === zone-max: plus-knop opacity 0.3 (of gelijkwaardig visueel gedimd).              | PASS: gedimd. FAIL: vol opacity.                                                         |
 
 **B) Technisch (console, network, state)**
 
-| # | Criterium | Check | PASS/FAIL |
-|---|-----------|--------|-----------|
-| B1 | Geen backend-call bij +/− | Network tab: geen request bij klik plus/min. | PASS: geen. FAIL: wel request. |
-| B2 | State consistent | Na klik: `Q8.State.duration` === waarde die in `#val-duration` getoond wordt (in minuten). | PASS: gelijk. FAIL: verschil. |
-| B3 | Geen errors | Console: geen uncaught errors bij klik plus/min. | PASS: geen. FAIL: error. |
+| #   | Criterium                 | Check                                                                                      | PASS/FAIL                      |
+| --- | ------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------ |
+| B1  | Geen backend-call bij +/− | Network tab: geen request bij klik plus/min.                                               | PASS: geen. FAIL: wel request. |
+| B2  | State consistent          | Na klik: `Q8.State.duration` === waarde die in `#val-duration` getoond wordt (in minuten). | PASS: gelijk. FAIL: verschil.  |
+| B3  | Geen errors               | Console: geen uncaught errors bij klik plus/min.                                           | PASS: geen. FAIL: error.       |
 
 **C) Automatisch testbaar (E2E/proof)**
 
-| # | Criterium | Proof-stap | PASS/FAIL |
-|---|-----------|------------|-----------|
-| C1 | Duration verandert na plus | Proof stap 5–6: lees `[data-testid="duration-value"]`, klik `[data-testid="btn-zone-plus"]`, wacht tot `#val-duration` tekst != oude waarde. | PASS: stap 6 groen. FAIL: "Duration changed" faalt. |
-| C2 | Selectors stabiel | Proof gebruikt `#val-duration`, `[data-testid="duration-value"]`, `[data-testid="btn-zone-plus"]`. | PASS: geen selector-wijziging zonder proof-update. FAIL: proof breekt door selector. |
+| #   | Criterium                  | Proof-stap                                                                                                                                   | PASS/FAIL                                                                            |
+| --- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| C1  | Duration verandert na plus | Proof stap 5–6: lees `[data-testid="duration-value"]`, klik `[data-testid="btn-zone-plus"]`, wacht tot `#val-duration` tekst != oude waarde. | PASS: stap 6 groen. FAIL: "Duration changed" faalt.                                  |
+| C2  | Selectors stabiel          | Proof gebruikt `#val-duration`, `[data-testid="duration-value"]`, `[data-testid="btn-zone-plus"]`.                                           | PASS: geen selector-wijziging zonder proof-update. FAIL: proof breekt door selector. |
 
 **D) Negatieve checks**
 
-| # | Criterium | Verwachting | PASS/FAIL |
-|---|-----------|-------------|-----------|
-| D1 | Plus bij gesloten sheet | `modifyDuration` wordt niet uitgevoerd of heeft geen effect als sheet niet open is. | PASS: geen wijziging. FAIL: duration verandert. |
-| D2 | Geen onverwacht sluiten | Na klik plus/min: sheet blijft open. | PASS: sheet open. FAIL: sheet sluit. |
-| D3 | Min bij 0 | Bij duration 0: klik min verandert niets; min visueel gedimd. | PASS: 0 blijft 0, knop gedimd. FAIL: negatieve waarde of niet gedimd. |
-| D4 | Pills veranderen niet de getoonde duur (sheet open) | `.duration-default-pill`, `#val-duration` | Terwijl sheet open is: klik op een pill (bijv. "2u"). De tekst van `#val-duration` verandert niet. | PASS: tekst ongewijzigd. FAIL: tekst verandert direct. Zie ook subsectie "Pills: default vs huidige sessie". |
+| #   | Criterium                                           | Verwachting                                                                         | PASS/FAIL                                                                                          |
+| --- | --------------------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| D1  | Plus bij gesloten sheet                             | `modifyDuration` wordt niet uitgevoerd of heeft geen effect als sheet niet open is. | PASS: geen wijziging. FAIL: duration verandert.                                                    |
+| D2  | Geen onverwacht sluiten                             | Na klik plus/min: sheet blijft open.                                                | PASS: sheet open. FAIL: sheet sluit.                                                               |
+| D3  | Min bij 0                                           | Bij duration 0: klik min verandert niets; min visueel gedimd.                       | PASS: 0 blijft 0, knop gedimd. FAIL: negatieve waarde of niet gedimd.                              |
+| D4  | Pills veranderen niet de getoonde duur (sheet open) | `.duration-default-pill`, `#val-duration`                                           | Terwijl sheet open is: klik op een pill (bijv. "2u"). De tekst van `#val-duration` verandert niet. | PASS: tekst ongewijzigd. FAIL: tekst verandert direct. Zie ook subsectie "Pills: default vs huidige sessie". |
 
 ### Known deviations vs rules
 

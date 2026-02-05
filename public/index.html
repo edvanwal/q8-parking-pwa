@@ -1,865 +1,1826 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-  <!-- Basic Meta Tags -->
-  <title>Q8 Parking</title>
-  <meta name="description" content="Smart parking management for Q8 Liberty card holders. Find zones, manage plates, and track parking history.">
-  <meta name="keywords" content="parking, Q8, Liberty, zones, Netherlands, Amsterdam, Rotterdam, Utrecht">
-  <meta name="author" content="Q8 Liberty">
-  <meta name="robots" content="index, follow">
+    <!-- Basic Meta Tags -->
+    <title>Q8 Parking</title>
+    <meta
+      name="description"
+      content="Smart parking management for Q8 Liberty card holders. Find zones, manage plates, and track parking history."
+    />
+    <meta
+      name="keywords"
+      content="parking, Q8, Liberty, zones, Netherlands, Amsterdam, Rotterdam, Utrecht"
+    />
+    <meta name="author" content="Q8 Liberty" />
+    <meta name="robots" content="index, follow" />
 
-  <!-- PWA Manifest & Theme -->
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#003D6B">
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#003D6B">
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#002347">
+    <!-- PWA Manifest & Theme -->
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#003D6B" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#003D6B" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#002347" />
 
-  <!-- iOS Specific Meta Tags -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Q8 Parking">
-  <meta name="format-detection" content="telephone=no">
+    <!-- iOS Specific Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Q8 Parking" />
+    <meta name="format-detection" content="telephone=no" />
 
-  <!-- Apple Touch Icons -->
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="icons/apple-touch-icon-152x152.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon-180x180.png">
-  <link rel="apple-touch-icon" sizes="167x167" href="icons/apple-touch-icon-167x167.png">
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/apple-touch-icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon-180x180.png" />
+    <link rel="apple-touch-icon" sizes="167x167" href="icons/apple-touch-icon-167x167.png" />
 
-  <!-- iOS Splash Screens -->
-  <!-- iPhone 14 Pro Max -->
-  <link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/iphone-14-pro-max.png">
-  <!-- iPhone 14 Pro -->
-  <link rel="apple-touch-startup-image" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/iphone-14-pro.png">
-  <!-- iPhone 14/13/12 -->
-  <link rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/iphone-14.png">
-  <!-- iPhone SE -->
-  <link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash/iphone-se.png">
-  <!-- iPad Pro 12.9" -->
-  <link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash/ipad-pro-12.9.png">
+    <!-- iOS Splash Screens -->
+    <!-- iPhone 14 Pro Max -->
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="splash/iphone-14-pro-max.png"
+    />
+    <!-- iPhone 14 Pro -->
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="splash/iphone-14-pro.png"
+    />
+    <!-- iPhone 14/13/12 -->
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="splash/iphone-14.png"
+    />
+    <!-- iPhone SE -->
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="splash/iphone-se.png"
+    />
+    <!-- iPad Pro 12.9" -->
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="splash/ipad-pro-12.9.png"
+    />
 
-  <!-- Android/Chrome Specific -->
-  <meta name="mobile-web-app-capable" content="yes">
+    <!-- Android/Chrome Specific -->
+    <meta name="mobile-web-app-capable" content="yes" />
 
-  <!-- Microsoft Specific -->
-  <meta name="msapplication-TileColor" content="#003D6B">
-  <meta name="msapplication-TileImage" content="icons/mstile-144x144.png">
+    <!-- Microsoft Specific -->
+    <meta name="msapplication-TileColor" content="#003D6B" />
+    <meta name="msapplication-TileImage" content="icons/mstile-144x144.png" />
 
-  <!-- Favicons -->
-  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
-  <link rel="shortcut icon" href="favicon.ico">
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png" />
+    <link rel="shortcut icon" href="favicon.ico" />
 
-  <!-- Open Graph (Social Media) -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Q8 Liberty Parking">
-  <meta property="og:description" content="Smart parking management for Q8 Liberty card holders">
-  <meta property="og:image" content="icons/og-image.png">
-  <meta property="og:site_name" content="Q8 Parking">
+    <!-- Open Graph (Social Media) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Q8 Liberty Parking" />
+    <meta
+      property="og:description"
+      content="Smart parking management for Q8 Liberty card holders"
+    />
+    <meta property="og:image" content="icons/og-image.png" />
+    <meta property="og:site_name" content="Q8 Parking" />
 
-  <!-- Preconnect & Performance -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://maps.googleapis.com">
-  <link rel="preconnect" href="https://maps.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://www.gstatic.com">
-  <link rel="dns-prefetch" href="https://firestore.googleapis.com">
+    <!-- Preconnect & Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://maps.googleapis.com" />
+    <link rel="preconnect" href="https://maps.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://www.gstatic.com" />
+    <link rel="dns-prefetch" href="https://firestore.googleapis.com" />
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
-  <!-- Firebase (Compat) -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+    <!-- Firebase (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
 
-  <!-- Platform Detection (Load First) -->
-  <script src="platform-detection.js?v=1.0"></script>
+    <!-- Platform Detection (Load First) -->
+    <script src="platform-detection.js?v=1.0"></script>
 
-  <!-- Application Scripts -->
-  <script src="firebase-config.js?v=3.1"></script>
-  <script src="utils.js?v=3.8"></script>
-  <script src="kenteken.js?v=1.0"></script>
-  <script src="state.js"></script>
-  <script src="services.js?v=4.0"></script>
-  <script src="ui.js?v=5.6"></script>
-  <script src="app.js?v=4.0" defer></script>
+    <!-- Application Scripts -->
+    <script src="firebase-config.js?v=3.1"></script>
+    <script src="utils.js?v=3.8"></script>
+    <script src="kenteken.js?v=1.0"></script>
+    <script src="state.js"></script>
+    <script src="services.js?v=4.0"></script>
+    <script src="ui.js?v=5.6"></script>
+    <script src="app.js?v=4.0" defer></script>
 
-  <!-- Service Worker Registration (offline PWA support) -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('[PWA] Service Worker registered:', reg.scope))
-          .catch(err => console.warn('[PWA] SW registration failed:', err));
-      });
-    }
-  </script>
+    <!-- Service Worker Registration (offline PWA support) -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('/sw.js')
+            .then((reg) => console.log('[PWA] Service Worker registered:', reg.scope))
+            .catch((err) => console.warn('[PWA] SW registration failed:', err));
+        });
+      }
+    </script>
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="design-system.css?v=5.6">
-</head>
-<body>
+    <!-- Styles -->
+    <link rel="stylesheet" href="design-system.css?v=5.6" />
+  </head>
+  <body>
+    <!-- Skip Link for Accessibility -->
+    <a
+      href="#main-content"
+      class="sr-only"
+      style="
+        position: absolute;
+        left: -9999px;
+        top: auto;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      "
+      onfocus="
+        this.style.left = '0';
+        this.style.width = 'auto';
+        this.style.height = 'auto';
+      "
+      onblur="
+        this.style.left = '-9999px';
+        this.style.width = '1px';
+        this.style.height = '1px';
+      "
+      >Skip to main content</a
+    >
 
-<!-- Skip Link for Accessibility -->
-<a href="#main-content" class="sr-only" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;" onfocus="this.style.left='0';this.style.width='auto';this.style.height='auto';" onblur="this.style.left='-9999px';this.style.width='1px';this.style.height='1px';">Skip to main content</a>
-
-<div id="app" role="application" aria-label="Q8 Parking Application">
-
-  <!-- === VIEW: LOGIN === -->
-  <main id="main-content">
-  <div id="view-login" class="screen flex-col overflow-y-auto bg-surface" role="region" aria-label="Login">
-    <div class="login-container">
-
-      <!-- Logo -->
-      <div class="logo-block">
-        <img src="q8-logo.png" class="login-logo-img" alt="Q8 Liberty">
-        <div class="flex items-center gap-xs mt-xs">
-          <div class="text-secondary font-bold text-lg text-brand-navy">Drivers-app</div>
-          <div class="badge badge-success text-xxs pad-badge-sm">v3.3 LIVE</div>
-        </div>
-      </div>
-
-      <!-- Language Selector -->
-      <div class="flex gap-md mb-xl">
-        <button class="btn btn-primary lang-btn" data-action="set-lang" data-lang="en">
-           <span style="margin-right:8px; display:inline-flex;">
-             <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <rect width="20" height="15" fill="#B22234"/>
-               <rect y="2" width="20" height="2" fill="white"/>
-               <rect y="4" width="20" height="2" fill="#B22234"/>
-               <rect y="6" width="20" height="2" fill="white"/>
-               <rect y="8" width="20" height="2" fill="#B22234"/>
-               <rect y="10" width="20" height="2" fill="white"/>
-               <rect y="12" width="20" height="2" fill="#B22234"/>
-               <rect width="8" height="8" fill="#3C3B6E"/> <!-- Simplified Canton -->
-             </svg>
-           </span> ENGLISH
-        </button>
-        <button class="btn btn-outline lang-btn" data-action="set-lang" data-lang="nl">
-           <span style="margin-right:8px; display:inline-flex;">
-             <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <rect width="20" height="5" fill="#AE1C28"/>
-               <rect y="5" width="20" height="5" fill="white"/>
-               <rect y="10" width="20" height="5" fill="#21468B"/>
-             </svg>
-           </span> NEDERLANDS
-        </button>
-      </div>
-
-      <h2 class="font-bold text-xl mb-lg text-brand-navy">Sign in</h2>
-
-      <!-- Form -->
-      <form onsubmit="return false;">
-        <div class="mb-md">
-          <label class="input-label">Email</label>
-          <input type="email" id="inp-email" class="input-field input-lg" value="driver@q8.com" placeholder="name@company.com">
-        </div>
-
-        <div class="mb-sm">
-           <label class="input-label">Password</label>
-           <div class="input-group">
-             <input type="password" id="inp-password" class="input-field input-lg" value="password123">
-             <button class="icon-btn eye-toggle" data-action="toggle-password" type="button">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-             </button>
-           </div>
-        </div>
-
-        <div class="text-right mb-lg">
-           <a href="#" class="text-primary text-sm font-bold no-decoration" data-action="open-overlay" data-target="modal-forgot-password">Forgot password?</a>
-        </div>
-
-        <div class="flex items-center gap-sm mb-xl pointer" data-action="toggle-remember">
-           <div class="custom-checkbox"></div>
-           <span class="text-secondary text-sm">Remember me for 30 days</span>
-        </div>
-
-        <button class="btn btn-primary btn-lg" data-action="login" aria-label="Sign in to your account">SIGN IN</button>
-      </form>
-
-      <!-- Footer -->
-      <div class="text-center" style="margin-top:auto; padding-top:40px;">
-         <div class="mb-md" style="font-size:0.9rem;">
-            <span class="text-secondary">Don't have an account?</span>
-            <span class="text-primary font-bold pointer" data-action="nav-to" data-target="register">Create account.</span>
-         </div>
-         <p class="text-secondary text-xs" style="line-height:1.5; color:#98A2B3;">
-            By signing in and using the Q8 Liberty Drivers app, you agree to our <a href="#" class="text-brand-navy">Privacy Statement</a>
-         </p>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- === VIEW: REGISTER === -->
-  <div id="view-register" class="screen flex-col overflow-y-auto bg-surface pb-xl">
-
-    <!-- Logo -->
-    <div class="logo-block mt-xxl mb-lg">
-      <img src="q8-logo.png" class="login-logo-img" alt="Q8 Liberty">
-      <div class="text-secondary font-bold text-lg text-brand-navy">Drivers-app</div>
-    </div>
-
-    <!-- Header with Back Button -->
-    <div style="padding: 0 24px 16px;" class="flex items-center justify-center relative">
-        <button class="icon-btn absolute left-md" data-action="nav-to" data-target="login">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        </button>
-        <span class="font-bold text-xl text-brand-navy">Create account</span>
-    </div>
-
-    <div class="login-container">
-
-        <!-- Name Group -->
-        <div class="flex gap-md mb-lg">
-            <div style="flex:1;">
-                <label class="input-label label-context">First name</label>
-                <input type="text" class="input-field input-lg" placeholder="John">
+    <div id="app" role="application" aria-label="Q8 Parking Application">
+      <!-- === VIEW: LOGIN === -->
+      <main id="main-content">
+        <div
+          id="view-login"
+          class="screen flex-col overflow-y-auto bg-surface"
+          role="region"
+          aria-label="Login"
+        >
+          <div class="login-container">
+            <!-- Logo -->
+            <div class="logo-block">
+              <img src="q8-logo.png" class="login-logo-img" alt="Q8 Liberty" />
+              <div class="flex items-center gap-xs mt-xs">
+                <div class="text-secondary font-bold text-lg text-brand-navy">Drivers-app</div>
+                <div class="badge badge-success text-xxs pad-badge-sm">v3.3 LIVE</div>
+              </div>
             </div>
-            <div style="flex:1;">
-                <label class="input-label label-context">Last name</label>
-                <input type="text" class="input-field input-lg" placeholder="Doe">
+
+            <!-- Language Selector -->
+            <div class="flex gap-md mb-xl">
+              <button class="btn btn-primary lang-btn" data-action="set-lang" data-lang="en">
+                <span style="margin-right: 8px; display: inline-flex">
+                  <svg
+                    width="20"
+                    height="15"
+                    viewBox="0 0 20 15"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <rect width="20" height="15" fill="#B22234" />
+                    <rect y="2" width="20" height="2" fill="white" />
+                    <rect y="4" width="20" height="2" fill="#B22234" />
+                    <rect y="6" width="20" height="2" fill="white" />
+                    <rect y="8" width="20" height="2" fill="#B22234" />
+                    <rect y="10" width="20" height="2" fill="white" />
+                    <rect y="12" width="20" height="2" fill="#B22234" />
+                    <rect width="8" height="8" fill="#3C3B6E" />
+                    <!-- Simplified Canton -->
+                  </svg>
+                </span>
+                ENGLISH
+              </button>
+              <button class="btn btn-outline lang-btn" data-action="set-lang" data-lang="nl">
+                <span style="margin-right: 8px; display: inline-flex">
+                  <svg
+                    width="20"
+                    height="15"
+                    viewBox="0 0 20 15"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <rect width="20" height="5" fill="#AE1C28" />
+                    <rect y="5" width="20" height="5" fill="white" />
+                    <rect y="10" width="20" height="5" fill="#21468B" />
+                  </svg>
+                </span>
+                NEDERLANDS
+              </button>
             </div>
-        </div>
 
-        <!-- Section: Email -->
-        <div class="input-section">
-            <label class="input-label label-context">Email address</label>
-            <input type="email" id="reg-email" class="input-field input-lg" placeholder="name@company.com">
-        </div>
+            <h2 class="font-bold text-xl mb-lg text-brand-navy">Sign in</h2>
 
-        <!-- Section: Phone (Integrated) -->
-        <div class="input-section">
-            <label class="input-label label-context">Mobile number</label>
-            <div class="input-integrated">
-                <div class="prefix-block">
-                    <span style="font-size:1.2rem;">🇳🇱</span>
-                    <span style="font-weight:600; color:var(--text-main);">+31</span>
+            <!-- Form -->
+            <form onsubmit="return false;">
+              <div class="mb-md">
+                <label class="input-label">Email</label>
+                <input
+                  type="email"
+                  id="inp-email"
+                  class="input-field input-lg"
+                  value="driver@q8.com"
+                  placeholder="name@company.com"
+                />
+              </div>
+
+              <div class="mb-sm">
+                <label class="input-label">Password</label>
+                <div class="input-group">
+                  <input
+                    type="password"
+                    id="inp-password"
+                    class="input-field input-lg"
+                    value="password123"
+                  />
+                  <button class="icon-btn eye-toggle" data-action="toggle-password" type="button">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
                 </div>
-                <input type="tel" class="input-field-clean" placeholder="6 12345678">
+              </div>
+
+              <div class="text-right mb-lg">
+                <a
+                  href="#"
+                  class="text-primary text-sm font-bold no-decoration"
+                  data-action="open-overlay"
+                  data-target="modal-forgot-password"
+                  >Forgot password?</a
+                >
+              </div>
+
+              <div class="flex items-center gap-sm mb-xl pointer" data-action="toggle-remember">
+                <div class="custom-checkbox"></div>
+                <span class="text-secondary text-sm">Remember me for 30 days</span>
+              </div>
+
+              <button
+                class="btn btn-primary btn-lg"
+                data-action="login"
+                aria-label="Sign in to your account"
+              >
+                SIGN IN
+              </button>
+            </form>
+
+            <!-- Footer -->
+            <div class="text-center" style="margin-top: auto; padding-top: 40px">
+              <div class="mb-md" style="font-size: 0.9rem">
+                <span class="text-secondary">Don't have an account?</span>
+                <span
+                  class="text-primary font-bold pointer"
+                  data-action="nav-to"
+                  data-target="register"
+                  >Create account.</span
+                >
+              </div>
+              <p class="text-secondary text-xs" style="line-height: 1.5; color: #98a2b3">
+                By signing in and using the Q8 Liberty Drivers app, you agree to our
+                <a href="#" class="text-brand-navy">Privacy Statement</a>
+              </p>
             </div>
+          </div>
         </div>
 
-        <!-- Section: Liberty Card -->
-        <div class="input-section">
-            <label class="input-label label-context">Number of Liberty card</label>
-            <input type="text" class="input-field input-lg" placeholder="Enter card number">
+        <!-- === VIEW: REGISTER === -->
+        <div id="view-register" class="screen flex-col overflow-y-auto bg-surface pb-xl">
+          <!-- Logo -->
+          <div class="logo-block mt-xxl mb-lg">
+            <img src="q8-logo.png" class="login-logo-img" alt="Q8 Liberty" />
+            <div class="text-secondary font-bold text-lg text-brand-navy">Drivers-app</div>
+          </div>
+
+          <!-- Header with Back Button -->
+          <div style="padding: 0 24px 16px" class="flex items-center justify-center relative">
+            <button class="icon-btn absolute left-md" data-action="nav-to" data-target="login">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <span class="font-bold text-xl text-brand-navy">Create account</span>
+          </div>
+
+          <div class="login-container">
+            <!-- Name Group -->
+            <div class="flex gap-md mb-lg">
+              <div style="flex: 1">
+                <label class="input-label label-context">First name</label>
+                <input type="text" class="input-field input-lg" placeholder="John" />
+              </div>
+              <div style="flex: 1">
+                <label class="input-label label-context">Last name</label>
+                <input type="text" class="input-field input-lg" placeholder="Doe" />
+              </div>
+            </div>
+
+            <!-- Section: Email -->
+            <div class="input-section">
+              <label class="input-label label-context">Email address</label>
+              <input
+                type="email"
+                id="reg-email"
+                class="input-field input-lg"
+                placeholder="name@company.com"
+              />
+            </div>
+
+            <!-- Section: Phone (Integrated) -->
+            <div class="input-section">
+              <label class="input-label label-context">Mobile number</label>
+              <div class="input-integrated">
+                <div class="prefix-block">
+                  <span style="font-size: 1.2rem">🇳🇱</span>
+                  <span style="font-weight: 600; color: var(--text-main)">+31</span>
+                </div>
+                <input type="tel" class="input-field-clean" placeholder="6 12345678" />
+              </div>
+            </div>
+
+            <!-- Section: Liberty Card -->
+            <div class="input-section">
+              <label class="input-label label-context">Number of Liberty card</label>
+              <input type="text" class="input-field input-lg" placeholder="Enter card number" />
+            </div>
+
+            <!-- Section: Password -->
+            <div class="input-section">
+              <label class="input-label label-context">Password</label>
+              <div class="input-group">
+                <input
+                  type="password"
+                  id="reg-password"
+                  class="input-field input-lg"
+                  placeholder="••••••••"
+                />
+                <button class="icon-btn eye-toggle" type="button">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Section: Confirm Password -->
+            <div class="input-section mb-xl">
+              <label class="input-label label-context">Confirm password</label>
+              <div class="input-group">
+                <input
+                  type="password"
+                  id="reg-password-confirm"
+                  class="input-field input-lg"
+                  placeholder="••••••••"
+                />
+                <button class="icon-btn eye-toggle" type="button">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- CTA Anchor -->
+            <button
+              class="btn btn-primary btn-lg btn-anchor"
+              data-action="register"
+              style="margin-top: 40px; margin-bottom: 40px"
+            >
+              REGISTER
+            </button>
+          </div>
         </div>
 
-        <!-- Section: Password -->
-        <div class="input-section">
-             <label class="input-label label-context">Password</label>
-             <div class="input-group">
-                 <input type="password" id="reg-password" class="input-field input-lg" placeholder="••••••••">
-                 <button class="icon-btn eye-toggle" type="button">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                 </button>
-             </div>
-        </div>
+        <!-- === VIEW: MAP (Parking & Active) === -->
+        <div id="view-map" class="screen flex-col">
+          <!-- Header (logo | Parking | hamburger) -->
+          <header class="top-bar map-top-bar">
+            <div class="brand-logo">
+              <img src="q8-logo.png" class="header-logo" alt="Q8 Liberty" />
+            </div>
+            <h1 class="page-title">Parking</h1>
+            <button
+              class="icon-btn"
+              data-testid="btn-menu-open"
+              data-action="toggle-menu"
+              aria-label="Open menu"
+              aria-expanded="false"
+              aria-controls="side-menu"
+            >
+              <svg
+                class="no-pointer"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M5 7C5 6.44772 5.44772 6 6 6H18C18.5523 6 19 6.44772 19 7C19 7.55228 18.5523 8 18 8H6C5.44772 8 5 7.55228 5 7ZM5 12C5 11.4477 5.44772 11 6 11H18C18.5523 11 19 11.4477 19 12C19 12.5523 18.5523 13 18 13H6C5.44772 13 5 12.5523 5 12ZM5 17C5 16.4477 5.44772 16 6 16H18C18.5523 16 19 16.4477 19 17C19 17.5523 18.5523 18 18 18H6C5.44772 18 5 17.5523 5 17Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </header>
 
-        <!-- Section: Confirm Password -->
-        <div class="input-section mb-xl">
-             <label class="input-label label-context">Confirm password</label>
-             <div class="input-group">
-                 <input type="password" id="reg-password-confirm" class="input-field input-lg" placeholder="••••••••">
-                 <button class="icon-btn eye-toggle" type="button">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                 </button>
-             </div>
-        </div>
+          <!-- Map area (full height under header) -->
+          <div class="map-area" role="region" aria-label="Parking map">
+            <!-- Zones loading indicator -->
+            <div id="zones-loading-overlay" class="zones-loading-overlay hidden" aria-live="polite">
+              <div class="zones-loading-content">
+                <div class="zones-loading-spinner"></div>
+                <p class="zones-loading-text">Loading parking zones...</p>
+                <p
+                  class="zones-loading-subtitle"
+                  id="zones-loading-subtitle"
+                  aria-hidden="true"
+                ></p>
+              </div>
+            </div>
+            <!-- Zones load error (network failure) -->
+            <div
+              id="zones-load-error"
+              class="zones-loading-overlay hidden"
+              style="background: rgba(220, 38, 38, 0.05)"
+              aria-live="assertive"
+            >
+              <div class="zones-loading-content">
+                <p
+                  class="zones-error-text"
+                  style="color: var(--danger); font-weight: 600; margin-bottom: 16px"
+                ></p>
+                <button type="button" class="btn btn-primary" data-action="retry-load-zones">
+                  Retry
+                </button>
+              </div>
+            </div>
+            <!-- Search bar: in flow on small screens (no overlap), floating on larger -->
+            <div id="ui-idle-search" class="map-search-float">
+              <input
+                type="text"
+                id="inp-search"
+                class="map-search-input"
+                placeholder="Zone or street name"
+                autocomplete="off"
+                aria-label="Search for parking zone or street name"
+                role="searchbox"
+              />
+              <span class="map-search-icon-right">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M10 5C7.23858 5 5 7.23858 5 10C5 12.7614 7.23858 15 10 15C11.381 15 12.6296 14.4415 13.5355 13.5355C14.4415 12.6296 15 11.381 15 10C15 7.23858 12.7614 5 10 5ZM3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10C17 11.5719 16.481 13.0239 15.6063 14.1921L20.7071 19.2929C21.0976 19.6834 21.0976 20.3166 20.7071 20.7071C20.3166 21.0976 19.6834 21.0976 19.2929 20.7071L14.1921 15.6063C13.0239 16.481 11.5719 17 10 17C6.13401 17 3 13.866 3 10Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </span>
+            </div>
+            <!-- No plates hint: shown on map when user has no license plates -->
+            <div id="no-plates-hint" class="no-plates-hint hidden" role="status" aria-live="polite">
+              <p id="no-plates-hint-text" class="no-plates-hint-text">
+                Voeg een kenteken toe om te kunnen parkeren.
+              </p>
+              <button
+                type="button"
+                class="btn btn-primary btn-sm no-plates-hint-btn"
+                data-action="open-overlay"
+                data-target="modal-add-plate"
+              >
+                <span id="no-plates-hint-cta">Kenteken toevoegen</span>
+              </button>
+            </div>
+            <!-- Favorieten strip + laatst gebruikte zone: compact horizontale balk direct onder zoekbalk -->
+            <div
+              id="favorites-strip"
+              class="favorites-strip hidden"
+              role="region"
+              aria-label="Favorieten"
+            >
+              <!-- Injected: label + [Laatst: X] + favoriet-pills -->
+            </div>
+            <!-- Map Surface -->
+            <div id="map-container" class="map-surface" data-testid="map-root">
+              <!-- Markers injected by JS -->
+            </div>
+            <!-- Personal Greeting: hidden -->
+            <div id="personal-greeting" class="hidden" style="display: none !important"></div>
 
-        <!-- CTA Anchor -->
-        <button class="btn btn-primary btn-lg btn-anchor" data-action="register" style="margin-top: 40px; margin-bottom: 40px;">REGISTER</button>
-    </div>
-  </div>
+            <div id="ui-search-results" class="hidden"></div>
+            <div id="ui-favorites-quick" class="hidden" style="display: none"></div>
 
-  <!-- === VIEW: MAP (Parking & Active) === -->
-  <div id="view-map" class="screen flex-col">
-    <!-- Header (logo | Parking | hamburger) -->
-    <header class="top-bar map-top-bar">
-      <div class="brand-logo"><img src="q8-logo.png" class="header-logo" alt="Q8 Liberty"></div>
-      <h1 class="page-title">Parking</h1>
-      <button class="icon-btn" data-action="toggle-menu" aria-label="Open menu" aria-expanded="false" aria-controls="side-menu">
-        <svg class="no-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M5 7C5 6.44772 5.44772 6 6 6H18C18.5523 6 19 6.44772 19 7C19 7.55228 18.5523 8 18 8H6C5.44772 8 5 7.55228 5 7ZM5 12C5 11.4477 5.44772 11 6 11H18C18.5523 11 19 11.4477 19 12C19 12.5523 18.5523 13 18 13H6C5.44772 13 5 12.5523 5 12ZM5 17C5 16.4477 5.44772 16 6 16H18C18.5523 16 19 16.4477 19 17C19 17.5523 18.5523 18 18 18H6C5.44772 18 5 17.5523 5 17Z" fill="currentColor"/></svg>
-      </button>
-    </header>
+            <!-- Mijn locatie: centreer kaart op GPS en stel dichtstbijzijnde zone voor -->
+            <button
+              type="button"
+              id="btn-my-location"
+              class="map-location-fab icon-btn"
+              data-action="go-to-my-location"
+              aria-label="Mijn locatie"
+              title="Mijn locatie"
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+            </button>
 
-    <!-- Map area (full height under header) -->
-    <div class="map-area" role="region" aria-label="Parking map">
-      <!-- Zones loading indicator -->
-      <div id="zones-loading-overlay" class="zones-loading-overlay hidden" aria-live="polite">
-        <div class="zones-loading-content">
-          <div class="zones-loading-spinner"></div>
-          <p class="zones-loading-text">Loading parking zones...</p>
-          <p class="zones-loading-subtitle" id="zones-loading-subtitle" aria-hidden="true"></p>
-        </div>
-      </div>
-      <!-- Zones load error (network failure) -->
-      <div id="zones-load-error" class="zones-loading-overlay hidden" style="background:rgba(220,38,38,0.05);" aria-live="assertive">
-        <div class="zones-loading-content">
-          <p class="zones-error-text" style="color:var(--danger);font-weight:600;margin-bottom:16px;"></p>
-          <button type="button" class="btn btn-primary" data-action="retry-load-zones">Retry</button>
-        </div>
-      </div>
-      <!-- Search bar: in flow on small screens (no overlap), floating on larger -->
-      <div id="ui-idle-search" class="map-search-float">
-        <input type="text" id="inp-search" class="map-search-input" placeholder="Zone or street name" autocomplete="off" aria-label="Search for parking zone or street name" role="searchbox">
-        <span class="map-search-icon-right">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 5C7.23858 5 5 7.23858 5 10C5 12.7614 7.23858 15 10 15C11.381 15 12.6296 14.4415 13.5355 13.5355C14.4415 12.6296 15 11.381 15 10C15 7.23858 12.7614 5 10 5ZM3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10C17 11.5719 16.481 13.0239 15.6063 14.1921L20.7071 19.2929C21.0976 19.6834 21.0976 20.3166 20.7071 20.7071C20.3166 21.0976 19.6834 21.0976 19.2929 20.7071L14.1921 15.6063C13.0239 16.481 11.5719 17 10 17C6.13401 17 3 13.866 3 10Z" fill="currentColor"/></svg>
-        </span>
-      </div>
-      <!-- No plates hint: shown on map when user has no license plates -->
-      <div id="no-plates-hint" class="no-plates-hint hidden" role="status" aria-live="polite">
-        <p id="no-plates-hint-text" class="no-plates-hint-text">Voeg een kenteken toe om te kunnen parkeren.</p>
-        <button type="button" class="btn btn-primary btn-sm no-plates-hint-btn" data-action="open-overlay" data-target="modal-add-plate">
-          <span id="no-plates-hint-cta">Kenteken toevoegen</span>
-        </button>
-      </div>
-      <!-- Favorieten strip + laatst gebruikte zone: compact horizontale balk direct onder zoekbalk -->
-      <div id="favorites-strip" class="favorites-strip hidden" role="region" aria-label="Favorieten">
-        <!-- Injected: label + [Laatst: X] + favoriet-pills -->
-      </div>
-      <!-- Map Surface -->
-      <div id="map-container" class="map-surface" data-testid="map-root">
-        <!-- Markers injected by JS -->
-      </div>
-      <!-- Personal Greeting: hidden -->
-      <div id="personal-greeting" class="hidden" style="display:none !important;"></div>
+            <!-- Active Parking Overlay (inside map-area for positioning) -->
+            <div id="ui-active-parking" class="active-parking-overlay hidden" style="display: none">
+              <div class="active-parking-card">
+                <div class="flex justify-between items-start mb-lg">
+                  <div class="flex-1">
+                    <div
+                      class="font-bold mb-md text-brand-navy"
+                      style="font-size: 1.35rem; letter-spacing: -0.5px"
+                    >
+                      Active parking
+                    </div>
 
-      <div id="ui-search-results" class="hidden"></div>
-      <div id="ui-favorites-quick" class="hidden" style="display:none;"></div>
-
-      <!-- Mijn locatie: centreer kaart op GPS en stel dichtstbijzijnde zone voor -->
-      <button type="button" id="btn-my-location" class="map-location-fab icon-btn" data-action="go-to-my-location" aria-label="Mijn locatie" title="Mijn locatie">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-        </svg>
-      </button>
-
-      <!-- Active Parking Overlay (inside map-area for positioning) -->
-      <div id="ui-active-parking" class="active-parking-overlay hidden" style="display:none;">
-        <div class="active-parking-card">
-           <div class="flex justify-between items-start mb-lg">
-             <div class="flex-1">
-               <div class="font-bold mb-md text-brand-navy" style="font-size: 1.35rem; letter-spacing: -0.5px;">Active parking</div>
-
-               <div class="flex items-center gap-sm">
-                  <div class="zone-badge-box" style="height: 32px;">
-                    <span class="icon-p" style="width: 32px; height: 32px; font-size: 1rem;">P</span>
-                    <span id="active-zone-label" style="padding: 0 10px; font-size: 1rem; font-weight: 700;">1100</span>
+                    <div class="flex items-center gap-sm">
+                      <div class="zone-badge-box" style="height: 32px">
+                        <span class="icon-p" style="width: 32px; height: 32px; font-size: 1rem"
+                          >P</span
+                        >
+                        <span
+                          id="active-zone-label"
+                          style="padding: 0 10px; font-size: 1rem; font-weight: 700"
+                          >1100</span
+                        >
+                      </div>
+                      <div class="font-bold text-lg" id="active-plate-label">1-ABC-123</div>
+                    </div>
                   </div>
-                  <div class="font-bold text-lg" id="active-plate-label">1-ABC-123</div>
-               </div>
-             </div>
-             <div class="text-right" style="padding-top: 4px;">
-               <div id="active-timer-label" class="text-secondary text-xs uppercase font-bold mb-xs" style="font-size: 0.7rem; letter-spacing: 0.5px;">Time left</div>
-               <div id="active-timer" class="font-bold text-xl" style="color:#ce1818; font-variant-numeric: tabular-nums;">01:59</div> <!-- Less aggressive red -->
-             </div>
-           </div>
+                  <div class="text-right" style="padding-top: 4px">
+                    <div
+                      id="active-timer-label"
+                      class="text-secondary text-xs uppercase font-bold mb-xs"
+                      style="font-size: 0.7rem; letter-spacing: 0.5px"
+                    >
+                      Time left
+                    </div>
+                    <div
+                      id="active-timer"
+                      class="font-bold text-xl"
+                      style="color: #ce1818; font-variant-numeric: tabular-nums"
+                    >
+                      01:59
+                    </div>
+                    <!-- Less aggressive red -->
+                  </div>
+                </div>
 
-           <div class="flex justify-between items-center text-secondary text-sm" style="margin-bottom:32px; padding-top:20px; border-top:1px solid #F3F4F6;">
-              <span>Start: <span class="font-bold text-main" id="lbl-start">10:00</span></span>
-              <div class="flex items-center gap-sm">
-                <span>End: <span class="font-bold text-main" id="lbl-end">12:00</span></span>
-                <button class="icon-btn active-end-btn" data-action="mod-active-end" data-delta="-30" title="Verkort eindtijd" style="padding:6px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-                <button class="icon-btn active-end-btn" data-action="mod-active-end" data-delta="30" title="Verleng eindtijd" style="padding:6px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                <div
+                  class="flex justify-between items-center text-secondary text-sm"
+                  style="margin-bottom: 32px; padding-top: 20px; border-top: 1px solid #f3f4f6"
+                >
+                  <span>Start: <span class="font-bold text-main" id="lbl-start">10:00</span></span>
+                  <div class="flex items-center gap-sm">
+                    <span>End: <span class="font-bold text-main" id="lbl-end">12:00</span></span>
+                    <button
+                      class="icon-btn active-end-btn"
+                      data-action="mod-active-end"
+                      data-delta="-30"
+                      title="Verkort eindtijd"
+                      style="padding: 6px"
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                      </svg>
+                    </button>
+                    <button
+                      class="icon-btn active-end-btn"
+                      data-action="mod-active-end"
+                      data-delta="30"
+                      title="Verleng eindtijd"
+                      style="padding: 6px"
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  class="btn btn-danger w-full"
+                  data-action="open-overlay"
+                  data-target="modal-confirm"
+                  style="
+                    height: 56px;
+                    border-radius: 16px;
+                    font-size: 1.1rem;
+                    font-weight: 700;
+                    box-shadow: 0 8px 20px rgba(220, 38, 38, 0.25);
+                  "
+                  aria-label="End current parking session"
+                >
+                  END PARKING
+                </button>
               </div>
-           </div>
-
-           <button class="btn btn-danger w-full" data-action="open-overlay" data-target="modal-confirm" style="height: 56px; border-radius: 16px; font-size: 1.1rem; font-weight: 700; box-shadow: 0 8px 20px rgba(220, 38, 38, 0.25);" aria-label="End current parking session">END PARKING</button>
-        </div>
-      </div>
-
-
-    </div>
-  </div>
-
-
-  <!-- === VIEW: CAR SPECS === -->
-  <div id="view-car-specs" class="screen flex-col hidden" role="region" aria-label="Car specifications">
-    <header class="top-bar">
-      <div class="brand-logo"><img src="q8-logo.png" class="header-logo" alt="Q8 Liberty"></div>
-      <h1 class="page-title">Car specs</h1>
-      <button class="icon-btn" data-action="toggle-menu" aria-label="Open menu" aria-expanded="false">
-         <svg class="no-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M5 7C5 6.44772 5.44772 6 6 6H18C18.5523 6 19 6.44772 19 7C19 7.55228 18.5523 8 18 8H6C5.44772 8 5 7.55228 5 7ZM5 12C5 11.4477 5.44772 11 6 11H18C18.5523 11 19 11.4477 19 12C19 12.5523 18.5523 13 18 13H6C5.44772 13 5 12.5523 5 12ZM5 17C5 16.4477 5.44772 16 6 16H18C18.5523 16 19 16.4477 19 17C19 17.5523 18.5523 18 18 18H6C5.44772 18 5 17.5523 5 17Z" fill="currentColor"/></svg>
-      </button>
-    </header>
-    <div class="content padding-container" style="flex:1; overflow-y:auto;">
-      <p id="car-specs-intro" class="text-secondary text-sm mb-lg">Specs for your registered license plates (RDW).</p>
-      <div id="list-car-specs" class="flex-col gap-lg">
-        <!-- Injected by ui.js -->
-      </div>
-    </div>
-  </div>
-
-  <!-- === VIEW: PLATES === -->
-  <div id="view-plates" class="screen flex-col hidden" role="region" aria-label="License plates management">
-    <header class="top-bar">
-      <div class="brand-logo"><img src="q8-logo.png" class="header-logo" alt="Q8 Liberty"></div>
-      <h1 class="page-title">License plates</h1>
-      <button class="icon-btn" data-action="toggle-menu" aria-label="Open menu" aria-expanded="false">
-         <svg class="no-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M5 7C5 6.44772 5.44772 6 6 6H18C18.5523 6 19 6.44772 19 7C19 7.55228 18.5523 8 18 8H6C5.44772 8 5 7.55228 5 7ZM5 12C5 11.4477 5.44772 11 6 11H18C18.5523 11 19 11.4477 19 12C19 12.5523 18.5523 13 18 13H6C5.44772 13 5 12.5523 5 12ZM5 17C5 16.4477 5.44772 16 6 16H18C18.5523 16 19 16.4477 19 17C19 17.5523 18.5523 18 18 18H6C5.44772 18 5 17.5523 5 17Z" fill="currentColor"/></svg>
-      </button>
-    </header>
-    <div class="content padding-container" style="flex:1; overflow-y:auto;">
-      <div id="list-plates" style="margin-bottom: 24px;">
-        <!-- Injected -->
-      </div>
-      <button class="btn-inline-add" data-action="open-overlay" data-target="modal-add-plate">
-        <svg class="no-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12ZM12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM13 7C13 6.44772 12.5523 6 12 6C11.4477 6 11 6.44772 11 7V11H7C6.44772 11 6 11.4477 6 12C6 12.5523 6.44772 13 7 13H11V17C11 17.5523 11.4477 18 12 18C12.5523 18 13 17.5523 13 17V13H17C17.5523 13 18 12.5523 18 12C18 11.4477 17.5523 11 17 11H13V7Z" fill="currentColor"/></svg>
-        <span>Add new license plate</span>
-      </button>
-    </div>
-    <footer style="padding:16px; border-top:1px solid var(--border); background:var(--surface);">
-        <button id="btn-set-default" class="btn btn-primary btn-block" disabled data-action="set-default-plate">MAKE SELECTED PLATE DEFAULT</button>
-    </footer>
-  </div>
-
-
-  <!-- === VIEW: FAVORITES === -->
-  <div id="view-favorites" class="screen flex-col hidden" role="region" aria-label="Favorite zones">
-    <header class="top-bar">
-      <div class="brand-logo"><img src="q8-logo.png" class="header-logo" alt="Q8 Liberty"></div>
-      <h1 class="page-title">Favorites</h1>
-      <button class="icon-btn" data-action="toggle-menu" aria-label="Open menu">
-         <svg class="no-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M5 7C5 6.44772 5.44772 6 6 6H18C18.5523 6 19 6.44772 19 7C19 7.55228 18.5523 8 18 8H6C5.44772 8 5 7.55228 5 7ZM5 12C5 11.4477 5.44772 11 6 11H18C18.5523 11 19 11.4477 19 12C19 12.5523 18.5523 13 18 13H6C5.44772 13 5 12.5523 5 12ZM5 17C5 16.4477 5.44772 16 6 16H18C18.5523 16 19 16.4477 19 17C19 17.5523 18.5523 18 18 18H6C5.44772 18 5 17.5523 5 17Z" fill="currentColor"/></svg>
-      </button>
-    </header>
-    <div class="content padding-container" style="flex:1; overflow-y:auto;">
-      <p id="fav-intro-text" class="text-secondary text-sm mb-lg">Your favorite parking zones. Tap to start.</p>
-      <div id="list-favorites" class="flex-col gap-sm">
-        <!-- Injected by ui.js -->
-      </div>
-    </div>
-  </div>
-
-  <!-- === VIEW: NOTIFICATIONS === -->
-  <div id="view-notifications" class="screen flex-col hidden">
-    <header class="top-bar">
-      <div class="brand-logo"><img src="q8-logo.png" class="header-logo" alt="Q8 Liberty"></div>
-      <h1 class="page-title">Notifications</h1>
-      <button class="icon-btn" data-action="toggle-menu">
-         <svg class="no-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M5 7C5 6.44772 5.44772 6 6 6H18C18.5523 6 19 6.44772 19 7C19 7.55228 18.5523 8 18 8H6C5.44772 8 5 7.55228 5 7ZM5 12C5 11.4477 5.44772 11 6 11H18C18.5523 11 19 11.4477 19 12C19 12.5523 18.5523 13 18 13H6C5.44772 13 5 12.5523 5 12ZM5 17C5 16.4477 5.44772 16 6 16H18C18.5523 16 19 16.4477 19 17C19 17.5523 18.5523 18 18 18H6C5.44772 18 5 17.5523 5 17Z" fill="currentColor"/></svg>
-      </button>
-    </header>
-    <div class="content padding-container" style="flex:1; overflow-y:auto;">
-      <div class="notif-settings-section mb-xl">
-        <h2 class="text-main font-bold mb-md" style="font-size:1rem;">Settings</h2>
-        <div id="notif-settings-list" class="flex-col gap-sm">
-          <!-- Injected by ui.js -->
-        </div>
-      </div>
-      <div class="notif-history-section">
-        <h2 class="text-main font-bold mb-md" style="font-size:1rem;">History</h2>
-        <div id="notif-history-list" class="flex-col gap-sm">
-          <!-- Injected by ui.js -->
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- === VIEW: HISTORY === -->
-  <div id="view-history" class="screen flex-col hidden" role="region" aria-label="Parking history">
-    <header class="top-bar">
-      <div class="brand-logo"><img src="q8-logo.png" class="header-logo" alt="Q8 Liberty"></div>
-      <h1 class="page-title">Parking history</h1>
-      <button class="icon-btn" data-action="toggle-menu" aria-label="Open menu" aria-expanded="false">
-         <svg class="no-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M5 7C5 6.44772 5.44772 6 6 6H18C18.5523 6 19 6.44772 19 7C19 7.55228 18.5523 8 18 8H6C5.44772 8 5 7.55228 5 7ZM5 12C5 11.4477 5.44772 11 6 11H18C18.5523 11 19 11.4477 19 12C19 12.5523 18.5523 13 18 13H6C5.44772 13 5 12.5523 5 12ZM5 17C5 16.4477 5.44772 16 6 16H18C18.5523 16 19 16.4477 19 17C19 17.5523 18.5523 18 18 18H6C5.44772 18 5 17.5523 5 17Z" fill="currentColor"/></svg>
-      </button>
-    </header>
-    <!-- Quick filters: in één oogopslag zichtbaar op mobiel -->
-    <div id="history-quick-filters" class="history-quick-filters padding-container">
-       <!-- Injected: All, Last 7 days, Last 30 days, This month -->
-    </div>
-    <div id="history-filter-summary" class="history-filter-summary padding-container hidden">
-       <!-- Injected: active filter summary + link to full filters -->
-    </div>
-    <div class="content padding-container history-list-wrap" id="list-history">
-       <!-- Injected -->
-    </div>
-    <div class="history-footer" style="padding:16px; background:var(--surface); border-top:1px solid var(--border); display:flex; gap:12px; flex-wrap:wrap;">
-       <button class="btn btn-secondary" data-action="open-overlay" data-target="sheet-filter">Filters</button>
-       <button class="btn btn-outline" data-action="export-history-csv">Export CSV</button>
-       <button class="btn btn-outline" data-action="export-history-print">Print / PDF</button>
-    </div>
-  </div>
-
-
-  <!-- === OVERLAY: MENU === -->
-  <div id="menu-overlay" class="overlay-backdrop" data-action="close-overlay">
-    <div class="menu-drawer">
-      <header class="top-bar">
-        <div class="brand-logo">Q8</div>
-        <h1 class="page-title">Menu</h1>
-        <button class="icon-btn" data-action="close-overlay">
-          <svg class="no-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
-      </header>
-
-      <div class="menu-list" style="padding:24px;">
-        <div class="list-item" data-action="nav-to" data-target="parking">
-          <span>Parking</span>
-          <span class="text-secondary">›</span>
-        </div>
-        <div class="list-item" data-action="nav-to" data-target="history">
-          <span>Parking history</span>
-          <span class="text-secondary">›</span>
-        </div>
-        <div class="list-item" data-action="nav-to" data-target="plates">
-          <span>License plates</span>
-          <span class="text-secondary">›</span>
-        </div>
-        <div class="list-item" data-action="nav-to" data-target="car-specs">
-          <span>Car specs</span>
-          <span class="text-secondary">›</span>
-        </div>
-
-        <div class="list-item" style="cursor:default;">
-          <span>Language</span>
-          <div class="flex gap-sm">
-             <div class="badge badge-neutral" style="background:var(--border);">EN</div>
-             <div class="badge badge-neutral">NL</div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div style="padding:24px; margin-top:auto;">
-         <button class="btn btn-danger" data-action="logout">Sign out</button>
-      </div>
-    </div>
-  </div>
+        <!-- === VIEW: CAR SPECS === -->
+        <div
+          id="view-car-specs"
+          class="screen flex-col hidden"
+          role="region"
+          aria-label="Car specifications"
+        >
+          <header class="top-bar">
+            <div class="brand-logo">
+              <img src="q8-logo.png" class="header-logo" alt="Q8 Liberty" />
+            </div>
+            <h1 class="page-title">Car specs</h1>
+            <button
+              class="icon-btn"
+              data-action="toggle-menu"
+              aria-label="Open menu"
+              aria-expanded="false"
+            >
+              <svg
+                class="no-pointer"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M5 7C5 6.44772 5.44772 6 6 6H18C18.5523 6 19 6.44772 19 7C19 7.55228 18.5523 8 18 8H6C5.44772 8 5 7.55228 5 7ZM5 12C5 11.4477 5.44772 11 6 11H18C18.5523 11 19 11.4477 19 12C19 12.5523 18.5523 13 18 13H6C5.44772 13 5 12.5523 5 12ZM5 17C5 16.4477 5.44772 16 6 16H18C18.5523 16 19 16.4477 19 17C19 17.5523 18.5523 18 18 18H6C5.44772 18 5 17.5523 5 17Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </header>
+          <div class="content padding-container" style="flex: 1; overflow-y: auto">
+            <p id="car-specs-intro" class="text-secondary text-sm mb-lg">
+              Specs for your registered license plates (RDW).
+            </p>
+            <div id="list-car-specs" class="flex-col gap-lg">
+              <!-- Injected by ui.js -->
+            </div>
+          </div>
+        </div>
 
+        <!-- === VIEW: PLATES === -->
+        <div
+          id="view-plates"
+          class="screen flex-col hidden"
+          role="region"
+          aria-label="License plates management"
+        >
+          <header class="top-bar">
+            <div class="brand-logo">
+              <img src="q8-logo.png" class="header-logo" alt="Q8 Liberty" />
+            </div>
+            <h1 class="page-title">License plates</h1>
+            <button
+              class="icon-btn"
+              data-action="toggle-menu"
+              aria-label="Open menu"
+              aria-expanded="false"
+            >
+              <svg
+                class="no-pointer"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M5 7C5 6.44772 5.44772 6 6 6H18C18.5523 6 19 6.44772 19 7C19 7.55228 18.5523 8 18 8H6C5.44772 8 5 7.55228 5 7ZM5 12C5 11.4477 5.44772 11 6 11H18C18.5523 11 19 11.4477 19 12C19 12.5523 18.5523 13 18 13H6C5.44772 13 5 12.5523 5 12ZM5 17C5 16.4477 5.44772 16 6 16H18C18.5523 16 19 16.4477 19 17C19 17.5523 18.5523 18 18 18H6C5.44772 18 5 17.5523 5 17Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </header>
+          <div class="content padding-container" style="flex: 1; overflow-y: auto">
+            <div id="list-plates" style="margin-bottom: 24px">
+              <!-- Injected -->
+            </div>
+            <button class="btn-inline-add" data-action="open-overlay" data-target="modal-add-plate">
+              <svg
+                class="no-pointer"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12ZM12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM13 7C13 6.44772 12.5523 6 12 6C11.4477 6 11 6.44772 11 7V11H7C6.44772 11 6 11.4477 6 12C6 12.5523 6.44772 13 7 13H11V17C11 17.5523 11.4477 18 12 18C12.5523 18 13 17.5523 13 17V13H17C17.5523 13 18 12.5523 18 12C18 11.4477 17.5523 11 17 11H13V7Z"
+                  fill="currentColor"
+                />
+              </svg>
+              <span>Add new license plate</span>
+            </button>
+          </div>
+          <footer
+            style="padding: 16px; border-top: 1px solid var(--border); background: var(--surface)"
+          >
+            <button
+              id="btn-set-default"
+              class="btn btn-primary btn-block"
+              disabled
+              data-action="set-default-plate"
+            >
+              MAKE SELECTED PLATE DEFAULT
+            </button>
+          </footer>
+        </div>
 
-  <!-- === OVERLAY: ZONE DETAILS (Sheet) - bijlage 2 layout === -->
-  <div id="sheet-zone" class="overlay-backdrop" data-testid="sheet-zone" data-action="close-overlay" role="dialog" aria-modal="true" aria-labelledby="zone-sheet-title">
-    <div class="bottom-sheet sheet-zone" role="document">
-      <div class="sheet-handle"></div>
+        <!-- === VIEW: FAVORITES === -->
+        <div
+          id="view-favorites"
+          class="screen flex-col hidden"
+          role="region"
+          aria-label="Favorite zones"
+        >
+          <header class="top-bar">
+            <div class="brand-logo">
+              <img src="q8-logo.png" class="header-logo" alt="Q8 Liberty" />
+            </div>
+            <h1 class="page-title">Favorites</h1>
+            <button class="icon-btn" data-action="toggle-menu" aria-label="Open menu">
+              <svg
+                class="no-pointer"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M5 7C5 6.44772 5.44772 6 6 6H18C18.5523 6 19 6.44772 19 7C19 7.55228 18.5523 8 18 8H6C5.44772 8 5 7.55228 5 7ZM5 12C5 11.4477 5.44772 11 6 11H18C18.5523 11 19 11.4477 19 12C19 12.5523 18.5523 13 18 13H6C5.44772 13 5 12.5523 5 12ZM5 17C5 16.4477 5.44772 16 6 16H18C18.5523 16 19 16.4477 19 17C19 17.5523 18.5523 18 18 18H6C5.44772 18 5 17.5523 5 17Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </header>
+          <div class="content padding-container" style="flex: 1; overflow-y: auto">
+            <p id="fav-intro-text" class="text-secondary text-sm mb-lg">
+              Your favorite parking zones. Tap to start.
+            </p>
+            <div id="list-favorites" class="flex-col gap-sm">
+              <!-- Injected by ui.js -->
+            </div>
+          </div>
+        </div>
 
-      <div class="sheet-zone-body">
-        <div class="sheet-zone-header">
-           <div class="sheet-zone-title-row">
-              <div class="zone-badge-box zone-badge-box--sheet">
-                 <span class="icon-p">P</span>
-                 <span id="details-zone-id">321</span>
+        <!-- === VIEW: NOTIFICATIONS === -->
+        <div id="view-notifications" class="screen flex-col hidden">
+          <header class="top-bar">
+            <div class="brand-logo">
+              <img src="q8-logo.png" class="header-logo" alt="Q8 Liberty" />
+            </div>
+            <h1 class="page-title">Notifications</h1>
+            <button class="icon-btn" data-action="toggle-menu">
+              <svg
+                class="no-pointer"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M5 7C5 6.44772 5.44772 6 6 6H18C18.5523 6 19 6.44772 19 7C19 7.55228 18.5523 8 18 8H6C5.44772 8 5 7.55228 5 7ZM5 12C5 11.4477 5.44772 11 6 11H18C18.5523 11 19 11.4477 19 12C19 12.5523 18.5523 13 18 13H6C5.44772 13 5 12.5523 5 12ZM5 17C5 16.4477 5.44772 16 6 16H18C18.5523 16 19 16.4477 19 17C19 17.5523 18.5523 18 18 18H6C5.44772 18 5 17.5523 5 17Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </header>
+          <div class="content padding-container" style="flex: 1; overflow-y: auto">
+            <div class="notif-settings-section mb-xl">
+              <h2 class="text-main font-bold mb-md" style="font-size: 1rem">Settings</h2>
+              <div id="notif-settings-list" class="flex-col gap-sm">
+                <!-- Injected by ui.js -->
               </div>
-              <span class="sheet-zone-plate-badge clickable-plate" id="details-plate" data-action="open-plate-selector">G-346-VN</span>
-              <button class="icon-btn sheet-zone-fav" data-action="toggle-favorite" aria-label="Add to favorites" title="Add to favorites" style="padding:6px; margin-right:4px;">
-                 <svg id="fav-icon-outline" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                 <svg id="fav-icon-filled" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:none;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            </div>
+            <div class="notif-history-section">
+              <h2 class="text-main font-bold mb-md" style="font-size: 1rem">History</h2>
+              <div id="notif-history-list" class="flex-col gap-sm">
+                <!-- Injected by ui.js -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- === VIEW: HISTORY === -->
+        <div
+          id="view-history"
+          class="screen flex-col hidden"
+          role="region"
+          aria-label="Parking history"
+        >
+          <header class="top-bar">
+            <div class="brand-logo">
+              <img src="q8-logo.png" class="header-logo" alt="Q8 Liberty" />
+            </div>
+            <h1 class="page-title">Parking history</h1>
+            <button
+              class="icon-btn"
+              data-action="toggle-menu"
+              aria-label="Open menu"
+              aria-expanded="false"
+            >
+              <svg
+                class="no-pointer"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M5 7C5 6.44772 5.44772 6 6 6H18C18.5523 6 19 6.44772 19 7C19 7.55228 18.5523 8 18 8H6C5.44772 8 5 7.55228 5 7ZM5 12C5 11.4477 5.44772 11 6 11H18C18.5523 11 19 11.4477 19 12C19 12.5523 18.5523 13 18 13H6C5.44772 13 5 12.5523 5 12ZM5 17C5 16.4477 5.44772 16 6 16H18C18.5523 16 19 16.4477 19 17C19 17.5523 18.5523 18 18 18H6C5.44772 18 5 17.5523 5 17Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </header>
+          <!-- Quick filters: in één oogopslag zichtbaar op mobiel -->
+          <div id="history-quick-filters" class="history-quick-filters padding-container">
+            <!-- Injected: All, Last 7 days, Last 30 days, This month -->
+          </div>
+          <div id="history-filter-summary" class="history-filter-summary padding-container hidden">
+            <!-- Injected: active filter summary + link to full filters -->
+          </div>
+          <div class="content padding-container history-list-wrap" id="list-history">
+            <!-- Injected -->
+          </div>
+          <div
+            class="history-footer"
+            style="
+              padding: 16px;
+              background: var(--surface);
+              border-top: 1px solid var(--border);
+              display: flex;
+              gap: 12px;
+              flex-wrap: wrap;
+            "
+          >
+            <button class="btn btn-secondary" data-action="open-overlay" data-target="sheet-filter">
+              Filters
+            </button>
+            <button class="btn btn-outline" data-action="export-history-csv">Export CSV</button>
+            <button class="btn btn-outline" data-action="export-history-print">Print / PDF</button>
+          </div>
+        </div>
+
+        <!-- === OVERLAY: MENU === -->
+        <div id="menu-overlay" class="overlay-backdrop" data-action="close-overlay">
+          <div class="menu-drawer">
+            <header class="top-bar">
+              <div class="brand-logo">Q8</div>
+              <h1 class="page-title">Menu</h1>
+              <button class="icon-btn" data-action="close-overlay">
+                <svg
+                  class="no-pointer"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
               </button>
-              <button class="sheet-zone-close icon-btn" data-testid="btn-zone-close" data-close="sheet-zone" data-action="close-overlay" aria-label="Close">
-                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </header>
+
+            <div class="menu-list" style="padding: 24px">
+              <div class="list-item" data-action="nav-to" data-target="parking">
+                <span>Parking</span>
+                <span class="text-secondary">›</span>
+              </div>
+              <div class="list-item" data-action="nav-to" data-target="history">
+                <span>Parking history</span>
+                <span class="text-secondary">›</span>
+              </div>
+              <div class="list-item" data-action="nav-to" data-target="plates">
+                <span>License plates</span>
+                <span class="text-secondary">›</span>
+              </div>
+              <div class="list-item" data-action="nav-to" data-target="car-specs">
+                <span>Car specs</span>
+                <span class="text-secondary">›</span>
+              </div>
+
+              <div class="list-item" style="cursor: default">
+                <span>Language</span>
+                <div class="flex gap-sm">
+                  <div class="badge badge-neutral" style="background: var(--border)">EN</div>
+                  <div class="badge badge-neutral">NL</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="padding: 24px; margin-top: auto">
+              <button class="btn btn-danger" data-action="logout">Sign out</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- === OVERLAY: ZONE DETAILS (Sheet) - bijlage 2 layout === -->
+        <div
+          id="sheet-zone"
+          class="overlay-backdrop"
+          data-testid="sheet-zone"
+          data-action="close-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="zone-sheet-title"
+        >
+          <div class="bottom-sheet sheet-zone" role="document">
+            <div class="sheet-handle"></div>
+
+            <div class="sheet-zone-body">
+              <div class="sheet-zone-header">
+                <div class="sheet-zone-title-row">
+                  <div class="zone-badge-box zone-badge-box--sheet">
+                    <span class="icon-p">P</span>
+                    <span id="details-zone-id">321</span>
+                  </div>
+                  <span
+                    class="sheet-zone-plate-badge clickable-plate"
+                    id="details-plate"
+                    data-action="open-plate-selector"
+                    >G-346-VN</span
+                  >
+                  <button
+                    class="icon-btn sheet-zone-fav"
+                    data-action="toggle-favorite"
+                    aria-label="Add to favorites"
+                    title="Add to favorites"
+                    style="padding: 6px; margin-right: 4px"
+                  >
+                    <svg
+                      id="fav-icon-outline"
+                      width="22"
+                      height="22"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path
+                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                      ></path>
+                    </svg>
+                    <svg
+                      id="fav-icon-filled"
+                      width="22"
+                      height="22"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      xmlns="http://www.w3.org/2000/svg"
+                      style="display: none"
+                    >
+                      <path
+                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    class="sheet-zone-close icon-btn"
+                    data-testid="btn-zone-close"
+                    data-close="sheet-zone"
+                    data-action="close-overlay"
+                    aria-label="Close"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="sheet-section">
+                <label class="input-label sheet-section-label" id="details-rates-label" title=""
+                  >Rates</label
+                >
+                <div id="details-rates-list" class="sheet-rates-list">
+                  <!-- Dynamic rates injected here -->
+                </div>
+              </div>
+
+              <div class="sheet-section sheet-section-duration">
+                <label id="details-duration-label" class="input-label sheet-section-label"
+                  >Parking duration</label
+                >
+                <div class="sheet-duration-control">
+                  <button
+                    class="sheet-duration-btn"
+                    data-action="mod-duration"
+                    data-delta="-15"
+                    data-testid="btn-zone-minus"
+                  >
+                    −
+                  </button>
+                  <div class="sheet-duration-value" id="val-duration" data-testid="duration-value">
+                    2h 00m
+                  </div>
+                  <button
+                    class="sheet-duration-btn"
+                    data-action="mod-duration"
+                    data-delta="15"
+                    data-testid="btn-zone-plus"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <div class="sheet-section sheet-section-default-duration">
+                <label
+                  id="default-duration-label"
+                  class="input-label sheet-section-label text-secondary"
+                  >Standaard duur</label
+                >
+                <div class="default-duration-pills">
+                  <button
+                    type="button"
+                    class="duration-default-pill"
+                    data-action="set-default-duration"
+                    data-minutes="0"
+                  >
+                    Until stopped
+                  </button>
+                  <button
+                    type="button"
+                    class="duration-default-pill"
+                    data-action="set-default-duration"
+                    data-minutes="60"
+                  >
+                    1u
+                  </button>
+                  <button
+                    type="button"
+                    class="duration-default-pill"
+                    data-action="set-default-duration"
+                    data-minutes="120"
+                  >
+                    2u
+                  </button>
+                  <button
+                    type="button"
+                    class="duration-default-pill"
+                    data-action="set-default-duration"
+                    data-minutes="180"
+                  >
+                    3u
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="sheet-zone-footer">
+              <p
+                id="sheet-zone-error"
+                class="sheet-zone-error hidden"
+                role="alert"
+                aria-live="polite"
+              ></p>
+              <button
+                class="btn btn-primary btn-lg sheet-start-btn w-full"
+                data-action="start-session"
+              >
+                START PARKING
               </button>
-           </div>
-        </div>
-
-        <div class="sheet-section">
-          <label class="input-label sheet-section-label" id="details-rates-label" title="">Rates</label>
-          <div id="details-rates-list" class="sheet-rates-list">
-              <!-- Dynamic rates injected here -->
+            </div>
           </div>
         </div>
 
-        <div class="sheet-section sheet-section-duration">
-           <label id="details-duration-label" class="input-label sheet-section-label">Parking duration</label>
-           <div class="sheet-duration-control">
-              <button class="sheet-duration-btn" data-action="mod-duration" data-delta="-15" data-testid="btn-zone-minus">−</button>
-              <div class="sheet-duration-value" id="val-duration" data-testid="duration-value">2h 00m</div>
-              <button class="sheet-duration-btn" data-action="mod-duration" data-delta="15" data-testid="btn-zone-plus">+</button>
-           </div>
-        </div>
-        <div class="sheet-section sheet-section-default-duration">
-           <label id="default-duration-label" class="input-label sheet-section-label text-secondary">Standaard duur</label>
-           <div class="default-duration-pills">
-              <button type="button" class="duration-default-pill" data-action="set-default-duration" data-minutes="0">Until stopped</button>
-              <button type="button" class="duration-default-pill" data-action="set-default-duration" data-minutes="60">1u</button>
-              <button type="button" class="duration-default-pill" data-action="set-default-duration" data-minutes="120">2u</button>
-              <button type="button" class="duration-default-pill" data-action="set-default-duration" data-minutes="180">3u</button>
-           </div>
-        </div>
-      </div>
+        <!-- === OVERLAY: FILTERS (Sheet) === -->
+        <div id="sheet-filter" class="overlay-backdrop" data-action="close-overlay">
+          <div class="bottom-sheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+              <h2 class="font-bold text-lg">Filters</h2>
+              <span class="filters-clear" data-action="close-overlay">Clear all</span>
+            </div>
 
-      <div class="sheet-zone-footer">
-        <p id="sheet-zone-error" class="sheet-zone-error hidden" role="alert" aria-live="polite"></p>
-        <button class="btn btn-primary btn-lg sheet-start-btn w-full" data-action="start-session">START PARKING</button>
-      </div>
-    </div>
-  </div>
+            <div class="sheet-section">
+              <label class="input-label uppercase">Vehicle</label>
+              <div class="flex gap-sm">
+                <div class="badge badge-success">1-ABC-123</div>
+                <div class="badge badge-neutral">2-XYZ-999</div>
+              </div>
+            </div>
 
+            <div class="sheet-section mb-xl">
+              <label class="input-label uppercase">Date Range</label>
+              <div class="flex gap-md mt-sm">
+                <div class="btn btn-secondary" style="flex: 1; font-size: 0.9rem">Start Date</div>
+                <div class="btn btn-secondary" style="flex: 1; font-size: 0.9rem">End Date</div>
+              </div>
+            </div>
 
-  <!-- === OVERLAY: FILTERS (Sheet) === -->
-  <div id="sheet-filter" class="overlay-backdrop" data-action="close-overlay">
-    <div class="bottom-sheet">
-      <div class="sheet-handle"></div>
-       <div class="sheet-header">
-         <h2 class="font-bold text-lg">Filters</h2>
-         <span class="filters-clear" data-action="close-overlay">Clear all</span>
-       </div>
-
-       <div class="sheet-section">
-          <label class="input-label uppercase">Vehicle</label>
-          <div class="flex gap-sm">
-             <div class="badge badge-success">1-ABC-123</div>
-             <div class="badge badge-neutral">2-XYZ-999</div>
+            <button class="btn btn-primary btn-lg" data-action="close-overlay">APPLY</button>
           </div>
-       </div>
+        </div>
 
-       <div class="sheet-section mb-xl">
-          <label class="input-label uppercase">Date Range</label>
-          <div class="flex gap-md mt-sm">
-             <div class="btn btn-secondary" style="flex:1; font-size:0.9rem;">Start Date</div>
-             <div class="btn btn-secondary" style="flex:1; font-size:0.9rem;">End Date</div>
+        <!-- === OVERLAY: QUICK PLATE SELECTOR (Action Sheet) === -->
+        <div
+          id="sheet-plate-selector"
+          class="overlay-backdrop"
+          data-action="close-overlay"
+          style="z-index: 9999"
+        >
+          <div class="bottom-sheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+              <h2 class="font-bold text-lg">Select vehicle</h2>
+            </div>
+            <div class="sheet-section mb-lg">
+              <div id="quick-plate-list" class="flex-col gap-sm">
+                <!-- Dynamic list -->
+              </div>
+            </div>
           </div>
-       </div>
+        </div>
 
-       <button class="btn btn-primary btn-lg" data-action="close-overlay">APPLY</button>
-    </div>
-  </div>
+        <!-- === OVERLAY: ADD PLATE (Modal) === -->
+        <div
+          id="modal-add-plate"
+          class="overlay-backdrop justify-center items-center"
+          data-action="close-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="add-plate-title"
+        >
+          <div class="card modal-card" role="document">
+            <h2 id="add-plate-title" class="font-bold text-lg mb-lg">Add license plate</h2>
 
-  <!-- === OVERLAY: QUICK PLATE SELECTOR (Action Sheet) === -->
-  <div id="sheet-plate-selector" class="overlay-backdrop" data-action="close-overlay" style="z-index: 9999;">
-    <div class="bottom-sheet">
-       <div class="sheet-handle"></div>
-       <div class="sheet-header">
-         <h2 class="font-bold text-lg">Select vehicle</h2>
-       </div>
-       <div class="sheet-section mb-lg">
-          <div id="quick-plate-list" class="flex-col gap-sm">
-             <!-- Dynamic list -->
+            <div class="mb-sm">
+              <label class="input-label">License plate</label>
+              <input
+                type="text"
+                id="inp-plate"
+                class="input-field input-lg"
+                placeholder="AB-123-C"
+                maxlength="10"
+                autocomplete="off"
+              />
+              <p id="plate-format-hint" class="text-secondary mt-xs" style="font-size: 0.75rem">
+                E.g. AB-123-C (Dutch format)
+              </p>
+              <p
+                id="plate-format-error"
+                class="plate-format-error mt-xs"
+                style="font-size: 0.8rem; color: var(--danger); display: none"
+              ></p>
+            </div>
+            <div class="mb-md">
+              <span
+                id="plate-rdw-result"
+                class="plate-rdw-result"
+                style="font-size: 0.85rem"
+              ></span>
+            </div>
+
+            <div class="mb-xl">
+              <label class="input-label">Description</label>
+              <input
+                type="text"
+                id="inp-plate-desc"
+                class="input-field input-lg"
+                placeholder="My Car"
+                maxlength="20"
+              />
+            </div>
+
+            <div class="flex gap-md">
+              <button class="btn btn-secondary" data-action="close-overlay">CANCEL</button>
+              <button class="btn btn-primary" data-action="save-plate">ADD</button>
+            </div>
           </div>
-       </div>
-    </div>
-  </div>
-
-
-  <!-- === OVERLAY: ADD PLATE (Modal) === -->
-  <div id="modal-add-plate" class="overlay-backdrop justify-center items-center" data-action="close-overlay" role="dialog" aria-modal="true" aria-labelledby="add-plate-title">
-     <div class="card modal-card" role="document">
-        <h2 id="add-plate-title" class="font-bold text-lg mb-lg">Add license plate</h2>
-
-        <div class="mb-sm">
-           <label class="input-label">License plate</label>
-           <input type="text" id="inp-plate" class="input-field input-lg" placeholder="AB-123-C" maxlength="10" autocomplete="off">
-           <p id="plate-format-hint" class="text-secondary mt-xs" style="font-size:0.75rem;">E.g. AB-123-C (Dutch format)</p>
-           <p id="plate-format-error" class="plate-format-error mt-xs" style="font-size:0.8rem; color:var(--danger); display:none;"></p>
-        </div>
-        <div class="mb-md">
-           <span id="plate-rdw-result" class="plate-rdw-result" style="font-size:0.85rem;"></span>
         </div>
 
-        <div class="mb-xl">
-           <label class="input-label">Description</label>
-           <input type="text" id="inp-plate-desc" class="input-field input-lg" placeholder="My Car" maxlength="20">
+        <!-- === OVERLAY: EDIT PLATE (Modal) === -->
+        <div
+          id="modal-edit-plate"
+          class="overlay-backdrop justify-center items-center"
+          data-action="close-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="edit-plate-title"
+        >
+          <div class="card modal-card" role="document">
+            <h2 id="edit-plate-title" class="font-bold text-lg mb-lg">Edit license plate</h2>
+
+            <div class="mb-md">
+              <label class="input-label">License plate</label>
+              <input
+                type="text"
+                id="inp-edit-plate"
+                class="input-field input-lg"
+                placeholder="1-ABC-123"
+              />
+            </div>
+
+            <div class="mb-xl">
+              <label class="input-label">Description</label>
+              <input
+                type="text"
+                id="inp-edit-plate-desc"
+                class="input-field input-lg"
+                placeholder="My Car"
+                maxlength="20"
+              />
+            </div>
+
+            <div class="flex gap-md">
+              <button class="btn btn-secondary" data-action="close-overlay">CANCEL</button>
+              <button class="btn btn-primary" data-action="save-edit-plate">SAVE</button>
+            </div>
+          </div>
         </div>
 
-        <div class="flex gap-md">
-           <button class="btn btn-secondary" data-action="close-overlay">CANCEL</button>
-           <button class="btn btn-primary" data-action="save-plate">ADD</button>
+        <!-- === OVERLAY: FORGOT PASSWORD (Modal) === -->
+        <div
+          id="modal-forgot-password"
+          class="overlay-backdrop justify-center items-center"
+          data-action="close-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="forgot-password-title"
+        >
+          <div class="card modal-card" role="document">
+            <h2 id="forgot-password-title" class="font-bold text-lg mb-sm">Reset password</h2>
+            <p class="text-secondary mb-lg" style="font-size: 0.9rem; line-height: 1.5">
+              Enter your email address and we'll send you a link to reset your password.
+            </p>
+            <form id="form-forgot-password" onsubmit="return false;">
+              <div class="mb-md">
+                <label class="input-label">Email</label>
+                <input
+                  type="email"
+                  id="inp-forgot-email"
+                  class="input-field input-lg"
+                  placeholder="name@company.com"
+                />
+              </div>
+              <p id="forgot-password-result" class="text-sm mb-md" style="display: none"></p>
+              <div class="flex gap-md">
+                <button type="button" class="btn btn-secondary" data-action="close-overlay">
+                  CANCEL
+                </button>
+                <button type="submit" class="btn btn-primary" data-action="submit-forgot-password">
+                  SEND RESET LINK
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-     </div>
-  </div>
 
-  <!-- === OVERLAY: EDIT PLATE (Modal) === -->
-  <div id="modal-edit-plate" class="overlay-backdrop justify-center items-center" data-action="close-overlay" role="dialog" aria-modal="true" aria-labelledby="edit-plate-title">
-     <div class="card modal-card" role="document">
-        <h2 id="edit-plate-title" class="font-bold text-lg mb-lg">Edit license plate</h2>
-
-        <div class="mb-md">
-           <label class="input-label">License plate</label>
-           <input type="text" id="inp-edit-plate" class="input-field input-lg" placeholder="1-ABC-123">
+        <!-- === OVERLAY: CONFIRM START PARKING (Modal) - zone + plate verificatie === -->
+        <div
+          id="modal-confirm-start"
+          class="overlay-backdrop justify-center items-center"
+          data-action="close-overlay"
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="confirm-start-title"
+        >
+          <div class="card modal-card" role="document">
+            <h2 id="confirm-start-title" class="font-bold text-lg mb-sm">
+              Confirm parking session
+            </h2>
+            <p
+              id="confirm-start-desc"
+              class="text-secondary mb-md"
+              style="font-size: 0.9rem; line-height: 1.5"
+            >
+              Please verify zone number and license plate before starting.
+            </p>
+            <div class="flex flex-col gap-md mb-lg" style="font-size: 1rem">
+              <div
+                class="flex justify-between items-center"
+                style="padding: 12px 16px; background: var(--bg-secondary); border-radius: 12px"
+              >
+                <span class="text-secondary" style="font-weight: 500">Zone</span>
+                <span id="confirm-start-zone" class="font-bold">—</span>
+              </div>
+              <div
+                class="flex justify-between items-center"
+                style="
+                  padding: 12px 16px;
+                  background: var(--bg-secondary);
+                  border-radius: 12px;
+                  cursor: pointer;
+                "
+                data-action="open-plate-selector-from-confirm"
+                title="Change license plate"
+              >
+                <span class="text-secondary" style="font-weight: 500">License plate</span>
+                <span
+                  id="confirm-start-plate"
+                  class="font-bold sheet-zone-plate-badge"
+                  style="padding: 6px 12px"
+                  >—</span
+                >
+              </div>
+            </div>
+            <p
+              id="confirm-start-daypass-note"
+              class="text-secondary mb-md"
+              style="font-size: 0.85rem; display: none"
+            ></p>
+            <div class="flex gap-md">
+              <button class="btn btn-secondary" data-action="close-overlay">CANCEL</button>
+              <button class="btn btn-primary" data-action="confirm-start-session">
+                YES, START
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div class="mb-xl">
-           <label class="input-label">Description</label>
-           <input type="text" id="inp-edit-plate-desc" class="input-field input-lg" placeholder="My Car" maxlength="20">
+        <!-- === OVERLAY: CONFIRM DAYPASS ZONE (Modal) === -->
+        <div
+          id="modal-confirm-daypass"
+          class="overlay-backdrop justify-center items-center"
+          data-action="close-overlay"
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="confirm-daypass-title"
+        >
+          <div class="card modal-card" role="document">
+            <h2 id="confirm-daypass-title" class="font-bold text-lg mb-sm">Zone with day pass</h2>
+            <p
+              id="confirm-daypass-desc"
+              class="text-secondary mb-lg"
+              style="font-size: 0.9rem; line-height: 1.5"
+            >
+              This zone has a day pass. Are you sure you want to start the transaction?
+            </p>
+            <div class="flex gap-md">
+              <button
+                class="btn btn-secondary"
+                data-action="close-overlay"
+                id="confirm-daypass-cancel"
+              >
+                CANCEL
+              </button>
+              <button
+                class="btn btn-primary"
+                data-action="confirm-start-daypass"
+                id="confirm-daypass-ok"
+              >
+                YES, START
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div class="flex gap-md">
-           <button class="btn btn-secondary" data-action="close-overlay">CANCEL</button>
-           <button class="btn btn-primary" data-action="save-edit-plate">SAVE</button>
+        <!-- === OVERLAY: CONFIRM DELETE PLATE (Modal) === -->
+        <div
+          id="modal-confirm-delete-plate"
+          class="overlay-backdrop justify-center items-center"
+          data-action="close-overlay"
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="confirm-delete-plate-title"
+        >
+          <div class="card modal-card" role="document">
+            <h2 id="confirm-delete-plate-title" class="font-bold text-lg mb-sm">
+              Delete license plate?
+            </h2>
+            <p
+              id="confirm-delete-plate-desc"
+              class="text-secondary mb-lg"
+              style="font-size: 0.9rem; line-height: 1.5"
+            >
+              Are you sure you want to remove this license plate? This cannot be undone.
+            </p>
+            <div class="flex gap-md">
+              <button class="btn btn-secondary" data-action="close-overlay">CANCEL</button>
+              <button class="btn btn-danger" data-action="confirm-delete-plate">DELETE</button>
+            </div>
+          </div>
         </div>
-     </div>
-  </div>
 
-
-  <!-- === OVERLAY: FORGOT PASSWORD (Modal) === -->
-  <div id="modal-forgot-password" class="overlay-backdrop justify-center items-center" data-action="close-overlay" role="dialog" aria-modal="true" aria-labelledby="forgot-password-title">
-     <div class="card modal-card" role="document">
-        <h2 id="forgot-password-title" class="font-bold text-lg mb-sm">Reset password</h2>
-        <p class="text-secondary mb-lg" style="font-size:0.9rem; line-height:1.5;">Enter your email address and we'll send you a link to reset your password.</p>
-        <form id="form-forgot-password" onsubmit="return false;">
-           <div class="mb-md">
-              <label class="input-label">Email</label>
-              <input type="email" id="inp-forgot-email" class="input-field input-lg" placeholder="name@company.com">
-           </div>
-           <p id="forgot-password-result" class="text-sm mb-md" style="display:none;"></p>
-           <div class="flex gap-md">
-              <button type="button" class="btn btn-secondary" data-action="close-overlay">CANCEL</button>
-              <button type="submit" class="btn btn-primary" data-action="submit-forgot-password">SEND RESET LINK</button>
-           </div>
-        </form>
-     </div>
-  </div>
-
-  <!-- === OVERLAY: CONFIRM START PARKING (Modal) - zone + plate verificatie === -->
-  <div id="modal-confirm-start" class="overlay-backdrop justify-center items-center" data-action="close-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirm-start-title">
-     <div class="card modal-card" role="document">
-        <h2 id="confirm-start-title" class="font-bold text-lg mb-sm">Confirm parking session</h2>
-        <p id="confirm-start-desc" class="text-secondary mb-md" style="font-size:0.9rem; line-height:1.5;">Please verify zone number and license plate before starting.</p>
-        <div class="flex flex-col gap-md mb-lg" style="font-size:1rem;">
-           <div class="flex justify-between items-center" style="padding:12px 16px; background:var(--bg-secondary); border-radius:12px;">
-              <span class="text-secondary" style="font-weight:500;">Zone</span>
-              <span id="confirm-start-zone" class="font-bold">—</span>
-           </div>
-           <div class="flex justify-between items-center" style="padding:12px 16px; background:var(--bg-secondary); border-radius:12px; cursor:pointer;" data-action="open-plate-selector-from-confirm" title="Change license plate">
-              <span class="text-secondary" style="font-weight:500;">License plate</span>
-              <span id="confirm-start-plate" class="font-bold sheet-zone-plate-badge" style="padding:6px 12px;">—</span>
-           </div>
+        <!-- === OVERLAY: CONFIRM END (Modal) === -->
+        <div
+          id="modal-confirm"
+          class="overlay-backdrop justify-center items-center"
+          data-action="close-overlay"
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="confirm-title"
+          aria-describedby="confirm-desc"
+        >
+          <div class="card modal-card" role="document">
+            <h2 id="confirm-title" class="font-bold text-lg mb-sm">End Parking?</h2>
+            <p id="confirm-desc" class="text-secondary mb-lg" style="line-height: 1.5">
+              Are you sure you want to stop this parking session?
+            </p>
+            <div class="flex gap-md">
+              <button class="btn btn-secondary" data-action="close-overlay">CANCEL</button>
+              <button class="btn btn-danger" data-action="confirm-end">END PARKING</button>
+            </div>
+          </div>
         </div>
-        <p id="confirm-start-daypass-note" class="text-secondary mb-md" style="font-size:0.85rem; display:none;"></p>
-        <div class="flex gap-md">
-           <button class="btn btn-secondary" data-action="close-overlay">CANCEL</button>
-           <button class="btn btn-primary" data-action="confirm-start-session">YES, START</button>
+
+        <!-- === OVERLAY: Locatie-uitleg (2.5) vóór eerste permissievraag === -->
+        <div
+          id="modal-location-explanation"
+          class="overlay-backdrop justify-center items-center"
+          data-action="close-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="location-explanation-title"
+        >
+          <div class="card modal-card" role="document">
+            <h2 id="location-explanation-title" class="font-bold text-lg mb-md">Locatie</h2>
+            <p id="location-explanation-text" class="text-secondary mb-lg" style="line-height: 1.5">
+              We gebruiken je locatie om nabije parkeerzones te tonen.
+            </p>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-action="confirm-location-explanation"
+            >
+              Toestaan
+            </button>
+          </div>
         </div>
-     </div>
-  </div>
 
-  <!-- === OVERLAY: CONFIRM DAYPASS ZONE (Modal) === -->
-  <div id="modal-confirm-daypass" class="overlay-backdrop justify-center items-center" data-action="close-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirm-daypass-title">
-     <div class="card modal-card" role="document">
-        <h2 id="confirm-daypass-title" class="font-bold text-lg mb-sm">Zone with day pass</h2>
-        <p id="confirm-daypass-desc" class="text-secondary mb-lg" style="font-size:0.9rem; line-height:1.5;">This zone has a day pass. Are you sure you want to start the transaction?</p>
-        <div class="flex gap-md">
-           <button class="btn btn-secondary" data-action="close-overlay" id="confirm-daypass-cancel">CANCEL</button>
-           <button class="btn btn-primary" data-action="confirm-start-daypass" id="confirm-daypass-ok">YES, START</button>
+        <!-- Toast (header area, with progress & close) -->
+        <div class="toast-container" role="status" aria-live="polite" aria-atomic="true">
+          <div id="toast" class="toast">
+            <span id="toast-message" class="toast-message"></span>
+            <button
+              type="button"
+              class="toast-close"
+              data-action="dismiss-toast"
+              aria-label="Close notification"
+            >
+              &times;
+            </button>
+            <div class="toast-progress" id="toast-progress"></div>
+          </div>
         </div>
-     </div>
-  </div>
+      </main>
 
-  <!-- === OVERLAY: CONFIRM DELETE PLATE (Modal) === -->
-  <div id="modal-confirm-delete-plate" class="overlay-backdrop justify-center items-center" data-action="close-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirm-delete-plate-title">
-     <div class="card modal-card" role="document">
-        <h2 id="confirm-delete-plate-title" class="font-bold text-lg mb-sm">Delete license plate?</h2>
-        <p id="confirm-delete-plate-desc" class="text-secondary mb-lg" style="font-size:0.9rem; line-height:1.5;">Are you sure you want to remove this license plate? This cannot be undone.</p>
-        <div class="flex gap-md">
-           <button class="btn btn-secondary" data-action="close-overlay">CANCEL</button>
-           <button class="btn btn-danger" data-action="confirm-delete-plate">DELETE</button>
-        </div>
-     </div>
-  </div>
-
-  <!-- === OVERLAY: CONFIRM END (Modal) === -->
-  <div id="modal-confirm" class="overlay-backdrop justify-center items-center" data-action="close-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-desc">
-     <div class="card modal-card" role="document">
-        <h2 id="confirm-title" class="font-bold text-lg mb-sm">End Parking?</h2>
-        <p id="confirm-desc" class="text-secondary mb-lg" style="line-height:1.5;">Are you sure you want to stop this parking session?</p>
-        <div class="flex gap-md">
-           <button class="btn btn-secondary" data-action="close-overlay">CANCEL</button>
-           <button class="btn btn-danger" data-action="confirm-end">END PARKING</button>
-        </div>
-     </div>
-  </div>
-
-  <!-- === OVERLAY: Locatie-uitleg (2.5) vóór eerste permissievraag === -->
-  <div id="modal-location-explanation" class="overlay-backdrop justify-center items-center" data-action="close-overlay" role="dialog" aria-modal="true" aria-labelledby="location-explanation-title">
-     <div class="card modal-card" role="document">
-        <h2 id="location-explanation-title" class="font-bold text-lg mb-md">Locatie</h2>
-        <p id="location-explanation-text" class="text-secondary mb-lg" style="line-height:1.5;">We gebruiken je locatie om nabije parkeerzones te tonen.</p>
-        <button type="button" class="btn btn-primary" data-action="confirm-location-explanation">Toestaan</button>
-     </div>
-  </div>
-
-  <!-- Toast (header area, with progress & close) -->
-  <div class="toast-container" role="status" aria-live="polite" aria-atomic="true">
-    <div id="toast" class="toast">
-      <span id="toast-message" class="toast-message"></span>
-      <button type="button" class="toast-close" data-action="dismiss-toast" aria-label="Close notification">&times;</button>
-      <div class="toast-progress" id="toast-progress"></div>
-    </div>
-  </div>
-
-  </main>
-
-  <!-- === SIDEBAR MENU (from right, matches original design) === -->
-  <nav id="side-menu" class="side-menu" role="navigation" aria-label="Main navigation">
-      <div class="menu-items">
-          <div class="menu-item-pill" data-action="nav-to" data-target="parking">
-             <span class="menu-icon-circle">
-               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13,7H10A1,1,0,0,0,9,8v8a1,1,0,0,0,2,0V14h2a3,3,0,0,0,3-3V10A3,3,0,0,0,13,7Zm1,4a1,1,0,0,1-1,1H11V9h2a1,1,0,0,1,1,1ZM12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" fill="currentColor"/></svg>
-             </span>
-             <span>Parking</span>
+      <!-- === SIDEBAR MENU (from right, matches original design) === -->
+      <nav
+        id="side-menu"
+        class="side-menu"
+        data-testid="side-menu"
+        role="navigation"
+        aria-label="Main navigation"
+      >
+        <div class="menu-items">
+          <div
+            class="menu-item-pill"
+            data-testid="menu-item-parking"
+            data-action="nav-to"
+            data-target="parking"
+          >
+            <span class="menu-icon-circle">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M13,7H10A1,1,0,0,0,9,8v8a1,1,0,0,0,2,0V14h2a3,3,0,0,0,3-3V10A3,3,0,0,0,13,7Zm1,4a1,1,0,0,1-1,1H11V9h2a1,1,0,0,1,1,1ZM12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </span>
+            <span>Parking</span>
           </div>
           <div class="menu-item-pill" data-action="nav-to" data-target="history">
-             <span class="menu-icon-circle">
-               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.01112 11.5747L6.29288 10.2929C6.68341 9.90236 7.31657 9.90236 7.7071 10.2929C8.09762 10.6834 8.09762 11.3166 7.7071 11.7071L4.7071 14.7071C4.51956 14.8946 4.26521 15 3.99999 15C3.73477 15 3.48042 14.8946 3.29288 14.7071L0.292884 11.7071C-0.0976406 11.3166 -0.0976406 10.6834 0.292884 10.2929C0.683408 9.90236 1.31657 9.90236 1.7071 10.2929L3.0081 11.5939C3.22117 6.25933 7.61317 2 13 2C18.5229 2 23 6.47715 23 12C23 17.5228 18.5229 22 13 22C9.85817 22 7.05429 20.5499 5.22263 18.2864C4.87522 17.8571 4.94163 17.2274 5.37096 16.88C5.80028 16.5326 6.42996 16.599 6.77737 17.0283C8.24562 18.8427 10.4873 20 13 20C17.4183 20 21 16.4183 21 12C21 7.58172 17.4183 4 13 4C8.72441 4 5.23221 7.35412 5.01112 11.5747ZM13 5C13.5523 5 14 5.44772 14 6V11.5858L16.7071 14.2929C17.0976 14.6834 17.0976 15.3166 16.7071 15.7071C16.3166 16.0976 15.6834 16.0976 15.2929 15.7071L12.2929 12.7071C12.1054 12.5196 12 12.2652 12 12V6C12 5.44772 12.4477 5 13 5Z" fill="currentColor"/></svg>
-             </span>
-             <span>Parking history</span>
+            <span class="menu-icon-circle">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M5.01112 11.5747L6.29288 10.2929C6.68341 9.90236 7.31657 9.90236 7.7071 10.2929C8.09762 10.6834 8.09762 11.3166 7.7071 11.7071L4.7071 14.7071C4.51956 14.8946 4.26521 15 3.99999 15C3.73477 15 3.48042 14.8946 3.29288 14.7071L0.292884 11.7071C-0.0976406 11.3166 -0.0976406 10.6834 0.292884 10.2929C0.683408 9.90236 1.31657 9.90236 1.7071 10.2929L3.0081 11.5939C3.22117 6.25933 7.61317 2 13 2C18.5229 2 23 6.47715 23 12C23 17.5228 18.5229 22 13 22C9.85817 22 7.05429 20.5499 5.22263 18.2864C4.87522 17.8571 4.94163 17.2274 5.37096 16.88C5.80028 16.5326 6.42996 16.599 6.77737 17.0283C8.24562 18.8427 10.4873 20 13 20C17.4183 20 21 16.4183 21 12C21 7.58172 17.4183 4 13 4C8.72441 4 5.23221 7.35412 5.01112 11.5747ZM13 5C13.5523 5 14 5.44772 14 6V11.5858L16.7071 14.2929C17.0976 14.6834 17.0976 15.3166 16.7071 15.7071C16.3166 16.0976 15.6834 16.0976 15.2929 15.7071L12.2929 12.7071C12.1054 12.5196 12 12.2652 12 12V6C12 5.44772 12.4477 5 13 5Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </span>
+            <span>Parking history</span>
           </div>
           <div class="menu-item-pill" data-action="nav-to" data-target="plates">
-             <span class="menu-icon-circle">
-               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12ZM12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM13 7C13 6.44772 12.5523 6 12 6C11.4477 6 11 6.44772 11 7V11H7C6.44772 11 6 11.4477 6 12C6 12.5523 6.44772 13 7 13H11V17C11 17.5523 11.4477 18 12 18C12.5523 18 13 17.5523 13 17V13H17C17.5523 13 18 12.5523 18 12C18 11.4477 17.5523 11 17 11H13V7Z" fill="currentColor"/></svg>
-             </span>
-             <span>License plates</span>
+            <span class="menu-icon-circle">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12ZM12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM13 7C13 6.44772 12.5523 6 12 6C11.4477 6 11 6.44772 11 7V11H7C6.44772 11 6 11.4477 6 12C6 12.5523 6.44772 13 7 13H11V17C11 17.5523 11.4477 18 12 18C12.5523 18 13 17.5523 13 17V13H17C17.5523 13 18 12.5523 18 12C18 11.4477 17.5523 11 17 11H13V7Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </span>
+            <span>License plates</span>
           </div>
           <div class="menu-item-pill" data-action="nav-to" data-target="notifications">
-             <span class="menu-icon-circle">
-               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.37 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.64 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z" fill="currentColor"/></svg>
-             </span>
-             <span>Notifications</span>
+            <span class="menu-icon-circle">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.37 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.64 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </span>
+            <span>Notifications</span>
           </div>
           <div class="menu-item-pill" data-action="nav-to" data-target="favorites">
-             <span class="menu-icon-circle">
-               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg>
-             </span>
-             <span>Favorites</span>
+            <span class="menu-icon-circle">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                  fill="currentColor"
+                />
+              </svg>
+            </span>
+            <span>Favorites</span>
           </div>
-          <div class="menu-item-pill menu-item-secondary" data-action="nav-to" data-target="car-specs">
-             <span class="menu-icon-circle">
-               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z" fill="currentColor"/></svg>
-             </span>
-             <span>Car specs</span>
+          <div
+            class="menu-item-pill menu-item-secondary"
+            data-action="nav-to"
+            data-target="car-specs"
+          >
+            <span class="menu-icon-circle">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"
+                  fill="currentColor"
+                />
+              </svg>
+            </span>
+            <span>Car specs</span>
           </div>
-          <div class="menu-dark-row" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;margin-bottom:8px;">
-             <span class="text-main" style="font-size:0.9rem;">Appearance</span>
-             <div class="dark-mode-options flex gap-xs">
-               <button type="button" class="dark-mode-opt" data-action="set-dark-pref" data-pref="light" aria-pressed="false">Light</button>
-               <button type="button" class="dark-mode-opt" data-action="set-dark-pref" data-pref="system" aria-pressed="true">System</button>
-               <button type="button" class="dark-mode-opt" data-action="set-dark-pref" data-pref="dark" aria-pressed="false">Dark</button>
-             </div>
+          <div
+            class="menu-dark-row"
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 12px;
+              padding: 12px 16px;
+              margin-bottom: 8px;
+            "
+          >
+            <span class="text-main" style="font-size: 0.9rem">Appearance</span>
+            <div class="dark-mode-options flex gap-xs">
+              <button
+                type="button"
+                class="dark-mode-opt"
+                data-action="set-dark-pref"
+                data-pref="light"
+                aria-pressed="false"
+              >
+                Light
+              </button>
+              <button
+                type="button"
+                class="dark-mode-opt"
+                data-action="set-dark-pref"
+                data-pref="system"
+                aria-pressed="true"
+              >
+                System
+              </button>
+              <button
+                type="button"
+                class="dark-mode-opt"
+                data-action="set-dark-pref"
+                data-pref="dark"
+                aria-pressed="false"
+              >
+                Dark
+              </button>
+            </div>
           </div>
           <div class="menu-lang-row">
-             <button type="button" class="menu-lang-btn active" data-action="set-lang" data-lang="en">
-               <span class="menu-lang-flag"><svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="15" fill="#B22234"/><rect y="2" width="20" height="2" fill="white"/><rect y="4" width="20" height="2" fill="#B22234"/><rect y="6" width="20" height="2" fill="white"/><rect y="8" width="20" height="2" fill="#B22234"/><rect y="10" width="20" height="2" fill="white"/><rect y="12" width="20" height="2" fill="#B22234"/><rect width="8" height="8" fill="#3C3B6E"/></svg></span>
-               ENGLISH
-             </button>
-             <button type="button" class="menu-lang-btn" data-action="set-lang" data-lang="nl">
-               <span class="menu-lang-flag"><svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="5" fill="#AE1C28"/><rect y="5" width="20" height="5" fill="white"/><rect y="10" width="20" height="5" fill="#21468B"/></svg></span>
-               NEDERLANDS
-             </button>
+            <button
+              type="button"
+              class="menu-lang-btn active"
+              data-action="set-lang"
+              data-lang="en"
+            >
+              <span class="menu-lang-flag"
+                ><svg
+                  width="20"
+                  height="15"
+                  viewBox="0 0 20 15"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect width="20" height="15" fill="#B22234" />
+                  <rect y="2" width="20" height="2" fill="white" />
+                  <rect y="4" width="20" height="2" fill="#B22234" />
+                  <rect y="6" width="20" height="2" fill="white" />
+                  <rect y="8" width="20" height="2" fill="#B22234" />
+                  <rect y="10" width="20" height="2" fill="white" />
+                  <rect y="12" width="20" height="2" fill="#B22234" />
+                  <rect width="8" height="8" fill="#3C3B6E" /></svg
+              ></span>
+              ENGLISH
+            </button>
+            <button type="button" class="menu-lang-btn" data-action="set-lang" data-lang="nl">
+              <span class="menu-lang-flag"
+                ><svg
+                  width="20"
+                  height="15"
+                  viewBox="0 0 20 15"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect width="20" height="5" fill="#AE1C28" />
+                  <rect y="5" width="20" height="5" fill="white" />
+                  <rect y="10" width="20" height="5" fill="#21468B" /></svg
+              ></span>
+              NEDERLANDS
+            </button>
           </div>
-      </div>
-      <div class="menu-bottom">
-          <button type="button" class="menu-signout-btn" data-action="logout">SIGN OUT</button>
-      </div>
-  </nav>
+        </div>
+        <div class="menu-bottom">
+          <button
+            type="button"
+            class="menu-signout-btn"
+            data-testid="btn-logout"
+            data-action="logout"
+          >
+            SIGN OUT
+          </button>
+        </div>
+      </nav>
 
-  <!-- Overlay for Sidebar -->
-  <div id="menu-overlay-backdrop" class="overlay-backdrop" data-action="toggle-menu"></div>
+      <!-- Overlay for Sidebar -->
+      <div id="menu-overlay-backdrop" class="overlay-backdrop" data-action="toggle-menu"></div>
 
-  <!-- Onboarding: eenmalige korte uitleg na eerste open (parkeer-scherm) -->
-  <div id="onboarding-overlay" class="onboarding-overlay hidden" role="dialog" aria-labelledby="onboarding-title" aria-modal="true">
-    <div class="onboarding-card">
-      <h2 id="onboarding-title" class="onboarding-title">Welkom</h2>
-      <p id="onboarding-text" class="onboarding-text">Dit is de kaart. Zoek een zone of tik op een marker om te starten.</p>
-      <button type="button" class="btn btn-primary btn-lg onboarding-dismiss" data-action="dismiss-onboarding">Begrepen</button>
+      <!-- Onboarding: eenmalige korte uitleg na eerste open (parkeer-scherm) -->
+      <div
+        id="onboarding-overlay"
+        class="onboarding-overlay hidden"
+        role="dialog"
+        aria-labelledby="onboarding-title"
+        aria-modal="true"
+      >
+        <div class="onboarding-card">
+          <h2 id="onboarding-title" class="onboarding-title">Welkom</h2>
+          <p id="onboarding-text" class="onboarding-text">
+            Dit is de kaart. Zoek een zone of tik op een marker om te starten.
+          </p>
+          <button
+            type="button"
+            class="btn btn-primary btn-lg onboarding-dismiss"
+            data-action="dismiss-onboarding"
+          >
+            Begrepen
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
-
-</div>
-</body>
+  </body>
 </html>
