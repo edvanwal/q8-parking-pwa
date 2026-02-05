@@ -38,6 +38,7 @@ const PAUSE = 500;
 const ARTIFACT_DIR = join(ROOT, "test-output", "e2e-proof");
 const TRACE_PATH = join(ARTIFACT_DIR, "proof-trace.zip");
 const VIDEO_DIR = join(ARTIFACT_DIR, "video");
+const isCI = process.env.CI === "true";
 
 function log(step, detail = "") {
   console.log(`[proof] ${step}${detail ? " " + detail : ""}`);
@@ -115,8 +116,8 @@ async function main() {
 
   const browser = await chromium.launch({
     channel: "chrome",
-    headless: false,
-    slowMo: 150,
+    headless: isCI,
+    slowMo: isCI ? 0 : 150,
   });
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 },
