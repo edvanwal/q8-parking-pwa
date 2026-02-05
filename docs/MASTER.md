@@ -110,9 +110,17 @@ De **Q8 Parking B2B PWA** is een Progressive Web App voor zakelijke chauffeurs (
 
 ## 9. Hoe we werken
 
+- **Project Geheugenboek (lees dit eerst!):** [PROJECT_MEMORY.md](PROJECT_MEMORY.md) — bekende valkuilen en learnings.
+- **Snelle check:** De agent draait `npm run quick:check` en rapporteert het resultaat aan Edwin.
 - **Verplichte werkregels (productowner, agents, hard stops):** [WORKING_RULES.md](WORKING_RULES.md)  
 - **Cursor/AI-regels:** [.cursorrules](../.cursorrules) (projectroot) – verwijst naar WORKING_RULES.  
 - **UI-specificatie (design, componenten, schermen):** [directives/ui-parking-pwa.md](../directives/ui-parking-pwa.md) (projectroot).
+
+### Checklist en feedback
+
+- **Acceptatie-checklists:** [product/ACCEPTANCE_CHECKLISTS.md](product/ACCEPTANCE_CHECKLISTS.md) — per categorie een afvinklijst met IDs (306 punten).
+- **Feedback backlog:** [product/FEEDBACK_BACKLOG.md](product/FEEDBACK_BACKLOG.md) — feedback die niet direct wordt opgepakt (20 items).
+- **Edge cases library:** [product/EDGE_CASES_LIBRARY.md](product/EDGE_CASES_LIBRARY.md) — standaard patronen voor edge cases (herbruikbaar in checklists).
 
 **Afspraak:** Bij wijzigingen altijd [WORKING_RULES.md](WORKING_RULES.md) nalezen en volgen.
 

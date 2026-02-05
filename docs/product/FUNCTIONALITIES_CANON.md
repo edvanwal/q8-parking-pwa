@@ -3,6 +3,9 @@
 **Doel:** Volledige, feitelijke lijst van alle functionaliteiten die het systeem hoort te hebben, afgeleid uit documentatie en code.  
 **Scope (read-only):** docs/MASTER.md, docs/PRODUCT_ANALYSIS.md, docs/ARCHITECTURE.md, docs/WORKING_RULES.md, public/ (UI), scripts/e2e-proof.mjs.  
 **Laatste audit:** februari 2026.
+**Checklists:** Zie [ACCEPTANCE_CHECKLISTS.md](ACCEPTANCE_CHECKLISTS.md) voor 306 testpunten per categorie.
+**Edge cases:** Zie [EDGE_CASES_LIBRARY.md](EDGE_CASES_LIBRARY.md) voor herbruikbare patronen.
+**Backlog:** Zie [FEEDBACK_BACKLOG.md](FEEDBACK_BACKLOG.md) voor 20 ontbrekende/onduidelijke items.
 
 ---
 
@@ -195,7 +198,7 @@
 - **Huidige implementatie:**
   - Bestaat: ja
   - Locatie (bestand(en)): public/services.js (handleStartParking), public/app.js (start-session, confirm-start-session, confirm-start-daypass), public/ui.js (populateConfirmStartModal).
-- **Bewijs:** handmatig (E2E start geen sessie; wel zone sheet + duration).
+- **Bewijs:** E2E (scripts/e2e-session.mjs): complete flow — zone marker → sheet → START PARKING → confirm modal → YES, START → active card visible.
 - **Status:** OK
 - **Opmerkingen:** Bij geen zone/geen kenteken/geen sheet: toast-foutmelding (PRODUCT_ANALYSIS prioriteit 1 was "gebruikersfeedback" — in code aanwezig).
 
@@ -207,7 +210,7 @@
 - **Huidige implementatie:**
   - Bestaat: ja
   - Locatie (bestand(en)): public/index.html (modal-confirm-start), public/ui.js (populateConfirmStartModal), public/app.js (confirm-start-session, open-plate-selector-from-confirm).
-- **Bewijs:** handmatig
+- **Bewijs:** E2E (scripts/e2e-session.mjs): confirm modal toont zone (268_CANISI) en plate (1-ABC-123) correct.
 - **Status:** OK
 - **Opmerkingen:** —
 
@@ -219,7 +222,7 @@
 - **Huidige implementatie:**
   - Bestaat: ja
   - Locatie (bestand(en)): public/services.js (handleEndParking, transactionData, sessions.doc.update, transactions.add), public/app.js (confirm-end), public/index.html (modal-confirm, active-parking END PARKING).
-- **Bewijs:** handmatig
+- **Bewijs:** E2E (scripts/e2e-session.mjs): END PARKING → confirm modal → confirm end → sessie afgesloten (active card verborgen).
 - **Status:** OK
 - **Opmerkingen:** —
 
@@ -231,7 +234,7 @@
 - **Huidige implementatie:**
   - Bestaat: ja
   - Locatie (bestand(en)): public/ui.js (renderParkingView, active card, timer), public/index.html (ui-active-parking), public/state.js (session).
-- **Bewijs:** handmatig
+- **Bewijs:** E2E (scripts/e2e-session.mjs): active card toont zone (268_CANISI), plate (1-ABC-123), timer (00:02) correct.
 - **Status:** OK
 - **Opmerkingen:** PRODUCT_ANALYSIS: bij herladen wordt kenteken uit sessie getoond (session.plate); "default kenteken" betrof mogelijk oud gedrag.
 
@@ -243,7 +246,7 @@
 - **Huidige implementatie:**
   - Bestaat: ja
   - Locatie (bestand(en)): public/services.js (modifyActiveSessionEnd), public/app.js (mod-active-end), public/index.html (active-end-btn).
-- **Bewijs:** handmatig
+- **Bewijs:** E2E (scripts/e2e-session.mjs): +30 button verandert eindtijd van "Until stopped" naar "18:35" (concrete eindtijd).
 - **Status:** OK
 - **Opmerkingen:** —
 
@@ -673,7 +676,19 @@
   - Locatie (bestand(en)): scripts/e2e-proof.mjs, public/index.html (data-testid map-root, sheet-zone, duration-value, btn-zone-plus, btn-zone-close, btn-menu-open, side-menu, menu-item-parking, btn-logout).
 - **Bewijs:** E2E (headed in niet-CI).
 - **Status:** OK
-- **Opmerkingen:** Start/stop parkeersessie wordt niet in E2E gedaan; wel zone-sheet en duration-wijziging.
+- **Opmerkingen:** —
+
+### Proof: complete parking session (start → active → modify → end)
+- **Doel:** Bewijs dat complete parkeersessie flow werkt: zone selecteren, bevestigen, actieve sessie, eindtijd aanpassen, beëindigen.
+- **Voor wie (rol):** QA / gate voor human review.
+- **Trigger / entry point:** npm run test:e2e:session; scripts/e2e-session.mjs.
+- **Verwacht gedrag:** 1) Login. 2) Cleanup bestaande sessie indien aanwezig. 3) Zone marker klik → sheet-zone visible. 4) START PARKING → modal-confirm-start met zone + plate. 5) YES, START → active-parking card visible. 6) +30 button → eindtijd wijzigt. 7) END PARKING → modal-confirm. 8) Confirm end → sessie afgesloten (card verborgen). Artifacts: trace, video, screenshots.
+- **Huidige implementatie:**
+  - Bestaat: ja
+  - Locatie (bestand(en)): scripts/e2e-session.mjs, public/ (services.js, app.js, ui.js, index.html).
+- **Bewijs:** E2E (headed in niet-CI). Laatste run: Build 20260205170644-86cc166-dirty, PASS.
+- **Status:** OK
+- **Opmerkingen:** Test valideert Categorie 3 (Parkeersessies) volledig. Gecreëerd feb 2026.
 
 ---
 
@@ -747,10 +762,10 @@
 | UI en navigatie     |  9 |     0 |         0 |
 | Data en persistentie|  3 |     0 |         0 |
 | PWA                 |  2 |     0 |         0 |
-| E2E                 |  1 |     0 |         0 |
+| E2E                 |  2 |     0 |         0 |
 | Rollen              |  1 |     0 |         0 |
 | Overige             |  1 |     2 |         0 |
 
-**Totaal:** OK 51, DEELS 5, ONTBREEKT 0.
+**Totaal:** OK 52, DEELS 5, ONTBREEKT 0.
 
 *Dit document wijzigt geen bestaande code. Bij onduidelijkheid is gekozen voor DEELS of feitelijke beschrijving.*
