@@ -13,6 +13,15 @@ Concrete blockers met repro en waar onderzocht. Bij oplossing: verplaatsen naar 
 
 ---
 
+## B4. GitHub CLI (gh) ontbreekt in agent-shell
+
+- **Repro:** `gh pr create ...` → "gh is not recognized as the name of a cmdlet".
+- **Waar onderzocht:** PowerShell command in repo-root tijdens PR-actie.
+- **Impact:** PR kan niet worden aangemaakt of beheerd via CLI.
+- **Actie:** Installeer GitHub CLI (gh) of voeg toe aan PATH; daarna PR opnieuw aanmaken.
+
+---
+
 ## B2. Preflight / format:check scripts ontbraken in package.json — OPGELOST
 
 - **Repro:** `npm run preflight` en `npm run format:check` bestonden niet in package.json.
@@ -34,5 +43,6 @@ Concrete blockers met repro en waar onderzocht. Bij oplossing: verplaatsen naar 
 - format:check: PASS
 - preflight: PASS (GH_TOKEN missing mode)
 - test:e2e:proof: PASS
+- workflow yaml: PASS (npx --yes js-yaml .github/workflows/firebase-hosting-merge.yml)
 
 *Gebruik: bij nieuwe blocker toevoegen met id B<n>, korte repro, waar onderzocht, impact, actie.*
