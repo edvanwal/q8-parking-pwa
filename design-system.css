@@ -1959,48 +1959,46 @@ body {
   }
   
   .map-search-float {
-    max-width: 450px;
-    left: 50%;
-    transform: translateX(-50%);
-    right: auto;
-    width: calc(100% - 32px);
+    max-width: calc(100% - 32px);
+    left: 16px;
+    right: 16px;
+    transform: none;
   }
   
+  /* RULE: Desktop mirrors mobile - sheet fills #app width, not viewport-centered */
   .bottom-sheet {
-    max-width: 480px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100%);
+    /* Remove max-width and centering - stay within #app container */
+    left: 0;
+    right: 0;
+    transform: translateY(100%);
     border-radius: 24px 24px 0 0;
   }
   
   .overlay-backdrop.open .bottom-sheet {
-    transform: translateX(-50%) translateY(0);
+    transform: translateY(0);
   }
   
   .active-parking-overlay {
-    max-width: 480px;
-    left: 50%;
-    transform: translateX(-50%);
+    /* Stay within #app bounds */
+    left: 0;
+    right: 0;
+    transform: none;
   }
 }
 
 /* --- Large Tablets (768px+) --- */
+/* RULE: Desktop mirrors mobile - #app stays at mobile width */
 @media screen and (min-width: 768px) {
   #app {
-    max-width: 500px;
+    max-width: 480px; /* Same as mobile, not wider */
   }
   
   .modal-card {
-    max-width: 450px;
+    max-width: 100%; /* Fill #app width */
   }
   
-  /* Sheet zelfde breedte als app op desktop */
-  .bottom-sheet {
-    max-width: 500px;
-  }
-  .active-parking-overlay {
-    max-width: 500px;
-  }
+  /* Sheet fills #app container - no separate max-width */
+  /* .bottom-sheet and .active-parking-overlay inherit from 481px+ rules */
 }
 
 /* --- Landscape Mode --- */
@@ -2495,3 +2493,30 @@ body.platform-ios {
 .plate-rdw-result.plate-rdw-warn { color: var(--q8-text-muted); }
 .plate-rdw-result.plate-rdw-loading { color: var(--primary); font-style: italic; }
 .plate-format-error { color: var(--danger); }
+
+/* --- Build Version Indicator --- */
+/* Visible only in dev/test mode (localhost or ?showbuild)
+   WHY: Allows testers to verify which build is loaded at a glance
+   PREVENTS: "It works for me" debugging, stale cache confusion */
+.build-indicator {
+  position: fixed;
+  bottom: 4px;
+  right: 4px;
+  background: rgba(0, 61, 107, 0.9);
+  color: white;
+  font-size: 10px;
+  font-family: monospace;
+  padding: 2px 6px;
+  border-radius: 3px;
+  z-index: 99999;
+  pointer-events: none;
+  opacity: 0.7;
+  user-select: none;
+}
+
+/* Hide on very small screens to avoid obstructing UI */
+@media (max-height: 500px) {
+  .build-indicator {
+    display: none !important;
+  }
+}
