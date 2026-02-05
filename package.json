@@ -5,6 +5,8 @@
   "scripts": {
     "screenshot": "node scripts/screenshot.js",
     "sync": "node scripts/sync-to-public.js",
+    "preflight": "node scripts/preflight.mjs",
+    "format:check": "node scripts/format-check.mjs",
     "test:e2e:proof": "node scripts/e2e-proof.mjs",
     "deploy": "npm run sync && firebase deploy",
     "deploy:hosting": "firebase deploy --only hosting",
