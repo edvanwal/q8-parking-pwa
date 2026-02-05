@@ -918,6 +918,14 @@ body {
   min-width: 80px;
   text-align: center;
 }
+.duration-max-msg {
+  color: var(--danger);
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: var(--space-05);
+  text-align: center;
+  width: 100%;
+}
 .sheet-start-btn { margin: 0; width: 100%; }
 .rate-item {
   display: flex; align-items: flex-start; gap: 12px;

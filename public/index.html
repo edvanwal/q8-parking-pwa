@@ -568,7 +568,7 @@
         <div class="sheet-section sheet-section-duration">
            <label id="details-duration-label" class="input-label sheet-section-label">Parking duration</label>
            <div class="sheet-duration-control">
-              <button class="sheet-duration-btn" data-action="mod-duration" data-delta="-15">−</button>
+              <button class="sheet-duration-btn" data-action="mod-duration" data-delta="-15" data-testid="btn-zone-minus">−</button>
               <div class="sheet-duration-value" id="val-duration" data-testid="duration-value">2h 00m</div>
               <button class="sheet-duration-btn" data-action="mod-duration" data-delta="15" data-testid="btn-zone-plus">+</button>
            </div>
@@ -846,7 +846,7 @@
       <div class="menu-bottom">
           <button type="button" class="menu-signout-btn" data-action="logout">SIGN OUT</button>
       </div>
-  </div>
+  </nav>
 
   <!-- Overlay for Sidebar -->
   <div id="menu-overlay-backdrop" class="overlay-backdrop" data-action="toggle-menu"></div>

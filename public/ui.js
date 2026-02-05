@@ -382,7 +382,7 @@ Q8.UI = (function() {
             if (!elMaxMsg) {
                  const msg = document.createElement('div');
                  msg.id = 'duration-max-msg';
-                 msg.style.cssText = 'color: #D92D20; font-size: 0.75rem; font-weight: 600; margin-top: 4px; text-align: center; width: 100%;';
+                 msg.className = 'duration-max-msg';
                  msg.innerText = maxMsgText;
                  elDur?.parentNode?.appendChild(msg);
             } else {
@@ -854,7 +854,7 @@ Q8.UI = (function() {
             if (hasDateFilter || hasVehicleFilter || hasCustomRange) {
                 const parts = [];
                 if (hasDateFilter && filters.dateRange !== 'custom') {
-                    const labels = { week: nl ? 'Laatste 7 dagen' : 'Last 7 days', 30days: nl ? 'Laatste 30 dagen' : 'Last 30 days', month: nl ? 'Deze maand' : 'This month' };
+                    const labels = { week: nl ? 'Laatste 7 dagen' : 'Last 7 days', '30days': nl ? 'Laatste 30 dagen' : 'Last 30 days', month: nl ? 'Deze maand' : 'This month' };
                     parts.push((nl ? 'Datum: ' : 'Date: ') + (labels[filters.dateRange] || filters.dateRange));
                 }
                 if (hasCustomRange) parts.push((nl ? 'Datum: ' : 'Date: ') + (filters.customStart || '…') + ' – ' + (filters.customEnd || '…'));
