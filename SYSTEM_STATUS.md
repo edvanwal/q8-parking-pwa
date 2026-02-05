@@ -15,6 +15,6 @@
 - [ ] [Bekend probleem 2]
 
 ## Hoe test je dit
-- **Lokaal:** App op http://localhost:3000 (bijv. `npx serve public -l 3000`). E2E: `npm run test:e2e:headed`.
-- **E2E headless:** `npm run test:e2e`
+- **Lokaal:** App op http://localhost:3000 (bijv. `npx serve public -l 3000`). E2E: `npm run test:e2e:proof`.
+- **E2E:** Lokaal draait E2E headed (zichtbare browser). In CI draait E2E headless via `process.env.CI`.
 - **Verificatie:** Zie docs/WORKING_RULES.md en .cursor/rules/20_BROWSER_VERIFICATION.mdc

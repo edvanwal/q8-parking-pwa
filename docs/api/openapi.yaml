@@ -1,0 +1,5 @@
+openapi: 3.0.0
+info:
+  title: Q8 Parking API
+  version: 0.0.0
+paths: {}

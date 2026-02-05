@@ -4,6 +4,14 @@ Korte status (10 regels) + volgende 3 acties voor de volgende agent of Edwin.
 
 ---
 
+## PR2 – docs/rules consistency
+
+- **Scope:** Alleen docs-structuur en rules-consistentie; geen productlogica, geen CI-wijzigingen.
+- **Gedaan:** SYSTEM_STATUS.md gecorrigeerd (E2E-scriptverwijzingen alleen `npm run test:e2e:proof`; korte uitleg headed/headless). Placeholder-docs aangemaakt: docs/product/PRD.md, BACKLOG.md, stories/STORY_TEMPLATE.md; docs/architecture/c4.md; docs/decisions/ADR_TEMPLATE.md; docs/api/openapi.yaml; docs/flows/FLOW_TEMPLATE.md; docs/ops/observability.md; docs/USER_FLOWS_AND_DATAFLOWS.md.
+- **Niet gedaan:** Geen inhoudelijke uitwerking; rule 25_DOCS_AND_TRACEABILITY.mdc niet gewijzigd.
+
+---
+
 ## Autopilot stop — samenvatting
 
 1. **Gates PASS (laatste bekende run):**  

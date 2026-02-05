@@ -36,6 +36,14 @@ Concrete blockers met repro en waar onderzocht. Bij oplossing: verplaatsen naar 
 
 ---
 
+## B5. Docs/rules consistency (placeholder-paden ontbraken) — OPGELOST
+
+- **Repro:** Rules (25_DOCS_AND_TRACEABILITY) verwijzen naar docs/product/, docs/architecture/, docs/api/, docs/USER_FLOWS_AND_DATAFLOWS.md etc.; die bestonden niet.
+- **Waar onderzocht:** .cursor/rules/25_DOCS_AND_TRACEABILITY.mdc; docs/ directory.
+- **Actie:** PR2 (docs/rules-consistency): placeholder-bestanden en -mappen aangemaakt. Geen inhoud toegevoegd.
+
+---
+
 ---
 
 ## Laatste gate-run
