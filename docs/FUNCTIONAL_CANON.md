@@ -104,6 +104,8 @@ Bij wijzigingen: canon bijwerken; status ✅ (PASS) / 🟡 (manual-only / flaky)
 | F71 | Notifications | #view-notifications, #notif-settings-list, #notif-history-list | Instellingen + geschiedenis | ✅ | manual-only |
 | F72 | Toast (meldingen) | #toast, data-action="dismiss-toast" | Toast verschijnt en kan sluiten | ✅ | manual-only |
 | F73 | Locatie-uitleg modal | #modal-location-explanation, data-action="confirm-location-explanation" | Toestaan voor eerste locatievraag | ✅ | manual-only |
+| F74 | PWA Install Gate | installMode.active, ui.js renderInstallGate | Install-prompt (iOS/Android) of verbergen | ✅ | manual-only |
+| F75 | Info-banner (dismiss) | state.infoBanner, data-action="close-info-banner" | Banner tonen en sluiten | ✅ | manual-only |
 
 ---
 
@@ -134,4 +136,4 @@ Selectors die de proof vereist: map-root, sheet-zone, duration-value, btn-zone-p
 
 ---
 
-*Laatste update: nachtrun inventarisatie; alle user-visible features uit index.html, ui.js, app.js, RAPPORT_USER_STORIES.*
+*Laatste update: AUTOPILOT nachtrun; F74 Install Gate, F75 Info-banner toegevoegd. Alle features user-visible ja; backend ja waar Firestore/Auth gebruikt.*

@@ -4,6 +4,23 @@ Korte status (10 regels) + volgende 3 acties voor de volgende agent of Edwin.
 
 ---
 
+## Autopilot stop — samenvatting
+
+1. **Gates PASS (laatste bekende run):**  
+   - format:check PASS  
+   - preflight PASS (GH_TOKEN missing mode)  
+   - test:e2e:proof PASS  
+   *(Na de canon-update en runbook-toevoego zijn de gates niet opnieuw gedraaid.)*
+
+2. **Laatst toegevoegd aan FUNCTIONAL_CANON.md:**  
+   - **F74** — PWA Install Gate (installMode.active, renderInstallGate); status ✅, manual-only.  
+   - **F75** — Info-banner dismiss (state.infoBanner, data-action="close-info-banner"); status ✅, manual-only.
+
+3. **Eerstvolgende stap vóór stop:**  
+   Gates draaien in volgorde (format:check → preflight → test:e2e:proof) na de canon-wijzigingen; bij falen Fix/Test-loop volgens docs/AUTOPILOT_RUNBOOK.md, daarna AGENT_HANDOVER en BLOCKERS bijwerken en eventueel NACHTRUN EINDRAPPORT schrijven.
+
+---
+
 ## Status (10 regels)
 
 1. **Branch:** fix/e2e-menu-logout-clean. **Repo:** edvanwal/q8-parking-pwa.
@@ -27,4 +44,4 @@ Korte status (10 regels) + volgende 3 acties voor de volgende agent of Edwin.
 
 ---
 
-*Laatste update: stopcriteria bereikt — alle 3 gates PASS, canon compleet.*
+*Laatste update: autopilot gestopt; samenvatting gates/canon/volgende-stap toegevoegd.*
