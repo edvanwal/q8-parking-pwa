@@ -12,10 +12,12 @@
 - **Rule:** On desktop, the app MUST render exactly like mobile. Desktop is treated as a "large phone".
 - **Rationale:** For the current development phase, desktop usage is ONLY a test environment. Desktop must behave as a mirror of mobile UI, not as a separate UX.
 - **Implementation:**
-  - Zone sheet (`.bottom-sheet`): uses fixed `max-width: 480px` on all screen sizes above mobile (481px+).
+  - App container (`#app`): fixed `max-width: 480px` on all screen sizes.
+  - Zone sheet (`.bottom-sheet`): fills the full width of `#app`, not viewport-centered.
   - No desktop-specific layout optimizations are allowed.
   - This rule overrides any responsive desktop optimizations.
-- **Enforcement:** E2E test (`scripts/e2e-proof.mjs`) validates zone sheet width on desktop viewport.
+- **Enforcement:** E2E test (`scripts/e2e-desktop.mjs`) validates zone sheet width matches app width on desktop viewport.
+- **Fix (feb 2026):** Sheet was viewport-centered with separate max-width. Fixed to use `left: 0; right: 0` within `#app` container.
 
 ---
 

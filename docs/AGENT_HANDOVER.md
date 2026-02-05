@@ -72,4 +72,13 @@ Korte status (10 regels) + volgende 3 acties voor de volgende agent of Edwin.
 - **Fix:** In `initAuthListener()` (services.js) wordt nu `loadZones()` aangeroepen als zones leeg zijn of een error hadden na succesvolle login.
 - **Bewijs:** E2E test toont echte Firestore zones (Zone 268_CANISI, Domplein 21, Nijmegen, €1,80/uur).
 - **Canon update:** "Kaart met markers" status DEELS → OK.
-- **Gates:** E2E proof PASS, build PASS.
+- **Gates:** E2E proof PASS, E2E desktop PASS, build PASS.
+
+---
+
+## Iteratie feb 2026 — Desktop mirrors mobile (sheet width)
+
+- **Root cause:** `.bottom-sheet` had `left: 50%; transform: translateX(-50%)` waardoor het viewport-gecentreerd was, niet binnen `#app`.
+- **Fix:** Sheet CSS aangepast naar `left: 0; right: 0; transform: translateY(100%)` zodat het de volle breedte van `#app` vult.
+- **Bewijs:** E2E desktop test toont sheet breedte = 480px = app breedte.
+- **Commit:** `c5269ccf` gepusht.
