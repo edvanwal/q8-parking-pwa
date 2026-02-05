@@ -2,6 +2,10 @@
 
 Korte status (10 regels) + volgende 3 acties voor de volgende agent of Edwin.
 
+**Nieuwe learnings gaan altijd ook in docs/PROJECT_MEMORY.md en agents draaien eerst `npm run quick:check`.**
+
+**Terminal is agent-only; Edwin krijgt alleen links en kijkpunten.**
+
 ---
 
 ## PR2 – docs/rules consistency
@@ -82,3 +86,75 @@ Korte status (10 regels) + volgende 3 acties voor de volgende agent of Edwin.
 - **Fix:** Sheet CSS aangepast naar `left: 0; right: 0; transform: translateY(100%)` zodat het de volle breedte van `#app` vult.
 - **Bewijs:** E2E desktop test toont sheet breedte = 480px = app breedte.
 - **Commit:** `c5269ccf` gepusht.
+
+---
+
+## Iteratie feb 2026 — Categorie 3 (Parkeersessies)
+
+- **Scope:** Volledige validatie van Categorie 3 — Parkeersessies uit FUNCTIONALITIES_CANON.md (8 items).
+- **E2E test aangemaakt:** `scripts/e2e-session.mjs` — complete parking session flow test.
+- **Fixes onderweg:**
+  1. Toast pointer-events: toast blokkeerde clicks op START PARKING. Fix: `.toast { pointer-events: none }` met uitzondering voor close button.
+  2. Active parking overlay hidden class: `#ui-active-parking` toggled nu correct de `hidden` class voor visibility detectie.
+- **Test flow:**
+  1. Login
+  2. Cleanup bestaande sessie
+  3. Zone marker → sheet visible
+  4. START PARKING → confirm modal (zone 268_CANISI, plate 1-ABC-123)
+  5. YES, START → active card visible (timer 00:02)
+  6. +30 button → Until stopped → 18:35
+  7. END PARKING → confirm modal
+  8. Confirm end → sessie afgesloten
+- **Gates PASS:**
+  - `npm run test:e2e:proof`: PASS
+  - `npm run test:e2e:desktop`: PASS
+  - `npm run test:e2e:session`: PASS
+- **Build:** `20260205170644-86cc166-dirty`
+- **Canon update:** Categorie 3 items hebben nu E2E bewijs. Nieuwe E2E proof item toegevoegd.
+
+---
+
+## Iteratie feb 2026 — Complete Offline Inventarisatie
+
+- **Scope:** Volledige inventarisatie van alle 13 categorieën uit FUNCTIONALITIES_CANON.md
+- **Resultaat:**
+  1. **ACCEPTANCE_CHECKLISTS.md** — 306 testpunten over alle categorieën
+  2. **EDGE_CASES_LIBRARY.md** — 40+ herbruikbare edge case patronen
+  3. **FEEDBACK_BACKLOG.md** — 20 ontbrekende/onduidelijke user stories
+  4. **FUNCTIONALITIES_CANON.md** — Links naar nieuwe docs
+  5. **MASTER.md** — Links naar nieuwe docs
+  6. **PROJECT_MEMORY.md** — Serve port issue toegevoegd
+- **Categorieën met punten:**
+  - C1: Authenticatie (50)
+  - C2: Kaart en parkeerzones (53)
+  - C3: Parkeersessies (42)
+  - C4: Kentekens (48)
+  - C5: Parkeerhistorie (24)
+  - C6: Favorieten (16)
+  - C7: Notificaties (15)
+  - C8: UI en navigatie (25)
+  - C9: Data en persistentie (6)
+  - C10: PWA (8)
+  - C11: E2E-bewezen flows (7)
+  - C12: Rollen (3)
+  - C13: Overige (9)
+- **Commit:** `4a0849d2`
+- **Build:** `20260205170644-86cc1`
+
+---
+
+## Status (actueel)
+
+1. **Branch:** docs/rules-consistency
+2. **Commit:** `4a0849d2` — docs: complete acceptance checklists for all 13 categories (306 points)
+3. **Build:** `20260205170644-86cc1`
+4. **Server:** `http://localhost:3000`
+5. **Gates:** Niet gedraaid (documentatie-only run)
+
+---
+
+## Volgende acties
+
+1. **Edwin:** Bekijk ACCEPTANCE_CHECKLISTS.md en test de app tegen de checklists
+2. **Edwin:** Bij afwijkingen: geef IDs door (bijv. "Dit klopt niet: C3-05, C4-12")
+3. **Na validatie:** Begin met categorie 1 en werk door met de nieuwe checklists
