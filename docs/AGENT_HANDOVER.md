@@ -52,3 +52,24 @@ Korte status (10 regels) + volgende 3 acties voor de volgende agent of Edwin.
 ---
 
 *Laatste update: autopilot gestopt; samenvatting gates/canon/volgende-stap toegevoegd.*
+
+---
+
+## Iteratie feb 2026 — Canon-validatie Categorie 1
+
+- **Auth 1.1 (Inloggen):** E2E PASS. Technisch OK.
+- **Feedback Edwin:** Kaart zichtbaar, maar zone-markers ontbreken; vraag om onboarding voor kenteken bij eerste login.
+- **Documentatie-update (geen code):**
+  1. `docs/product/DEELS_DECISIONS.md`: Sectie "Onboarding: na eerste login kenteken toevoegen" toegevoegd (KEUZE: TE BEPALEN).
+  2. `docs/product/FUNCTIONALITIES_CANON.md`: "Kaart met markers" status van OK → DEELS; observatie + testplan toegevoegd.
+- **Volgende stap:** Categorie 2 afgerond, wacht op Edwin's validatie.
+
+---
+
+## Iteratie feb 2026 — Categorie 2 Fix
+
+- **Root cause:** `loadZones()` werd niet opnieuw aangeroepen na login. Als de initiële aanroep faalde door gebrek aan auth, bleven zones leeg.
+- **Fix:** In `initAuthListener()` (services.js) wordt nu `loadZones()` aangeroepen als zones leeg zijn of een error hadden na succesvolle login.
+- **Bewijs:** E2E test toont echte Firestore zones (Zone 268_CANISI, Domplein 21, Nijmegen, €1,80/uur).
+- **Canon update:** "Kaart met markers" status DEELS → OK.
+- **Gates:** E2E proof PASS, build PASS.

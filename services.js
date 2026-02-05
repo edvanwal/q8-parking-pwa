@@ -149,6 +149,22 @@ Q8.Services = (function () {
             setScreen("parking");
           }
           if (db) loadHistory(user.uid);
+          // Reload zones after login to ensure auth-required zones are fetched
+          if (
+            db &&
+            (!S.get.zones || S.get.zones.length === 0 || S.get.zonesLoadError)
+          ) {
+            loadZones()
+              .then(() => {
+                if (Q8.UI && typeof Q8.UI.renderMapMarkers === "function")
+                  Q8.UI.renderMapMarkers();
+                if (Q8.UI && typeof Q8.UI.update === "function") Q8.UI.update();
+              })
+              .catch((err) => {
+                if (U && U.debug)
+                  U.debug("DATA", "Zones reload after login failed", err);
+              });
+          }
         } else {
           if (U && U.debug) U.debug("AUTH", "No User / Logged Out");
           if (_historyUnsub) {
@@ -332,13 +348,45 @@ Q8.Services = (function () {
       });
   }
 
-  function registerUser(email, password) {
+  function registerUser(email, password, profileData) {
     if (U && U.debug) U.debug("AUTH", "Attempting Register", email);
     return applyAuthPersistenceForNextLogin()
       .catch(() => {})
       .then(() => auth.createUserWithEmailAndPassword(email, password))
-      .then(() => {
+      .then((userCredential) => {
         S.save();
+        // Save profile data to Firestore users collection
+        if (db && userCredential && userCredential.user) {
+          const uid = userCredential.user.uid;
+          const userData = {
+            email: email,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          };
+          // Add displayName if provided
+          if (profileData && profileData.displayName) {
+            userData.displayName = profileData.displayName;
+          }
+          // Add phone if provided (optional)
+          if (profileData && profileData.phone) {
+            userData.phone = profileData.phone;
+          }
+          // Add libertyCardNumber if provided (optional)
+          if (profileData && profileData.libertyCardNumber) {
+            userData.libertyCardNumber = profileData.libertyCardNumber;
+          }
+          return db
+            .collection("users")
+            .doc(uid)
+            .set(userData)
+            .then(() => {
+              if (U && U.debug)
+                U.debug("AUTH", "User profile saved to Firestore", uid);
+            })
+            .catch((err) => {
+              console.error("Failed to save user profile to Firestore:", err);
+              // Don't throw - registration succeeded, profile save is secondary
+            });
+        }
       });
   }
 
@@ -1065,14 +1113,80 @@ Q8.Services = (function () {
   function handleAutoEndSession(reason) {
     const session = S.get.session;
     if (!session) return;
+
+    const now = new Date();
+    const startDate =
+      session.start instanceof Date ? session.start : new Date(session.start);
+    const endDate = session.end
+      ? session.end instanceof Date
+        ? session.end
+        : new Date(session.end)
+      : now;
+
     const zone =
       S.get.zones.find(
         (z) => z.uid === session.zoneUid || z.id === session.zoneUid,
       ) || S.get.zones.find((z) => z.id === session.zone);
     const zoneLabel = zone ? zone.id : session.zone || "?";
     const plate = session.plate || "?";
+
+    // Calculate cost for transaction record
+    const hourlyRate =
+      zone && zone.price != null
+        ? parseFloat(zone.price)
+        : S.get.selectedZoneRate || 2.0;
+    const durationMins = Math.round(
+      (endDate.getTime() - startDate.getTime()) / 60000,
+    );
+    const cost =
+      U && U.calculateCost
+        ? U.calculateCost(durationMins, hourlyRate)
+        : (durationMins / 60) * hourlyRate;
+
+    // Clear local state first
     S.update({ session: null, activeOverlay: null });
     S.save();
+
+    // Create Firestore transaction and update session status
+    if (db && auth && auth.currentUser) {
+      const userId = auth.currentUser.uid;
+      const tenantId = getTenantId();
+
+      const transactionData = {
+        userId,
+        tenantId,
+        zone: session.zone,
+        zoneUid: session.zoneUid,
+        plate: session.plate || "",
+        street: zone && zone.street ? zone.street : "",
+        start: firebase.firestore.Timestamp.fromDate(startDate),
+        end: firebase.firestore.Timestamp.fromDate(endDate),
+        cost: Math.round(cost * 100) / 100,
+        endedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        endedBy: "auto",
+      };
+
+      // Update session document to ended
+      if (session.sessionDocId) {
+        db.collection("sessions")
+          .doc(session.sessionDocId)
+          .update({
+            status: "ended",
+            endedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            endedBy: "auto",
+          })
+          .catch((err) => console.warn("Auto-end session update failed:", err));
+      }
+
+      // Create transaction record for history
+      db.collection("transactions")
+        .add(transactionData)
+        .catch((err) => {
+          console.error("Auto-end transaction add failed:", err);
+        });
+    }
+
+    // Show notification
     if (reason === "sessionEndedByUser") {
       addNotification(
         "sessionEndedByUser",
