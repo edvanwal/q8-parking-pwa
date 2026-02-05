@@ -1,0 +1,42 @@
+---
+scope: project
+priority: high
+alwaysApply: true
+enforced: true
+---
+
+# AGENT HANDOVER DISCIPLINE
+
+Nieuwe agents moeten kunnen starten zonder chatgeschiedenis en zonder vastlopen.
+
+## BRON VAN WAARHEID
+- docs/AGENT_HANDOVER.md is verplicht en moet actueel zijn.
+- docs/BLOCKERS.md is verplicht voor alles wat voortgang blokkeert.
+
+## DEFINITIE "ITERATIE"
+Een werkcyclus waarin je 1 of meer commits maakt of een feature-contract uitbreidt.
+
+## NA ELKE ITERATIE
+1) Update docs/AGENT_HANDOVER.md met:
+- Status in maximaal 10 regels
+- Wat is toegevoegd/veranderd
+- Gate-uitslagen (preflight, test:e2e:proof, format:check)
+- Waar de belangrijkste code zit (bestanden)
+- Volgende 3 acties (in volgorde)
+
+2) Update docs/BLOCKERS.md met:
+- Titel
+- Impact
+- Repro stappen
+- Waar onderzocht (filepad + functie/sectie)
+- Wat nog nodig is
+
+## VERBOD
+- Stop niet omdat iets onduidelijk is. Log als blocker en ga door met de volgende feature.
+- Vraag Edwin niet om context als het antwoord waarschijnlijk in AGENT_HANDOVER, FUNCTIONAL_CANON of SYSTEM_STATUS staat.
+
+## OUTPUT
+Elke agent output bevat minimaal:
+- Laatste preflight resultaat
+- Top blockers
+- Bewijs-pad als dat bestaat

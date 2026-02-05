@@ -1,0 +1,23 @@
+---
+scope: project
+priority: high
+alwaysApply: true
+enforced: true
+---
+
+# GLOBAL WORKING RULES
+
+Deze regels gelden altijd voor elke agent-run in deze repo.
+
+## VERPLICHT
+- Lees AGENTS.md en de canonical rules voordat je iets verandert.
+- Vraag Edwin niet om handmatige GitHub UI acties. Als PR/merge nodig is: gebruik scripts of API-flow. Als token ontbreekt: noteer dit als blocker en ga door met werk dat geen token nodig heeft.
+- Vraag nooit om browser review als preflight niet PASS is (zie 12_CANON_GATING).
+- Houd wijzigingen klein en doelgericht. Grote format-batches alleen als expliciet gevraagd, of in een aparte commit met duidelijke naam.
+
+## OUTPUT DISCIPLINE
+Elke status-update bevat minimaal:
+- Branch + short SHA
+- Gate-uitslagen: preflight, format:check, test:e2e:proof (als relevant)
+- Bewijs-pad als er proof is (bijv. test-output/e2e-proof/)
+- Top blockers (uit docs/BLOCKERS.md als die bestaat)

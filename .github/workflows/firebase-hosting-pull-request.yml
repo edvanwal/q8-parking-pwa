@@ -1,25 +1,23 @@
-name: Deploy to Firebase Hosting on PR
+# PR CI: no Firebase deploy; Firebase deploy runs only on push to main (firebase-hosting-merge.yml).
+name: PR CI
 "on": pull_request
 jobs:
-  build_and_preview:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Sync Root to Public
-        run: |
-          mkdir -p public
-          cp -f index.html public/index.html
-          cp -f ui.js public/ui.js
-          cp -f design-system.css public/design-system.css
-          cp -f app.js public/app.js || true
-          cp -f utils.js public/utils.js || true
-          cp -f services.js public/services.js || true
-          cp -f state.js public/state.js || true
-          cp -f firebase-config.js public/firebase-config.js || true
-          cp -r assets public/assets || true
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          firebaseServiceAccount: "${{ secrets.Q8_PARKING_PWA_FIREBASE }}"
-          projectId: q8-parking-pwa
+      - name: Install
+        run: npm ci
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Build (sync to public)
+        run: npm run sync
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: E2E proof
+        run: npm run test:e2e:proof
