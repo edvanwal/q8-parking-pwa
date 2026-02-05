@@ -1,5 +1,5 @@
-/**
- * E2E "human proof" for parking app: map visible → zone sheet → plus → close.
+﻿/**
+ * E2E "human proof" for parking app: map visible ÔåÆ zone sheet ÔåÆ plus ÔåÆ close.
  * Policy: docs/QA_AND_E2E_POLICY.md
  *
  * When [data-testid="map-root"] exists (parking backend), runs:
@@ -12,8 +12,10 @@
  * 7. Assert duration value changed (or visible "more" effect)
  * 8. Click btn-zone-close
  * 9. Assert sheet-zone not visible
+ * 10. Click btn-menu-open; assert side-menu visible and at least one menu item (menu-item-parking) visible/clickable
+ * 11. Click btn-logout; assert view-login visible (back to login state)
  *
- * Artifacts: trace, video, screenshots (after map, after sheet open, after plus, after close).
+ * Artifacts: trace, video, screenshots (after map, after sheet open, after plus, after close, after menu, after logout).
  *
  * Usage: npm run test:e2e:proof
  * Script starts server automatically if BASE_URL not reachable.
@@ -42,7 +44,7 @@ function log(step, detail = '') {
 }
 
 function fail(step, whatIsWrong) {
-  console.error(`[FAIL] ${step} — ${whatIsWrong}`);
+  console.error(`[FAIL] ${step} ÔÇö ${whatIsWrong}`);
 }
 
 async function waitForUrl(url, maxMs = 15000) {
@@ -139,28 +141,46 @@ async function main() {
 
     const MAP_ROOT_WAIT_MS = 10000;
     try {
-      await page.waitForSelector('[data-testid="map-root"]', { state: 'attached', timeout: MAP_ROOT_WAIT_MS });
+      await page.waitForSelector('[data-testid="map-root"]', {
+        state: 'attached',
+        timeout: MAP_ROOT_WAIT_MS,
+      });
     } catch (_) {
       await context.tracing.stop({ path: TRACE_PATH });
       await browser.close();
       if (serverProcess) serverProcess.kill();
-      console.error('[proof] PROOF GATE FAILED: #map-root not found. Start server on http://localhost:3000 or fix build/route.');
+      console.error(
+        '[proof] PROOF GATE FAILED: #map-root not found. Start server on http://localhost:3000 or fix build/route.'
+      );
       process.exit(1);
     }
 
-    await page.waitForSelector('#view-login, #view-map', { state: 'visible', timeout: VISIBLE_WAIT }).catch(() => null);
-    const loginVisible = await page.locator('#view-login').isVisible().catch(() => false);
-    const mapAlreadyVisible = await page.locator('#view-map').isVisible().catch(() => false);
+    await page
+      .waitForSelector('#view-login, #view-map', { state: 'visible', timeout: VISIBLE_WAIT })
+      .catch(() => null);
+    const loginVisible = await page
+      .locator('#view-login')
+      .isVisible()
+      .catch(() => false);
+    const mapAlreadyVisible = await page
+      .locator('#view-map')
+      .isVisible()
+      .catch(() => false);
     if (loginVisible) {
       log('1. Login visible, clicking sign in');
-      await page.locator('button[data-action="login"]').first().click({ timeout: 8000, force: true });
+      await page
+        .locator('button[data-action="login"]')
+        .first()
+        .click({ timeout: 8000, force: true });
     } else if (!mapAlreadyVisible) {
       fail('1. Login or map', 'Neither login nor map visible');
       allOk = false;
     } else {
       log('1. Already on map');
     }
-    await page.waitForSelector('#view-map', { state: 'visible', timeout: VISIBLE_WAIT }).catch(() => null);
+    await page
+      .waitForSelector('#view-map', { state: 'visible', timeout: VISIBLE_WAIT })
+      .catch(() => null);
     await page.waitForTimeout(PAUSE);
 
     const mapRoot = page.locator('[data-testid="map-root"]');
@@ -183,37 +203,84 @@ async function main() {
     }
     await page.waitForTimeout(2500); // let map idle and zones load from Firestore
 
-    const endParkingBtn = page.getByRole('button', { name: /end current parking session|END PARKING/i }).first();
+    const endParkingBtn = page
+      .getByRole('button', { name: /end current parking session|END PARKING/i })
+      .first();
     if (await endParkingBtn.isVisible().catch(() => false)) {
       await endParkingBtn.click();
-      await page.locator('#modal-confirm.open').waitFor({ state: 'visible', timeout: 5000 }).catch(() => null);
+      await page
+        .locator('#modal-confirm.open')
+        .waitFor({ state: 'visible', timeout: 5000 })
+        .catch(() => null);
       await page.locator('#modal-confirm button[data-action="confirm-end"]').first().click();
       await page.waitForTimeout(PAUSE);
     }
 
     // Zone markers: from Firestore or inject one + open sheet so we can test plus/close (FAIL 6/7)
-    let markerVisible = await page.locator('.q8-price-marker').first().isVisible().catch(() => false);
+    let markerVisible = await page
+      .locator('.q8-price-marker')
+      .first()
+      .isVisible()
+      .catch(() => false);
     let openedByInject = false;
     if (!markerVisible) {
-      await page.evaluate(() => new Promise((resolve) => {
-        setTimeout(() => {
-          if (window.Q8 && window.Q8.State && window.Q8.State.update && window.Q8.Services && window.Q8.Services.tryOpenOverlay) {
-            const zone = { id: 'E2E1', uid: 'e2e-zone-1', lat: 52.0907, lng: 5.1214, price: 2.5, display_label: '2,50', street: 'Test', city: 'Utrecht', rates: [] };
-            window.Q8.State.update({ zones: [zone], zonesLoading: false, zonesLoadError: null, selectedZone: 'e2e-zone-1', duration: 0, defaultDurationMinutes: 0 });
-            if (typeof window.renderMapMarkers === 'function') window.renderMapMarkers();
-            window.Q8.Services.tryOpenOverlay('sheet-zone', { uid: 'e2e-zone-1', zone: 'E2E1', price: 2.5, rates: [] });
-            window.Q8.State.update({ duration: 0 });
-            if (window.Q8.UI && typeof window.Q8.UI.update === 'function') window.Q8.UI.update();
-            const el = document.getElementById('sheet-zone');
-            if (el) el.classList.add('open');
-            window.__proofSheetOpenedByInject = true;
-          }
-          resolve();
-        }, 1500);
-      }));
+      await page.evaluate(
+        () =>
+          new Promise((resolve) => {
+            setTimeout(() => {
+              if (
+                window.Q8 &&
+                window.Q8.State &&
+                window.Q8.State.update &&
+                window.Q8.Services &&
+                window.Q8.Services.tryOpenOverlay
+              ) {
+                const zone = {
+                  id: 'E2E1',
+                  uid: 'e2e-zone-1',
+                  lat: 52.0907,
+                  lng: 5.1214,
+                  price: 2.5,
+                  display_label: '2,50',
+                  street: 'Test',
+                  city: 'Utrecht',
+                  rates: [],
+                };
+                window.Q8.State.update({
+                  zones: [zone],
+                  zonesLoading: false,
+                  zonesLoadError: null,
+                  selectedZone: 'e2e-zone-1',
+                  duration: 0,
+                  defaultDurationMinutes: 0,
+                });
+                if (typeof window.renderMapMarkers === 'function') window.renderMapMarkers();
+                window.Q8.Services.tryOpenOverlay('sheet-zone', {
+                  uid: 'e2e-zone-1',
+                  zone: 'E2E1',
+                  price: 2.5,
+                  rates: [],
+                });
+                window.Q8.State.update({ duration: 0 });
+                if (window.Q8.UI && typeof window.Q8.UI.update === 'function')
+                  window.Q8.UI.update();
+                const el = document.getElementById('sheet-zone');
+                if (el) el.classList.add('open');
+                window.__proofSheetOpenedByInject = true;
+              }
+              resolve();
+            }, 1500);
+          })
+      );
       await page.waitForTimeout(500);
-      openedByInject = await page.evaluate(() => !!window.__proofSheetOpenedByInject).catch(() => false);
-      if (openedByInject) await page.locator('#sheet-zone.open').waitFor({ state: 'visible', timeout: 5000 }).catch(() => null);
+      openedByInject = await page
+        .evaluate(() => !!window.__proofSheetOpenedByInject)
+        .catch(() => false);
+      if (openedByInject)
+        await page
+          .locator('#sheet-zone.open')
+          .waitFor({ state: 'visible', timeout: 5000 })
+          .catch(() => null);
     }
     if (!openedByInject) {
       const zoneMarker = page.locator('.q8-price-marker').first();
@@ -263,24 +330,29 @@ async function main() {
 
     const plusBtn = sheetZone.locator('[data-testid="btn-zone-plus"]').first();
     await plusBtn.click({ force: true });
-    await page.waitForFunction(
-      (before) => {
-        const el = document.getElementById('val-duration');
-        return el && el.innerText.trim() !== before;
-      },
-      textBeforeTrim,
-      { timeout: 5000 }
-    ).catch(() => null);
+    await page
+      .waitForFunction(
+        (before) => {
+          const el = document.getElementById('val-duration');
+          return el && el.innerText.trim() !== before;
+        },
+        textBeforeTrim,
+        { timeout: 5000 }
+      )
+      .catch(() => null);
     await page.waitForTimeout(300);
 
     const textAfter = (await durationEl.textContent().catch(() => '')) || '';
     const textAfterTrim = textAfter.trim();
     const valueChanged = textAfterTrim !== textBeforeTrim;
     if (!valueChanged) {
-      fail('6. Duration changed', `Expected duration to change: "${textBeforeTrim}" → "${textAfterTrim}"`);
+      fail(
+        '6. Duration changed',
+        `Expected duration to change: "${textBeforeTrim}" ÔåÆ "${textAfterTrim}"`
+      );
       allOk = false;
     } else {
-      log('6. Duration changed', `"${textBeforeTrim}" → "${textAfterTrim}"`);
+      log('6. Duration changed', `"${textBeforeTrim}" ÔåÆ "${textAfterTrim}"`);
     }
     await takeScreenshot(page, 'after-plus');
     await page.waitForTimeout(PAUSE);
@@ -288,13 +360,15 @@ async function main() {
     const closeBtn = sheetZone.locator('[data-testid="btn-zone-close"]').first();
     await closeBtn.click({ force: true });
     await page.waitForTimeout(PAUSE);
-    await page.waitForFunction(
-      () => !document.querySelector('#sheet-zone.open'),
-      { timeout: VISIBLE_WAIT }
-    ).catch(() => null);
+    await page
+      .waitForFunction(() => !document.querySelector('#sheet-zone.open'), { timeout: VISIBLE_WAIT })
+      .catch(() => null);
     await page.waitForTimeout(300);
 
-    const sheetStillVisible = await page.locator('#sheet-zone.open').isVisible().catch(() => true);
+    const sheetStillVisible = await page
+      .locator('#sheet-zone.open')
+      .isVisible()
+      .catch(() => true);
     if (sheetStillVisible) {
       fail('7. Sheet closed', 'sheet-zone still visible after clicking btn-zone-close');
       allOk = false;
@@ -302,6 +376,64 @@ async function main() {
       log('7. Sheet closed (sheet-zone not visible)');
     }
     await takeScreenshot(page, 'after-close');
+    await page.waitForTimeout(PAUSE);
+
+    // Step 8: Open menu and assert at least one menu item is visible (user-visible)
+    const menuBtn = page.locator('[data-testid="btn-menu-open"]').first();
+    await menuBtn.waitFor({ state: 'visible', timeout: 5000 }).catch(() => null);
+    const menuBtnVisible = await menuBtn.isVisible().catch(() => false);
+    if (!menuBtnVisible) {
+      fail('8. Menu button', 'btn-menu-open not visible');
+      allOk = false;
+    } else {
+      await menuBtn.click({ force: true });
+      await page.waitForTimeout(PAUSE);
+    }
+    const sideMenu = page.locator('[data-testid="side-menu"].open');
+    await sideMenu.waitFor({ state: 'visible', timeout: VISIBLE_WAIT }).catch(() => null);
+    const menuOpen = await sideMenu.isVisible().catch(() => false);
+    if (!menuOpen) {
+      fail('8. Menu open', 'side-menu not visible after clicking btn-menu-open');
+      allOk = false;
+    } else {
+      log('8. Menu open (side-menu visible)');
+    }
+    const menuItemParking = page.locator('[data-testid="menu-item-parking"]').first();
+    const menuItemVisible = await menuItemParking.isVisible().catch(() => false);
+    if (!menuItemVisible) {
+      fail('8. Menu item', 'menu-item-parking not visible');
+      allOk = false;
+    } else {
+      log('8. Menu item (menu-item-parking) visible and clickable');
+    }
+    await takeScreenshot(page, 'menu-open');
+    await page.waitForTimeout(PAUSE);
+
+    // Step 9: Logout and assert login state (user-visible)
+    const logoutBtn = page.locator('[data-testid="btn-logout"]').first();
+    await logoutBtn.waitFor({ state: 'visible', timeout: 5000 }).catch(() => null);
+    const logoutBtnVisible = await logoutBtn.isVisible().catch(() => false);
+    if (!logoutBtnVisible) {
+      fail('9. Logout button', 'btn-logout not visible');
+      allOk = false;
+    } else {
+      await logoutBtn.click({ force: true });
+      await page.waitForTimeout(PAUSE);
+    }
+    await page
+      .waitForSelector('#view-login', { state: 'visible', timeout: VISIBLE_WAIT })
+      .catch(() => null);
+    const loginViewVisible = await page
+      .locator('#view-login')
+      .isVisible()
+      .catch(() => false);
+    if (!loginViewVisible) {
+      fail('9. Logout', 'view-login not visible after clicking logout');
+      allOk = false;
+    } else {
+      log('9. Logout OK (view-login visible)');
+    }
+    await takeScreenshot(page, 'after-logout');
   } catch (e) {
     console.error('Exception:', e.message);
     allOk = false;
