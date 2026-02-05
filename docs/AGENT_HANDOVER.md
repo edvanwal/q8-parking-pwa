@@ -7,40 +7,39 @@ Korte status (10 regels) + volgende 3 acties voor de volgende agent of Edwin.
 ## Autopilot stop — samenvatting
 
 1. **Gates PASS (laatste bekende run):**  
-   - format:check PASS  
-   - preflight PASS (GH_TOKEN missing mode)  
-   - test:e2e:proof PASS  
-   *(Na de canon-update en runbook-toevoego zijn de gates niet opnieuw gedraaid.)*
+   - format:check NIET gedraaid in deze iteratie  
+   - preflight NIET gedraaid in deze iteratie  
+   - test:e2e:proof NIET gedraaid in deze iteratie  
+   - workflow yaml: PASS (npx --yes js-yaml .github/workflows/firebase-hosting-merge.yml)
 
 2. **Laatst toegevoegd aan FUNCTIONAL_CANON.md:**  
-   - **F74** — PWA Install Gate (installMode.active, renderInstallGate); status ✅, manual-only.  
-   - **F75** — Info-banner dismiss (state.infoBanner, data-action="close-info-banner"); status ✅, manual-only.
+   - Geen wijzigingen in deze iteratie (CI-only change).
 
 3. **Eerstvolgende stap vóór stop:**  
-   Gates draaien in volgorde (format:check → preflight → test:e2e:proof) na de canon-wijzigingen; bij falen Fix/Test-loop volgens docs/AUTOPILOT_RUNBOOK.md, daarna AGENT_HANDOVER en BLOCKERS bijwerken en eventueel NACHTRUN EINDRAPPORT schrijven.
+   GitHub CLI installeren/toevoegen aan PATH en PR aanmaken; daarna CI-checks op de PR volgen.
 
 ---
 
 ## Status (10 regels)
 
-1. **Branch:** fix/e2e-menu-logout-clean. **Repo:** edvanwal/q8-parking-pwa.
-2. **Functional canon:** docs/FUNCTIONAL_CANON.md compleet — alle user-visible features F01–F80 (✅ of manual-only).
-3. **E2E proof:** scripts/e2e-proof.mjs dekt: login → map → zone sheet → duration + → close → menu → logout.
-4. **Gates:** preflight, format:check, test:e2e:proof — alle drie PASS (laatste run: format:check PASS, preflight PASS, test:e2e:proof PASS).
-5. **GH_TOKEN:** niet gezet in agent-shell; nachtrun in "GH_TOKEN MISSING MODE" (geen PR/merge/API).
-6. **Documentatie:** AGENT_HANDOVER.md, BLOCKERS.md, FUNCTIONAL_CANON.md bijgewerkt.
-7. **Public vs root:** App wordt geserveerd uit public/ (npx serve public -l 3000); sync via npm run sync.
-8. **Blocker-documentatie:** docs/BLOCKERS.md — B1 (GH_TOKEN) open; B2 opgelost.
-9. **Stopcriteria bereikt:** preflight PASS, test:e2e:proof PASS, format:check PASS, canon compleet.
-10. **Bewijs-pad:** test-output/e2e-proof/ (trace, video, screenshots).
+1. **Branch:** chore/ci-sync-consistency-servicesjs. **Repo:** edvanwal/q8-parking-pwa.
+2. **Wijziging:** merge workflow overschrijft public/services.js niet meer; portal/fleet deploy-variant blijft intact.
+3. **Functional canon:** geen wijziging (CI-only change).
+4. **Gates:** preflight/format:check/test:e2e:proof niet gedraaid in deze iteratie.
+5. **Workflow check:** YAML validatie PASS (npx --yes js-yaml .github/workflows/firebase-hosting-merge.yml).
+6. **PR-status:** niet aangemaakt; gh ontbreekt in shell (zie BLOCKERS B4).
+7. **GH_TOKEN:** niet gezet in agent-shell; geen GitHub API-calls mogelijk.
+8. **Documentatie:** AGENT_HANDOVER.md en BLOCKERS.md bijgewerkt.
+9. **Blockers:** B1 (GH_TOKEN) open; B4 (gh ontbreekt) open.
+10. **Bewijs-pad:** n.v.t. (geen E2E-proof in deze iteratie).
 
 ---
 
 ## Volgende 3 acties
 
-1. **Gates lokaal draaien:** `npm run preflight`, `npm run format:check`, `npm run test:e2e:proof` — bij falen root-cause loop, kleine fix, herhalen.
-2. **Canon groen houden:** Nieuwe user-visible feature → regel in FUNCTIONAL_CANON.md + indien stabiele selector, extra stap in e2e-proof.mjs.
-3. **GH_TOKEN (optioneel):** Voor PR/merge: GH_TOKEN in omgeving zetten; preflight doet dan API-check; anders blijft nachtrun lokaal verifieerbaar.
+1. **GitHub CLI:** `gh` installeren/toevoegen aan PATH en PR aanmaken naar `main`.
+2. **CI checken:** PR checks volgen tot ze starten/draaien.
+3. **Gates (optioneel):** `npm run format:check`, `npm run preflight`, `npm run test:e2e:proof` als extra zekerheid gewenst.
 
 ---
 
