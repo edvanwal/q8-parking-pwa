@@ -92,6 +92,7 @@ De **Q8 Parking B2B PWA** is een Progressive Web App voor zakelijke chauffeurs (
 | Active parking – breedte/layout | [ROOT_CAUSE_ACTIVE_PARKING_WIDTH.md](ROOT_CAUSE_ACTIVE_PARKING_WIDTH.md) |
 | Kaart niet zichtbaar | [ROOT_CAUSE_KAART_NIET_ZICHTBAAR.md](ROOT_CAUSE_KAART_NIET_ZICHTBAAR.md) |
 | Code-analyse en opschoning | [CODE_ANALYSE_OPSCHONING.md](CODE_ANALYSE_OPSCHONING.md) |
+| Firebase upgrade poging 2026-02 | [audit/FIREBASE_UPGRADE_REPORT_2026-02.md](audit/FIREBASE_UPGRADE_REPORT_2026-02.md) |
 
 ---
 
