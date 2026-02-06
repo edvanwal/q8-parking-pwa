@@ -5,7 +5,7 @@
  * that have exceeded their duration or are outside allowed time windows.
  */
 
-const functions = require('firebase-functions');
+const functions = require('firebase-functions/v1');
 const admin = require('firebase-admin');
 const { exportParkingSessions, exportMonthlySubscriptions, createParkingSessionDoc } = require('./billing');
 
