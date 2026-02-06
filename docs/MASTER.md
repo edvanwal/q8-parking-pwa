@@ -100,6 +100,7 @@ De **Q8 Parking B2B PWA** is een Progressive Web App voor zakelijke chauffeurs (
 
 | Onderwerp | Document |
 |-----------|----------|
+| PWA icons rapport 2026-02 | [audit/PWA_ICONS_REPORT_2026-02.md](audit/PWA_ICONS_REPORT_2026-02.md) |
 | PWA installatie-instructies | [PWA_INSTALL_INSTRUCTIES.md](PWA_INSTALL_INSTRUCTIES.md) |
 | PWA cross-platform | [PWA_CROSS_PLATFORM_GUIDE.md](PWA_CROSS_PLATFORM_GUIDE.md) |
 | Quick checklist (icons, manifest, testen) | [QUICK_CHECKLIST.md](QUICK_CHECKLIST.md) |
